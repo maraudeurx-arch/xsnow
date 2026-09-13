@@ -8,7 +8,7 @@ export const BRAND = {
 } as const;
 
 export const WELCOME_SPEECH =
-  "Bonjour ! Je suis votre guide Xsnow. Choisissez un menu à gauche, ou touchez Accueil pour découvrir Reportage, Séries TV, Dessins animés et Vos attributs. Notre proximité fait notre force — Monétisé Vous !";
+  "Bonjour ! Je suis votre guide Xsnow. Choisissez un menu à gauche, explorez les Services Open-Community — courses, déménagement, garde et prêt d’objets — ou touchez Accueil pour Reportage, Séries TV, Dessins animés et Vos attributs. Monétisé Vous !";
 
 export const LEFT_MENU = [
   {
@@ -97,5 +97,9 @@ export const FEATURE_COPY = {
   attributs: {
     title: "Vos attributs",
     lead: "Vos étiquettes d’entraide. Elles restent sur cet appareil, chez vous.",
+  },
+  services: {
+    title: "Services Open-Community",
+    lead: "Les premiers services monétisables du quartier : courses, déménagement, garde et prêt d’objets avec caution.",
   },
 } as const;

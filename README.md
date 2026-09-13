@@ -12,7 +12,7 @@ Application web communautaire (Next.js App Router + TypeScript + Tailwind) prêt
 
 ### Qu’est-ce que c’est ?
 
-Xsnow est la vitrine **Open-Community** : faire connaître un business, voir qui est à proximité, retrouver un téléphone perdu, et être alerté si un proche s’éloigne de la zone où il doit être. Un guide parlant invite à choisir un menu. Le filigrane **EN CONSTRUCTION** rappelle que le produit est encore en chantier.
+Xsnow est la vitrine **Open-Community** : faire connaître un business, voir qui est à proximité, retrouver un téléphone perdu, et être alerté si un proche s’éloigne de la zone où il doit être. Les premiers **services monétisables** sont ouverts : courses et livraison, aide au déménagement, garde d’enfants et d’animaux, prêt / emprunt d’objets avec caution. Un guide parlant invite à choisir un menu. Le filigrane **EN CONSTRUCTION** rappelle que le produit est encore en chantier.
 
 ### Fonctions de l’interface
 
@@ -26,7 +26,7 @@ Xsnow est la vitrine **Open-Community** : faire connaître un business, voir qui
 
 Aucun panneau Jeton / Outils.
 
-Les formulaires (business, téléphone, alertes, attributs) s’enregistrent dans `localStorage` — aucun backend payant.
+Les formulaires (business, téléphone, alertes, attributs, **services**) s’enregistrent dans `localStorage` — aucun backend payant. La caution d’un prêt est un accord affiché, pas un vrai escrow.
 
 ### Démarrage local
 
@@ -68,7 +68,7 @@ Créez un identifiant gratuit : [cloud.walletconnect.com](https://cloud.walletco
 
 ### What is this?
 
-**Xsnow / Open-Community** is a neighborhood dApp shell: list a business, see who is nearby, report a lost phone, and get alerted if a family member leaves a trusted place. A talking guide invites a menu choice. A diagonal **EN CONSTRUCTION** watermark marks the work-in-progress release.
+**Xsnow / Open-Community** is a neighborhood dApp shell: list a business, see who is nearby, report a lost phone, get alerted if a family member leaves a trusted place, and publish the first monetizable neighbor services (grocery runs, moving help, childcare/pet sitting, lend/borrow with collateral). A talking guide invites a menu choice. A diagonal **EN CONSTRUCTION** watermark marks the work-in-progress release.
 
 ### UI chrome
 
@@ -80,7 +80,7 @@ Créez un identifiant gratuit : [cloud.walletconnect.com](https://cloud.walletco
 - Watermark with `pointer-events: none`
 - iPhone Safari: `viewport-fit=cover`, safe areas, ~44 px tap targets
 
-No Jeton/Outils panels. Forms persist in `localStorage` only.
+No Jeton/Outils panels. Forms persist in `localStorage` only. Lending collateral is recorded as an agreement — no payment processor in v1.
 
 ### Local setup
 
