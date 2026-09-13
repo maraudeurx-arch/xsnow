@@ -123,38 +123,37 @@ body {
 .guide-mouth {
   position: absolute;
   left: 50%;
-  top: 31.5%;
-  width: 10.5%;
-  height: 3.8%;
-  border-radius: 45% 45% 70% 70%;
-  background: #2a120e;
+  top: 27.8%;
+  width: 13%;
+  height: 4.6%;
+  border-radius: 50% 50% 60% 60% / 35% 35% 80% 80%;
+  background: linear-gradient(#f3d0c4 0 20%, #160806 20% 100%);
   box-shadow:
-    0 -1px 0 1px #c4786a,
-    0 2px 0 1px #8a3d34,
-    inset 0 -4px 0 #6b2a24;
-  transform: translateX(-50%) scaleY(0.34);
-  transform-origin: 50% 18%;
-  opacity: 0.7;
+    0 0 0 2px #9a5348,
+    inset 0 -6px 0 #7a332c;
+  transform: translateX(-50%) scaleY(0.28);
+  transform-origin: 50% 32%;
+  opacity: 0.9;
   pointer-events: none;
 }
 
 .guide-mouth.is-talking {
   opacity: 1;
-  animation: talk-mouth 0.17s ease-in-out infinite;
+  animation: talk-mouth 0.15s ease-in-out infinite;
 }
 
 @keyframes talk-mouth {
   0%,
   100% {
-    transform: translateX(-50%) scaleY(0.32) scaleX(1);
+    transform: translateX(-50%) scaleY(0.28) scaleX(1);
   }
-  28% {
-    transform: translateX(-50%) scaleY(2.15) scaleX(1.12);
+  30% {
+    transform: translateX(-50%) scaleY(2.45) scaleX(1.18);
   }
-  52% {
-    transform: translateX(-50%) scaleY(0.55) scaleX(1.02);
+  55% {
+    transform: translateX(-50%) scaleY(0.62) scaleX(1.04);
   }
-  76% {
-    transform: translateX(-50%) scaleY(1.75) scaleX(1.1);
+  78% {
+    transform: translateX(-50%) scaleY(2.05) scaleX(1.14);
   }
 }
