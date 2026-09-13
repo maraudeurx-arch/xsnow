@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { WELCOME_SPEECH } from "@/lib/content";
+import { BUBBLE_INTRO, WELCOME_SPEECH } from "@/lib/content";
 import { useSpeech } from "@/lib/speech";
 
 export function Guide() {
@@ -15,8 +15,11 @@ export function Guide() {
           type="button"
           className="tap mt-3 inline-flex items-center justify-center rounded-full bg-night px-4 text-sm font-extrabold text-gold"
           onClick={() => {
-            if (lastText === WELCOME_SPEECH) replay();
-            else speak(lastText);
+            if (lastText === BUBBLE_INTRO || lastText === WELCOME_SPEECH) {
+              replay();
+            } else {
+              speak(lastText);
+            }
           }}
         >
           Réécouter

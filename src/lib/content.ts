@@ -7,6 +7,9 @@ export const BRAND = {
   watermark: "EN CONSTRUCTION",
 } as const;
 
+export const BUBBLE_INTRO =
+  "Bonjour ! Je suis votre guide. Touchez Accueil, sous Xsnow à gauche, pour choisir une proposition. Réécouter : je vous les présente.";
+
 export const WELCOME_SPEECH =
   "Bonjour ! Je suis votre guide Xsnow. Touchez Accueil, juste sous Xsnow à gauche, pour voir toutes les propositions. Vous pourrez faire connaître votre business, voir qui est à proximité, retrouver un téléphone perdu, ou être alerté si un proche s’éloigne. Dans Accueil aussi : Reportage, Séries TV, Dessins animés, Vos attributs. Et les services : courses et livraison, aide au déménagement, garde d’enfants et d’animaux, prêt ou emprunt d’objets avec caution. Choisissez une option. Monétisé Vous !";
 
