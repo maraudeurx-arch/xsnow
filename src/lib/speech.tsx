@@ -9,7 +9,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { WELCOME_SPEECH } from "@/lib/content";
+import { BUBBLE_INTRO, WELCOME_SPEECH } from "@/lib/content";
 
 type SpeechContextValue = {
   isSpeaking: boolean;
@@ -31,7 +31,7 @@ function pickFrenchVoice(): SpeechSynthesisVoice | undefined {
 
 export function SpeechProvider({ children }: { children: ReactNode }) {
   const [isSpeaking, setIsSpeaking] = useState(false);
-  const [lastText, setLastText] = useState(WELCOME_SPEECH);
+  const [lastText, setLastText] = useState(BUBBLE_INTRO);
   const lastRef = useRef(WELCOME_SPEECH);
 
   const speak = useCallback((text: string) => {
@@ -59,7 +59,7 @@ export function SpeechProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const replay = useCallback(() => {
-    speak(lastRef.current);
+    speak(WELCOME_SPEECH);
   }, [speak]);
 
   const value = useMemo(

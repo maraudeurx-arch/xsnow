@@ -2,9 +2,17 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
-import { ACCUEIL_MENU } from "@/lib/content";
+import { useState, type ReactNode } from "react";
+import { ACCUEIL_MENU, ACCUEIL_OPEN_SPEECH, LEFT_MENU } from "@/lib/content";
+import { SERVICE_LIST } from "@/lib/services";
 import { useSpeech } from "@/lib/speech";
+
+const itemClass = (active: boolean, speaking: boolean) =>
+  `tap flex items-center rounded-2xl border px-3 py-2 text-left text-[13px] leading-snug font-semibold ${
+    active
+      ? "border-gold/70 bg-gold/15 text-gold"
+      : "border-white/10 bg-white/5 text-snow/90 hover:border-ice/40 hover:bg-white/10"
+  } ${speaking ? "menu-pulse" : ""}`;
 
 export function AccueilMenu() {
   const pathname = usePathname();
@@ -12,47 +20,85 @@ export function AccueilMenu() {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="flex flex-col items-center gap-2">
+    <div className="mt-3 w-[min(100%,17.5rem)]">
       <button
         type="button"
-        className={`tap min-w-[9.5rem] rounded-full border border-ice/40 bg-white/10 px-6 text-base font-extrabold tracking-wide text-snow backdrop-blur-md ${
+        className={`tap flex w-full items-center justify-between rounded-2xl border border-ice/40 bg-white/10 px-4 text-base font-extrabold tracking-wide text-snow backdrop-blur-md ${
           isSpeaking ? "menu-pulse" : ""
         }`}
         aria-expanded={open}
         onClick={() => {
-          setOpen((value) => !value);
-          if (!open) {
-            speak(
-              "Accueil. Voici Reportage, Séries TV, Dessins animés et Vos attributs. Choisissez une rubrique.",
-            );
-          }
+          const next = !open;
+          setOpen(next);
+          if (next) speak(ACCUEIL_OPEN_SPEECH);
         }}
       >
-        Accueil
+        <span>Accueil</span>
+        <span aria-hidden className="text-sm font-bold">
+          {open ? "–" : "+"}
+        </span>
       </button>
 
       {open ? (
-        <ul className="flex w-[min(100%,18rem)] flex-col gap-2">
-          {ACCUEIL_MENU.map((item) => {
-            const active = pathname === item.href;
-            return (
-              <li key={item.href}>
-                <Link
-                  href={item.href}
-                  onClick={() => speak(item.speech)}
-                  className={`tap flex items-center justify-center rounded-2xl border px-3 text-sm font-semibold ${
-                    active
-                      ? "border-gold/70 bg-gold/15 text-gold"
-                      : "border-white/10 bg-white/5 text-snow hover:border-ice/40"
-                  } ${isSpeaking ? "menu-pulse" : ""}`}
-                >
-                  {item.label}
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
+        <nav
+          aria-label="Propositions Accueil"
+          className="mt-2 max-h-[min(70dvh,34rem)] space-y-3 overflow-y-auto pr-1"
+        >
+          <Group title="Communauté">
+            {LEFT_MENU.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={() => speak(item.speech)}
+                className={itemClass(pathname === item.href, isSpeaking)}
+              >
+                {item.label}
+              </Link>
+            ))}
+          </Group>
+          <Group title="Découvrir">
+            {ACCUEIL_MENU.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={() => speak(item.speech)}
+                className={itemClass(pathname === item.href, isSpeaking)}
+              >
+                {item.label}
+              </Link>
+            ))}
+          </Group>
+          <Group title="Services">
+            {SERVICE_LIST.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={() => speak(item.speech)}
+                className={itemClass(pathname === item.href, isSpeaking)}
+              >
+                {item.title}
+              </Link>
+            ))}
+          </Group>
+        </nav>
       ) : null}
+    </div>
+  );
+}
+
+function Group({
+  title,
+  children,
+}: {
+  title: string;
+  children: ReactNode;
+}) {
+  return (
+    <div>
+      <p className="mb-1.5 px-1 text-[11px] font-extrabold tracking-[0.16em] text-gold uppercase">
+        {title}
+      </p>
+      <div className="flex flex-col gap-2">{children}</div>
     </div>
   );
 }
