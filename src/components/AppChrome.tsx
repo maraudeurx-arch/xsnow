@@ -43,7 +43,7 @@ export function AppChrome({ children }: { children: ReactNode }) {
         <AccueilMenu />
       </div>
 
-      <main className="relative z-20 flex flex-1 flex-col items-center justify-center py-6">
+      <main className="relative z-20 flex flex-1 flex-col items-center justify-start py-6">
         {children}
       </main>
 
