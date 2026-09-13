@@ -16,12 +16,12 @@ export function AppChrome({ children }: { children: ReactNode }) {
       <header className="relative z-30">
         <Link
           href="/"
-          className="tap inline-flex items-center text-[1.55rem] leading-none font-black tracking-tight text-snow"
+          className="inline-flex items-center text-[1.55rem] leading-none font-black tracking-tight text-snow"
         >
           {BRAND.name}
         </Link>
 
-        <div className="mt-2 flex items-start justify-between gap-3">
+        <div className="relative mt-3 flex items-center justify-between gap-3">
           <AccueilMenu />
           <ConnectWallet />
         </div>
