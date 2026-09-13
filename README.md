@@ -6,6 +6,22 @@
 
 Application web communautaire (Next.js App Router + TypeScript + Tailwind) prête pour un déploiement gratuit sur **Vercel Hobby**.
 
+## Ouvrir sur iPhone (HTTPS gratuit)
+
+Aucun add-on payant. Un compte [Vercel Hobby](https://vercel.com/signup) suffit.
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/import?s=https://github.com/maraudeurx-arch/xsnow)
+
+**Un clic :** [Importer ce dépôt sur Vercel](https://vercel.com/new/import?s=https://github.com/maraudeurx-arch/xsnow)
+
+1. Connectez GitHub si Vercel le demande.
+2. Projet : `maraudeurx-arch/xsnow`. Framework : **Next.js**. Build : `npm run build`.
+3. Tant que le [PR #1](https://github.com/maraudeurx-arch/xsnow/pull/1) n’est pas fusionné, déployez la branche `cursor/xsnow-open-community-ebda` (`main` n’a encore que le README).
+4. Après **Deploy**, Vercel donne `https://….vercel.app` — ouvrez-le dans Safari iPhone.
+5. Optionnel : fusionnez le PR, puis laissez Vercel republier `main`.
+
+WalletConnect n’est pas requis pour le premier HTTPS.
+
 ---
 
 ## Français
@@ -56,11 +72,7 @@ Créez un identifiant gratuit : [cloud.walletconnect.com](https://cloud.walletco
 
 ### Déployer gratuitement sur Vercel Hobby
 
-1. Poussez ce dépôt sur GitHub.
-2. Importez-le sur [vercel.com](https://vercel.com) (compte Hobby).
-3. Framework preset : **Next.js**. Build : `npm run build`. Output : défaut.
-4. Ajoutez `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID` si vous voulez le vrai Connect.
-5. Deploy. Aucun add-on payant n’est requis.
+[Importer `maraudeurx-arch/xsnow`](https://vercel.com/new/import?s=https://github.com/maraudeurx-arch/xsnow) → Deploy. Voir aussi le bouton en haut de ce README.
 
 ---
 
@@ -101,6 +113,6 @@ npm start
 
 See [`.env.example`](.env.example). WalletConnect is optional. Without `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID`, Connect stays a Sepolia guest stub so Hobby deploys stay free and secret-less.
 
-### Free Vercel Hobby deploy
+### Free Vercel Hobby deploy (iPhone HTTPS)
 
-Import the GitHub repo in Vercel, keep the Next.js defaults, optionally set the WalletConnect project id, deploy. No paid add-ons.
+One click: [Import this GitHub repo on Vercel](https://vercel.com/new/import?s=https://github.com/maraudeurx-arch/xsnow). Hobby plan, Next.js defaults, no paid add-ons. Until PR #1 is merged, deploy branch `cursor/xsnow-open-community-ebda` — `main` is still the seed README. The live URL will look like `https://….vercel.app`. WalletConnect is optional.
