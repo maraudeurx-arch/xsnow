@@ -3,7 +3,6 @@ import { type ReactNode } from "react";
 import { AccueilMenu } from "@/components/AccueilMenu";
 import { ConnectWallet } from "@/components/ConnectWallet";
 import { ConstructionWatermark } from "@/components/ConstructionWatermark";
-import { LeftMenu } from "@/components/LeftMenu";
 import { SiteFooter } from "@/components/SiteFooter";
 import { Snowfield } from "@/components/Snowfield";
 import { BRAND } from "@/lib/content";
@@ -14,36 +13,32 @@ export function AppChrome({ children }: { children: ReactNode }) {
       <Snowfield />
       <ConstructionWatermark />
 
-      <header className="relative z-20">
-        <div className="flex items-start justify-between gap-2">
+      <header className="relative z-30 flex items-start justify-between gap-3">
+        <div className="relative z-30 min-w-0 shrink-0">
           <Link
             href="/"
-            className="tap relative z-20 inline-flex items-center text-[1.55rem] leading-none font-black tracking-tight text-snow"
+            className="tap inline-flex items-center text-[1.55rem] leading-none font-black tracking-tight text-snow"
           >
             {BRAND.name}
           </Link>
-          <div className="relative z-20">
-            <ConnectWallet />
-          </div>
+          <AccueilMenu />
         </div>
 
-        <div className="pointer-events-none absolute inset-x-12 top-0 text-center sm:inset-x-36">
-          <h1 className="font-[family-name:var(--font-fraunces)] text-[clamp(1.05rem,5.1vw,2.75rem)] leading-tight font-extrabold text-snow">
+        <div className="pointer-events-none absolute inset-x-0 top-0 text-center">
+          <h1 className="mx-auto max-w-[16rem] font-[family-name:var(--font-fraunces)] text-[clamp(1.15rem,5.2vw,2.75rem)] leading-tight font-extrabold text-balance text-snow sm:max-w-none">
             {BRAND.community}
           </h1>
-          <p className="mt-1 text-[clamp(0.7rem,2.8vw,1rem)] font-semibold tracking-wide text-gold">
+          <p className="mt-1 text-[clamp(0.75rem,2.8vw,1.05rem)] font-semibold tracking-wide text-gold">
             {BRAND.slogan}
           </p>
         </div>
 
-        <LeftMenu />
+        <div className="relative z-30 shrink-0">
+          <ConnectWallet />
+        </div>
       </header>
 
-      <div className="relative z-20 mt-4 flex justify-center">
-        <AccueilMenu />
-      </div>
-
-      <main className="relative z-20 flex flex-1 flex-col items-center justify-start py-6">
+      <main className="relative z-20 flex flex-1 flex-col items-center justify-center px-3 py-4 text-center">
         {children}
       </main>
 

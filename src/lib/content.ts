@@ -8,7 +8,10 @@ export const BRAND = {
 } as const;
 
 export const WELCOME_SPEECH =
-  "Bonjour ! Je suis votre guide Xsnow. Choisissez un menu à gauche, explorez les Services Open-Community — courses, déménagement, garde et prêt d’objets — ou touchez Accueil pour Reportage, Séries TV, Dessins animés et Vos attributs. Monétisé Vous !";
+  "Bonjour ! Je suis votre guide Xsnow. Touchez Accueil, juste sous Xsnow à gauche, pour voir toutes les propositions. Vous pourrez faire connaître votre business, voir qui est à proximité, retrouver un téléphone perdu, ou être alerté si un proche s’éloigne. Dans Accueil aussi : Reportage, Séries TV, Dessins animés, Vos attributs. Et les services : courses et livraison, aide au déménagement, garde d’enfants et d’animaux, prêt ou emprunt d’objets avec caution. Choisissez une option. Monétisé Vous !";
+
+export const ACCUEIL_OPEN_SPEECH =
+  "Accueil. Voici toutes les propositions : la communauté, les rubriques, et les services. Choisissez.";
 
 export const LEFT_MENU = [
   {

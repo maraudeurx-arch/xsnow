@@ -123,3 +123,32 @@ body {
 .rk button {
   min-height: 44px !important;
 }
+
+.guide-mouth {
+  position: absolute;
+  left: 50%;
+  top: 46.5%;
+  width: 18%;
+  height: 4.2%;
+  border-radius: 50% 50% 55% 55%;
+  background: #3a241c;
+  transform: translateX(-50%) scaleY(0.28);
+  transform-origin: 50% 30%;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.guide-mouth.is-talking {
+  opacity: 0.92;
+  animation: talk-mouth 0.2s ease-in-out infinite;
+}
+
+@keyframes talk-mouth {
+  0%,
+  100% {
+    transform: translateX(-50%) scaleY(0.28) scaleX(1);
+  }
+  50% {
+    transform: translateX(-50%) scaleY(1.15) scaleX(1.06);
+  }
+}
