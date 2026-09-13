@@ -9,9 +9,7 @@ import { useSpeech } from "@/lib/speech";
 export function AccueilMenu() {
   const pathname = usePathname();
   const { isSpeaking, speak } = useSpeech();
-  const [open, setOpen] = useState(
-    ACCUEIL_MENU.some((item) => item.href === pathname),
-  );
+  const [open, setOpen] = useState(false);
 
   return (
     <div className="flex flex-col items-center gap-2">
