@@ -1,5 +1,7 @@
 import type { NextConfig } from "next";
 
+const pagesBase = "/xsnow";
+
 const x402Stub = "./src/lib/x402-stub.ts";
 
 const x402Aliases = {
@@ -11,6 +13,13 @@ const x402Aliases = {
 };
 
 const nextConfig: NextConfig = {
+  output: "export",
+  basePath: pagesBase,
+  assetPrefix: pagesBase,
+  trailingSlash: true,
+  images: {
+    unoptimized: true,
+  },
   reactStrictMode: true,
   serverExternalPackages: ["pino-pretty", "lokijs", "encoding"],
   turbopack: {
