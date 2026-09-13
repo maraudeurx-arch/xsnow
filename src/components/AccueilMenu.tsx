@@ -23,7 +23,7 @@ export function AccueilMenu() {
     <div className="mt-3 w-[min(100%,17.5rem)]">
       <button
         type="button"
-        className={`tap flex w-full items-center justify-between rounded-2xl border border-ice/40 bg-white/10 px-4 text-base font-extrabold tracking-wide text-snow backdrop-blur-md ${
+        className={`inline-flex min-h-[22px] items-center justify-between gap-2 rounded-xl border border-ice/40 bg-white/10 px-2 py-0.5 text-[11px] font-extrabold tracking-wide text-snow backdrop-blur-md ${
           isSpeaking ? "menu-pulse" : ""
         }`}
         aria-expanded={open}
@@ -34,7 +34,7 @@ export function AccueilMenu() {
         }}
       >
         <span>Accueil</span>
-        <span aria-hidden className="text-sm font-bold">
+        <span aria-hidden className="text-[10px] font-bold">
           {open ? "–" : "+"}
         </span>
       </button>

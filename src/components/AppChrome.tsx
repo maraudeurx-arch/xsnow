@@ -24,8 +24,8 @@ export function AppChrome({ children }: { children: ReactNode }) {
           <AccueilMenu />
         </div>
 
-        <div className="pointer-events-none absolute inset-x-0 top-0 text-center">
-          <h1 className="mx-auto max-w-[16rem] font-[family-name:var(--font-fraunces)] text-[clamp(1.15rem,5.2vw,2.75rem)] leading-tight font-extrabold text-balance text-snow sm:max-w-none">
+        <div className="pointer-events-none absolute inset-x-0 top-0 px-[5.25rem] text-center sm:px-28">
+          <h1 className="mx-auto font-[family-name:var(--font-fraunces)] text-[clamp(2.3rem,10.4vw,5.5rem)] leading-[0.95] font-extrabold text-balance text-snow">
             {BRAND.community}
           </h1>
           <p className="mt-1 text-[clamp(0.75rem,2.8vw,1.05rem)] font-semibold tracking-wide text-gold">
