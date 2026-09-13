@@ -13,28 +13,26 @@ export function AppChrome({ children }: { children: ReactNode }) {
       <Snowfield />
       <ConstructionWatermark />
 
-      <header className="relative z-30 flex items-start justify-between gap-3">
-        <div className="relative z-30 min-w-0 shrink-0">
-          <Link
-            href="/"
-            className="tap inline-flex items-center text-[1.55rem] leading-none font-black tracking-tight text-snow"
-          >
-            {BRAND.name}
-          </Link>
+      <header className="relative z-30">
+        <Link
+          href="/"
+          className="tap inline-flex items-center text-[1.55rem] leading-none font-black tracking-tight text-snow"
+        >
+          {BRAND.name}
+        </Link>
+
+        <div className="mt-2 flex items-start justify-between gap-3">
           <AccueilMenu />
+          <ConnectWallet />
         </div>
 
-        <div className="pointer-events-none absolute inset-x-0 top-0 px-[5.25rem] text-center sm:px-28">
+        <div className="mt-4 text-center">
           <h1 className="mx-auto font-[family-name:var(--font-fraunces)] text-[clamp(2.3rem,10.4vw,5.5rem)] leading-[0.95] font-extrabold text-balance text-snow">
             {BRAND.community}
           </h1>
           <p className="mt-1 text-[clamp(0.75rem,2.8vw,1.05rem)] font-semibold tracking-wide text-gold">
             {BRAND.slogan}
           </p>
-        </div>
-
-        <div className="relative z-30 shrink-0">
-          <ConnectWallet />
         </div>
       </header>
 

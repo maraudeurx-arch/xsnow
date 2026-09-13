@@ -20,7 +20,7 @@ export function AccueilMenu() {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="mt-3 w-[min(100%,17.5rem)]">
+    <div className="w-[min(100%,17.5rem)]">
       <button
         type="button"
         className={`inline-flex min-h-[22px] items-center justify-between gap-2 rounded-xl border border-ice/40 bg-white/10 px-2 py-0.5 text-[11px] font-extrabold tracking-wide text-snow backdrop-blur-md ${
