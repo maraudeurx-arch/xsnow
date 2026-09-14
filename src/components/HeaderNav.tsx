@@ -13,7 +13,7 @@ export function HeaderNav() {
   return (
     <nav
       aria-label="Navigation principale"
-      className="relative mt-1 flex w-full flex-col gap-1 overflow-visible"
+      className="relative mt-0 flex w-full flex-col gap-0.5 overflow-visible"
     >
       <div className="flex w-full items-center justify-between gap-3">
         <AccueilMenu key={pathname} />
