@@ -39,7 +39,7 @@ export function PhoneBoard() {
         <Input name="color" label="Couleur / étui" />
         <Input name="lastSeen" label="Dernier endroit vu" placeholder="Bus 24, café, école…" />
         <Input name="note" label="Détail utile" />
-        <button type="submit" className="tap rounded-full bg-gold font-extrabold text-night">
+        <button type="submit" className="tap rounded-full bg-cobalt font-extrabold text-snow">
           Alerter la communauté
         </button>
       </form>

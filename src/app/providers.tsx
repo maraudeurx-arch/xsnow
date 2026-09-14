@@ -27,8 +27,8 @@ function RainbowStack({ children }: { children: ReactNode }) {
         <RainbowKitProvider
           locale="fr"
           theme={darkTheme({
-            accentColor: "#f5c16c",
-            accentColorForeground: "#06111d",
+            accentColor: "#2563eb",
+            accentColorForeground: "#f4f6fb",
             borderRadius: "large",
           })}
         >

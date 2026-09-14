@@ -48,7 +48,7 @@ export function BusinessBoard() {
             className="min-h-[88px] rounded-2xl border border-white/15 bg-white/5 px-3 py-2 text-sm font-normal text-snow outline-none focus:border-gold"
           />
         </label>
-        <button type="submit" className="tap rounded-full bg-gold font-extrabold text-night">
+        <button type="submit" className="tap rounded-full bg-cobalt font-extrabold text-snow">
           Publier dans Open-Community
         </button>
         {saved ? (

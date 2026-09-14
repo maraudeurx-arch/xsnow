@@ -4,7 +4,7 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { hasWalletConnectProjectId, useStubWallet } from "@/lib/wallet";
 
 const btnClass =
-  "inline-flex min-h-[22px] items-center justify-center rounded-full border border-gold/50 bg-gold px-2 py-0.5 text-[11px] font-extrabold tracking-wide text-night shadow-[0_4px_12px_rgba(245,193,108,0.25)] transition hover:brightness-105";
+  "inline-flex min-h-[22px] items-center justify-center rounded-full border border-cobalt/60 bg-cobalt px-2 py-0.5 text-[11px] font-extrabold tracking-wide text-snow shadow-[0_4px_14px_rgba(37,99,235,0.38)] transition hover:brightness-110";
 
 function StubConnect() {
   const wallet = useStubWallet();

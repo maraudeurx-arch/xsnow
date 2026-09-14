@@ -19,12 +19,12 @@ export function Guide() {
           height={560}
           fetchPriority="high"
           decoding="async"
-          className="h-auto max-h-[min(56dvh,400px)] w-auto max-w-[min(74vw,280px)] rounded-[1.5rem] object-contain object-top"
+          className="h-auto max-h-[min(56dvh,400px)] w-auto max-w-[min(74vw,280px)] rounded-[1.5rem] border border-white/10 object-contain object-top shadow-[0_18px_40px_rgba(0,0,0,0.45)]"
         />
       </figure>
       <button
         type="button"
-        className="inline-flex items-center gap-1 rounded-full border border-white/15 bg-white/5 px-2 py-0.5 text-[10px] font-semibold tracking-wide text-snow/65"
+        className="inline-flex items-center gap-1 rounded-full border border-cobalt/55 bg-cobalt px-2 py-0.5 text-[10px] font-semibold tracking-wide text-snow shadow-[0_4px_14px_rgba(37,99,235,0.32)]"
         aria-label="Réécouter"
         onClick={() => {
           if (lastText === BUBBLE_INTRO || lastText === WELCOME_SPEECH) {

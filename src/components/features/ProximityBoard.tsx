@@ -35,7 +35,7 @@ export function ProximityBoard() {
       <button
         type="button"
         onClick={locate}
-        className="tap w-full rounded-full border border-ice/40 bg-white/10 font-extrabold text-ice"
+        className="tap w-full rounded-full bg-cobalt font-extrabold text-snow"
       >
         Activer ma position
       </button>

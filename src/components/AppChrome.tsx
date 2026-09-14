@@ -9,7 +9,7 @@ import { BRAND } from "@/lib/content";
 
 export function AppChrome({ children }: { children: ReactNode }) {
   return (
-    <div className="safe-frame relative flex h-dvh max-h-dvh flex-col overflow-hidden bg-[radial-gradient(1200px_circle_at_20%_-10%,#16324d_0%,transparent_55%),radial-gradient(900px_circle_at_90%_10%,#1d3b2a_0%,transparent_42%),linear-gradient(180deg,#06111d_0%,#031018_100%)]">
+    <div className="safe-frame relative flex h-dvh max-h-dvh flex-col overflow-hidden bg-[radial-gradient(1100px_circle_at_0%_-8%,rgba(61,255,138,0.16)_0%,transparent_52%),radial-gradient(900px_circle_at_100%_0%,rgba(139,92,246,0.18)_0%,transparent_48%),linear-gradient(180deg,#050506_0%,#0a0a0c_100%)]">
       <Snowfield />
       <ConstructionWatermark />
 
