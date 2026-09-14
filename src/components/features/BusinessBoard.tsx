@@ -49,7 +49,7 @@ export function BusinessBoard() {
           />
         </label>
         <button type="submit" className="tap rounded-full bg-cobalt font-extrabold text-snow">
-          Publier dans Open-Community
+          Publier dans Open Community
         </button>
         {saved ? (
           <p className="text-sm text-gold">Enregistré sur cet appareil. La vitrine publique arrive bientôt.</p>

@@ -6,7 +6,7 @@ export const LOCATION = {
 
 export const BRAND = {
   name: LOCATION.city,
-  community: "Open-Community",
+  community: "Open Community",
   slogan: "Monétisé Vous!",
   footerBefore: "Proximité et Esprit d’entraide au service des ",
   footerAfter: ".",
@@ -58,7 +58,7 @@ export const ACCUEIL_MENU = [
     href: "/series",
     label: "Séries TV",
     speech:
-      "Séries TV : des feuilleton locaux produits par Open-Community. Installe-toi, c’est chez nous.",
+      "Séries TV : des feuilleton locaux produits par Open Community. Installe-toi, c’est chez nous.",
   },
   {
     href: "/dessins-animes",
@@ -77,7 +77,7 @@ export const ACCUEIL_MENU = [
 export const FEATURE_COPY = {
   business: {
     title: "Faites connaître votre business",
-    lead: "Publiez votre commerce dans Open-Community. Les voisins vous trouvent, vous les servez.",
+    lead: "Publiez votre commerce dans Open Community. Les voisins vous trouvent, vous les servez.",
   },
   proximite: {
     title: "Voyez qui est à proximité",
@@ -93,7 +93,7 @@ export const FEATURE_COPY = {
   },
   reportage: {
     title: "Reportage",
-    lead: "Les reportages d’Open-Community : la vie de quartier, sans filtre corporate.",
+    lead: "Les reportages d’Open Community : la vie de quartier, sans filtre corporate.",
   },
   series: {
     title: "Séries TV",
@@ -108,7 +108,7 @@ export const FEATURE_COPY = {
     lead: "Vos étiquettes d’entraide. Elles restent sur cet appareil, chez vous.",
   },
   services: {
-    title: "Services Open-Community",
+    title: "Services Open Community",
     lead: "Les premiers services monétisables du quartier : courses, déménagement, garde et prêt d’objets avec caution.",
   },
 } as const;

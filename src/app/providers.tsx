@@ -12,7 +12,7 @@ import "@rainbow-me/rainbowkit/styles.css";
 const queryClient = new QueryClient();
 
 const walletConfig = getDefaultConfig({
-  appName: "GATINEAU Open-Community",
+  appName: "GATINEAU Open Community",
   projectId:
     process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID ||
     "00000000000000000000000000000000",
