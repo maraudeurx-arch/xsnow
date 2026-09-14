@@ -60,7 +60,7 @@ Le build écrit le site statique dans `out/`.
 
 Voir [`.env.example`](.env.example). `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID` est optionnel.
 
-`NEXT_PUBLIC_CHAT_API_URL` : URL publique du Worker Cloudflare (`workers/xsnow-chat`). Inlinée au `npm run build` (export statique). Sans cette variable, le front utilise le placeholder dans `src/lib/llm.ts` (`CHAT_API_FALLBACK_URL`) — à remplacer après le premier deploy Wrangler.
+`NEXT_PUBLIC_CHAT_API_URL` : URL publique du Worker Cloudflare (`workers/xsnow-chat`). Inlinée au `npm run build` (export statique). Défaut si vide : `https://xsnow-chat.xsnowopc.workers.dev` (`CHAT_API_FALLBACK_URL` dans `src/lib/llm.ts`).
 
 ### Chat avatar (Cloudflare Workers AI, sans login)
 
@@ -76,7 +76,7 @@ npx wrangler login
 npx wrangler deploy
 ```
 
-Puis coller l’URL `https://xsnow-chat.<compte>.workers.dev` dans `NEXT_PUBLIC_CHAT_API_URL` (Actions variable `NEXT_PUBLIC_CHAT_API_URL` pour Pages) ou dans `CHAT_API_FALLBACK_URL`.
+Le Worker déployé est `https://xsnow-chat.xsnowopc.workers.dev`. Pour un autre compte, coller la nouvelle URL dans `NEXT_PUBLIC_CHAT_API_URL` (variable Actions du même nom) ou dans `CHAT_API_FALLBACK_URL`.
 
 ---
 
@@ -109,4 +109,4 @@ npx wrangler login
 npx wrangler deploy
 ```
 
-Set `NEXT_PUBLIC_CHAT_API_URL` to the `*.workers.dev` URL (GitHub Actions variable of the same name) or replace `CHAT_API_FALLBACK_URL` in `src/lib/llm.ts`.
+Deployed Worker: `https://xsnow-chat.xsnowopc.workers.dev`. Override with `NEXT_PUBLIC_CHAT_API_URL` (GitHub Actions variable of the same name) or `CHAT_API_FALLBACK_URL` in `src/lib/llm.ts`.

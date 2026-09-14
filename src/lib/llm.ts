@@ -4,7 +4,7 @@
  * NEXT_PUBLIC_CHAT_API_URL (or fill CHAT_API_FALLBACK_URL).
  */
 export const CHAT_API_FALLBACK_URL =
-  "https://xsnow-chat.<SUBDOMAIN>.workers.dev";
+  "https://xsnow-chat.xsnowopc.workers.dev";
 
 export const CHAT_API_URL =
   process.env.NEXT_PUBLIC_CHAT_API_URL ||
