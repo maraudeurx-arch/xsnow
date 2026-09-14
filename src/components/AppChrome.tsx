@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { type ReactNode } from "react";
+import { BrandLogo } from "@/components/BrandLogo";
 import { ConstructionWatermark } from "@/components/ConstructionWatermark";
 import { HeaderNav } from "@/components/HeaderNav";
 import { SiteFooter } from "@/components/SiteFooter";
@@ -13,12 +14,15 @@ export function AppChrome({ children }: { children: ReactNode }) {
       <ConstructionWatermark />
 
       <header className="relative z-30 shrink-0 overflow-visible">
-        <Link
-          href="/"
-          className="inline-flex items-center text-[1.25rem] leading-none font-black tracking-tight text-gold sm:text-[1.55rem]"
-        >
-          {BRAND.name}
-        </Link>
+        <div className="flex w-full items-center justify-between gap-3">
+          <Link
+            href="/"
+            className="inline-flex items-center text-[1.25rem] leading-none font-black tracking-tight text-gold sm:text-[1.55rem]"
+          >
+            {BRAND.name}
+          </Link>
+          <BrandLogo />
+        </div>
 
         <HeaderNav />
 
