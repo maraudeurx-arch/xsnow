@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { AvatarChat } from "@/components/AvatarChat";
 import { AvatarDisc } from "@/components/AvatarDisc";
-import { AVATARS, avatarById, type AvatarId } from "@/lib/avatars";
+import { AVATARS, avatarById, type Avatar, type AvatarId } from "@/lib/avatars";
 import { WELCOME_SPEECH } from "@/lib/content";
 import {
   hasPlayedWelcomeFor,
@@ -25,11 +25,12 @@ export function Guide() {
   const chosen = avatarId ? avatarById(avatarId) : null;
 
   function chooseAvatar(id: AvatarId) {
+    const avatar = avatarById(id);
     setAvatarId(id);
     setPicking(false);
     if (hasPlayedWelcomeFor(id)) return;
     markWelcomePlayed(id);
-    speak(WELCOME_SPEECH);
+    speak(WELCOME_SPEECH, avatar.gender);
   }
 
   return (
@@ -77,7 +78,7 @@ export function Guide() {
           <div className="flex shrink-0 items-center justify-center gap-2 pt-0.5">
             <AvatarDisc avatar={chosen} className={chosenSize} priority />
             <div className="flex shrink-0 flex-col items-start gap-1">
-              <ReplayButton />
+              <ReplayButton gender={chosen.gender} />
               <button
                 type="button"
                 className="whitespace-nowrap rounded-full border border-white/20 bg-white/[0.04] px-2 py-0.5 text-[10px] font-semibold tracking-wide text-snow/90 hover:border-violet/50 hover:bg-white/[0.07]"
@@ -94,7 +95,7 @@ export function Guide() {
   );
 }
 
-function ReplayButton() {
+function ReplayButton({ gender }: { gender: Avatar["gender"] }) {
   const { replay } = useSpeech();
 
   return (
@@ -103,7 +104,7 @@ function ReplayButton() {
       data-welcome-replay
       className="inline-flex items-center gap-1 whitespace-nowrap rounded-full border border-cobalt/55 bg-cobalt px-2 py-0.5 text-[10px] font-semibold tracking-wide text-snow shadow-[0_4px_14px_rgba(37,99,235,0.32)]"
       aria-label="Réécouter"
-      onClick={() => replay()}
+      onClick={() => replay(gender)}
     >
       <svg aria-hidden viewBox="0 0 16 16" className="h-3 w-3 fill-current">
         <path d="M2.5 6.2v3.6c0 .4.3.7.7.7h1.7l3 2.4c.5.4 1.1 0 1.1-.6V3.7c0-.6-.6-1-1.1-.6l-3 2.4H3.2c-.4 0-.7.3-.7.7Zm8.2 4.4a.6.6 0 0 0 .1-.8 2.6 2.6 0 0 0 0-3.6.6.6 0 1 0-.9.8 1.4 1.4 0 0 1 0 2c.2.3.6.3.8 0Zm1.6 1.5a.6.6 0 0 0 .1-.9 4.8 4.8 0 0 0 0-6.4.6.6 0 1 0-.9.8 3.6 3.6 0 0 1 0 4.8c.2.3.6.3.8 0Z" />

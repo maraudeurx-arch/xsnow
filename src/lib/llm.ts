@@ -98,13 +98,10 @@ async function waitForPuter(signal?: AbortSignal): Promise<NonNullable<Window["p
   throw new ChatFault("network");
 }
 
-export async function completeChat(options: {
-  system: string;
-  messages: ChatMessage[];
-  signal?: AbortSignal;
-}): Promise<string> {
-  const puter = await waitForPuter(options.signal);
-
+export async function ensurePuterAuth(
+  signal?: AbortSignal,
+): Promise<NonNullable<Window["puter"]>> {
+  const puter = await waitForPuter(signal);
   if (!puter.auth.isSignedIn()) {
     try {
       await puter.auth.signIn({ attempt_temp_user_creation: true });
@@ -113,6 +110,15 @@ export async function completeChat(options: {
       throw new ChatFault("auth");
     }
   }
+  return puter;
+}
+
+export async function completeChat(options: {
+  system: string;
+  messages: ChatMessage[];
+  signal?: AbortSignal;
+}): Promise<string> {
+  const puter = await ensurePuterAuth(options.signal);
 
   if (options.signal?.aborted) {
     throw new DOMException("Aborted", "AbortError");
@@ -129,6 +135,9 @@ export async function completeChat(options: {
         normalize: true,
       },
     );
+    if (options.signal?.aborted) {
+      throw new DOMException("Aborted", "AbortError");
+    }
     const text = assistantText(payload);
     if (!text) throw new ChatFault("empty");
     return text;

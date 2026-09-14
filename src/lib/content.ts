@@ -19,9 +19,18 @@ export const AVATAR_CHAT = {
   title: "Parle à ton avatar",
   placeholder: "Écris à ton avatar…",
   send: "Envoyer",
+  speak: "Parler",
+  listening: "J’écoute…",
   authRequired: "Connexion rapide requise pour discuter. Réessaie après t’être connecté.",
   networkError: "Impossible de joindre l’avatar pour le moment. Réessaie dans un instant.",
   genericError: "L’avatar n’a pas pu répondre. Réessaie dans un instant.",
+  micUnsupported:
+    "La dictée n’est pas disponible sur cet appareil. Écris ton message — le clavier reste toujours là.",
+  micPermission:
+    "Accès au micro refusé. Sur iPhone : Réglages → Safari → Microphone, ou écris ton message.",
+  micSilent: "Je n’ai rien entendu. Réessaie « Parler », ou écris ton message.",
+  micNetwork: "Dictée indisponible pour le moment. Écris ton message.",
+  micError: "Impossible d’écouter pour le moment. Écris ton message.",
 } as const;
 
 export const AVATAR_SYSTEM_PROMPT =
