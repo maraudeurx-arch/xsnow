@@ -1,17 +1,20 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import type { CSSProperties } from "react";
-import { parseSeasonParam, seasonFromDate, seasonParticles, type Season, type SeasonParticle } from "@/lib/season";
+import type { CSSProperties, ReactNode } from "react";
+import { assetUrl } from "@/lib/paths";
+import {
+  parseSeasonParam,
+  seasonFromDate,
+  seasonParticles,
+  SEASON_PHOTO,
+  type Season,
+  type SeasonParticle,
+} from "@/lib/season";
 
-const PETAL_COLORS = ["#ffb7c5", "#fff6f8", "#e9d5ff", "#a7f3d0"];
-const LEAF_COLORS = ["#f59e0b", "#d97706", "#b45309", "#9f1239", "#7f1d1d"];
-const FLAKE_COLORS = [
-  "rgba(244,246,251,1)",
-  "rgba(186,230,253,1)",
-  "rgba(61,255,138,0.95)",
-  "rgba(196,181,253,1)",
-];
+const PETAL_COLORS = ["#ffb7c5", "#fff6f8", "#fbcfe8", "#f9a8d4"];
+const LEAF_COLORS = ["#f59e0b", "#fbbf24", "#ea580c", "#b45309", "#9f1239"];
+const FLAKE_COLORS = ["#ffffff", "#f8fafc", "#e0f2fe", "#fffbeb"];
 
 function MapleLeaf() {
   return (
@@ -50,7 +53,7 @@ function WinterField({ particles }: { particles: SeasonParticle[] }) {
           className="season-flake"
           style={particleStyle(particle, {
             background: FLAKE_COLORS[particle.variant % FLAKE_COLORS.length],
-            boxShadow: `0 0 ${Math.max(4, particle.size * 1.4)}px ${FLAKE_COLORS[particle.variant % FLAKE_COLORS.length]}`,
+            boxShadow: `0 0 ${Math.max(5, particle.size * 1.6)}px rgba(255,255,255,0.85)`,
           })}
         />
       ))}
@@ -84,10 +87,10 @@ function SummerField({ particles }: { particles: SeasonParticle[] }) {
           style={particleStyle(particle, {
             background:
               particle.variant === 0
-                ? "rgba(250,204,21,0.95)"
+                ? "rgba(254,240,138,0.95)"
                 : particle.variant === 1
-                  ? "rgba(61,255,138,0.9)"
-                  : "rgba(254,240,138,0.95)",
+                  ? "rgba(253,224,71,0.95)"
+                  : "rgba(255,255,255,0.9)",
           })}
         />
       ))}
@@ -121,16 +124,37 @@ function Field({ season }: { season: Season }) {
   return <AutumnField particles={particles} />;
 }
 
+export function SeasonScene({ season, children }: { season: Season; children?: ReactNode }) {
+  return (
+    <div aria-hidden data-season={season} className="pointer-events-none absolute inset-0 overflow-hidden">
+      <div className="season-wash" data-season={season} />
+      {/* Plain img: next/image omitted basePath and 404'd on GitHub Pages. */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={assetUrl(SEASON_PHOTO[season])}
+        alt=""
+        width={1024}
+        height={1820}
+        decoding="async"
+        draggable={false}
+        className="season-photo"
+      />
+      <div className="season-sun" data-season={season} />
+      <div className="season-scrim" data-season={season} />
+      {children}
+    </div>
+  );
+}
+
 export function SeasonalBackdrop() {
   const params = useSearchParams();
   const season = parseSeasonParam(params.get("season")) ?? seasonFromDate();
 
   return (
-    <div aria-hidden data-season={season} className="pointer-events-none absolute inset-0 overflow-hidden">
-      <div className="season-wash" data-season={season} />
+    <SeasonScene season={season}>
       <div className="absolute inset-0">
         <Field season={season} />
       </div>
-    </div>
+    </SeasonScene>
   );
 }

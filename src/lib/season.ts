@@ -142,3 +142,10 @@ const PARTICLES: Record<Season, SeasonParticle[]> = {
 export function seasonParticles(season: Season): SeasonParticle[] {
   return PARTICLES[season];
 }
+
+export const SEASON_PHOTO: Record<Season, string> = {
+  winter: "/seasons/winter.png",
+  spring: "/seasons/spring.png",
+  summer: "/seasons/summer.png",
+  autumn: "/seasons/autumn.png",
+};
