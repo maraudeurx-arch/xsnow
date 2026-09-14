@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useState, type ReactNode } from "react";
 import {
   ACCUEIL_MENU,
+  COMING_SOON_2027_TITLE,
   COMMUNITY_MENU,
   PROFESSIONNELLE_MENU,
   SAFETY_SERVICES_MENU,
@@ -99,7 +100,7 @@ export function AccueilMenu() {
               </Link>
             ))}
           </Group>
-          <Group title="Découvrir">
+          <Group title={COMING_SOON_2027_TITLE} uppercase={false}>
             {ACCUEIL_MENU.map((item) => (
               <Link
                 key={item.href}
@@ -120,13 +121,19 @@ export function AccueilMenu() {
 function Group({
   title,
   children,
+  uppercase = true,
 }: {
   title: string;
   children: ReactNode;
+  uppercase?: boolean;
 }) {
   return (
     <div>
-      <p className="mb-0.5 px-1 text-[9px] font-extrabold tracking-[0.12em] text-gold uppercase">
+      <p
+        className={`mb-0.5 px-1 text-[9px] font-extrabold text-gold ${
+          uppercase ? "tracking-[0.12em] uppercase" : "tracking-wide"
+        }`}
+      >
         {title}
       </p>
       <div className="flex flex-col gap-1">{children}</div>
