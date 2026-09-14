@@ -13,15 +13,24 @@ export const BRAND = {
 } as const;
 
 export const WELCOME_SPEECH =
-  "Bonjour, je suis ton avatar dans l’écosystème Open Community. La proximité et l’esprit d’entraide des gens de Gatineau font notre force. Fais connaître à tes voisins un service que tu peux leur rendre en échange d’une compensation : ça peut être aider à déménager, faire des courses, ou aider à des travaux dans la maison. De plus, cette application t’offre des services gratuits, comme t’aider à retrouver ton téléphone si tu le perds, et t’avertir si ton enfant, ton conjoint ou tes parents âgés s’éloignent de l’endroit où ils sont censés être : l’école, le travail, ou la maison de retraite. Va dans Accueil et choisis le service dont tu aimerais bénéficier, ou que tu voudrais offrir à tes voisins de Gatineau. N’hésitez pas à me questionner à tout moment, je suis à votre entière disposition.";
+  "Bonjour, je suis ton avatar dans l’écosystème Open Community. La proximité et l’esprit d’entraide des gens de Gatineau font notre force. Fais connaître à tes voisins un service que tu peux leur rendre en échange d’une compensation : ça peut être aider à déménager, faire des courses, ou aider à des travaux dans la maison. De plus, cette application t’offre des services gratuits, comme t’aider à retrouver ton téléphone si tu le perds, et t’avertir si ton enfant, ton conjoint ou tes parents âgés s’éloignent de l’endroit où ils sont censés être : l’école, le travail, ou la maison de retraite. Va dans Accueil et choisis le service dont tu aimerais bénéficier, ou que tu voudrais offrir à tes voisins de Gatineau. Avez-vous des suggestions de tâches et de services que vous aimeriez monétiser ? Faites-moi savoir, et toute la communauté en profitera. De plus, les gens qui partagent cette application, et des idées qui sont monétisées, recevront au prorata de leurs efforts. N’hésitez pas à me questionner à tout moment, je suis à votre entière disposition.";
 
 export const AVATAR_CHAT = {
   title: "Parle à ton avatar",
   placeholder: "Écris à ton avatar…",
   send: "Envoyer",
+  speak: "Parler",
+  listening: "J’écoute…",
   authRequired: "Connexion rapide requise pour discuter. Réessaie après t’être connecté.",
   networkError: "Impossible de joindre l’avatar pour le moment. Réessaie dans un instant.",
   genericError: "L’avatar n’a pas pu répondre. Réessaie dans un instant.",
+  micUnsupported:
+    "La dictée n’est pas disponible sur cet appareil. Écris ton message — le clavier reste toujours là.",
+  micPermission:
+    "Accès au micro refusé. Sur iPhone : Réglages → Safari → Microphone, ou écris ton message.",
+  micSilent: "Je n’ai rien entendu. Réessaie « Parler », ou écris ton message.",
+  micNetwork: "Dictée indisponible pour le moment. Écris ton message.",
+  micError: "Impossible d’écouter pour le moment. Écris ton message.",
 } as const;
 
 export const AVATAR_SYSTEM_PROMPT =

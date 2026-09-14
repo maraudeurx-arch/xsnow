@@ -17,10 +17,10 @@ export function AppChrome({ children }: { children: ReactNode }) {
       </Suspense>
 
       <header className="relative z-30 shrink-0 overflow-visible">
-        <div className="flex w-full items-center justify-between gap-3">
+        <div className="flex w-full items-center justify-between gap-2">
           <Link
             href="/"
-            className="inline-flex items-center text-[1.25rem] leading-none font-black tracking-tight text-gold [text-shadow:0_2px_12px_rgba(0,0,0,0.55)] sm:text-[1.55rem]"
+            className="inline-flex items-center text-[1.2rem] leading-none font-black tracking-tight text-gold [text-shadow:0_2px_12px_rgba(0,0,0,0.55)] sm:text-[1.55rem]"
           >
             {BRAND.name}
           </Link>
@@ -29,17 +29,17 @@ export function AppChrome({ children }: { children: ReactNode }) {
 
         <HeaderNav />
 
-        <div className="mt-2 text-center sm:mt-3">
-          <h1 className="mx-auto font-[family-name:var(--font-fraunces)] text-[clamp(2.3rem,10.4vw,5.5rem)] leading-[0.9] font-extrabold text-balance text-snow [text-shadow:0_2px_18px_rgba(0,0,0,0.72)]">
+        <div className="mt-0 text-center sm:mt-1">
+          <h1 className="mx-auto font-[family-name:var(--font-fraunces)] text-[clamp(1.85rem,8.8vw,5.5rem)] leading-[0.86] font-extrabold text-balance text-snow [text-shadow:0_2px_18px_rgba(0,0,0,0.72)]">
             {BRAND.community}
           </h1>
-          <p className="mt-0.5 text-[clamp(0.7rem,2.6vw,1.05rem)] font-semibold tracking-wide text-gold [text-shadow:0_2px_10px_rgba(0,0,0,0.55)]">
+          <p className="mt-0 text-[clamp(0.65rem,2.2vw,1.05rem)] font-semibold tracking-wide text-gold [text-shadow:0_2px_10px_rgba(0,0,0,0.55)]">
             {BRAND.slogan}
           </p>
         </div>
       </header>
 
-      <main className="relative z-20 flex min-h-0 w-full flex-1 flex-col items-center justify-center overflow-y-auto px-3 py-1 text-center">
+      <main className="relative z-20 flex min-h-0 w-full flex-1 flex-col items-center justify-center overflow-y-auto px-3 py-0.5 text-center">
         {children}
       </main>
 
