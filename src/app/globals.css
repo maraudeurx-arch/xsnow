@@ -288,6 +288,21 @@ body {
   }
 }
 
+.logo-rock {
+  transform-origin: center center;
+  animation: logo-rock 3.6s ease-in-out infinite;
+}
+
+@keyframes logo-rock {
+  0%,
+  100% {
+    transform: rotate(-10deg);
+  }
+  50% {
+    transform: rotate(10deg);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .season-flake,
   .season-petal,
@@ -295,6 +310,11 @@ body {
   .season-leaf {
     animation: none;
     opacity: 0.28;
+  }
+
+  .logo-rock {
+    animation: none;
+    transform: none;
   }
 }
 
