@@ -10,7 +10,6 @@ export const BRAND = {
   slogan: "Monétisé Vous!",
   footerBefore: "Proximité et Esprit d’entraide au service des ",
   footerAfter: ".",
-  watermark: "EN CONSTRUCTION",
 } as const;
 
 export const WELCOME_SPEECH =
@@ -62,42 +61,38 @@ export const PROFESSIONNELLE_MENU = [
   },
   {
     href: "/monetise",
-    label: "Monétisé ce que vous avez",
+    label: "Monétiser vous : votre image, votre voix.",
     speech:
-      "Monétisé ce que vous avez : un talent, un outil, une heure. Proposez-le à vos voisins de Gatineau.",
+      "Monétiser vous : votre image, votre voix. Proposez votre présence à la communauté de Gatineau.",
+  },
+  {
+    href: "/sondages",
+    label: "Répondre à des sondages et gagner de l’argent",
+    speech:
+      "Répondez à des sondages de quartier et gagnez de l’argent. Bientôt dans Open Community.",
   },
 ] as const;
 
 export const HEADER_NAV = [
-  { href: "/mes-monetisations", label: "Mes monétisations" },
-  { href: "/service-en-demande", label: "Service en demande" },
+  { href: "/mes-services", label: "Mes services" },
+  { href: "/en-demande", label: "En demande" },
   { href: "/mon-profil", label: "Mon profil" },
 ] as const;
+
+export const COMING_SOON_2027_TITLE = "En construction pour 2027 :";
 
 export const ACCUEIL_MENU = [
   {
     href: "/reportage",
-    label: "Reportage",
+    label: "Avec l’IA, crée des reportages sur votre quartier",
     speech:
-      "Reportage : les récits de notre communauté. Des voisins qui s’entraident, des commerces qui tiennent le coup, des histoires vraies.",
+      "Avec l’IA, crée des reportages sur votre quartier. Un studio communautaire arrive en 2027.",
   },
   {
-    href: "/series",
-    label: "Séries TV",
+    href: "/scenarios",
+    label: "Crée des scénarios humour / animé",
     speech:
-      "Séries TV : des feuilleton locaux produits par Open Community. Installe-toi, c’est chez nous.",
-  },
-  {
-    href: "/dessins-animes",
-    label: "Dessins animés",
-    speech:
-      "Dessins animés : des histoires douces pour les enfants de la communauté, sans pub invasive.",
-  },
-  {
-    href: "/attributs",
-    label: "Vos attributs",
-    speech:
-      "Vos attributs : dites à la communauté qui vous êtes — voisin, commerçant, bénévole, parent — pour mieux s’entraider.",
+      "Crée des scénarios humour ou animé. Un atelier créatif arrive en 2027.",
   },
 ] as const;
 
@@ -119,8 +114,8 @@ export const FEATURE_COPY = {
     lead: "Recevez une alerte si un enfant, un conjoint ou des parents âgés s’éloignent de la zone où ils doivent être.",
   },
   reportage: {
-    title: "Reportage",
-    lead: "Les reportages d’Open Community : la vie de quartier, sans filtre corporate.",
+    title: "Avec l’IA, crée des reportages sur votre quartier",
+    lead: "Un studio IA pour raconter votre rue, vos voisins, votre commerce. Prévu pour 2027.",
   },
   series: {
     title: "Séries TV",
@@ -139,19 +134,56 @@ export const FEATURE_COPY = {
     lead: "Les services de sécurité du quartier : téléphone perdu et alertes si un proche s’éloigne.",
   },
   monetise: {
-    title: "Monétisé ce que vous avez",
-    lead: "Un talent, un outil, une heure libre : proposez-le à vos voisins. Bientôt branché sur vos monétisations.",
+    title: "Monétiser vous : votre image, votre voix.",
+    lead: "Proposez votre image ou votre voix à la communauté. Bientôt branché sur vos services.",
   },
-  mesMonetisations: {
-    title: "Mes monétisations",
+  sondages: {
+    title: "Répondre à des sondages et gagner de l’argent",
+    lead: "Des sondages locaux, une compensation claire. En construction.",
+  },
+  scenarios: {
+    title: "Crée des scénarios humour / animé",
+    lead: "Inventez des sketches et des dessins animés communautaires. Prévu pour 2027.",
+  },
+  mesServices: {
+    title: "Mes services",
     lead: "Ici, vous verrez ce que vous offrez déjà à la communauté : pubs, services, objets. En construction.",
   },
-  serviceEnDemande: {
-    title: "Service en demande",
+  enDemande: {
+    title: "En demande",
     lead: "Les demandes du quartier que vous pourriez honorer. En construction.",
   },
   monProfil: {
     title: "Mon profil",
-    lead: "Votre fiche Gatineau : attributs, portefeuille, et ce que vous monétisez. En construction.",
+    lead: "Votre fiche Gatineau : infos, réglages, invitations.",
+  },
+  mesInfos: {
+    title: "Mes infos",
+    lead: "Vos coordonnées et votre portefeuille restent sur cet appareil.",
+  },
+  reglages: {
+    title: "Réglages",
+    lead: "Préférences d’affichage et de notifications. En construction.",
+  },
+  inviter: {
+    title: "Inviter d’autres à rejoindre la communauté",
+    lead: "Partagez Open Community avec un voisin, un commerce, une famille.",
+  },
+  aPropos: {
+    title: "À propos de Open Community (OPC)",
+    lead: "Proximité, entraide et visibilité locale — Monétisé Vous!",
   },
 } as const;
+
+export const PROFILE_MENU = [
+  { href: "/mon-profil/infos", label: "Mes infos" },
+  { href: "/mon-profil/reglages", label: "Réglages" },
+  {
+    href: "/mon-profil/inviter",
+    label: "Inviter d’autres à rejoindre la communauté",
+  },
+  {
+    href: "/mon-profil/a-propos",
+    label: "À propos de Open Community (OPC)",
+  },
+] as const;

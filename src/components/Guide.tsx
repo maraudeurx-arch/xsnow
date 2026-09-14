@@ -46,7 +46,7 @@ export function Guide() {
           aria-label="Choisis ton avatar"
           className="flex min-h-0 w-full flex-col items-center gap-1.5"
         >
-          <p className="text-[13px] leading-none font-extrabold tracking-wide text-snow sm:text-sm">
+          <p className="text-[13px] leading-none font-extrabold tracking-wide text-snow [text-shadow:0_2px_10px_rgba(0,0,0,0.7)] sm:text-sm">
             Choisis ton avatar
           </p>
           <div className="grid grid-cols-2 justify-items-center gap-x-4 gap-y-3 p-1 sm:gap-x-5 sm:gap-y-4">

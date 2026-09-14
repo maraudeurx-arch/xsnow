@@ -28,7 +28,7 @@ WalletConnect n’est pas requis.
 
 ### Qu’est-ce que c’est ?
 
-Xsnow est la vitrine **Open-Community** : faire connaître un business, voir qui est à proximité, retrouver un téléphone perdu, et être alerté si un proche s’éloigne. Les premiers **services monétisables** : courses et livraison, aide au déménagement, garde d’enfants et d’animaux, prêt / emprunt d’objets avec caution. Un guide parlant invite à ouvrir **Accueil**. Le filigrane **EN CONSTRUCTION** rappelle que le produit est encore en chantier.
+Xsnow est la vitrine **Open-Community** : faire connaître un business, voir qui est à proximité, retrouver un téléphone perdu, et être alerté si un proche s’éloigne. Les premiers **services monétisables** : courses et livraison, aide au déménagement, garde d’enfants et d’animaux, prêt / emprunt d’objets avec caution. Un guide parlant invite à ouvrir **Accueil**. Le fond saisonnier (neige, pétales, lucioles, feuilles) suit le calendrier America/Toronto ; `?season=winter|spring|summer|autumn` force une saison pour les tests.
 
 ### Interface
 
@@ -36,7 +36,6 @@ Xsnow est la vitrine **Open-Community** : faire connaître un business, voir qui
 - En haut à droite : **Connect** (RainbowKit/wagmi Sepolia, ou invité)
 - Titre centré : **Open-Community** / **Monétisé Vous!**
 - Centre : avatar + bulle + **Réécouter** (`speechSynthesis`, iOS = tap)
-- Filigrane diagonal `pointer-events: none`
 - Safari iPhone : `viewport-fit=cover`, safe areas, cibles ~44 px
 
 Aucun panneau Jeton / Outils. Les formulaires restent dans `localStorage`. La caution d’un prêt est un accord affiché, pas un vrai escrow.

@@ -2,7 +2,7 @@ import { CatalogBoard } from "@/components/features/CatalogBoard";
 import { FeaturePanel } from "@/components/FeaturePanel";
 import { FEATURE_COPY } from "@/lib/content";
 
-export const metadata = { title: "Reportage" };
+export const metadata = { title: "Reportages IA" };
 
 export default function ReportagePage() {
   return (
@@ -13,7 +13,7 @@ export default function ReportagePage() {
             title: "La ruelle qui s’entraide",
             meta: "Quartier",
             blurb:
-              "Quand un voisin perd ses clés, trois portes s’ouvrent. Reportage en cours de montage.",
+              "Quand un voisin perd ses clés, trois portes s’ouvrent. Un reportage IA en cours de montage — prévu pour 2027.",
           },
           {
             title: "Commerces de proximité",
