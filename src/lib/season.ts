@@ -70,18 +70,21 @@ function makeParticles(
 }
 
 function winterParticles() {
-  return makeParticles(120, 20261221, (rng) => ({
-    left: between(rng, 0.4, 99.2),
-    top: between(rng, -18, 8),
-    size: rng() < 0.18 ? between(rng, 6, 11) : between(rng, 1.6, 5.4),
-    delay: between(rng, -22, 8),
-    duration: between(rng, 8.5, 22),
-    opacity: between(rng, 0.18, 0.88),
-    drift: between(rng, -42, 48),
-    blur: rng() < 0.22 ? between(rng, 0.4, 1.6) : 0,
-    rotate: 0,
-    variant: Math.floor(between(rng, 0, 4)),
-  }));
+  return makeParticles(180, 20261221, (rng) => {
+    const large = rng() < 0.28;
+    return {
+      left: between(rng, 0.2, 99.6),
+      top: between(rng, -22, 6),
+      size: large ? between(rng, 5.5, 12) : between(rng, 2.2, 5.8),
+      delay: between(rng, -24, 6),
+      duration: large ? between(rng, 14, 24) : between(rng, 7.5, 16),
+      opacity: large ? between(rng, 0.42, 0.95) : between(rng, 0.28, 0.78),
+      drift: between(rng, -48, 54),
+      blur: rng() < 0.2 ? between(rng, 0.3, 1.4) : 0,
+      rotate: 0,
+      variant: Math.floor(between(rng, 0, 4)),
+    };
+  });
 }
 
 function springParticles() {
@@ -118,7 +121,7 @@ function autumnParticles() {
   return makeParticles(46, 20260922, (rng) => ({
     left: between(rng, 0.6, 99),
     top: between(rng, -18, 6),
-    size: between(rng, 10, 22),
+    size: between(rng, 16, 34),
     delay: between(rng, -20, 7),
     duration: between(rng, 10, 21),
     opacity: between(rng, 0.35, 0.92),
