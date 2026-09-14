@@ -20,20 +20,8 @@ export const AVATAR_CHAT = {
   title: "Parle à ton avatar",
   placeholder: "Écris à ton avatar…",
   send: "Envoyer",
-  settings: "Réglages LLM",
-  apiKeyLabel: "Clé API LLM (gratuite)",
-  apiKeyHint:
-    "La clé reste dans cet appareil (localStorage). Elle n’est jamais envoyée vers GitHub Pages.",
-  apiKeyHelp: "Créer une clé gratuite Moonshot / Kimi",
-  apiKeyHelpUrl: "https://platform.kimi.ai/console/api-keys",
-  baseUrlLabel: "URL de l’API (OpenAI-compatible)",
-  modelLabel: "Modèle",
-  save: "Enregistrer",
-  empty:
-    "Pour discuter, ajoute une clé API gratuite Moonshot / Kimi. Ton avatar pourra alors t’aider pour les courses, un déménagement, la garde, un prêt d’objet, un téléphone perdu ou une alerte de proximité.",
-  missingKey: "Ajoute d’abord ta clé API dans les réglages.",
-  networkError:
-    "Impossible de joindre l’API depuis Safari. Vérifie la clé, ou colle une URL OpenAI-compatible qui autorise ce site (CORS).",
+  authRequired: "Connexion rapide requise pour discuter. Réessaie après t’être connecté.",
+  networkError: "Impossible de joindre l’avatar pour le moment. Réessaie dans un instant.",
   genericError: "L’avatar n’a pas pu répondre. Réessaie dans un instant.",
 } as const;
 

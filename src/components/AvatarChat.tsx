@@ -1,27 +1,25 @@
 "use client";
 
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AVATAR_CHAT, AVATAR_SYSTEM_PROMPT } from "@/lib/content";
-import {
-  completeChat,
-  LLM_DEFAULTS,
-  type ChatMessage,
-  type LlmSettings,
-} from "@/lib/llm";
-import { useLlmSettings } from "@/lib/useLlmSettings";
+import { ChatFault, completeChat, type ChatMessage } from "@/lib/llm";
 import type { Avatar } from "@/lib/avatars";
 
+function faultCopy(caught: unknown) {
+  if (caught instanceof ChatFault) {
+    if (caught.kind === "auth") return AVATAR_CHAT.authRequired;
+    if (caught.kind === "network") return AVATAR_CHAT.networkError;
+  }
+  return AVATAR_CHAT.genericError;
+}
+
 export function AvatarChat({ avatar }: { avatar: Avatar }) {
-  const [settings, setSettings] = useLlmSettings();
-  const [draft, setDraft] = useState<LlmSettings>(settings);
-  const [openSettings, setOpenSettings] = useState(false);
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const abortRef = useRef<AbortController | null>(null);
-  const showSettings = openSettings || !settings.apiKey;
 
   useEffect(() => {
     const node = listRef.current;
@@ -32,21 +30,9 @@ export function AvatarChat({ avatar }: { avatar: Avatar }) {
     return () => abortRef.current?.abort();
   }, []);
 
-  function saveSettings(event: FormEvent) {
-    event.preventDefault();
-    setSettings(draft);
-    setOpenSettings(false);
-    setError(null);
-  }
-
   async function send() {
     const text = input.trim();
     if (!text || busy) return;
-    if (!settings.apiKey) {
-      setOpenSettings(true);
-      setError(AVATAR_CHAT.missingKey);
-      return;
-    }
 
     const nextMessages: ChatMessage[] = [...messages, { role: "user", content: text }];
     setMessages(nextMessages);
@@ -59,7 +45,6 @@ export function AvatarChat({ avatar }: { avatar: Avatar }) {
 
     try {
       const reply = await completeChat({
-        settings,
         system: `${AVATAR_SYSTEM_PROMPT} Ton apparence : ${avatar.label}.`,
         messages: nextMessages,
         signal: controller.signal,
@@ -67,12 +52,7 @@ export function AvatarChat({ avatar }: { avatar: Avatar }) {
       setMessages([...nextMessages, { role: "assistant", content: reply }]);
     } catch (caught) {
       if (caught instanceof DOMException && caught.name === "AbortError") return;
-      const message = caught instanceof Error ? caught.message : "";
-      setError(
-        message === "network" || message === "empty"
-          ? AVATAR_CHAT.networkError
-          : message || AVATAR_CHAT.genericError,
-      );
+      setError(faultCopy(caught));
     } finally {
       setBusy(false);
     }
@@ -83,88 +63,11 @@ export function AvatarChat({ avatar }: { avatar: Avatar }) {
       className="flex min-h-0 w-full flex-1 flex-col rounded-2xl border border-white/10 bg-[linear-gradient(180deg,rgba(18,20,26,0.92)_0%,rgba(8,8,10,0.92)_100%)] p-2 text-left shadow-[0_12px_32px_rgba(0,0,0,0.35)] backdrop-blur-md"
       aria-label={AVATAR_CHAT.title}
     >
-      <div className="flex shrink-0 items-center justify-between gap-2 px-1">
+      <div className="flex shrink-0 items-center px-1">
         <h2 className="text-[12px] font-extrabold tracking-wide text-snow">
           {AVATAR_CHAT.title}
         </h2>
-        <button
-          type="button"
-          className="rounded-full border border-white/15 px-2 py-0.5 text-[10px] font-semibold text-ice/90 hover:border-gold/50 hover:text-gold"
-          aria-expanded={showSettings}
-          onClick={() => {
-            setDraft(settings);
-            setOpenSettings((next) => !next);
-          }}
-        >
-          {AVATAR_CHAT.settings}
-        </button>
       </div>
-
-      {!settings.apiKey ? (
-        <p className="mt-1.5 px-1 text-[11px] leading-relaxed text-ice/85">
-          {AVATAR_CHAT.empty}
-        </p>
-      ) : null}
-
-      {showSettings ? (
-        <form className="mt-1.5 space-y-1.5 rounded-xl border border-white/10 bg-black/25 p-2" onSubmit={saveSettings}>
-          <label className="block text-[10px] font-bold tracking-wide text-gold uppercase">
-            {AVATAR_CHAT.apiKeyLabel}
-            <input
-              type="password"
-              autoComplete="off"
-              value={draft.apiKey}
-              onChange={(event) =>
-                setDraft((current) => ({ ...current, apiKey: event.target.value }))
-              }
-              className="mt-0.5 w-full rounded-lg border border-white/15 bg-night px-2 py-1.5 text-[12px] font-medium text-snow outline-none focus:border-gold/70"
-            />
-          </label>
-          <p className="text-[10px] leading-snug text-ice/80">{AVATAR_CHAT.apiKeyHint}</p>
-          <a
-            href={AVATAR_CHAT.apiKeyHelpUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="inline-block text-[11px] font-semibold text-gold underline-offset-2 hover:underline"
-          >
-            {AVATAR_CHAT.apiKeyHelp}
-          </a>
-          <details className="text-[11px] text-ice/85">
-            <summary className="cursor-pointer font-semibold text-snow/80">
-              URL et modèle
-            </summary>
-            <label className="mt-1.5 block text-[10px] font-bold tracking-wide text-ice/80 uppercase">
-              {AVATAR_CHAT.baseUrlLabel}
-              <input
-                type="url"
-                value={draft.baseUrl}
-                onChange={(event) =>
-                  setDraft((current) => ({ ...current, baseUrl: event.target.value }))
-                }
-                placeholder={LLM_DEFAULTS.baseUrl}
-                className="mt-0.5 w-full rounded-lg border border-white/15 bg-night px-2 py-1.5 text-[11px] text-snow outline-none focus:border-violet/60"
-              />
-            </label>
-            <label className="mt-1.5 block text-[10px] font-bold tracking-wide text-ice/80 uppercase">
-              {AVATAR_CHAT.modelLabel}
-              <input
-                value={draft.model}
-                onChange={(event) =>
-                  setDraft((current) => ({ ...current, model: event.target.value }))
-                }
-                placeholder={LLM_DEFAULTS.model}
-                className="mt-0.5 w-full rounded-lg border border-white/15 bg-night px-2 py-1.5 text-[11px] text-snow outline-none focus:border-violet/60"
-              />
-            </label>
-          </details>
-          <button
-            type="submit"
-            className="rounded-full border border-cobalt/55 bg-cobalt px-3 py-1 text-[11px] font-extrabold text-snow"
-          >
-            {AVATAR_CHAT.save}
-          </button>
-        </form>
-      ) : null}
 
       <div
         ref={listRef}
