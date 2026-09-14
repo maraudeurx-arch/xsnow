@@ -100,6 +100,12 @@ export function AvatarChat({ avatar }: { avatar: Avatar }) {
         </button>
       </div>
 
+      {!settings.apiKey ? (
+        <p className="mt-1.5 px-1 text-[11px] leading-relaxed text-ice/85">
+          {AVATAR_CHAT.empty}
+        </p>
+      ) : null}
+
       {showSettings ? (
         <form className="mt-1.5 space-y-1.5 rounded-xl border border-white/10 bg-black/25 p-2" onSubmit={saveSettings}>
           <label className="block text-[10px] font-bold tracking-wide text-gold uppercase">
@@ -123,29 +129,34 @@ export function AvatarChat({ avatar }: { avatar: Avatar }) {
           >
             {AVATAR_CHAT.apiKeyHelp}
           </a>
-          <label className="block text-[10px] font-bold tracking-wide text-ice/80 uppercase">
-            {AVATAR_CHAT.baseUrlLabel}
-            <input
-              type="url"
-              value={draft.baseUrl}
-              onChange={(event) =>
-                setDraft((current) => ({ ...current, baseUrl: event.target.value }))
-              }
-              placeholder={LLM_DEFAULTS.baseUrl}
-              className="mt-0.5 w-full rounded-lg border border-white/15 bg-night px-2 py-1.5 text-[11px] text-snow outline-none focus:border-violet/60"
-            />
-          </label>
-          <label className="block text-[10px] font-bold tracking-wide text-ice/80 uppercase">
-            {AVATAR_CHAT.modelLabel}
-            <input
-              value={draft.model}
-              onChange={(event) =>
-                setDraft((current) => ({ ...current, model: event.target.value }))
-              }
-              placeholder={LLM_DEFAULTS.model}
-              className="mt-0.5 w-full rounded-lg border border-white/15 bg-night px-2 py-1.5 text-[11px] text-snow outline-none focus:border-violet/60"
-            />
-          </label>
+          <details className="text-[11px] text-ice/85">
+            <summary className="cursor-pointer font-semibold text-snow/80">
+              URL et modèle
+            </summary>
+            <label className="mt-1.5 block text-[10px] font-bold tracking-wide text-ice/80 uppercase">
+              {AVATAR_CHAT.baseUrlLabel}
+              <input
+                type="url"
+                value={draft.baseUrl}
+                onChange={(event) =>
+                  setDraft((current) => ({ ...current, baseUrl: event.target.value }))
+                }
+                placeholder={LLM_DEFAULTS.baseUrl}
+                className="mt-0.5 w-full rounded-lg border border-white/15 bg-night px-2 py-1.5 text-[11px] text-snow outline-none focus:border-violet/60"
+              />
+            </label>
+            <label className="mt-1.5 block text-[10px] font-bold tracking-wide text-ice/80 uppercase">
+              {AVATAR_CHAT.modelLabel}
+              <input
+                value={draft.model}
+                onChange={(event) =>
+                  setDraft((current) => ({ ...current, model: event.target.value }))
+                }
+                placeholder={LLM_DEFAULTS.model}
+                className="mt-0.5 w-full rounded-lg border border-white/15 bg-night px-2 py-1.5 text-[11px] text-snow outline-none focus:border-violet/60"
+              />
+            </label>
+          </details>
           <button
             type="submit"
             className="rounded-full border border-cobalt/55 bg-cobalt px-3 py-1 text-[11px] font-extrabold text-snow"
@@ -159,9 +170,6 @@ export function AvatarChat({ avatar }: { avatar: Avatar }) {
         ref={listRef}
         className="mt-1.5 min-h-0 flex-1 space-y-1.5 overflow-y-auto px-1 py-1"
       >
-        {!settings.apiKey ? (
-          <p className="text-[11px] leading-relaxed text-ice/85">{AVATAR_CHAT.empty}</p>
-        ) : null}
         {messages.map((message, index) => (
           <p
             key={`${message.role}-${index}`}

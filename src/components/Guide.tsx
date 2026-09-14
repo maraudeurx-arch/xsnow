@@ -76,11 +76,11 @@ export function Guide() {
         <>
           <div className="flex shrink-0 items-center justify-center gap-2 pt-0.5">
             <AvatarDisc avatar={chosen} className={chosenSize} priority />
-            <div className="flex flex-col items-start gap-1">
+            <div className="flex shrink-0 flex-col items-start gap-1">
               <ReplayButton />
               <button
                 type="button"
-                className="rounded-full border border-white/20 bg-white/[0.04] px-2 py-0.5 text-[10px] font-semibold tracking-wide text-snow/90 hover:border-violet/50 hover:bg-white/[0.07]"
+                className="whitespace-nowrap rounded-full border border-white/20 bg-white/[0.04] px-2 py-0.5 text-[10px] font-semibold tracking-wide text-snow/90 hover:border-violet/50 hover:bg-white/[0.07]"
                 onClick={() => setPicking(true)}
               >
                 Changer d’avatar
@@ -101,7 +101,7 @@ function ReplayButton() {
     <button
       type="button"
       data-welcome-replay
-      className="inline-flex items-center gap-1 rounded-full border border-cobalt/55 bg-cobalt px-2 py-0.5 text-[10px] font-semibold tracking-wide text-snow shadow-[0_4px_14px_rgba(37,99,235,0.32)]"
+      className="inline-flex items-center gap-1 whitespace-nowrap rounded-full border border-cobalt/55 bg-cobalt px-2 py-0.5 text-[10px] font-semibold tracking-wide text-snow shadow-[0_4px_14px_rgba(37,99,235,0.32)]"
       aria-label="Réécouter"
       onClick={() => replay()}
     >
