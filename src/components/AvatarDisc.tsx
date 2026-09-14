@@ -4,7 +4,7 @@ import { assetUrl } from "@/lib/paths";
 import type { Avatar } from "@/lib/avatars";
 
 const frameClass =
-  "block rounded-full border-[2.5px] border-snow shadow-[0_8px_20px_rgba(0,0,0,0.45)] ring-[2.5px] ring-offset-[3px] ring-offset-[#050506]";
+  "block rounded-full border-[3px] border-gold shadow-[0_0_14px_rgba(61,255,138,0.35)] ring-[2.5px] ring-gold ring-offset-[3px] ring-offset-[#050506]";
 
 export function AvatarDisc({
   avatar,
@@ -20,7 +20,7 @@ export function AvatarDisc({
   return (
     <span
       className={`${frameClass} ${className} ${
-        selected ? "ring-gold" : "ring-snow"
+        selected ? "shadow-[0_0_22px_rgba(61,255,138,0.7)] ring-[3.5px]" : ""
       }`}
     >
       <span className="block h-full w-full overflow-hidden rounded-full">
