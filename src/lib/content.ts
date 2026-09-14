@@ -155,6 +155,35 @@ export const FEATURE_COPY = {
   },
   monProfil: {
     title: "Mon profil",
-    lead: "Votre fiche Gatineau : attributs, portefeuille, et ce que vous monétisez. En construction.",
+    lead: "Votre fiche Gatineau : infos, réglages, invitations.",
+  },
+  mesInfos: {
+    title: "Mes infos",
+    lead: "Vos coordonnées et votre portefeuille restent sur cet appareil.",
+  },
+  reglages: {
+    title: "Réglages",
+    lead: "Préférences d’affichage et de notifications. En construction.",
+  },
+  inviter: {
+    title: "Inviter d’autres à rejoindre la communauté",
+    lead: "Partagez Open Community avec un voisin, un commerce, une famille.",
+  },
+  aPropos: {
+    title: "À propos de Open Community (OPC)",
+    lead: "Proximité, entraide et visibilité locale — Monétisé Vous!",
   },
 } as const;
+
+export const PROFILE_MENU = [
+  { href: "/mon-profil/infos", label: "Mes infos" },
+  { href: "/mon-profil/reglages", label: "Réglages" },
+  {
+    href: "/mon-profil/inviter",
+    label: "Inviter d’autres à rejoindre la communauté",
+  },
+  {
+    href: "/mon-profil/a-propos",
+    label: "À propos de Open Community (OPC)",
+  },
+] as const;

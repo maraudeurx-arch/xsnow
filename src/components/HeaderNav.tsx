@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { AccueilMenu, headerNavBtnClass } from "@/components/AccueilMenu";
 import { ConnectWallet } from "@/components/ConnectWallet";
 import { HEADER_NAV } from "@/lib/content";
-import { pathMatches } from "@/lib/paths";
+import { pathMatches, pathStartsWith } from "@/lib/paths";
 
 export function HeaderNav() {
   const pathname = usePathname();
@@ -27,9 +27,12 @@ export function HeaderNav() {
           <Link
             key={item.href}
             href={item.href}
-            className={`${headerNavBtnClass(pathMatches(pathname, item.href), true)}${
-              item.href === "/mon-profil" ? " ml-auto" : ""
-            }`}
+            className={`${headerNavBtnClass(
+              item.href === "/mon-profil"
+                ? pathStartsWith(pathname, item.href)
+                : pathMatches(pathname, item.href),
+              true,
+            )}${item.href === "/mon-profil" ? " ml-auto" : ""}`}
           >
             {item.label}
           </Link>

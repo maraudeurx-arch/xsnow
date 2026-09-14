@@ -11,3 +11,11 @@ export function pathMatches(pathname: string, href: string) {
   const norm = (value: string) => value.replace(/\/+$/, "") || "/";
   return norm(pathname) === norm(href);
 }
+
+/** True when pathname is href or a nested route under it. */
+export function pathStartsWith(pathname: string, href: string) {
+  const norm = (value: string) => value.replace(/\/+$/, "") || "/";
+  const current = norm(pathname);
+  const base = norm(href);
+  return current === base || current.startsWith(`${base}/`);
+}
