@@ -1,0 +1,31 @@
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { AccueilMenu, headerNavBtnClass } from "@/components/AccueilMenu";
+import { HEADER_NAV } from "@/lib/content";
+import { pathMatches } from "@/lib/paths";
+
+export function HeaderNav() {
+  const pathname = usePathname();
+
+  return (
+    <nav
+      aria-label="Navigation principale"
+      className="relative mt-1.5 flex w-full flex-wrap items-center gap-1.5 overflow-visible"
+    >
+      <AccueilMenu />
+      {HEADER_NAV.map((item) => (
+        <Link
+          key={item.href}
+          href={item.href}
+          className={`${headerNavBtnClass(pathMatches(pathname, item.href))}${
+            item.href === "/mon-profil" ? " ml-auto" : ""
+          }`}
+        >
+          {item.label}
+        </Link>
+      ))}
+    </nav>
+  );
+}

@@ -1,8 +1,7 @@
 import Link from "next/link";
 import { type ReactNode } from "react";
-import { AccueilMenu } from "@/components/AccueilMenu";
-import { ConnectWallet } from "@/components/ConnectWallet";
 import { ConstructionWatermark } from "@/components/ConstructionWatermark";
+import { HeaderNav } from "@/components/HeaderNav";
 import { SiteFooter } from "@/components/SiteFooter";
 import { Snowfield } from "@/components/Snowfield";
 import { BRAND } from "@/lib/content";
@@ -13,7 +12,7 @@ export function AppChrome({ children }: { children: ReactNode }) {
       <Snowfield />
       <ConstructionWatermark />
 
-      <header className="relative z-30 shrink-0">
+      <header className="relative z-30 shrink-0 overflow-visible">
         <Link
           href="/"
           className="inline-flex items-center text-[1.25rem] leading-none font-black tracking-tight text-gold sm:text-[1.55rem]"
@@ -21,10 +20,7 @@ export function AppChrome({ children }: { children: ReactNode }) {
           {BRAND.name}
         </Link>
 
-        <div className="relative mt-1.5 flex items-center justify-between gap-3">
-          <AccueilMenu />
-          <ConnectWallet />
-        </div>
+        <HeaderNav />
 
         <div className="mt-2 text-center sm:mt-3">
           <h1 className="mx-auto font-[family-name:var(--font-fraunces)] text-[clamp(2.3rem,10.4vw,5.5rem)] leading-[0.9] font-extrabold text-balance text-snow">

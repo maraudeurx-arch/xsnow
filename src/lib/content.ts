@@ -40,19 +40,16 @@ export const AVATAR_CHAT = {
 export const AVATAR_SYSTEM_PROMPT =
   "Tu es l’avatar du visiteur dans Open Community, à Gatineau. Tu parles uniquement en français, tu tutoies, tu restes chaleureux, concret et bref. Tu aides sur l’entraide de quartier : courses et livraison, aide au déménagement, travaux à la maison, garde d’enfants ou d’animaux, prêt ou emprunt d’objets, téléphone perdu, alertes si un enfant, un conjoint ou des parents âgés s’éloignent (école, travail, maison de retraite). Tu invites à toucher Accueil, sous GATINEAU à gauche, pour choisir un service à offrir ou à recevoir. Tu ne prétends pas être un humain. En cas d’urgence réelle, oriente vers le 911. Tu es à la disposition du visiteur pour toute question sur Open Community.";
 
-export const LEFT_MENU = [
-  {
-    href: "/business",
-    label: "Faites connaître votre business",
-    speech:
-      "Parfait. Faites connaître votre business à la communauté. Décrivez votre commerce, votre quartier, et on le met en lumière.",
-  },
+export const COMMUNITY_MENU = [
   {
     href: "/proximite",
     label: "Voyez qui est à proximité",
     speech:
       "Voyons qui est à proximité. Activez votre position pour rencontrer voisins et commerces tout près de vous.",
   },
+] as const;
+
+export const SAFETY_SERVICES_MENU = [
   {
     href: "/telephone",
     label: "Retrouve ton téléphone perdu",
@@ -62,10 +59,31 @@ export const LEFT_MENU = [
   {
     href: "/alertes",
     label:
-      "Sois alerté si ton enfant, ton mari, tes grands-parents s’éloignent de l’endroit où ils doivent être",
+      "Sois alerté si ton enfant, ton conjoint ou tes parents âgés s’éloignent de l’endroit où ils sont censés être",
     speech:
-      "Ici, tu crées une zone de confiance. Si ton enfant, ton mari ou tes grands-parents s’éloignent de l’endroit où ils doivent être, tu seras alerté.",
+      "Ici, tu crées une zone de confiance. Si ton enfant, ton conjoint ou tes parents âgés s’éloignent de l’endroit où ils sont censés être, tu seras alerté.",
   },
+] as const;
+
+export const PROFESSIONNELLE_MENU = [
+  {
+    href: "/business",
+    label: "Faites connaître votre business par des pubs",
+    speech:
+      "Faites connaître votre business par des pubs dans Open Community. Décrivez votre commerce, votre quartier, et on le met en lumière.",
+  },
+  {
+    href: "/monetise",
+    label: "Monétisé ce que vous avez",
+    speech:
+      "Monétisé ce que vous avez : un talent, un outil, une heure. Proposez-le à vos voisins de Gatineau.",
+  },
+] as const;
+
+export const HEADER_NAV = [
+  { href: "/mes-monetisations", label: "Mes monétisations" },
+  { href: "/service-en-demande", label: "Service en demande" },
+  { href: "/mon-profil", label: "Mon profil" },
 ] as const;
 
 export const ACCUEIL_MENU = [
@@ -97,8 +115,8 @@ export const ACCUEIL_MENU = [
 
 export const FEATURE_COPY = {
   business: {
-    title: "Faites connaître votre business",
-    lead: "Publiez votre commerce dans Open Community. Les voisins vous trouvent, vous les servez.",
+    title: "Faites connaître votre business par des pubs",
+    lead: "Publiez une pub locale dans Open Community. Les voisins vous trouvent, vous les servez.",
   },
   proximite: {
     title: "Voyez qui est à proximité",
@@ -110,7 +128,7 @@ export const FEATURE_COPY = {
   },
   alertes: {
     title: "Alertes de proximité",
-    lead: "Recevez une alerte si un proche s’éloigne de la zone où il doit être.",
+    lead: "Recevez une alerte si un enfant, un conjoint ou des parents âgés s’éloignent de la zone où ils doivent être.",
   },
   reportage: {
     title: "Reportage",
@@ -130,6 +148,22 @@ export const FEATURE_COPY = {
   },
   services: {
     title: "Services Open Community",
-    lead: "Les premiers services monétisables du quartier : courses, déménagement, garde et prêt d’objets avec caution.",
+    lead: "Les services de sécurité du quartier : téléphone perdu et alertes si un proche s’éloigne.",
+  },
+  monetise: {
+    title: "Monétisé ce que vous avez",
+    lead: "Un talent, un outil, une heure libre : proposez-le à vos voisins. Bientôt branché sur vos monétisations.",
+  },
+  mesMonetisations: {
+    title: "Mes monétisations",
+    lead: "Ici, vous verrez ce que vous offrez déjà à la communauté : pubs, services, objets. En construction.",
+  },
+  serviceEnDemande: {
+    title: "Service en demande",
+    lead: "Les demandes du quartier que vous pourriez honorer. En construction.",
+  },
+  monProfil: {
+    title: "Mon profil",
+    lead: "Votre fiche Gatineau : attributs, portefeuille, et ce que vous monétisez. En construction.",
   },
 } as const;
