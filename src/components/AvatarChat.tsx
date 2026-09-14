@@ -10,7 +10,7 @@ import {
   type BrowserSpeechRecognition,
   type DictationErrorKind,
 } from "@/lib/dictation";
-import { ChatFault, completeChat, ensurePuterAuth, type ChatMessage } from "@/lib/llm";
+import { ChatFault, completeChat, type ChatMessage } from "@/lib/llm";
 import type { Avatar } from "@/lib/avatars";
 import { useSpeech } from "@/lib/speech";
 
@@ -217,9 +217,6 @@ export function AvatarChat({ avatar }: { avatar: Avatar }) {
     prime();
     stop();
     setError(null);
-    void ensurePuterAuth().catch(() => {
-      // Gesture used to unlock Puter; sendText still reports auth if needed.
-    });
 
     if (listeningRef.current) {
       const heard = heardRef.current.trim();
