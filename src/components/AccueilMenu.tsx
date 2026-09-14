@@ -8,7 +8,7 @@ import { SERVICE_LIST } from "@/lib/services";
 import { useSpeech } from "@/lib/speech";
 
 const itemClass = (active: boolean, speaking: boolean) =>
-  `tap flex items-center rounded-2xl border px-3 py-2 text-left text-[13px] leading-snug font-semibold ${
+  `flex items-center rounded-lg border px-1.5 py-1 text-left text-[9px] leading-tight font-semibold ${
     active
       ? "border-gold/70 bg-gold/15 text-gold"
       : "border-white/10 bg-white/5 text-snow/90 hover:border-ice/40 hover:bg-white/10"
@@ -42,7 +42,7 @@ export function AccueilMenu() {
       {open ? (
         <nav
           aria-label="Propositions Accueil"
-          className="absolute top-full left-0 z-40 mt-2 max-h-[min(70dvh,34rem)] w-full space-y-3 overflow-y-auto rounded-2xl border border-white/10 bg-[#06111d]/95 p-2 pr-1 shadow-[0_16px_40px_rgba(0,0,0,0.35)] backdrop-blur-md"
+          className="absolute top-full left-0 z-40 mt-1.5 max-h-[min(62dvh,28rem)] w-full space-y-1.5 overflow-y-auto rounded-xl border border-white/10 bg-[#06111d]/95 p-1.5 pr-1 shadow-[0_16px_40px_rgba(0,0,0,0.35)] backdrop-blur-md"
         >
           <Group title="Communauté">
             {LEFT_MENU.map((item) => (
@@ -95,10 +95,10 @@ function Group({
 }) {
   return (
     <div>
-      <p className="mb-1.5 px-1 text-[11px] font-extrabold tracking-[0.16em] text-gold uppercase">
+      <p className="mb-0.5 px-1 text-[7px] font-extrabold tracking-[0.14em] text-gold uppercase">
         {title}
       </p>
-      <div className="flex flex-col gap-2">{children}</div>
+      <div className="flex flex-col gap-1">{children}</div>
     </div>
   );
 }
