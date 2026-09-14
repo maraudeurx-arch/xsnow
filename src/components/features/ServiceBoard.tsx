@@ -159,7 +159,7 @@ export function ServiceBoard({ kind }: { kind: ServiceKind }) {
           </div>
         ) : null}
 
-        <button type="submit" className="tap rounded-full bg-gold font-extrabold text-night">
+        <button type="submit" className="tap rounded-full bg-cobalt font-extrabold text-snow">
           Publier dans Open-Community
         </button>
         {saved ? (

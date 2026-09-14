@@ -51,7 +51,7 @@ export function AlertBoard() {
         </label>
         <Input name="place" label="Endroit où la personne doit être" required />
         <Input name="radius" label="Distance d’alerte" placeholder="200 m" />
-        <button type="submit" className="tap rounded-full bg-gold font-extrabold text-night">
+        <button type="submit" className="tap rounded-full bg-cobalt font-extrabold text-snow">
           Créer l’alerte
         </button>
       </form>

@@ -65,7 +65,7 @@ export function AttributesBoard() {
         <button
           type="button"
           onClick={addCustom}
-          className="tap rounded-full bg-gold px-4 font-extrabold text-night"
+          className="tap rounded-full bg-cobalt px-4 font-extrabold text-snow"
         >
           Ajouter
         </button>
