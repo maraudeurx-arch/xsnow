@@ -16,18 +16,18 @@ export function HeaderNav() {
       className="relative mt-1.5 flex w-full flex-col gap-1.5 overflow-visible"
     >
       <div className="flex w-full items-center justify-between gap-3">
-        <AccueilMenu />
+        <AccueilMenu key={pathname} />
         <div className="shrink-0">
           <ConnectWallet />
         </div>
       </div>
 
-      <div className="flex w-full flex-wrap items-center gap-1.5">
+      <div className="flex w-full flex-wrap items-center gap-1">
         {HEADER_NAV.map((item) => (
           <Link
             key={item.href}
             href={item.href}
-            className={`${headerNavBtnClass(pathMatches(pathname, item.href))}${
+            className={`${headerNavBtnClass(pathMatches(pathname, item.href), true)}${
               item.href === "/mon-profil" ? " ml-auto" : ""
             }`}
           >
