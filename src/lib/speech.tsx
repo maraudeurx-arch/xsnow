@@ -10,7 +10,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { BUBBLE_INTRO, WELCOME_SPEECH } from "@/lib/content";
+import { WELCOME_SPEECH } from "@/lib/content";
 
 type SpeechContextValue = {
   isSpeaking: boolean;
@@ -52,7 +52,7 @@ function pickFrenchMaleVoice(): SpeechSynthesisVoice | undefined {
 
 export function SpeechProvider({ children }: { children: ReactNode }) {
   const [isSpeaking, setIsSpeaking] = useState(false);
-  const [lastText, setLastText] = useState(BUBBLE_INTRO);
+  const [lastText, setLastText] = useState(WELCOME_SPEECH);
   const lastRef = useRef(WELCOME_SPEECH);
   const watchRef = useRef<number | null>(null);
   const genRef = useRef(0);
@@ -78,7 +78,7 @@ export function SpeechProvider({ children }: { children: ReactNode }) {
       stopWatch();
     };
 
-    const estimatedMs = Math.min(24000, Math.max(1800, text.length * 65));
+    const estimatedMs = Math.min(60000, Math.max(1800, text.length * 70));
 
     // Mouth starts with the tap so lips move even if the engine is late or silent.
     setIsSpeaking(true);
@@ -167,98 +167,29 @@ export function useSpeech() {
   return ctx;
 }
 
-const REPLAY_SELECTOR = "[data-welcome-replay]";
-const ACCUEIL_SELECTOR = "[data-accueil]";
+const WELCOME_PLAYED_KEY = "xsnow.welcomePlayed";
 
-/** Survives React Strict Mode remounts so we only autoplay once per page load. */
-let welcomeAutoplayStarted = false;
-
-function engineBusy() {
-  const synth = window.speechSynthesis;
-  return Boolean(synth?.speaking || synth?.pending);
+function readPlayedIds(): string[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = window.sessionStorage.getItem(WELCOME_PLAYED_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw) as unknown;
+    return Array.isArray(parsed)
+      ? parsed.filter((item): item is string => typeof item === "string")
+      : [];
+  } catch {
+    return [];
+  }
 }
 
-/**
- * Start the propositions presentation as soon as voices are ready.
- * iOS Safari often blocks speech without a gesture: still try on load,
- * then unlock on the first tap on the page. Accueil stays silent (it never
- * calls speak, and a tap on the menu does not consume the unlock).
- * Réécouter is skipped so it can replay without a double start.
- */
-export function useWelcomeAutoplay() {
-  const { replay } = useSpeech();
+export function hasPlayedWelcomeFor(avatarId: string) {
+  return readPlayedIds().includes(avatarId);
+}
 
-  useEffect(() => {
-    if (typeof window === "undefined" || !window.speechSynthesis) {
-      return;
-    }
-
-    let cancelled = false;
-    let confirmTimer: number | null = null;
-    let voicesTimer: number | null = null;
-    const synth = window.speechSynthesis;
-
-    const detachGestures = () => {
-      document.removeEventListener("pointerdown", onFirstGesture, true);
-      document.removeEventListener("click", onFirstGesture, true);
-    };
-
-    function onFirstGesture(event: Event) {
-      if (cancelled) return;
-      const target = event.target;
-      if (target instanceof Element && target.closest(REPLAY_SELECTOR)) {
-        welcomeAutoplayStarted = true;
-        detachGestures();
-        return;
-      }
-      if (target instanceof Element && target.closest(ACCUEIL_SELECTOR)) {
-        return;
-      }
-      if (engineBusy()) {
-        welcomeAutoplayStarted = true;
-        detachGestures();
-        return;
-      }
-      welcomeAutoplayStarted = true;
-      detachGestures();
-      replay();
-    }
-
-    document.addEventListener("pointerdown", onFirstGesture, true);
-    document.addEventListener("click", onFirstGesture, true);
-
-    const tryAutoplay = () => {
-      if (cancelled || welcomeAutoplayStarted) {
-        if (engineBusy()) detachGestures();
-        return;
-      }
-      welcomeAutoplayStarted = true;
-      replay();
-      confirmTimer = window.setTimeout(() => {
-        if (cancelled) return;
-        if (engineBusy()) detachGestures();
-      }, 280);
-    };
-
-    const onVoicesChanged = () => {
-      if (synth.getVoices().length > 0) {
-        tryAutoplay();
-      }
-    };
-
-    if (synth.getVoices().length > 0) {
-      tryAutoplay();
-    } else {
-      synth.addEventListener("voiceschanged", onVoicesChanged);
-      voicesTimer = window.setTimeout(tryAutoplay, 400);
-    }
-
-    return () => {
-      cancelled = true;
-      synth.removeEventListener("voiceschanged", onVoicesChanged);
-      if (voicesTimer != null) window.clearTimeout(voicesTimer);
-      if (confirmTimer != null) window.clearTimeout(confirmTimer);
-      detachGestures();
-    };
-  }, [replay]);
+export function markWelcomePlayed(avatarId: string) {
+  if (typeof window === "undefined") return;
+  const next = new Set(readPlayedIds());
+  next.add(avatarId);
+  window.sessionStorage.setItem(WELCOME_PLAYED_KEY, JSON.stringify([...next]));
 }
