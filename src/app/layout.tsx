@@ -1,7 +1,9 @@
 import type { Metadata, Viewport } from "next";
 import { Fraunces, Outfit } from "next/font/google";
+import Script from "next/script";
 import { AppChrome } from "@/components/AppChrome";
 import { Providers } from "@/app/providers";
+import { PUTER_SCRIPT_SRC } from "@/lib/llm";
 import "./globals.css";
 
 const outfit = Outfit({
@@ -46,6 +48,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${outfit.variable} ${fraunces.variable} h-full antialiased`}
     >
       <body className="min-h-full min-h-dvh">
+        <Script src={PUTER_SCRIPT_SRC} strategy="afterInteractive" />
         <Providers>
           <AppChrome>{children}</AppChrome>
         </Providers>
