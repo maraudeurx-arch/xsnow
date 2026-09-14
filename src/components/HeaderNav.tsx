@@ -13,7 +13,7 @@ export function HeaderNav() {
   return (
     <nav
       aria-label="Navigation principale"
-      className="relative mt-1.5 flex w-full flex-col gap-1.5 overflow-visible"
+      className="relative mt-1 flex w-full flex-col gap-1 overflow-visible"
     >
       <div className="flex w-full items-center justify-between gap-3">
         <AccueilMenu key={pathname} />
@@ -22,7 +22,7 @@ export function HeaderNav() {
         </div>
       </div>
 
-      <div className="flex w-full flex-wrap items-center gap-1">
+      <div className="grid w-full grid-cols-3 items-center gap-1">
         {HEADER_NAV.map((item) => (
           <Link
             key={item.href}
@@ -32,7 +32,7 @@ export function HeaderNav() {
                 ? pathStartsWith(pathname, item.href)
                 : pathMatches(pathname, item.href),
               true,
-            )}${item.href === "/mon-profil" ? " ml-auto" : ""}`}
+            )} justify-self-center`}
           >
             {item.label}
           </Link>
