@@ -19,7 +19,7 @@ export default function ReportagePage() {
             title: "Commerces de proximité",
             meta: "Économie locale",
             blurb:
-              "Ceux qui restent ouverts tard pour les familles. Un portrait d’Open-Community.",
+              "Ceux qui restent ouverts tard pour les familles. Un portrait d’Open Community.",
           },
           {
             title: "Garder un œil, sans surveiller",

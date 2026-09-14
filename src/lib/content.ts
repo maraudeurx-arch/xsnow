@@ -1,20 +1,23 @@
+/** City / gentilé — later swapped from user location. */
+export const LOCATION = {
+  city: "GATINEAU",
+  locationLabel: "Gatinois",
+} as const;
+
 export const BRAND = {
-  name: "Xsnow",
-  community: "Open-Community",
+  name: LOCATION.city,
+  community: "Open Community",
   slogan: "Monétisé Vous!",
-  footer:
-    "Notre Proximité et notre esprit d’entraide est le gage de notre succès!",
+  footerBefore: "Proximité et Esprit d’entraide au service des ",
+  footerAfter: ".",
   watermark: "EN CONSTRUCTION",
 } as const;
 
 export const BUBBLE_INTRO =
-  "Bonjour ! Je suis votre guide. Touchez Accueil, sous Xsnow à gauche, pour choisir une proposition. Réécouter : je vous les présente.";
+  "Bonjour ! Je suis votre guide. Touchez Accueil, sous GATINEAU à gauche, pour choisir une proposition. Réécouter : je vous les présente.";
 
 export const WELCOME_SPEECH =
-  "Bonjour ! Je suis votre guide Xsnow. Touchez Accueil, juste sous Xsnow à gauche, pour voir toutes les propositions. Vous pourrez faire connaître votre business, voir qui est à proximité, retrouver un téléphone perdu, ou être alerté si un proche s’éloigne. Dans Accueil aussi : Reportage, Séries TV, Dessins animés, Vos attributs. Et les services : courses et livraison, aide au déménagement, garde d’enfants et d’animaux, prêt ou emprunt d’objets avec caution. Choisissez une option. Monétisé Vous !";
-
-export const ACCUEIL_OPEN_SPEECH =
-  "Accueil. Voici toutes les propositions : la communauté, les rubriques, et les services. Choisissez.";
+  "Bonjour ! Je suis votre guide GATINEAU. Touchez Accueil, juste sous GATINEAU à gauche, pour voir toutes les propositions. Vous pourrez faire connaître votre business, voir qui est à proximité, retrouver un téléphone perdu, ou être alerté si un proche s’éloigne. Dans Accueil aussi : Reportage, Séries TV, Dessins animés, Vos attributs. Et les services : courses et livraison, aide au déménagement, garde d’enfants et d’animaux, prêt ou emprunt d’objets avec caution. Choisissez une option. Monétisé Vous !";
 
 export const LEFT_MENU = [
   {
@@ -55,7 +58,7 @@ export const ACCUEIL_MENU = [
     href: "/series",
     label: "Séries TV",
     speech:
-      "Séries TV : des feuilleton locaux produits par Open-Community. Installe-toi, c’est chez nous.",
+      "Séries TV : des feuilleton locaux produits par Open Community. Installe-toi, c’est chez nous.",
   },
   {
     href: "/dessins-animes",
@@ -74,7 +77,7 @@ export const ACCUEIL_MENU = [
 export const FEATURE_COPY = {
   business: {
     title: "Faites connaître votre business",
-    lead: "Publiez votre commerce dans Open-Community. Les voisins vous trouvent, vous les servez.",
+    lead: "Publiez votre commerce dans Open Community. Les voisins vous trouvent, vous les servez.",
   },
   proximite: {
     title: "Voyez qui est à proximité",
@@ -82,7 +85,7 @@ export const FEATURE_COPY = {
   },
   telephone: {
     title: "Retrouve ton téléphone perdu",
-    lead: "Signalez l’appareil. La proximité de Xsnow devient un filet de sécurité.",
+    lead: "Signalez l’appareil. La proximité de GATINEAU devient un filet de sécurité.",
   },
   alertes: {
     title: "Alertes de proximité",
@@ -90,7 +93,7 @@ export const FEATURE_COPY = {
   },
   reportage: {
     title: "Reportage",
-    lead: "Les reportages d’Open-Community : la vie de quartier, sans filtre corporate.",
+    lead: "Les reportages d’Open Community : la vie de quartier, sans filtre corporate.",
   },
   series: {
     title: "Séries TV",
@@ -105,7 +108,7 @@ export const FEATURE_COPY = {
     lead: "Vos étiquettes d’entraide. Elles restent sur cet appareil, chez vous.",
   },
   services: {
-    title: "Services Open-Community",
+    title: "Services Open Community",
     lead: "Les premiers services monétisables du quartier : courses, déménagement, garde et prêt d’objets avec caution.",
   },
 } as const;

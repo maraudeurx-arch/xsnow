@@ -16,7 +16,7 @@ export function AppChrome({ children }: { children: ReactNode }) {
       <header className="relative z-30 shrink-0">
         <Link
           href="/"
-          className="inline-flex items-center text-[1.25rem] leading-none font-black tracking-tight text-snow sm:text-[1.55rem]"
+          className="inline-flex items-center text-[1.25rem] leading-none font-black tracking-tight text-gold sm:text-[1.55rem]"
         >
           {BRAND.name}
         </Link>
