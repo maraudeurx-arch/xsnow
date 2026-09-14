@@ -129,10 +129,10 @@ export function AvatarChat({ avatar }: { avatar: Avatar }) {
         </h2>
         <button
           type="button"
-          className={`rounded-full border px-2 py-0.5 text-[10px] font-semibold tracking-wide ${
+          className={`rounded-full border px-2.5 py-1 text-[10px] font-semibold tracking-wide ${
             voiceOn
               ? "border-cobalt/55 bg-cobalt/80 text-snow"
-              : "border-white/20 bg-white/[0.04] text-snow/80"
+              : "border-white/40 bg-black/45 text-snow"
           }`}
           aria-pressed={voiceOn}
           aria-label={voiceOn ? AVATAR_CHAT.voiceOn : AVATAR_CHAT.voiceOff}
