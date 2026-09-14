@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AccueilMenu, headerNavBtnClass } from "@/components/AccueilMenu";
 import { HEADER_NAV } from "@/lib/content";
+import { pathMatches } from "@/lib/paths";
 
 export function HeaderNav() {
   const pathname = usePathname();
@@ -18,7 +19,9 @@ export function HeaderNav() {
         <Link
           key={item.href}
           href={item.href}
-          className={headerNavBtnClass(pathname === item.href)}
+          className={`${headerNavBtnClass(pathMatches(pathname, item.href))}${
+            item.href === "/mon-profil" ? " ml-auto" : ""
+          }`}
         >
           {item.label}
         </Link>

@@ -9,6 +9,7 @@ import {
   PROFESSIONNELLE_MENU,
   SAFETY_SERVICES_MENU,
 } from "@/lib/content";
+import { pathMatches } from "@/lib/paths";
 import { SERVICE_LIST } from "@/lib/services";
 
 export const headerNavBtnClass = (active = false) =>
@@ -57,7 +58,7 @@ export function AccueilMenu() {
               <Link
                 key={item.href}
                 href={item.href}
-                className={itemClass(pathname === item.href)}
+                className={itemClass(pathMatches(pathname, item.href))}
               >
                 {item.label}
               </Link>
@@ -66,7 +67,7 @@ export function AccueilMenu() {
               <Link
                 key={item.href}
                 href={item.href}
-                className={itemClass(pathname === item.href)}
+                className={itemClass(pathMatches(pathname, item.href))}
               >
                 {item.title}
               </Link>
@@ -77,7 +78,7 @@ export function AccueilMenu() {
               <Link
                 key={item.href}
                 href={item.href}
-                className={itemClass(pathname === item.href)}
+                className={itemClass(pathMatches(pathname, item.href))}
               >
                 {item.label}
               </Link>
@@ -88,7 +89,7 @@ export function AccueilMenu() {
               <Link
                 key={item.href}
                 href={item.href}
-                className={itemClass(pathname === item.href)}
+                className={itemClass(pathMatches(pathname, item.href))}
               >
                 {item.label}
               </Link>
@@ -99,7 +100,7 @@ export function AccueilMenu() {
               <Link
                 key={item.href}
                 href={item.href}
-                className={itemClass(pathname === item.href)}
+                className={itemClass(pathMatches(pathname, item.href))}
               >
                 {item.label}
               </Link>
