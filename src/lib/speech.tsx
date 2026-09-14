@@ -166,3 +166,94 @@ export function useSpeech() {
   }
   return ctx;
 }
+
+const REPLAY_SELECTOR = "[data-welcome-replay]";
+
+/** Survives React Strict Mode remounts so we only autoplay once per page load. */
+let welcomeAutoplayStarted = false;
+
+function engineBusy() {
+  const synth = window.speechSynthesis;
+  return Boolean(synth?.speaking || synth?.pending);
+}
+
+/**
+ * Start the propositions presentation as soon as voices are ready.
+ * iOS Safari often blocks speech without a gesture: still try on load,
+ * then unlock on the first tap anywhere. Accueil never calls speak() itself.
+ * Réécouter is skipped so it can replay without a double start.
+ */
+export function useWelcomeAutoplay() {
+  const { replay } = useSpeech();
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !window.speechSynthesis) {
+      return;
+    }
+
+    let cancelled = false;
+    let confirmTimer: number | null = null;
+    let voicesTimer: number | null = null;
+    const synth = window.speechSynthesis;
+
+    const detachGestures = () => {
+      document.removeEventListener("pointerdown", onFirstGesture, true);
+      document.removeEventListener("click", onFirstGesture, true);
+    };
+
+    function onFirstGesture(event: Event) {
+      if (cancelled) return;
+      const target = event.target;
+      if (target instanceof Element && target.closest(REPLAY_SELECTOR)) {
+        welcomeAutoplayStarted = true;
+        detachGestures();
+        return;
+      }
+      if (engineBusy()) {
+        welcomeAutoplayStarted = true;
+        detachGestures();
+        return;
+      }
+      welcomeAutoplayStarted = true;
+      detachGestures();
+      replay();
+    }
+
+    document.addEventListener("pointerdown", onFirstGesture, true);
+    document.addEventListener("click", onFirstGesture, true);
+
+    const tryAutoplay = () => {
+      if (cancelled || welcomeAutoplayStarted) {
+        if (engineBusy()) detachGestures();
+        return;
+      }
+      welcomeAutoplayStarted = true;
+      replay();
+      confirmTimer = window.setTimeout(() => {
+        if (cancelled) return;
+        if (engineBusy()) detachGestures();
+      }, 280);
+    };
+
+    const onVoicesChanged = () => {
+      if (synth.getVoices().length > 0) {
+        tryAutoplay();
+      }
+    };
+
+    if (synth.getVoices().length > 0) {
+      tryAutoplay();
+    } else {
+      synth.addEventListener("voiceschanged", onVoicesChanged);
+      voicesTimer = window.setTimeout(tryAutoplay, 400);
+    }
+
+    return () => {
+      cancelled = true;
+      synth.removeEventListener("voiceschanged", onVoicesChanged);
+      if (voicesTimer != null) window.clearTimeout(voicesTimer);
+      if (confirmTimer != null) window.clearTimeout(confirmTimer);
+      detachGestures();
+    };
+  }, [replay]);
+}
