@@ -8,7 +8,7 @@ import { SERVICE_LIST } from "@/lib/services";
 import { useSpeech } from "@/lib/speech";
 
 const itemClass = (active: boolean, speaking: boolean) =>
-  `flex items-center rounded-lg border px-1.5 py-1 text-left text-[7px] leading-tight font-semibold ${
+  `flex items-center rounded-lg border px-1.5 py-1 text-left text-[9px] leading-tight font-semibold ${
     active
       ? "border-gold/70 bg-gold/15 text-gold"
       : "border-white/10 bg-white/5 text-snow/90 hover:border-ice/40 hover:bg-white/10"
@@ -95,7 +95,7 @@ function Group({
 }) {
   return (
     <div>
-      <p className="mb-0.5 px-1 text-[6px] font-extrabold tracking-[0.14em] text-gold uppercase">
+      <p className="mb-0.5 px-1 text-[7px] font-extrabold tracking-[0.14em] text-gold uppercase">
         {title}
       </p>
       <div className="flex flex-col gap-1">{children}</div>

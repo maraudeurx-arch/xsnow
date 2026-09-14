@@ -19,7 +19,7 @@ export function Guide() {
           height={560}
           fetchPriority="high"
           decoding="async"
-          className="h-auto max-h-[min(48dvh,340px)] w-auto max-w-[min(62vw,220px)] rounded-[1.5rem] object-contain object-top"
+          className="h-auto max-h-[min(56dvh,400px)] w-auto max-w-[min(74vw,280px)] rounded-[1.5rem] object-contain object-top"
         />
       </figure>
       <button
