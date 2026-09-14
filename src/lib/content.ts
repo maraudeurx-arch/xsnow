@@ -13,11 +13,8 @@ export const BRAND = {
   watermark: "EN CONSTRUCTION",
 } as const;
 
-export const BUBBLE_INTRO =
-  "Bonjour ! Je suis votre guide. Touchez Accueil, sous GATINEAU à gauche, pour choisir une proposition. Réécouter : je vous les présente.";
-
 export const WELCOME_SPEECH =
-  "Bonjour ! Je suis votre guide GATINEAU. Touchez Accueil, juste sous GATINEAU à gauche, pour voir toutes les propositions. Vous pourrez faire connaître votre business, voir qui est à proximité, retrouver un téléphone perdu, ou être alerté si un proche s’éloigne. Dans Accueil aussi : Reportage, Séries TV, Dessins animés, Vos attributs. Et les services : courses et livraison, aide au déménagement, garde d’enfants et d’animaux, prêt ou emprunt d’objets avec caution. Choisissez une option. Monétisé Vous !";
+  "Bonjour, je suis ton avatar dans l’écosystème Open Community. La proximité et l’esprit d’entraide des gens de Gatineau font notre force. Fais connaître à tes voisins un service que tu peux leur rendre en échange d’une compensation : ça peut être aider à déménager, faire des courses, ou aider à des travaux dans la maison. De plus, cette application t’offre des services gratuits, comme t’aider à retrouver ton téléphone si tu le perds, et t’avertir si ton enfant, ton conjoint ou tes parents âgés s’éloignent de l’endroit où ils sont censés être : l’école, le travail, ou la maison de retraite. Va dans Accueil et choisis le service dont tu aimerais bénéficier, ou que tu voudrais offrir à tes voisins de Gatineau.";
 
 export const LEFT_MENU = [
   {
