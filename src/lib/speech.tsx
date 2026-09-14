@@ -16,6 +16,8 @@ type SpeechContextValue = {
   isSpeaking: boolean;
   lastText: string;
   speak: (text: string) => void;
+  stop: () => void;
+  prime: () => void;
   replay: () => void;
 };
 
@@ -127,6 +129,24 @@ export function SpeechProvider({ children }: { children: ReactNode }) {
     window.speechSynthesis.resume();
   }, []);
 
+  const stop = useCallback(() => {
+    genRef.current += 1;
+    setIsSpeaking(false);
+    if (watchRef.current != null) {
+      window.clearInterval(watchRef.current);
+      watchRef.current = null;
+    }
+    if (typeof window !== "undefined") {
+      window.speechSynthesis?.cancel();
+    }
+  }, []);
+
+  const prime = useCallback(() => {
+    if (typeof window === "undefined" || !window.speechSynthesis) return;
+    // Keep the iOS speech engine unlocked after a tap (send / mic).
+    window.speechSynthesis.resume();
+  }, []);
+
   const replay = useCallback(() => {
     speak(WELCOME_SPEECH);
   }, [speak]);
@@ -150,8 +170,8 @@ export function SpeechProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const value = useMemo(
-    () => ({ isSpeaking, lastText, speak, replay }),
-    [isSpeaking, lastText, speak, replay],
+    () => ({ isSpeaking, lastText, speak, stop, prime, replay }),
+    [isSpeaking, lastText, speak, stop, prime, replay],
   );
 
   return (
