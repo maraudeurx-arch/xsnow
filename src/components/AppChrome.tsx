@@ -1,17 +1,26 @@
 import Link from "next/link";
-import { type ReactNode } from "react";
+import { Suspense, type ReactNode } from "react";
 import { BrandLogo } from "@/components/BrandLogo";
-import { ConstructionWatermark } from "@/components/ConstructionWatermark";
 import { HeaderNav } from "@/components/HeaderNav";
+import { SeasonalBackdrop } from "@/components/SeasonalBackdrop";
 import { SiteFooter } from "@/components/SiteFooter";
-import { Snowfield } from "@/components/Snowfield";
 import { BRAND } from "@/lib/content";
+import { seasonFromDate } from "@/lib/season";
 
 export function AppChrome({ children }: { children: ReactNode }) {
+  const calendarSeason = seasonFromDate();
+
   return (
-    <div className="safe-frame relative flex h-dvh max-h-dvh flex-col overflow-hidden bg-[radial-gradient(1100px_circle_at_0%_-8%,rgba(61,255,138,0.16)_0%,transparent_52%),radial-gradient(900px_circle_at_100%_0%,rgba(139,92,246,0.18)_0%,transparent_48%),linear-gradient(180deg,#050506_0%,#0a0a0c_100%)]">
-      <Snowfield />
-      <ConstructionWatermark />
+    <div className="safe-frame relative flex h-dvh max-h-dvh flex-col overflow-hidden bg-[linear-gradient(180deg,#050506_0%,#0a0a0c_100%)]">
+      <Suspense
+        fallback={
+          <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
+            <div className="season-wash" data-season={calendarSeason} />
+          </div>
+        }
+      >
+        <SeasonalBackdrop />
+      </Suspense>
 
       <header className="relative z-30 shrink-0 overflow-visible">
         <div className="flex w-full items-center justify-between gap-3">

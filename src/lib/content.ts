@@ -10,7 +10,6 @@ export const BRAND = {
   slogan: "Monétisé Vous!",
   footerBefore: "Proximité et Esprit d’entraide au service des ",
   footerAfter: ".",
-  watermark: "EN CONSTRUCTION",
 } as const;
 
 export const WELCOME_SPEECH =
@@ -69,8 +68,8 @@ export const PROFESSIONNELLE_MENU = [
 ] as const;
 
 export const HEADER_NAV = [
-  { href: "/mes-monetisations", label: "Mes monétisations" },
-  { href: "/service-en-demande", label: "Service en demande" },
+  { href: "/mes-services", label: "Mes services" },
+  { href: "/en-demande", label: "En demande" },
   { href: "/mon-profil", label: "Mon profil" },
 ] as const;
 
@@ -142,12 +141,12 @@ export const FEATURE_COPY = {
     title: "Monétisé ce que vous avez",
     lead: "Un talent, un outil, une heure libre : proposez-le à vos voisins. Bientôt branché sur vos monétisations.",
   },
-  mesMonetisations: {
-    title: "Mes monétisations",
+  mesServices: {
+    title: "Mes services",
     lead: "Ici, vous verrez ce que vous offrez déjà à la communauté : pubs, services, objets. En construction.",
   },
-  serviceEnDemande: {
-    title: "Service en demande",
+  enDemande: {
+    title: "En demande",
     lead: "Les demandes du quartier que vous pourriez honorer. En construction.",
   },
   monProfil: {
