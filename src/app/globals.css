@@ -129,6 +129,15 @@ body {
   object-position: center top;
 }
 
+[data-season="spring"] .season-photo,
+[data-season="summer"] .season-photo {
+  object-position: 72% 18%;
+}
+
+[data-season="autumn"] .season-photo {
+  object-position: center 38%;
+}
+
 .season-sun {
   position: absolute;
   inset: 0;
