@@ -168,6 +168,7 @@ export function useSpeech() {
 }
 
 const REPLAY_SELECTOR = "[data-welcome-replay]";
+const ACCUEIL_SELECTOR = "[data-accueil]";
 
 /** Survives React Strict Mode remounts so we only autoplay once per page load. */
 let welcomeAutoplayStarted = false;
@@ -180,7 +181,8 @@ function engineBusy() {
 /**
  * Start the propositions presentation as soon as voices are ready.
  * iOS Safari often blocks speech without a gesture: still try on load,
- * then unlock on the first tap anywhere. Accueil never calls speak() itself.
+ * then unlock on the first tap on the page. Accueil stays silent (it never
+ * calls speak, and a tap on the menu does not consume the unlock).
  * Réécouter is skipped so it can replay without a double start.
  */
 export function useWelcomeAutoplay() {
@@ -207,6 +209,9 @@ export function useWelcomeAutoplay() {
       if (target instanceof Element && target.closest(REPLAY_SELECTOR)) {
         welcomeAutoplayStarted = true;
         detachGestures();
+        return;
+      }
+      if (target instanceof Element && target.closest(ACCUEIL_SELECTOR)) {
         return;
       }
       if (engineBusy()) {
