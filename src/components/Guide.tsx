@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { AvatarChat } from "@/components/AvatarChat";
 import { AvatarDisc } from "@/components/AvatarDisc";
 import { AVATARS, avatarById, type AvatarId } from "@/lib/avatars";
 import { WELCOME_SPEECH } from "@/lib/content";
@@ -13,8 +14,7 @@ import { useStoredAvatar } from "@/lib/useStoredAvatar";
 
 const pickerSize =
   "size-[min(26vw,17dvh,6.6rem)] sm:size-[min(22vw,8.5rem)]";
-const chosenSize =
-  "size-[min(42vw,34dvh,12.5rem)] sm:size-[min(36vw,16rem)]";
+const chosenSize = "size-[min(18vw,12dvh,4.4rem)]";
 
 export function Guide() {
   const [avatarId, setAvatarId] = useStoredAvatar();
@@ -33,7 +33,13 @@ export function Guide() {
   }
 
   return (
-    <section className="flex h-full min-h-0 w-full flex-col items-center justify-center gap-1.5">
+    <section
+      className={`flex h-full min-h-0 w-full flex-1 self-stretch flex-col ${
+        showPicker
+          ? "items-center justify-center gap-1.5"
+          : "items-stretch gap-1.5"
+      }`}
+    >
       {showPicker ? (
         <div
           role="group"
@@ -67,21 +73,22 @@ export function Guide() {
           </div>
         </div>
       ) : chosen ? (
-        <figure className="idle-float relative flex min-h-0 max-h-full items-center justify-center">
-          <AvatarDisc avatar={chosen} className={chosenSize} priority />
-        </figure>
-      ) : null}
-
-      {chosen ? <ReplayButton /> : null}
-
-      {chosen && !showPicker ? (
-        <button
-          type="button"
-          className="rounded-full border border-white/20 bg-white/[0.04] px-2 py-0.5 text-[10px] font-semibold tracking-wide text-snow/90 hover:border-violet/50 hover:bg-white/[0.07]"
-          onClick={() => setPicking(true)}
-        >
-          Changer d’avatar
-        </button>
+        <>
+          <div className="flex shrink-0 items-center justify-center gap-2 pt-0.5">
+            <AvatarDisc avatar={chosen} className={chosenSize} priority />
+            <div className="flex shrink-0 flex-col items-start gap-1">
+              <ReplayButton />
+              <button
+                type="button"
+                className="whitespace-nowrap rounded-full border border-white/20 bg-white/[0.04] px-2 py-0.5 text-[10px] font-semibold tracking-wide text-snow/90 hover:border-violet/50 hover:bg-white/[0.07]"
+                onClick={() => setPicking(true)}
+              >
+                Changer d’avatar
+              </button>
+            </div>
+          </div>
+          <AvatarChat avatar={chosen} />
+        </>
       ) : null}
     </section>
   );
@@ -94,7 +101,7 @@ function ReplayButton() {
     <button
       type="button"
       data-welcome-replay
-      className="inline-flex items-center gap-1 rounded-full border border-cobalt/55 bg-cobalt px-2 py-0.5 text-[10px] font-semibold tracking-wide text-snow shadow-[0_4px_14px_rgba(37,99,235,0.32)]"
+      className="inline-flex items-center gap-1 whitespace-nowrap rounded-full border border-cobalt/55 bg-cobalt px-2 py-0.5 text-[10px] font-semibold tracking-wide text-snow shadow-[0_4px_14px_rgba(37,99,235,0.32)]"
       aria-label="Réécouter"
       onClick={() => replay()}
     >
