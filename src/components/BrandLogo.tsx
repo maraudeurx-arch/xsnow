@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { assetUrl } from "@/lib/paths";
 
-/** White network mark for the dark header. Display ~32px on iPhone, 36px from sm. */
+/** White network mark for the dark header. ~36px so the people stay readable on iPhone. */
 export function BrandLogo() {
   return (
     <Link
@@ -18,7 +18,7 @@ export function BrandLogo() {
         height={36}
         decoding="async"
         draggable={false}
-        className="size-[32px] sm:size-9"
+        className="size-9"
       />
     </Link>
   );
