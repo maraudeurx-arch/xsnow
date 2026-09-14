@@ -120,7 +120,7 @@ function Group({
 }) {
   return (
     <div>
-      <p className="mb-0.5 px-1 text-[7px] font-extrabold tracking-[0.14em] text-gold uppercase">
+      <p className="mb-0.5 px-1 text-[9px] font-extrabold tracking-[0.12em] text-gold uppercase">
         {title}
       </p>
       <div className="flex flex-col gap-1">{children}</div>
