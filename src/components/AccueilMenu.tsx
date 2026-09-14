@@ -18,7 +18,7 @@ export function AccueilMenu() {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="relative w-[min(100%,17.5rem)]">
+    <div className="relative w-[min(100%,17.5rem)]" data-accueil>
       <button
         type="button"
         className="inline-flex min-h-[22px] items-center justify-between gap-2 rounded-xl border border-cobalt/55 bg-cobalt px-2 py-0.5 text-[11px] font-extrabold tracking-wide text-snow shadow-[0_4px_14px_rgba(37,99,235,0.28)]"

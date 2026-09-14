@@ -2,10 +2,11 @@
 
 import { BUBBLE_INTRO, WELCOME_SPEECH } from "@/lib/content";
 import { assetUrl } from "@/lib/paths";
-import { useSpeech } from "@/lib/speech";
+import { useSpeech, useWelcomeAutoplay } from "@/lib/speech";
 
 export function Guide() {
   const { lastText, replay, speak } = useSpeech();
+  useWelcomeAutoplay();
 
   return (
     <section className="flex h-full min-h-0 w-full flex-col items-center justify-center gap-2">
@@ -24,6 +25,7 @@ export function Guide() {
       </figure>
       <button
         type="button"
+        data-welcome-replay
         className="inline-flex items-center gap-1 rounded-full border border-cobalt/55 bg-cobalt px-2 py-0.5 text-[10px] font-semibold tracking-wide text-snow shadow-[0_4px_14px_rgba(37,99,235,0.32)]"
         aria-label="Réécouter"
         onClick={() => {
