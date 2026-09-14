@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState, type ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import {
   ACCUEIL_MENU,
   COMMUNITY_MENU,
@@ -30,9 +30,7 @@ export function AccueilMenu() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
-  useEffect(() => {
-    setOpen(false);
-  }, [pathname]);
+  const close = () => setOpen(false);
 
   return (
     <div className="relative z-40 shrink-0" data-accueil>
@@ -59,6 +57,7 @@ export function AccueilMenu() {
                 key={item.href}
                 href={item.href}
                 className={itemClass(pathMatches(pathname, item.href))}
+                onClick={close}
               >
                 {item.label}
               </Link>
@@ -68,6 +67,7 @@ export function AccueilMenu() {
                 key={item.href}
                 href={item.href}
                 className={itemClass(pathMatches(pathname, item.href))}
+                onClick={close}
               >
                 {item.title}
               </Link>
@@ -79,6 +79,7 @@ export function AccueilMenu() {
                 key={item.href}
                 href={item.href}
                 className={itemClass(pathMatches(pathname, item.href))}
+                onClick={close}
               >
                 {item.label}
               </Link>
@@ -90,6 +91,7 @@ export function AccueilMenu() {
                 key={item.href}
                 href={item.href}
                 className={itemClass(pathMatches(pathname, item.href))}
+                onClick={close}
               >
                 {item.label}
               </Link>
@@ -101,6 +103,7 @@ export function AccueilMenu() {
                 key={item.href}
                 href={item.href}
                 className={itemClass(pathMatches(pathname, item.href))}
+                onClick={close}
               >
                 {item.label}
               </Link>
