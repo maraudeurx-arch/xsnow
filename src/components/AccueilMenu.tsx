@@ -3,35 +3,27 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, type ReactNode } from "react";
-import { ACCUEIL_MENU, ACCUEIL_OPEN_SPEECH, LEFT_MENU } from "@/lib/content";
+import { ACCUEIL_MENU, LEFT_MENU } from "@/lib/content";
 import { SERVICE_LIST } from "@/lib/services";
-import { useSpeech } from "@/lib/speech";
 
-const itemClass = (active: boolean, speaking: boolean) =>
+const itemClass = (active: boolean) =>
   `flex items-center rounded-lg border px-1.5 py-1 text-left text-[9px] leading-tight font-semibold ${
     active
       ? "border-gold/70 bg-gold/10 text-gold"
       : "border-white/10 bg-white/[0.04] text-snow/90 hover:border-violet/40 hover:bg-white/[0.07]"
-  } ${speaking ? "menu-pulse" : ""}`;
+  }`;
 
 export function AccueilMenu() {
   const pathname = usePathname();
-  const { isSpeaking, speak } = useSpeech();
   const [open, setOpen] = useState(false);
 
   return (
     <div className="relative w-[min(100%,17.5rem)]">
       <button
         type="button"
-        className={`inline-flex min-h-[22px] items-center justify-between gap-2 rounded-xl border border-cobalt/55 bg-cobalt px-2 py-0.5 text-[11px] font-extrabold tracking-wide text-snow shadow-[0_4px_14px_rgba(37,99,235,0.28)] ${
-          isSpeaking ? "menu-pulse" : ""
-        }`}
+        className="inline-flex min-h-[22px] items-center justify-between gap-2 rounded-xl border border-cobalt/55 bg-cobalt px-2 py-0.5 text-[11px] font-extrabold tracking-wide text-snow shadow-[0_4px_14px_rgba(37,99,235,0.28)]"
         aria-expanded={open}
-        onClick={() => {
-          const next = !open;
-          setOpen(next);
-          if (next) speak(ACCUEIL_OPEN_SPEECH);
-        }}
+        onClick={() => setOpen((next) => !next)}
       >
         <span>Accueil</span>
         <span aria-hidden className="text-[10px] font-bold">
@@ -49,8 +41,7 @@ export function AccueilMenu() {
               <Link
                 key={item.href}
                 href={item.href}
-                onClick={() => speak(item.speech)}
-                className={itemClass(pathname === item.href, isSpeaking)}
+                className={itemClass(pathname === item.href)}
               >
                 {item.label}
               </Link>
@@ -61,8 +52,7 @@ export function AccueilMenu() {
               <Link
                 key={item.href}
                 href={item.href}
-                onClick={() => speak(item.speech)}
-                className={itemClass(pathname === item.href, isSpeaking)}
+                className={itemClass(pathname === item.href)}
               >
                 {item.label}
               </Link>
@@ -73,8 +63,7 @@ export function AccueilMenu() {
               <Link
                 key={item.href}
                 href={item.href}
-                onClick={() => speak(item.speech)}
-                className={itemClass(pathname === item.href, isSpeaking)}
+                className={itemClass(pathname === item.href)}
               >
                 {item.title}
               </Link>

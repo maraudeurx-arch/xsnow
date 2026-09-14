@@ -14,7 +14,7 @@ export function Guide() {
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={assetUrl("/guide.png")}
-          alt="Guide Xsnow, professionnel en veston sombre, les bras croisés"
+          alt="Guide GATINEAU, professionnel en veston sombre, les bras croisés"
           width={420}
           height={560}
           fetchPriority="high"

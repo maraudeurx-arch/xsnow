@@ -21,12 +21,32 @@ type SpeechContextValue = {
 
 const SpeechContext = createContext<SpeechContextValue | null>(null);
 
-function pickFrenchVoice(): SpeechSynthesisVoice | undefined {
+const FEMALE_HINT =
+  /female|femme|woman|sylvie|am[eé]lie|audrey|marie|julie|claire|denise|hortense|aria|flo|l[eé]a|caroline|virginie|celeste|c[eé]leste/;
+const MALE_HINT =
+  /male|homme|man|thomas|nicolas|henri|paul|daniel|jean|jacques|pierre|guillaume|bernard|fr[eé]d[eé]ric|google fran[cç]ais|microsoft paul|microsoft henri|microsoft horatio|fred\b/;
+
+function isFrench(voice: SpeechSynthesisVoice) {
+  return voice.lang.toLowerCase().startsWith("fr");
+}
+
+function isMaleVoice(voice: SpeechSynthesisVoice) {
+  const name = voice.name.toLowerCase();
+  if (FEMALE_HINT.test(name)) return false;
+  if (MALE_HINT.test(name)) return true;
+  const gender = (voice as SpeechSynthesisVoice & { gender?: string }).gender;
+  return gender?.toLowerCase() === "male";
+}
+
+function pickFrenchMaleVoice(): SpeechSynthesisVoice | undefined {
   const voices = window.speechSynthesis.getVoices();
+  const french = voices.filter(isFrench);
   return (
-    voices.find((voice) => voice.lang.toLowerCase() === "fr-ca") ??
-    voices.find((voice) => voice.lang.toLowerCase() === "fr-fr") ??
-    voices.find((voice) => voice.lang.toLowerCase().startsWith("fr"))
+    french.find((voice) => isMaleVoice(voice) && voice.lang.toLowerCase() === "fr-ca") ??
+    french.find((voice) => isMaleVoice(voice) && voice.lang.toLowerCase() === "fr-fr") ??
+    french.find(isMaleVoice) ??
+    french.find((voice) => voice.lang.toLowerCase() === "fr-fr") ??
+    french[0]
   );
 }
 
@@ -88,10 +108,13 @@ export function SpeechProvider({ children }: { children: ReactNode }) {
 
     const utter = new SpeechSynthesisUtterance(text);
     utter.lang = "fr-FR";
-    utter.rate = 1.02;
-    utter.pitch = 1;
-    const voice = pickFrenchVoice();
-    if (voice) utter.voice = voice;
+    utter.rate = 1.0;
+    utter.pitch = 0.92;
+    const voice = pickFrenchMaleVoice();
+    if (voice) {
+      utter.voice = voice;
+      utter.lang = voice.lang || "fr-FR";
+    }
 
     utter.onstart = () => {
       if (alive()) setIsSpeaking(true);
@@ -109,13 +132,20 @@ export function SpeechProvider({ children }: { children: ReactNode }) {
   }, [speak]);
 
   useEffect(() => {
+    if (typeof window === "undefined" || !window.speechSynthesis) {
+      return;
+    }
+    const warmVoices = () => {
+      window.speechSynthesis.getVoices();
+    };
+    warmVoices();
+    window.speechSynthesis.addEventListener("voiceschanged", warmVoices);
     return () => {
+      window.speechSynthesis.removeEventListener("voiceschanged", warmVoices);
       if (watchRef.current != null) {
         window.clearInterval(watchRef.current);
       }
-      if (typeof window !== "undefined" && window.speechSynthesis) {
-        window.speechSynthesis.cancel();
-      }
+      window.speechSynthesis.cancel();
     };
   }, []);
 

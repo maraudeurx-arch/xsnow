@@ -16,15 +16,15 @@ const fraunces = Fraunces({
 
 export const metadata: Metadata = {
   title: {
-    default: "Xsnow — Open-Community",
-    template: "%s · Xsnow",
+    default: "GATINEAU — Open-Community",
+    template: "%s · GATINEAU",
   },
   description:
-    "Xsnow / Open-Community — Monétisé Vous! Proximité, entraide et visibilité locale.",
-  applicationName: "Xsnow",
+    "GATINEAU / Open-Community — Monétisé Vous! Proximité, entraide et visibilité locale.",
+  applicationName: "GATINEAU",
   appleWebApp: {
     capable: true,
-    title: "Xsnow",
+    title: "GATINEAU",
     statusBarStyle: "black-translucent",
   },
   formatDetection: {
