@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import {
   ACCUEIL_MENU,
   COMMUNITY_MENU,
@@ -19,7 +19,7 @@ export const headerNavBtnClass = (active = false) =>
   }`;
 
 const itemClass = (active: boolean) =>
-  `flex items-center rounded-lg border px-1.5 py-1 text-left text-[9px] leading-tight font-semibold ${
+  `flex items-center rounded-lg border px-1.5 py-1 text-left text-[11px] leading-snug font-semibold whitespace-normal ${
     active
       ? "border-gold/70 bg-gold/10 text-gold"
       : "border-white/10 bg-white/[0.04] text-snow/90 hover:border-violet/40 hover:bg-white/[0.07]"
@@ -29,8 +29,12 @@ export function AccueilMenu() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
+
   return (
-    <div className="relative shrink-0" data-accueil>
+    <div className="relative z-40 shrink-0" data-accueil>
       <button
         type="button"
         className={headerNavBtnClass(false)}
@@ -46,7 +50,7 @@ export function AccueilMenu() {
       {open ? (
         <nav
           aria-label="Propositions Accueil"
-          className="absolute top-full left-0 z-40 mt-1.5 max-h-[min(62dvh,28rem)] w-[min(calc(100vw-1.5rem),17.5rem)] space-y-1.5 overflow-y-auto rounded-xl border border-white/10 bg-[linear-gradient(180deg,rgba(18,20,26,0.98)_0%,rgba(8,8,10,0.98)_100%)] p-1.5 pr-1 shadow-[0_16px_40px_rgba(0,0,0,0.45)] backdrop-blur-md"
+          className="absolute top-full left-0 z-50 mt-1.5 max-h-[min(68dvh,32rem)] w-[min(calc(100vw-1.5rem),20rem)] space-y-1.5 overflow-y-auto overflow-x-hidden rounded-xl border border-white/10 bg-[linear-gradient(180deg,rgba(18,20,26,0.98)_0%,rgba(8,8,10,0.98)_100%)] p-1.5 pr-1 shadow-[0_16px_40px_rgba(0,0,0,0.45)] backdrop-blur-md"
         >
           <Group title="Communauté">
             {COMMUNITY_MENU.map((item) => (

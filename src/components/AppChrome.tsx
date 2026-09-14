@@ -12,7 +12,7 @@ export function AppChrome({ children }: { children: ReactNode }) {
       <Snowfield />
       <ConstructionWatermark />
 
-      <header className="relative z-30 shrink-0">
+      <header className="relative z-30 shrink-0 overflow-visible">
         <Link
           href="/"
           className="inline-flex items-center text-[1.25rem] leading-none font-black tracking-tight text-gold sm:text-[1.55rem]"
