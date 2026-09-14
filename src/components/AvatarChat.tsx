@@ -15,9 +15,8 @@ import type { Avatar } from "@/lib/avatars";
 import { useSpeech } from "@/lib/speech";
 
 function faultCopy(caught: unknown) {
-  if (caught instanceof ChatFault) {
-    if (caught.kind === "auth") return AVATAR_CHAT.authRequired;
-    if (caught.kind === "network") return AVATAR_CHAT.networkError;
+  if (caught instanceof ChatFault && caught.kind === "network") {
+    return AVATAR_CHAT.networkError;
   }
   return AVATAR_CHAT.genericError;
 }
@@ -122,12 +121,6 @@ export function AvatarChat({ avatar }: { avatar: Avatar }) {
     } catch (caught) {
       if (caught instanceof DOMException && caught.name === "AbortError") return;
       setError(faultCopy(caught));
-      if (caught instanceof ChatFault && caught.kind === "auth") {
-        const restored = nextMessages.slice(0, -1);
-        messagesRef.current = restored;
-        setMessages(restored);
-        setInput(text);
-      }
     } finally {
       if (abortRef.current === controller) {
         busyRef.current = false;

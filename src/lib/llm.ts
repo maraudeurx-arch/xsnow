@@ -1,7 +1,15 @@
-export const PUTER_SCRIPT_SRC = "https://js.puter.com/v2/";
-/** Documented default Puter chat model — lightweight / fast. */
-export const PUTER_MODEL = "gpt-5-nano";
-export const PUTER_MAX_TOKENS = 400;
+/**
+ * Public Cloudflare Worker chat proxy. No Puter, no visitor login.
+ * After `npx wrangler deploy` in workers/xsnow-chat, set
+ * NEXT_PUBLIC_CHAT_API_URL (or fill CHAT_API_FALLBACK_URL).
+ */
+export const CHAT_API_FALLBACK_URL =
+  "https://xsnow-chat.xsnowopc.workers.dev";
+
+export const CHAT_API_URL =
+  process.env.NEXT_PUBLIC_CHAT_API_URL ||
+  process.env.NEXT_PUBLIC_CHAT_API ||
+  CHAT_API_FALLBACK_URL;
 
 export type ChatRole = "user" | "assistant";
 
@@ -10,7 +18,7 @@ export type ChatMessage = {
   content: string;
 };
 
-export type ChatFaultKind = "auth" | "network" | "empty";
+export type ChatFaultKind = "network" | "empty";
 
 export class ChatFault extends Error {
   readonly kind: ChatFaultKind;
@@ -37,80 +45,37 @@ function flattenContent(content: unknown): string {
     .trim();
 }
 
-function assistantText(payload: unknown): string {
+function replyFromPayload(payload: unknown): string {
   if (typeof payload === "string") return payload.trim();
   if (!payload || typeof payload !== "object") return "";
 
   const record = payload as {
+    reply?: unknown;
+    response?: unknown;
     message?: { content?: unknown };
-    text?: unknown;
-    toString?: () => string;
+    choices?: Array<{ message?: { content?: unknown }; text?: unknown }>;
   };
 
-  const fromMessage = flattenContent(record.message?.content);
-  if (fromMessage) return fromMessage;
-
-  if (typeof record.text === "string" && record.text.trim()) {
-    return record.text.trim();
+  if (typeof record.reply === "string" && record.reply.trim()) {
+    return record.reply.trim();
   }
 
-  if (typeof record.toString === "function") {
-    const printed = record.toString();
-    if (printed && printed !== "[object Object]") return printed.trim();
+  if (typeof record.response === "string" && record.response.trim()) {
+    return record.response.trim();
   }
 
-  return "";
-}
-
-function errorBlob(caught: unknown): string {
-  if (caught instanceof Error) return `${caught.name} ${caught.message}`;
-  if (typeof caught === "string") return caught;
-  if (caught && typeof caught === "object") {
-    const record = caught as { error?: unknown; code?: unknown; msg?: unknown; message?: unknown };
-    return [record.error, record.code, record.msg, record.message].map(String).join(" ");
+  const choice = record.choices?.[0];
+  const fromChoice = flattenContent(choice?.message?.content);
+  if (fromChoice) return fromChoice;
+  if (typeof choice?.text === "string" && choice.text.trim()) {
+    return choice.text.trim();
   }
-  return "";
+
+  return flattenContent(record.message?.content);
 }
 
 function isAbort(caught: unknown) {
   return caught instanceof DOMException && caught.name === "AbortError";
-}
-
-function isAuthError(caught: unknown) {
-  const blob = errorBlob(caught).toLowerCase();
-  return /popup_blocked|auth_window_closed|not_signed_in|sign[-_ ]?in|auth|login|permission|unauthorized|forbidden/.test(
-    blob,
-  );
-}
-
-async function waitForPuter(signal?: AbortSignal): Promise<NonNullable<Window["puter"]>> {
-  const deadline = Date.now() + 12_000;
-  while (Date.now() < deadline) {
-    if (signal?.aborted) {
-      throw new DOMException("Aborted", "AbortError");
-    }
-    const puter = window.puter;
-    if (puter?.ai?.chat && puter.auth) {
-      return puter;
-    }
-    await new Promise((resolve) => setTimeout(resolve, 50));
-  }
-  throw new ChatFault("network");
-}
-
-export async function ensurePuterAuth(
-  signal?: AbortSignal,
-): Promise<NonNullable<Window["puter"]>> {
-  const puter = await waitForPuter(signal);
-  if (!puter.auth.isSignedIn()) {
-    try {
-      await puter.auth.signIn({ attempt_temp_user_creation: true });
-    } catch (caught) {
-      if (isAbort(caught)) throw caught;
-      throw new ChatFault("auth");
-    }
-  }
-  return puter;
 }
 
 export async function completeChat(options: {
@@ -118,32 +83,43 @@ export async function completeChat(options: {
   messages: ChatMessage[];
   signal?: AbortSignal;
 }): Promise<string> {
-  const puter = await ensurePuterAuth(options.signal);
+  if (options.signal?.aborted) {
+    throw new DOMException("Aborted", "AbortError");
+  }
+
+  let response: Response;
+  try {
+    response = await fetch(CHAT_API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        system: options.system,
+        messages: options.messages,
+      }),
+      signal: options.signal,
+    });
+  } catch (caught) {
+    if (isAbort(caught)) throw caught;
+    throw new ChatFault("network");
+  }
 
   if (options.signal?.aborted) {
     throw new DOMException("Aborted", "AbortError");
   }
 
-  try {
-    const payload = await puter.ai.chat(
-      [{ role: "system", content: options.system }, ...options.messages],
-      false,
-      {
-        model: PUTER_MODEL,
-        max_tokens: PUTER_MAX_TOKENS,
-        temperature: 0.6,
-        normalize: true,
-      },
-    );
-    if (options.signal?.aborted) {
-      throw new DOMException("Aborted", "AbortError");
-    }
-    const text = assistantText(payload);
-    if (!text) throw new ChatFault("empty");
-    return text;
-  } catch (caught) {
-    if (isAbort(caught) || caught instanceof ChatFault) throw caught;
-    if (isAuthError(caught)) throw new ChatFault("auth");
+  if (!response.ok) {
     throw new ChatFault("network");
   }
+
+  let payload: unknown;
+  try {
+    payload = await response.json();
+  } catch (caught) {
+    if (isAbort(caught)) throw caught;
+    throw new ChatFault("empty");
+  }
+
+  const text = replyFromPayload(payload);
+  if (!text) throw new ChatFault("empty");
+  return text;
 }

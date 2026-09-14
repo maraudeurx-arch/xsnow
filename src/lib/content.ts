@@ -21,7 +21,6 @@ export const AVATAR_CHAT = {
   send: "Envoyer",
   speak: "Parler",
   listening: "J’écoute…",
-  authRequired: "Connexion rapide requise pour discuter. Réessaie après t’être connecté.",
   networkError: "Impossible de joindre l’avatar pour le moment. Réessaie dans un instant.",
   genericError: "L’avatar n’a pas pu répondre. Réessaie dans un instant.",
   micUnsupported:
