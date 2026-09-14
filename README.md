@@ -60,6 +60,24 @@ Le build écrit le site statique dans `out/`.
 
 Voir [`.env.example`](.env.example). `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID` est optionnel.
 
+`NEXT_PUBLIC_CHAT_API_URL` : URL publique du Worker Cloudflare (`workers/xsnow-chat`). Inlinée au `npm run build` (export statique). Sans cette variable, le front utilise le placeholder dans `src/lib/llm.ts` (`CHAT_API_FALLBACK_URL`) — à remplacer après le premier deploy Wrangler.
+
+### Chat avatar (Cloudflare Workers AI, sans login)
+
+Le chat n’utilise **pas** Puter. Les visiteurs n’ont **aucun compte** à créer. Le navigateur envoie `POST` JSON `{ "system", "messages": [{ "role", "content" }] }` vers le Worker ; la réponse attendue est `{ "reply": "…" }` (le front accepte aussi un format type OpenAI `choices`).
+
+CORS autorise `https://maraudeurx-arch.github.io` (et `localhost` en dev).
+
+Déployer le Worker (compte Cloudflare + Workers AI) :
+
+```bash
+cd workers/xsnow-chat
+npx wrangler login
+npx wrangler deploy
+```
+
+Puis coller l’URL `https://xsnow-chat.<compte>.workers.dev` dans `NEXT_PUBLIC_CHAT_API_URL` (Actions variable `NEXT_PUBLIC_CHAT_API_URL` pour Pages) ou dans `CHAT_API_FALLBACK_URL`.
+
 ---
 
 ## English
@@ -80,3 +98,15 @@ npm run dev
 ```
 
 Open http://localhost:3000/xsnow/ then `npm run build` (writes `out/`).
+
+### Avatar chat (Cloudflare Workers AI, no login)
+
+Puter is gone. Visitors do not sign in. The browser `POST`s `{ "system", "messages" }` to the Worker in `workers/xsnow-chat` and reads `{ "reply" }` (OpenAI-style `choices` also work). CORS allows `https://maraudeurx-arch.github.io`.
+
+```bash
+cd workers/xsnow-chat
+npx wrangler login
+npx wrangler deploy
+```
+
+Set `NEXT_PUBLIC_CHAT_API_URL` to the `*.workers.dev` URL (GitHub Actions variable of the same name) or replace `CHAT_API_FALLBACK_URL` in `src/lib/llm.ts`.
