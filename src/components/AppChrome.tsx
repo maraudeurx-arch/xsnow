@@ -36,7 +36,7 @@ export function AppChrome({ children }: { children: ReactNode }) {
         </div>
       </header>
 
-      <main className="relative z-20 flex min-h-0 flex-1 flex-col items-center justify-center overflow-y-auto px-3 py-1 text-center">
+      <main className="relative z-20 flex min-h-0 w-full flex-1 flex-col items-center justify-center overflow-y-auto px-3 py-1 text-center">
         {children}
       </main>
 
