@@ -20,7 +20,7 @@ gh api --method POST /repos/maraudeurx-arch/xsnow/pages \
   -f build_type=workflow
 ```
 
-WalletConnect n’est pas requis.
+**Connect** ouvre RainbowKit / WalletConnect (QR sur ordinateur, lien profond sur iPhone) dès qu’un identifiant projet Reown est fourni au build Pages. Sans identifiant, le bouton n’invente pas une session « Invité ».
 
 ---
 
@@ -33,7 +33,7 @@ Xsnow est la vitrine **Open-Community** : faire connaître un business, voir qui
 ### Interface
 
 - En haut à gauche : **Xsnow**, puis **Accueil** (toutes les propositions à l’intérieur)
-- En haut à droite : **Connect** (RainbowKit/wagmi Sepolia, ou invité)
+- En haut à droite : **Connect** (RainbowKit / WalletConnect, réseau Sepolia)
 - Titre centré : **Open-Community** / **Monétisé Vous!**
 - Centre : avatar + bulle + **Réécouter** (`speechSynthesis`, iOS = tap)
 - Safari iPhone : `viewport-fit=cover`, safe areas, cibles ~44 px
@@ -56,9 +56,31 @@ npm run build
 
 Le build écrit le site statique dans `out/`.
 
+### Connect / WalletConnect (Reown)
+
+Sans `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID` au moment de `npm run build`, **Connect** affiche un court message : la connexion n’est pas configurée. Il ne simule pas un portefeuille.
+
+Pour la prod GitHub Pages, créer un projet **gratuit** puis passer l’id au workflow (aucune autre modification de code) :
+
+1. Ouvrir [Reown Cloud](https://cloud.reown.com) (WalletConnect Cloud).
+2. Créer un compte, **Create** un projet (ex. `xsnow` / Open Community).
+3. Copier le **Project ID** (32 caractères hexadécimaux).
+4. Dans le projet Reown : domaines autorisés au minimum  
+   `https://maraudeurx-arch.github.io` et `http://localhost:3000`.
+5. Sur GitHub : repo **xsnow** → **Settings → Secrets and variables → Actions → Variables → New repository variable**  
+   - Nom : `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID`  
+   - Valeur : le Project ID  
+   Un *secret* du même nom fonctionne aussi. L’id se retrouve dans le JS public ; une variable suffit.
+6. Optionnel : variable `NEXT_PUBLIC_ENABLE_TESTNETS` = `true` (Sepolia, déjà le défaut).
+7. Redéployer : **Actions → Deploy GitHub Pages → Run workflow**, ou un push sur `main`.
+
+Vérifier sur **iPhone Safari** : ouvrir https://maraudeurx-arch.github.io/xsnow/ → **Connect** → modal RainbowKit → WalletConnect (ou MetaMask / Rainbow / Trust) → approuver dans l’app → le bouton affiche l’adresse. Réseau attendu : **Sepolia**.
+
+En local : coller l’id dans `.env.local` (voir [`.env.example`](.env.example)) puis `npm run dev`.
+
 ### Variables d’environnement
 
-Voir [`.env.example`](.env.example). `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID` est optionnel.
+Voir [`.env.example`](.env.example). `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID` est **requis** pour un vrai Connect en production.
 
 `NEXT_PUBLIC_CHAT_API_URL` : URL publique du Worker Cloudflare (`workers/xsnow-chat`). Inlinée au `npm run build` (export statique). Défaut si vide : `https://xsnow-chat.xsnowopc.workers.dev` (`CHAT_API_FALLBACK_URL` dans `src/lib/llm.ts`).
 
@@ -99,6 +121,10 @@ QA : `?city=New%20York` force New York (mot-drapeau **NEW YORK**, gentilé **New
 Static Next.js export (`output: 'export'`, `basePath: '/xsnow'`). GitHub Actions publishes `out/` on every `main` push.
 
 If Pages 404s, set **Settings → Pages → Source = GitHub Actions**, or run the `gh api` command above.
+
+**Connect** needs a Reown / WalletConnect Cloud project id inlined at build time. Set the GitHub Actions variable `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID` (steps in French above), then redeploy. Without it, Connect explains that WalletConnect is not configured instead of faking a guest session.
+
+On iPhone Safari: open the public URL → **Connect** → RainbowKit modal → WalletConnect or MetaMask / Rainbow / Trust → approve in the wallet app → the button shows the address (Sepolia).
 
 ### Local
 

@@ -308,8 +308,9 @@ export const es: Messages = {
     connect: "Connect",
     disconnect: "Desconectar la cartera",
     connectAria: "Conectar la cartera",
-    guest: "Invitado · Sepolia",
     wrongNetwork: "Red incorrecta",
+    needsConfig:
+      "WalletConnect no está configurado: falta el identificador de proyecto en el despliegue.",
   },
   notFound: {
     title: "Página no encontrada",
