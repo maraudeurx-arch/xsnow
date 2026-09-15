@@ -175,19 +175,24 @@ describe("resolveAmbiance", () => {
   });
 });
 
-describe("regional photo assets", () => {
-  it("ships jpeg and webp files for every regional ambiance", () => {
+describe("backdrop photo assets", () => {
+  it("ships owner-approved JPEGs for regional and CA/US seasonal ambiances", () => {
     for (const region of REGIONAL_AMBIANCES) {
       const photo = REGIONAL_PHOTO[region];
-      assert.ok(photo.jpeg.startsWith("/backgrounds/regional/"));
-      assert.ok(photo.webp.endsWith(".webp"));
+      assert.ok(photo.jpeg.startsWith("/backgrounds/"));
+      assert.match(photo.jpeg, /\.jpg$/);
       assert.equal(existsSync(join(publicDir, photo.jpeg)), true, photo.jpeg);
-      assert.equal(existsSync(join(publicDir, photo.webp)), true, photo.webp);
       const resolved = photoForAmbiance({ type: "region", region });
       assert.equal(resolved.jpeg, photo.jpeg);
     }
     const autumn = photoForAmbiance(DEFAULT_AMBIANCE);
-    assert.equal(autumn.jpeg, "/seasons/autumn.png");
+    assert.equal(autumn.jpeg, "/backgrounds/na-autumn.jpg");
+    assert.equal(existsSync(join(publicDir, autumn.jpeg)), true);
+    for (const season of ["winter", "spring", "summer"] as const) {
+      const photo = photoForAmbiance({ type: "season", season });
+      assert.equal(photo.jpeg, `/backgrounds/na-${season}.jpg`);
+      assert.equal(existsSync(join(publicDir, photo.jpeg)), true, photo.jpeg);
+    }
     assert.equal(ambianceKey(DEFAULT_AMBIANCE), "season:autumn");
   });
 });

@@ -343,27 +343,12 @@ export function resolveAmbianceFromSearch(
   });
 }
 
-export const REGIONAL_PHOTO: Record<RegionalAmbiance, { jpeg: string; webp: string }> = {
-  caribbean: {
-    jpeg: "/backgrounds/regional/caribbean.jpg",
-    webp: "/backgrounds/regional/caribbean.webp",
-  },
-  africa: {
-    jpeg: "/backgrounds/regional/africa-sahel.jpg",
-    webp: "/backgrounds/regional/africa-sahel.webp",
-  },
-  europe: {
-    jpeg: "/backgrounds/regional/europe-meadow.jpg",
-    webp: "/backgrounds/regional/europe-meadow.webp",
-  },
-  asia: {
-    jpeg: "/backgrounds/regional/asia-terraces.jpg",
-    webp: "/backgrounds/regional/asia-terraces.webp",
-  },
-  southamerica: {
-    jpeg: "/backgrounds/regional/southamerica-andes.jpg",
-    webp: "/backgrounds/regional/southamerica-andes.webp",
-  },
+export const REGIONAL_PHOTO: Record<RegionalAmbiance, { jpeg: string }> = {
+  caribbean: { jpeg: "/backgrounds/caribbean.jpg" },
+  africa: { jpeg: "/backgrounds/africa-sahel.jpg" },
+  europe: { jpeg: "/backgrounds/europe-meadow.jpg" },
+  asia: { jpeg: "/backgrounds/asia-terraces.jpg" },
+  southamerica: { jpeg: "/backgrounds/southamerica-andes.jpg" },
 };
 
 export type AmbiancePhoto = { jpeg: string; webp?: string };

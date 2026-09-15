@@ -165,8 +165,8 @@ function BackdropPhoto({
     <img
       src={assetUrl(jpeg)}
       alt=""
-      width={1280}
-      height={720}
+      width={1080}
+      height={608}
       decoding="async"
       draggable={false}
       fetchPriority={fetchPriority}

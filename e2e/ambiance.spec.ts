@@ -5,7 +5,7 @@ test.describe("regional ambiance backgrounds", () => {
     await page.goto("./");
     const photo = page.locator("img.season-photo").first();
     await expect(photo).toBeVisible();
-    await expect(photo).toHaveAttribute("src", /\/seasons\/autumn\.png/);
+    await expect(photo).toHaveAttribute("src", /\/backgrounds\/na-autumn\.jpg/);
     await expect(page.locator('[data-ambiance="autumn"][data-season="autumn"]').first()).toBeVisible();
     await expect(page.locator("img.season-photo[src*='caribbean']")).toHaveCount(0);
   });
@@ -21,8 +21,8 @@ test.describe("regional ambiance backgrounds", () => {
     await page.goto("./?city=Gatineau");
     await expect(page.getByRole("link", { name: /GATINEAU/i })).toBeVisible();
     const src = await page.locator("img.season-photo").first().getAttribute("src");
-    expect(src).toMatch(/\/seasons\/(autumn|winter|spring|summer)\.png/);
-    await expect(page.locator("img.season-photo[src*='/backgrounds/regional/']")).toHaveCount(0);
+    expect(src).toMatch(/\/backgrounds\/na-(autumn|winter|spring|summer)\.jpg/);
+    await expect(page.locator("img.season-photo[src*='caribbean']")).toHaveCount(0);
   });
 
   test("Europe, Asia, Africa, and South America match the approved ambiances", async ({ page }) => {
