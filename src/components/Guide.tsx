@@ -52,9 +52,10 @@ export function Guide() {
 
   return (
     <section
+      id="home-guide"
       className={`flex min-h-0 w-full flex-col ${
         showPicker
-          ? "h-full flex-1 items-center justify-center gap-1.5"
+          ? "items-center justify-center gap-1.5"
           : "items-stretch justify-center gap-0 self-stretch"
       }`}
     >
