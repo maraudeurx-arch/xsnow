@@ -1,23 +1,19 @@
 "use client";
 
 import { usePlace } from "@/lib/place";
+import { useI18n } from "@/lib/i18n/locale";
 
 export function LocationPrompt() {
   const { locating, error, requestLocation, skipLocation } = usePlace();
+  const { m } = useI18n();
 
   return (
     <section
       className="w-full rounded-2xl border border-white/10 bg-[linear-gradient(180deg,rgba(18,20,26,0.92)_0%,rgba(8,8,10,0.92)_100%)] p-3 text-left shadow-[0_12px_32px_rgba(0,0,0,0.35)] backdrop-blur-md"
-      aria-label="Autoriser la position"
+      aria-label={m.geo.section}
     >
-      <p className="text-[13px] font-extrabold tracking-wide text-snow">
-        Où es-tu en ce moment ?
-      </p>
-      <p className="mt-1.5 text-[12px] leading-snug text-snow/85">
-        Autorise ta position pour afficher le nom de ta ville (et, plus tard, tes
-        voisins à proximité). Rien n’est envoyé à un serveur de suivi — seulement
-        ta ville, sur cet appareil.
-      </p>
+      <p className="text-[13px] font-extrabold tracking-wide text-snow">{m.geo.title}</p>
+      <p className="mt-1.5 text-[12px] leading-snug text-snow/85">{m.geo.body}</p>
 
       <div className="mt-3 flex flex-col gap-1.5">
         <button
@@ -26,7 +22,7 @@ export function LocationPrompt() {
           disabled={locating}
           onClick={requestLocation}
         >
-          {locating ? "Recherche de ta ville…" : "Autoriser ma position"}
+          {locating ? m.geo.locating : m.geo.allow}
         </button>
         <button
           type="button"
@@ -34,13 +30,13 @@ export function LocationPrompt() {
           disabled={locating}
           onClick={skipLocation}
         >
-          Plus tard — rester à Gatineau
+          {m.geo.skip}
         </button>
       </div>
 
       {error ? (
         <p className="mt-2 text-[11px] leading-snug text-gold" role="status">
-          {error}
+          {m.geo.errors[error]}
         </p>
       ) : null}
     </section>

@@ -61,6 +61,13 @@ function persist(consent: GeoConsent, place: StoredPlace) {
 
 export type PlaceSource = "fallback" | "stored" | "gps" | "override";
 
+export type GeoErrorKind =
+  | "unsupported"
+  | "generic"
+  | "denied"
+  | "timeout"
+  | "unavailable";
+
 export type PlaceValue = {
   city: string;
   placeName: string;
@@ -75,27 +82,19 @@ export type PlaceValue = {
   ready: boolean;
   needsPrompt: boolean;
   locating: boolean;
-  error: string | null;
+  error: GeoErrorKind | null;
   requestLocation: () => void;
   skipLocation: () => void;
 };
 
 const PlaceContext = createContext<PlaceValue | null>(null);
 
-function geoErrorMessage(error: GeolocationPositionError | null, unsupported: boolean) {
-  if (unsupported) {
-    return "La géolocalisation n’est pas disponible sur cet appareil. Tu peux continuer avec Gatineau.";
-  }
-  if (!error) {
-    return "Impossible d’obtenir ta position. Tu peux réessayer, ou continuer avec Gatineau.";
-  }
-  if (error.code === error.PERMISSION_DENIED) {
-    return "Safari a refusé la position. Dans Réglages → Safari → Localisation, ou continue avec Gatineau.";
-  }
-  if (error.code === error.TIMEOUT) {
-    return "La position a pris trop de temps. Réessaie, ou continue avec Gatineau.";
-  }
-  return "Position indisponible pour le moment. Réessaie, ou continue avec Gatineau.";
+function geoErrorKind(error: GeolocationPositionError | null, unsupported: boolean): GeoErrorKind {
+  if (unsupported) return "unsupported";
+  if (!error) return "generic";
+  if (error.code === error.PERMISSION_DENIED) return "denied";
+  if (error.code === error.TIMEOUT) return "timeout";
+  return "unavailable";
 }
 
 function PlaceProviderInner({ children }: { children: ReactNode }) {
@@ -117,7 +116,7 @@ function PlaceProviderInner({ children }: { children: ReactNode }) {
   }));
 
   const [locating, setLocating] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<GeoErrorKind | null>(null);
   const refreshedRef = useRef(false);
 
   const overridePlace = useMemo(
@@ -162,7 +161,7 @@ function PlaceProviderInner({ children }: { children: ReactNode }) {
     setError(null);
 
     if (typeof navigator === "undefined" || !navigator.geolocation) {
-      setError(geoErrorMessage(null, true));
+      setError(geoErrorKind(null, true));
       return;
     }
 
@@ -184,7 +183,7 @@ function PlaceProviderInner({ children }: { children: ReactNode }) {
       },
       (geoError) => {
         setLocating(false);
-        setError(geoErrorMessage(geoError, false));
+        setError(geoErrorKind(geoError, false));
       },
       {
         enableHighAccuracy: false,

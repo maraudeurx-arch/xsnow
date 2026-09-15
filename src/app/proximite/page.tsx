@@ -1,13 +1,12 @@
 import { ProximityBoard } from "@/components/features/ProximityBoard";
-import { FeaturePanel } from "@/components/FeaturePanel";
-import { FEATURE_COPY } from "@/lib/content";
+import { LocalizedFeature } from "@/components/LocalizedFeature";
 
 export const metadata = { title: "Proximité" };
 
 export default function ProximitePage() {
   return (
-    <FeaturePanel title={FEATURE_COPY.proximite.title} lead={FEATURE_COPY.proximite.lead}>
+    <LocalizedFeature feature="proximite">
       <ProximityBoard />
-    </FeaturePanel>
+    </LocalizedFeature>
   );
 }

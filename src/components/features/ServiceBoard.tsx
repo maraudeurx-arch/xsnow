@@ -1,15 +1,14 @@
 "use client";
 
 import { FormEvent, useMemo, useState } from "react";
+import { interpolate } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n/locale";
 import { uid } from "@/lib/storage";
 import {
-  COLLATERAL_STATUS_LABEL,
   CURRENCIES,
-  RATE_UNIT_LABEL,
   SERVICES,
   SERVICE_SEEDS,
   formatMoney,
-  sideLabel,
   type CollateralStatus,
   type ListingSide,
   type RateUnit,
@@ -24,6 +23,8 @@ const fieldClass =
   "tap rounded-2xl border border-white/15 bg-white/5 px-3 text-sm font-normal text-snow outline-none focus:border-gold";
 
 export function ServiceBoard({ kind }: { kind: ServiceKind }) {
+  const { locale, m } = useI18n();
+  const moneyLocale = locale === "fr" ? "fr-CA" : locale === "es" ? "es" : "en-CA";
   const def = SERVICES[kind];
   const [items, setItems] = useSeededList<ServiceListing>(
     def.storageKey,
@@ -73,31 +74,31 @@ export function ServiceBoard({ kind }: { kind: ServiceKind }) {
     <div className="space-y-6">
       <form onSubmit={onSubmit} className="grid gap-3">
         <fieldset className="grid gap-2">
-          <legend className="text-sm font-semibold">Type d’annonce</legend>
+          <legend className="text-sm font-semibold">{m.services.listingType}</legend>
           <div className="grid grid-cols-2 gap-2">
             <label className="tap flex items-center justify-center gap-2 rounded-2xl border border-white/15 bg-white/5 text-sm font-semibold">
               <input type="radio" name="side" value="offre" defaultChecked className="accent-gold" />
-              Offre
+              {m.services.offer}
             </label>
             <label className="tap flex items-center justify-center gap-2 rounded-2xl border border-white/15 bg-white/5 text-sm font-semibold">
               <input type="radio" name="side" value="demande" className="accent-gold" />
-              Demande
+              {m.services.request}
             </label>
           </div>
         </fieldset>
 
-        <Field name="title" label="Titre" required placeholder="Ex. Courses du samedi" />
+        <Field name="title" label={m.services.title} required placeholder={m.services.titlePh} />
         {def.hasCollateral ? (
-          <Field name="objectName" label="Objet prêté ou emprunté" required placeholder="Perceuse, tente, vélo…" />
+          <Field name="objectName" label={m.services.object} required placeholder={m.services.objectPh} />
         ) : null}
         <label className="grid gap-1 text-sm font-semibold">
-          Description
+          {m.services.description}
           <textarea name="description" rows={3} className={`${fieldClass} min-h-[88px] py-2`} />
         </label>
         <div className="grid gap-3 sm:grid-cols-2">
-          <Field name="neighborhood" label="Quartier" placeholder="Plateau, Rosemont…" required />
+          <Field name="neighborhood" label={m.services.neighborhood} placeholder={m.services.neighborhoodPh} required />
           <label className="grid gap-1 text-sm font-semibold">
-            Rayon
+            {m.services.radius}
             <select name="radiusKm" defaultValue="3" className={fieldClass}>
               <option value="1">1 km</option>
               <option value="3">3 km</option>
@@ -107,9 +108,9 @@ export function ServiceBoard({ kind }: { kind: ServiceKind }) {
           </label>
         </div>
         <div className="grid gap-3 sm:grid-cols-3">
-          <Field name="price" label="Tarif" type="number" min="0" step="0.5" placeholder="0" />
+          <Field name="price" label={m.services.price} type="number" min="0" step="0.5" placeholder="0" />
           <label className="grid gap-1 text-sm font-semibold">
-            Devise
+            {m.services.currency}
             <select name="currency" defaultValue="CAD" className={fieldClass}>
               {CURRENCIES.map((code) => (
                 <option key={code} value={code}>
@@ -119,11 +120,11 @@ export function ServiceBoard({ kind }: { kind: ServiceKind }) {
             </select>
           </label>
           <label className="grid gap-1 text-sm font-semibold">
-            Unité
+            {m.services.unit}
             <select name="rateUnit" defaultValue={def.rateUnits[0]} className={fieldClass}>
               {def.rateUnits.map((unit) => (
                 <option key={unit} value={unit}>
-                  {RATE_UNIT_LABEL[unit]}
+                  {m.services.rate[unit]}
                 </option>
               ))}
             </select>
@@ -133,20 +134,19 @@ export function ServiceBoard({ kind }: { kind: ServiceKind }) {
         {def.hasCollateral ? (
           <div className="grid gap-3 rounded-2xl border border-gold/30 bg-gold/5 p-3">
             <p className="text-sm leading-relaxed text-gold">
-              Caution (dépôt) : montant convenu entre les parties. Aucun paiement n’est prélevé
-              pour l’instant — l’accord est seulement enregistré.
+              {m.services.collateralNote}
             </p>
             <div className="grid gap-3 sm:grid-cols-2">
               <Field
                 name="collateralAmount"
-                label="Montant de la caution"
+                label={m.services.collateralAmount}
                 type="number"
                 min="1"
                 step="1"
                 required
               />
               <label className="grid gap-1 text-sm font-semibold">
-                Devise de la caution
+                {m.services.collateralCurrency}
                 <select name="collateralCurrency" defaultValue="CAD" className={fieldClass}>
                   {CURRENCIES.map((code) => (
                     <option key={code} value={code}>
@@ -160,11 +160,11 @@ export function ServiceBoard({ kind }: { kind: ServiceKind }) {
         ) : null}
 
         <button type="submit" className="tap rounded-full bg-cobalt font-extrabold text-snow">
-          Publier dans Open Community
+          {m.services.publish}
         </button>
         {saved ? (
           <p className="text-sm text-gold">
-            Annonce enregistrée sur cet appareil. Une API pourra la reprendre plus tard.
+            {m.services.saved}
           </p>
         ) : null}
       </form>
@@ -181,7 +181,7 @@ export function ServiceBoard({ kind }: { kind: ServiceKind }) {
                 : "border border-white/15 bg-white/5 text-snow"
             }`}
           >
-            {value === "tous" ? "Toutes" : value === "offre" ? "Offres" : "Demandes"}
+            {value === "tous" ? m.services.all : value === "offre" ? m.services.offers : m.services.requests}
           </button>
         ))}
       </div>
@@ -195,33 +195,38 @@ export function ServiceBoard({ kind }: { kind: ServiceKind }) {
                   item.side === "offre" ? "bg-ice/20 text-ice" : "bg-gold/20 text-gold"
                 }`}
               >
-                {sideLabel(item.side)}
+                {item.side === "offre" ? m.services.offer : m.services.request}
               </span>
-              <p className="font-bold">{item.title}</p>
+              <p className="font-bold">{m.seeds[item.id as keyof typeof m.seeds]?.title ?? item.title}</p>
             </div>
             {item.objectName ? (
-              <p className="mt-1 text-sm font-semibold text-ice">Objet : {item.objectName}</p>
+              <p className="mt-1 text-sm font-semibold text-ice">
+                {interpolate(m.services.objectLine, { name: item.objectName })}
+              </p>
             ) : null}
             {item.description ? (
-              <p className="mt-1 text-sm leading-relaxed text-snow/80">{item.description}</p>
+              <p className="mt-1 text-sm leading-relaxed text-snow/80">
+                {m.seeds[item.id as keyof typeof m.seeds]?.description ?? item.description}
+              </p>
             ) : null}
             <p className="mt-2 text-xs text-ice/80">
               {item.neighborhood} · {item.radiusKm} km ·{" "}
               {item.price === 0
-                ? "Gratuit"
-                : `${formatMoney(item.price, item.currency)} ${RATE_UNIT_LABEL[item.rateUnit]}`}
+                ? m.services.free
+                : `${formatMoney(item.price, item.currency, moneyLocale)} ${m.services.rate[item.rateUnit]}`}
             </p>
             {item.collateralAmount != null && item.collateralCurrency ? (
               <CollateralLine
                 amount={item.collateralAmount}
                 currency={item.collateralCurrency}
                 status={item.collateralStatus ?? "proposee"}
+                moneyLocale={moneyLocale}
               />
             ) : null}
           </li>
         ))}
         {visible.length === 0 ? (
-          <li className="text-sm text-snow/60">Aucune annonce pour ce filtre.</li>
+          <li className="text-sm text-snow/60">{m.services.empty}</li>
         ) : null}
       </ul>
     </div>
@@ -232,15 +237,20 @@ function CollateralLine({
   amount,
   currency,
   status,
+  moneyLocale,
 }: {
   amount: number;
   currency: string;
   status: CollateralStatus;
+  moneyLocale: string;
 }) {
+  const { m } = useI18n();
   return (
     <p className="mt-2 rounded-xl border border-gold/25 bg-gold/10 px-2 py-1.5 text-xs leading-relaxed text-gold">
-      Caution {formatMoney(amount, currency)} · {COLLATERAL_STATUS_LABEL[status]} (accord, pas
-      d’escrow réel)
+      {interpolate(m.services.collateralLine, {
+        amount: formatMoney(amount, currency, moneyLocale),
+        status: m.services.collateralStatus[status],
+      })}
     </p>
   );
 }

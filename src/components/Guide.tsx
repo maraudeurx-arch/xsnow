@@ -6,6 +6,7 @@ import { AvatarDisc } from "@/components/AvatarDisc";
 import { LocationPrompt } from "@/components/LocationPrompt";
 import { AVATARS, avatarById, type Avatar, type AvatarId } from "@/lib/avatars";
 import { welcomeSpeechFor } from "@/lib/content";
+import { useI18n } from "@/lib/i18n/locale";
 import { usePlace } from "@/lib/place";
 import {
   hasPlayedWelcomeFor,
@@ -23,6 +24,7 @@ export function Guide() {
   const [picking, setPicking] = useState(false);
   const { speak } = useSpeech();
   const { city, ready, needsPrompt } = usePlace();
+  const { locale, m } = useI18n();
 
   const showPicker = !avatarId || picking;
   const chosen = avatarId ? avatarById(avatarId) : null;
@@ -36,8 +38,8 @@ export function Guide() {
     if (!chosen || !ready) return;
     if (hasPlayedWelcomeFor(chosen.id)) return;
     markWelcomePlayed(chosen.id);
-    speak(welcomeSpeechFor(city), chosen.gender);
-  }, [chosen, city, ready, speak]);
+    speak(welcomeSpeechFor(city, locale), chosen.gender);
+  }, [chosen, city, locale, ready, speak]);
 
   return (
     <section
@@ -50,21 +52,22 @@ export function Guide() {
       {showPicker ? (
         <div
           role="group"
-          aria-label="Choisis ton avatar"
+          aria-label={m.guide.pickAvatar}
           className="flex min-h-0 w-full flex-col items-center gap-1.5"
         >
           <p className="text-[13px] leading-none font-extrabold tracking-wide text-snow [text-shadow:0_2px_10px_rgba(0,0,0,0.7)] sm:text-sm">
-            Choisis ton avatar
+            {m.guide.pickAvatar}
           </p>
           <div className="grid grid-cols-2 justify-items-center gap-x-4 gap-y-3 p-1 sm:gap-x-5 sm:gap-y-4">
             {AVATARS.map((avatar) => {
               const selected = avatar.id === avatarId;
+              const label = m.guide.avatars[avatar.id];
               return (
                 <button
                   key={avatar.id}
                   type="button"
                   className="rounded-full focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-gold"
-                  aria-label={avatar.label}
+                  aria-label={label}
                   aria-pressed={selected}
                   onClick={() => chooseAvatar(avatar.id)}
                 >
@@ -90,7 +93,7 @@ export function Guide() {
                 className="whitespace-nowrap rounded-full border border-white/20 bg-white/[0.04] px-2 py-0.5 text-[10px] font-semibold tracking-wide text-snow/90 hover:border-violet/50 hover:bg-white/[0.07]"
                 onClick={() => setPicking(true)}
               >
-                Changer d’avatar
+                {m.guide.changeAvatar}
               </button>
             </div>
           </div>
@@ -103,19 +106,20 @@ export function Guide() {
 
 function ReplayButton({ gender }: { gender: Avatar["gender"] }) {
   const { replay } = useSpeech();
+  const { m } = useI18n();
 
   return (
     <button
       type="button"
       data-welcome-replay
       className="inline-flex items-center gap-1 whitespace-nowrap rounded-full border border-cobalt/55 bg-cobalt px-2 py-0.5 text-[10px] font-semibold tracking-wide text-snow shadow-[0_4px_14px_rgba(37,99,235,0.32)]"
-      aria-label="Réécouter"
+      aria-label={m.guide.replay}
       onClick={() => replay(gender)}
     >
       <svg aria-hidden viewBox="0 0 16 16" className="h-3 w-3 fill-current">
         <path d="M2.5 6.2v3.6c0 .4.3.7.7.7h1.7l3 2.4c.5.4 1.1 0 1.1-.6V3.7c0-.6-.6-1-1.1-.6l-3 2.4H3.2c-.4 0-.7.3-.7.7Zm8.2 4.4a.6.6 0 0 0 .1-.8 2.6 2.6 0 0 0 0-3.6.6.6 0 1 0-.9.8 1.4 1.4 0 0 1 0 2c.2.3.6.3.8 0Zm1.6 1.5a.6.6 0 0 0 .1-.9 4.8 4.8 0 0 0 0-6.4.6.6 0 1 0-.9.8 3.6 3.6 0 0 1 0 4.8c.2.3.6.3.8 0Z" />
       </svg>
-      Réécouter
+      {m.guide.replay}
     </button>
   );
 }

@@ -20,6 +20,13 @@ describe("demonymFor", () => {
     assert.equal(demonymFor("Springfield"), "habitants de Springfield");
   });
 
+  it("uses English and Spanish forms", () => {
+    assert.equal(demonymFor("New York", "en"), "New Yorkers");
+    assert.equal(demonymFor("Gatineau", "en"), "Gatineau residents");
+    assert.equal(demonymFor("New York", "es"), "los neoyorquinos");
+    assert.equal(demonymFor("Gatineau", "es"), "los gatineses");
+  });
+
   it("hyphenates New- compounds", () => {
     assert.equal(demonymFor("New Haven"), "New-Havenais");
   });

@@ -1,5 +1,6 @@
 "use client";
 
+import { useI18n } from "@/lib/i18n/locale";
 import { assetUrl } from "@/lib/paths";
 import type { Avatar } from "@/lib/avatars";
 
@@ -17,6 +18,7 @@ export function AvatarDisc({
   selected?: boolean;
   priority?: boolean;
 }) {
+  const { m } = useI18n();
   return (
     <span
       className={`${frameClass} ${className} ${
@@ -28,7 +30,7 @@ export function AvatarDisc({
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={assetUrl(avatar.src)}
-          alt={avatar.alt}
+          alt={m.guide.alts[avatar.id]}
           width={720}
           height={720}
           fetchPriority={priority ? "high" : "auto"}

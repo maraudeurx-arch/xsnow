@@ -322,8 +322,76 @@ export function demonymFormsFor(city: string): DemonymForms {
   return fallbackForms(city);
 }
 
-/** Footer / speech: « des Gatinois », « des New-Yorkais », or « des habitants de … ». */
-export function demonymFor(city: string) {
+const EN_DEMONYM: Record<string, string> = {
+  gatineau: "Gatineau residents",
+  montreal: "Montrealers",
+  ottawa: "Ottawans",
+  quebec: "Quebecers",
+  toronto: "Torontonians",
+  vancouver: "Vancouverites",
+  "new york": "New Yorkers",
+  "los angeles": "Angelenos",
+  "san francisco": "San Franciscans",
+  boston: "Bostonians",
+  chicago: "Chicagoans",
+  miami: "Miamians",
+  paris: "Parisians",
+  lyon: "Lyonnais",
+  marseille: "Marseillais",
+  bordeaux: "Bordelais",
+  toulouse: "Toulousains",
+  lille: "Lillois",
+  nantes: "Nantais",
+  nice: "Niçois",
+  strasbourg: "Strasbourgeois",
+  bruxelles: "Brussels residents",
+  brussels: "Brussels residents",
+  geneve: "Genevans",
+  geneva: "Genevans",
+  londres: "Londoners",
+  london: "Londoners",
+};
+
+const ES_DEMONYM: Record<string, string> = {
+  gatineau: "los gatineses",
+  montreal: "los montrealenses",
+  ottawa: "los ottawienses",
+  quebec: "los quebequenses",
+  toronto: "los torontoenses",
+  vancouver: "los vancuberenses",
+  "new york": "los neoyorquinos",
+  "los angeles": "los angelinos",
+  "san francisco": "los sanfranciscanos",
+  boston: "los bostonianos",
+  chicago: "los chicagüenses",
+  miami: "los miamenses",
+  paris: "los parisinos",
+  lyon: "los lioneses",
+  marseille: "los marselleses",
+  bordeaux: "los burdeos",
+  toulouse: "los tolosanos",
+  lille: "los lillenses",
+  nantes: "los nanteses",
+  nice: "los niceses",
+  strasbourg: "los estrasburgueses",
+  bruxelles: "los bruselenses",
+  brussels: "los bruselenses",
+  geneve: "los ginebrinos",
+  geneva: "los ginebrinos",
+  londres: "los londinenses",
+  london: "los londinenses",
+};
+
+/** Footer / speech: locale-aware gentilé, or « habitants de {city} » / equivalent. */
+export function demonymFor(city: string, locale: "fr" | "en" | "es" = "fr") {
+  const pretty = displayCity(city);
+  const key = normalizeCityKey(city);
+  if (locale === "en") {
+    return EN_DEMONYM[key] ?? `residents of ${pretty}`;
+  }
+  if (locale === "es") {
+    return ES_DEMONYM[key] ?? `los habitantes de ${pretty}`;
+  }
   return demonymFormsFor(city).generic;
 }
 

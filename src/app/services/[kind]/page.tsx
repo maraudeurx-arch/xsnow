@@ -1,6 +1,5 @@
 import { notFound } from "next/navigation";
-import { FeaturePanel } from "@/components/FeaturePanel";
-import { ServiceBoard } from "@/components/features/ServiceBoard";
+import { LocalizedService } from "@/components/LocalizedService";
 import { SERVICE_KINDS, SERVICES, isServiceKind } from "@/lib/services";
 
 export function generateStaticParams() {
@@ -24,11 +23,6 @@ export default async function ServiceKindPage({
 }) {
   const { kind } = await params;
   if (!isServiceKind(kind)) notFound();
-  const def = SERVICES[kind];
 
-  return (
-    <FeaturePanel title={def.title} lead={def.lead}>
-      <ServiceBoard kind={kind} />
-    </FeaturePanel>
-  );
+  return <LocalizedService kind={kind} />;
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent } from "react";
+import { useI18n } from "@/lib/i18n/locale";
 import { uid } from "@/lib/storage";
 import { useStoredList } from "@/lib/useStoredList";
 
@@ -16,6 +17,7 @@ const KEY = "xsnow.phones";
 
 export function PhoneBoard() {
   const [items, setItems] = useStoredList<Report>(KEY);
+  const { m } = useI18n();
 
   function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -35,12 +37,12 @@ export function PhoneBoard() {
   return (
     <div className="space-y-5">
       <form onSubmit={onSubmit} className="grid gap-3">
-        <Input name="brand" label="Marque / modèle" required />
-        <Input name="color" label="Couleur / étui" />
-        <Input name="lastSeen" label="Dernier endroit vu" placeholder="Bus 24, café, école…" />
-        <Input name="note" label="Détail utile" />
+        <Input name="brand" label={m.phone.brand} required />
+        <Input name="color" label={m.phone.color} />
+        <Input name="lastSeen" label={m.phone.lastSeen} placeholder={m.phone.lastSeenPh} />
+        <Input name="note" label={m.phone.note} />
         <button type="submit" className="tap rounded-full bg-cobalt font-extrabold text-snow">
-          Alerter la communauté
+          {m.phone.submit}
         </button>
       </form>
       <ul className="space-y-2">
@@ -48,7 +50,7 @@ export function PhoneBoard() {
           <li key={item.id} className="rounded-2xl border border-white/10 bg-white/5 p-3">
             <p className="font-bold">{item.brand}</p>
             <p className="text-xs text-ice/80">
-              {item.color || "Couleur inconnue"} · {item.lastSeen || "Lieu inconnu"}
+              {item.color || m.phone.unknownColor} · {item.lastSeen || m.phone.unknownPlace}
             </p>
             {item.note ? <p className="mt-1 text-sm">{item.note}</p> : null}
           </li>

@@ -1,14 +1,27 @@
 "use client";
 
-import { RainbowKitProvider, darkTheme, getDefaultConfig } from "@rainbow-me/rainbowkit";
+import {
+  RainbowKitProvider,
+  darkTheme,
+  getDefaultConfig,
+  type Locale as RainbowKitLocale,
+} from "@rainbow-me/rainbowkit";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState, type ReactNode } from "react";
 import { WagmiProvider } from "wagmi";
 import { sepolia } from "wagmi/chains";
+import type { Locale } from "@/lib/i18n";
+import { LocaleProvider, useI18n } from "@/lib/i18n/locale";
 import { PlaceProvider } from "@/lib/place";
 import { SpeechProvider } from "@/lib/speech";
 import { StubWalletProvider, hasWalletConnectProjectId } from "@/lib/wallet";
 import "@rainbow-me/rainbowkit/styles.css";
+
+function rainbowKitLocale(locale: Locale): RainbowKitLocale {
+  if (locale === "fr") return "fr";
+  if (locale === "es") return "es";
+  return "en-US";
+}
 
 const queryClient = new QueryClient();
 
@@ -22,11 +35,13 @@ const walletConfig = getDefaultConfig({
 });
 
 function RainbowStack({ children }: { children: ReactNode }) {
+  const { locale } = useI18n();
+  const rainbowLocale = rainbowKitLocale(locale);
   return (
     <WagmiProvider config={walletConfig}>
       <QueryClientProvider client={queryClient}>
         <RainbowKitProvider
-          locale="fr"
+          locale={rainbowLocale}
           theme={darkTheme({
             accentColor: "#2563eb",
             accentColorForeground: "#f4f6fb",
@@ -44,14 +59,16 @@ export function Providers({ children }: { children: ReactNode }) {
   const [useRainbow] = useState(hasWalletConnectProjectId);
 
   return (
-    <PlaceProvider>
-      <SpeechProvider>
-        {useRainbow ? (
-          <RainbowStack>{children}</RainbowStack>
-        ) : (
-          <StubWalletProvider>{children}</StubWalletProvider>
-        )}
-      </SpeechProvider>
-    </PlaceProvider>
+    <LocaleProvider>
+      <PlaceProvider>
+        <SpeechProvider>
+          {useRainbow ? (
+            <RainbowStack>{children}</RainbowStack>
+          ) : (
+            <StubWalletProvider>{children}</StubWalletProvider>
+          )}
+        </SpeechProvider>
+      </PlaceProvider>
+    </LocaleProvider>
   );
 }

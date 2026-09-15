@@ -1,31 +1,38 @@
 "use client";
 
 import { useState } from "react";
+import { interpolate } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n/locale";
 
 const NEARBY = [
-  { name: "Café des Pins", kind: "Commerce", distance: "120 m" },
-  { name: "Nadia · voisine", kind: "Entraide", distance: "180 m" },
-  { name: "Atelier Vélo-Nord", kind: "Business", distance: "350 m" },
-  { name: "Marc · parent d’élève", kind: "Communauté", distance: "420 m" },
-  { name: "Épicerie Hochelaga", kind: "Commerce", distance: "510 m" },
+  { nameKey: "cafe" as const, kindKey: "commerce" as const, distance: "120 m" },
+  { nameKey: "nadia" as const, kindKey: "help" as const, distance: "180 m" },
+  { nameKey: "atelier" as const, kindKey: "business" as const, distance: "350 m" },
+  { nameKey: "marc" as const, kindKey: "community" as const, distance: "420 m" },
+  { nameKey: "epicerie" as const, kindKey: "commerce" as const, distance: "510 m" },
 ];
 
 export function ProximityBoard() {
-  const [status, setStatus] = useState("La liste ci-dessous est un quartier démo (Montréal).");
+  const { m } = useI18n();
+  const [status, setStatus] = useState<string | null>(null);
+  const shown = status ?? m.proximity.demo;
 
   function locate() {
     if (!navigator.geolocation) {
-      setStatus("La géolocalisation n’est pas disponible sur cet appareil.");
+      setStatus(m.proximity.unsupported);
       return;
     }
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         setStatus(
-          `Position reçue (${pos.coords.latitude.toFixed(3)}, ${pos.coords.longitude.toFixed(3)}). Les voisins réels seront branchés après la construction.`,
+          interpolate(m.proximity.received, {
+            lat: pos.coords.latitude.toFixed(3),
+            lon: pos.coords.longitude.toFixed(3),
+          }),
         );
       },
       () => {
-        setStatus("Position refusée. On reste sur le quartier démo — l’entraide n’attend pas.");
+        setStatus(m.proximity.denied);
       },
     );
   }
@@ -37,18 +44,18 @@ export function ProximityBoard() {
         onClick={locate}
         className="tap w-full rounded-full bg-cobalt font-extrabold text-snow"
       >
-        Activer ma position
+        {m.proximity.activate}
       </button>
-      <p className="text-sm text-snow/75">{status}</p>
+      <p className="text-sm text-snow/75">{shown}</p>
       <ul className="space-y-2">
         {NEARBY.map((item) => (
           <li
-            key={item.name}
+            key={item.nameKey}
             className="flex min-h-11 items-center justify-between rounded-2xl border border-white/10 bg-white/5 px-3"
           >
             <span>
-              <span className="block font-semibold">{item.name}</span>
-              <span className="text-xs text-ice/70">{item.kind}</span>
+              <span className="block font-semibold">{m.proximity.people[item.nameKey]}</span>
+              <span className="text-xs text-ice/70">{m.proximity.kinds[item.kindKey]}</span>
             </span>
             <span className="text-sm font-bold text-gold">{item.distance}</span>
           </li>

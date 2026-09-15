@@ -5,7 +5,7 @@ import { HeaderNav } from "@/components/HeaderNav";
 import { PlaceWordmark } from "@/components/PlaceWordmark";
 import { SeasonalBackdrop, SeasonScene } from "@/components/SeasonalBackdrop";
 import { SiteFooter } from "@/components/SiteFooter";
-import { BRAND } from "@/lib/content";
+import { BrandCopy } from "@/components/BrandCopy";
 import { seasonFromDate } from "@/lib/season";
 
 export function AppChrome({ children }: { children: ReactNode }) {
@@ -32,10 +32,10 @@ export function AppChrome({ children }: { children: ReactNode }) {
 
         <div className="mt-0 text-center sm:mt-1">
           <h1 className="mx-auto font-[family-name:var(--font-fraunces)] text-[clamp(1.85rem,8.8vw,5.5rem)] leading-[0.86] font-extrabold text-balance text-snow [text-shadow:0_2px_18px_rgba(0,0,0,0.72)]">
-            {BRAND.community}
+            <BrandCopy field="community" />
           </h1>
           <p className="mt-0 text-[clamp(0.65rem,2.2vw,1.05rem)] font-semibold tracking-wide text-gold [text-shadow:0_2px_10px_rgba(0,0,0,0.55)]">
-            {BRAND.slogan}
+            <BrandCopy field="slogan" />
           </p>
         </div>
       </header>

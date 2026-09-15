@@ -117,9 +117,9 @@ export function isServiceKind(value: string): value is ServiceKind {
   return (SERVICE_KINDS as readonly string[]).includes(value);
 }
 
-export function formatMoney(amount: number, currency: string) {
+export function formatMoney(amount: number, currency: string, locale = "fr-CA") {
   try {
-    return new Intl.NumberFormat("fr-CA", {
+    return new Intl.NumberFormat(locale, {
       style: "currency",
       currency,
       maximumFractionDigits: 2,

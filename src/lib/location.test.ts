@@ -1,8 +1,9 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { parseLatLon } from "../../workers/xsnow-chat/src/geo.ts";
-import { welcomeSpeechFor, avatarSystemPromptFor } from "./content.ts";
 import { lookupKnownCity } from "./demonym.ts";
+import { fr } from "./i18n/fr.ts";
+import { interpolate } from "./i18n/locales.ts";
 import {
   frenchVoiceLangFor,
   geoResultFromPayload,
@@ -10,7 +11,7 @@ import {
   parseCityOverride,
   parseGeoPromptOverride,
 } from "./geo-logic.ts";
-import { pickFrenchVoice } from "./voices.ts";
+import { pickFrenchVoice, pickSpokenVoice } from "./voices.ts";
 
 describe("parseCityOverride", () => {
   it("reads ?city= for QA", () => {
@@ -79,9 +80,15 @@ describe("geoResultFromPayload", () => {
 
 describe("copy mentions the detected city", () => {
   it("welcome and system prompt include New York", () => {
-    assert.match(welcomeSpeechFor("New York"), /voisins de New York/);
-    assert.match(avatarSystemPromptFor("New York", "NEW YORK"), /à New York/);
-    assert.match(avatarSystemPromptFor("New York", "NEW YORK"), /sous NEW YORK/);
+    assert.match(interpolate(fr.welcome, { city: "New York" }), /voisins de New York/);
+    assert.match(
+      interpolate(fr.systemPrompt, { city: "New York", placeName: "NEW YORK", avatar: "" }),
+      /à New York/,
+    );
+    assert.match(
+      interpolate(fr.systemPrompt, { city: "New York", placeName: "NEW YORK", avatar: "" }),
+      /sous NEW YORK/,
+    );
   });
 });
 
@@ -122,5 +129,15 @@ describe("pickFrenchVoice", () => {
     const maleUs = pickFrenchVoice(voices, "male", "en-US");
     assert.equal(maleUs?.name, "Nicolas");
     assert.ok(maleUs?.lang.toLowerCase().startsWith("fr"));
+  });
+
+  it("picks English or Spanish when that is the UI language", () => {
+    assert.equal(pickSpokenVoice(voices, "female", "en", "en-US")?.name, "Samantha");
+    const extra = [
+      ...voices,
+      voice("Monica", "es-ES", "female"),
+      voice("Jorge", "es-MX", "male"),
+    ];
+    assert.equal(pickSpokenVoice(extra, "male", "es", "es-MX")?.name, "Jorge");
   });
 });
