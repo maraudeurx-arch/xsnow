@@ -32,7 +32,7 @@ export function LocalizedProfileStub({
   const { m } = useI18n();
   const copy = m.features[feature];
   return (
-    <ProfileStub title={copy.title} lead={copy.lead}>
+    <ProfileStub title={copy.title} lead={copy.lead} backLabel={m.nav.monProfil}>
       {children}
     </ProfileStub>
   );

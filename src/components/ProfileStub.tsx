@@ -5,10 +5,12 @@ import { FeaturePanel } from "@/components/FeaturePanel";
 export function ProfileStub({
   title,
   lead,
+  backLabel,
   children,
 }: {
   title: string;
   lead: string;
+  backLabel: string;
   children: ReactNode;
 }) {
   return (
@@ -19,7 +21,7 @@ export function ProfileStub({
           href="/mon-profil"
           className="inline-flex min-h-11 items-center text-sm font-extrabold text-gold hover:underline"
         >
-          ← Mon profil
+          ← {backLabel}
         </Link>
       </div>
     </FeaturePanel>
