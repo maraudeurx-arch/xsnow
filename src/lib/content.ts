@@ -1,6 +1,6 @@
 import { DEFAULT_LOCALE, getMessages, interpolate, type Locale } from "./i18n";
 
-/** Fallback city / gentilé — live branding comes from `usePlace()`. */
+/** Fallback city / gentilé — live branding comes from `usePlace()`. Gatineau is the dev seed only. */
 export const LOCATION = {
   city: "Gatineau",
   cityDisplay: "GATINEAU",

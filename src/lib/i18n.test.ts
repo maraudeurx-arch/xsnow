@@ -271,6 +271,18 @@ describe("legal copy is present in FR/EN/ES", () => {
     assert.match(en.legal.privacy.draft, /Law 25/);
     assert.match(es.legal.privacy.draft, /Ley 25/);
   });
+
+  it("does not tell skip/deny visitors they live in Gatineau", () => {
+    assert.doesNotMatch(fr.geo.skip, /Gatineau/);
+    assert.doesNotMatch(en.geo.skip, /Gatineau/);
+    assert.doesNotMatch(es.geo.skip, /Gatineau/);
+    assert.doesNotMatch(fr.geo.errors.generic, /Gatineau/);
+    assert.doesNotMatch(en.geo.errors.generic, /Gatineau/);
+    assert.doesNotMatch(es.geo.errors.generic, /Gatineau/);
+    assert.match(fr.place.neighborhood, /quartier/);
+    assert.match(en.place.neighborhood, /neighbourhood/);
+    assert.match(es.place.neighborhood, /barrio/);
+  });
 });
 
 describe("demonymFor locales", () => {

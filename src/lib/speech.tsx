@@ -231,13 +231,40 @@ function readPlayedIds(): string[] {
   }
 }
 
+const WELCOME_CITY_KEY = "xsnow.welcomeSpokenCity";
+
+function readSpokenCities(): Record<string, string> {
+  if (typeof window === "undefined") return {};
+  try {
+    const raw = window.sessionStorage.getItem(WELCOME_CITY_KEY);
+    if (!raw) return {};
+    const parsed = JSON.parse(raw) as unknown;
+    if (!parsed || typeof parsed !== "object") return {};
+    const out: Record<string, string> = {};
+    for (const [key, value] of Object.entries(parsed as Record<string, unknown>)) {
+      if (typeof value === "string" && value.trim()) out[key] = value;
+    }
+    return out;
+  } catch {
+    return {};
+  }
+}
+
 export function hasPlayedWelcomeFor(avatarId: string) {
   return readPlayedIds().includes(avatarId);
 }
 
-export function markWelcomePlayed(avatarId: string) {
+export function readWelcomeSpokenCity(avatarId: string): string | null {
+  return readSpokenCities()[avatarId] ?? null;
+}
+
+export function markWelcomePlayed(avatarId: string, city?: string) {
   if (typeof window === "undefined") return;
   const next = new Set(readPlayedIds());
   next.add(avatarId);
   window.sessionStorage.setItem(WELCOME_PLAYED_KEY, JSON.stringify([...next]));
+  if (!city?.trim()) return;
+  const cities = readSpokenCities();
+  cities[avatarId] = city.trim();
+  window.sessionStorage.setItem(WELCOME_CITY_KEY, JSON.stringify(cities));
 }

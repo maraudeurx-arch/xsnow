@@ -5,6 +5,10 @@ export const es: Messages = {
     community: "Open Community",
     slogan: "¡Monetízate!",
   },
+  place: {
+    neighborhood: "tu barrio",
+    demonym: "los vecinos del barrio",
+  },
   nav: {
     accueil: "Inicio",
     accueilProposals: "Propuestas de Inicio",
@@ -86,15 +90,15 @@ export const es: Messages = {
     body: "Permite tu ubicación para mostrar el nombre de tu ciudad (y, más adelante, a tus vecinos cercanos). Nada se envía a un servidor de seguimiento: solo tu ciudad, en este aparato.",
     allow: "Permitir mi ubicación",
     locating: "Buscando tu ciudad…",
-    skip: "Más tarde — quedarme en Gatineau",
+    skip: "Más tarde — mostrar tu barrio",
     errors: {
       unsupported:
-        "La geolocalización no está disponible en este aparato. Puedes continuar con Gatineau.",
-      generic: "No se pudo obtener tu ubicación. Reintenta, o continúa con Gatineau.",
+        "La geolocalización no está disponible en este aparato. Puedes continuar sin un nombre de ciudad preciso.",
+      generic: "No se pudo obtener tu ubicación. Reintenta, o continúa sin un nombre de ciudad preciso.",
       denied:
-        "Ubicación denegada. iPhone: Ajustes → Safari → Localización. Android: Ajustes → Aplicaciones → Chrome → Permisos. O continúa con Gatineau.",
-      timeout: "La ubicación tardó demasiado. Reintenta, o continúa con Gatineau.",
-      unavailable: "Ubicación no disponible por ahora. Reintenta, o continúa con Gatineau.",
+        "Ubicación denegada. iPhone: Ajustes → Safari → Localización. Android: Ajustes → Aplicaciones → Chrome → Permisos. O continúa sin un nombre de ciudad preciso.",
+      timeout: "La ubicación tardó demasiado. Reintenta, o continúa sin un nombre de ciudad preciso.",
+      unavailable: "Ubicación no disponible por ahora. Reintenta, o continúa sin un nombre de ciudad preciso.",
     },
   },
   consent: {
@@ -133,7 +137,7 @@ export const es: Messages = {
         },
         {
           heading: "Qué no hacemos",
-          body: "No vendemos datos personales. Sin seguimiento GPS continuo sin consentimiento. Sin reventa a anunciantes. Puedes rechazarlo todo y seguir usando la app (ciudad de respaldo: Gatineau).",
+          body: "No vendemos datos personales. Sin seguimiento GPS continuo sin consentimiento. Sin reventa a anunciantes. Puedes rechazarlo todo y seguir usando la app (etiqueta genérica: tu barrio, o tu última ciudad conocida).",
         },
         {
           heading: "Consentimiento (Canadá / Quebec)",
@@ -179,7 +183,7 @@ export const es: Messages = {
     },
     about: {
       extra:
-        "Open Community (OPC) es un proyecto de ayuda mutua de barrio: servicios entre vecinos, visibilidad local y, más adelante, alertas de proximidad. El nombre de tu ciudad aparece si aceptas la ubicación; si no, usamos Gatineau. Pedimos tu acuerdo antes de la geolocalización y antes de las estadísticas anónimas. Puedes rechazar ambas y seguir usando la app. Este texto es informativo, no un consejo jurídico.",
+        "Open Community (OPC) es un proyecto de ayuda mutua de barrio: servicios entre vecinos, visibilidad local y, más adelante, alertas de proximidad. El nombre de tu ciudad aparece si aceptas la ubicación; si no, mostramos «tu barrio» (o tu última ciudad conocida). Pedimos tu acuerdo antes de la geolocalización y antes de las estadísticas anónimas. Puedes rechazar ambas y seguir usando la app. Este texto es informativo, no un consejo jurídico.",
     },
   },
   footer: {
@@ -293,7 +297,7 @@ export const es: Messages = {
     comingSoon: "Las notificaciones y la estación de pantalla llegarán aquí.",
     locationConsent: "Ubicación",
     locationHint:
-      "Para el nombre de tu ciudad y, más adelante, la proximidad. Desactivar: volvemos a Gatineau.",
+      "Para el nombre de tu ciudad y, más adelante, la proximidad. Desactivar: conservamos tu última ciudad conocida, o «tu barrio».",
     analyticsConsent: "Estadísticas de uso anónimas",
     analyticsHint:
       "Sesión, idioma, ciudad/país si la ubicación está aceptada, ideas (Tus ideas / chat).",

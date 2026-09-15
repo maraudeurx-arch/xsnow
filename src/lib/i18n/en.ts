@@ -5,6 +5,10 @@ export const en: Messages = {
     community: "Open Community",
     slogan: "Monetize Yourself!",
   },
+  place: {
+    neighborhood: "your neighbourhood",
+    demonym: "neighbours",
+  },
   nav: {
     accueil: "Home",
     accueilProposals: "Home proposals",
@@ -86,14 +90,15 @@ export const en: Messages = {
     body: "Allow your location to show your city name (and, later, neighbours nearby). Nothing is sent to a tracking server — only your city, on this device.",
     allow: "Allow my location",
     locating: "Finding your city…",
-    skip: "Later — stay in Gatineau",
+    skip: "Later — show your neighbourhood",
     errors: {
-      unsupported: "Geolocation isn’t available on this device. You can continue with Gatineau.",
-      generic: "Couldn’t get your location. Try again, or continue with Gatineau.",
+      unsupported:
+        "Geolocation isn’t available on this device. You can continue without a precise city name.",
+      generic: "Couldn’t get your location. Try again, or continue without a precise city name.",
       denied:
-        "Location denied. iPhone: Settings → Safari → Location. Android: Settings → Apps → Chrome → Permissions. Or continue with Gatineau.",
-      timeout: "Location took too long. Try again, or continue with Gatineau.",
-      unavailable: "Location unavailable right now. Try again, or continue with Gatineau.",
+        "Location denied. iPhone: Settings → Safari → Location. Android: Settings → Apps → Chrome → Permissions. Or continue without a precise city name.",
+      timeout: "Location took too long. Try again, or continue without a precise city name.",
+      unavailable: "Location unavailable right now. Try again, or continue without a precise city name.",
     },
   },
   consent: {
@@ -132,7 +137,7 @@ export const en: Messages = {
         },
         {
           heading: "What we do not do",
-          body: "We do not sell personal data. No continuous GPS tracking without consent. No resale to advertisers. You can decline everything and still use the app (fallback city: Gatineau).",
+          body: "We do not sell personal data. No continuous GPS tracking without consent. No resale to advertisers. You can decline everything and still use the app (generic label: your neighbourhood, or your last known city).",
         },
         {
           heading: "Consent (Canada / Quebec)",
@@ -178,7 +183,7 @@ export const en: Messages = {
     },
     about: {
       extra:
-        "Open Community (OPC) is a neighbourhood mutual-aid project: neighbour services, local visibility, and later proximity alerts. Your city name shows if you allow location; otherwise we use Gatineau. We ask before geolocation and before anonymous stats. You can decline both and still use the app. This text is informational, not legal advice.",
+        "Open Community (OPC) is a neighbourhood mutual-aid project: neighbour services, local visibility, and later proximity alerts. Your city name shows if you allow location; otherwise we show “your neighbourhood” (or your last known city). We ask before geolocation and before anonymous stats. You can decline both and still use the app. This text is informational, not legal advice.",
     },
   },
   footer: {
@@ -292,7 +297,7 @@ export const en: Messages = {
     comingSoon: "Notifications and display season will land here.",
     locationConsent: "Location",
     locationHint:
-      "For your city name and, later, proximity. Turn off: we go back to Gatineau.",
+      "For your city name and, later, proximity. Turn off: we keep your last known city, or “your neighbourhood”.",
     analyticsConsent: "Anonymous usage stats",
     analyticsHint: "Session, language, city/country if location is allowed, ideas (Your ideas / chat).",
     privacy: "Privacy",

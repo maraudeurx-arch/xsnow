@@ -26,6 +26,15 @@ const KNOWN: Record<string, Entry> = {
     lat: 45.4765,
     lon: -75.7013,
   },
+  "port au prince": {
+    display: "Port-au-Prince",
+    generic: "habitants de Port-au-Prince",
+    feminine: "habitantes de Port-au-Prince",
+    countryCode: "HT",
+    localeHint: "fr-HT",
+    lat: 18.5392,
+    lon: -72.335,
+  },
   montreal: {
     display: "Montréal",
     generic: "Montréalais",

@@ -7,12 +7,14 @@
  * Do not start realtime tracking, watches, or server-side location shares here.
  */
 
-import { displayCity, lookupKnownCity } from "@/lib/demonym";
+import { displayCity } from "@/lib/demonym";
 import {
+  acceptGeoResult,
   geoResultFromPayload as parseGeoPayload,
   inferLocaleHint,
 } from "@/lib/geo-logic";
 import { CHAT_API_URL } from "@/lib/llm";
+import { isGeoConsent, type GeoConsent, type GeoResult, type StoredPlace } from "@/lib/place-logic";
 
 export {
   frenchVoiceLangFor,
@@ -21,63 +23,33 @@ export {
   parseGeoPromptOverride,
 } from "@/lib/geo-logic";
 
+export {
+  FALLBACK_CITY,
+  FALLBACK_COUNTRY,
+  FALLBACK_LAT,
+  FALLBACK_LOCALE,
+  FALLBACK_LON,
+  brandingForPlace,
+  coordsOnlyPlace,
+  fallbackPlace,
+  isGeoConsent,
+  isSeedFallbackPlace,
+  placeFromCityName,
+  placeToKeepOnSkip,
+  sanitizeStoredPlace,
+  unresolvedPlace,
+  type GeoConsent,
+  type GeoResult,
+  type PlaceBranding,
+  type StoredPlace,
+};
+
 export const PLACE_STORAGE_KEY = "xsnow.place";
 export const GEO_CONSENT_KEY = "xsnow.geoConsent";
-
-export const FALLBACK_CITY = "Gatineau";
-export const FALLBACK_COUNTRY = "CA";
-export const FALLBACK_LOCALE = "fr-CA";
-export const FALLBACK_LAT = 45.4765;
-export const FALLBACK_LON = -75.7013;
-
-export type GeoConsent = "unset" | "granted" | "denied" | "skipped";
-
-export type StoredPlace = {
-  lat: number | null;
-  lon: number | null;
-  city: string;
-  countryCode: string;
-  localeHint: string;
-  updatedAt: number;
-};
-
-export type GeoResult = {
-  city: string;
-  countryCode: string;
-  localeHint: string;
-};
 
 export const GEO_API_URL =
   process.env.NEXT_PUBLIC_GEO_API_URL ||
   `${String(CHAT_API_URL).replace(/\/$/, "")}/geo`;
-
-export function fallbackPlace(now = Date.now()): StoredPlace {
-  return {
-    lat: FALLBACK_LAT,
-    lon: FALLBACK_LON,
-    city: FALLBACK_CITY,
-    countryCode: FALLBACK_COUNTRY,
-    localeHint: FALLBACK_LOCALE,
-    updatedAt: now,
-  };
-}
-
-export function placeFromCityName(city: string, now = Date.now()): StoredPlace {
-  const known = lookupKnownCity(city);
-  const pretty = displayCity(city) || FALLBACK_CITY;
-  return {
-    lat: known?.lat ?? null,
-    lon: known?.lon ?? null,
-    city: pretty,
-    countryCode: known?.countryCode ?? FALLBACK_COUNTRY,
-    localeHint: known?.localeHint ?? FALLBACK_LOCALE,
-    updatedAt: now,
-  };
-}
-
-export function isGeoConsent(value: unknown): value is GeoConsent {
-  return value === "unset" || value === "granted" || value === "denied" || value === "skipped";
-}
 
 export function readConsent(): GeoConsent {
   if (typeof window === "undefined") return "unset";
@@ -101,7 +73,6 @@ function isStoredPlace(value: unknown): value is StoredPlace {
   const record = value as StoredPlace;
   return (
     typeof record.city === "string" &&
-    record.city.trim().length > 0 &&
     typeof record.countryCode === "string" &&
     typeof record.localeHint === "string" &&
     typeof record.updatedAt === "number" &&
@@ -166,6 +137,11 @@ function geoFromBigDataCloud(payload: unknown): GeoResult | null {
   };
 }
 
+function acceptOrNull(lat: number, lon: number, result: GeoResult | null): GeoResult | null {
+  if (!result || !acceptGeoResult(lat, lon, result)) return null;
+  return result;
+}
+
 async function reverseViaWorker(
   lat: number,
   lon: number,
@@ -178,7 +154,7 @@ async function reverseViaWorker(
     signal,
   });
   if (!response.ok) return null;
-  return geoResultFromPayload(await response.json());
+  return acceptOrNull(lat, lon, geoResultFromPayload(await response.json()));
 }
 
 async function reverseViaBigDataCloud(
@@ -192,19 +168,71 @@ async function reverseViaBigDataCloud(
   url.searchParams.set("localityLanguage", "fr");
   const response = await fetch(url, { signal });
   if (!response.ok) return null;
-  return geoFromBigDataCloud(await response.json());
+  return acceptOrNull(lat, lon, geoFromBigDataCloud(await response.json()));
+}
+
+function geoFromNominatim(payload: unknown): GeoResult | null {
+  if (!payload || typeof payload !== "object") return null;
+  const record = payload as {
+    address?: {
+      city?: unknown;
+      town?: unknown;
+      village?: unknown;
+      municipality?: unknown;
+      county?: unknown;
+      state?: unknown;
+      country_code?: unknown;
+    };
+  };
+  const address = record.address;
+  if (!address) return null;
+  const city =
+    cityFromUnknown(address.city) ||
+    cityFromUnknown(address.town) ||
+    cityFromUnknown(address.village) ||
+    cityFromUnknown(address.municipality) ||
+    cityFromUnknown(address.county);
+  const countryCode =
+    typeof address.country_code === "string" ? address.country_code.trim().toUpperCase() : "";
+  if (!city || !countryCode) return null;
+  return {
+    city: displayCity(city),
+    countryCode,
+    localeHint: inferLocaleHint(
+      countryCode,
+      typeof address.state === "string" ? address.state : null,
+    ),
+  };
+}
+
+async function reverseViaNominatim(
+  lat: number,
+  lon: number,
+  signal?: AbortSignal,
+): Promise<GeoResult | null> {
+  const url = new URL("https://nominatim.openstreetmap.org/reverse");
+  url.searchParams.set("lat", String(lat));
+  url.searchParams.set("lon", String(lon));
+  url.searchParams.set("format", "json");
+  url.searchParams.set("accept-language", "fr");
+  const response = await fetch(url, {
+    signal,
+    headers: { Accept: "application/json" },
+  });
+  if (!response.ok) return null;
+  return acceptOrNull(lat, lon, geoFromNominatim(await response.json()));
 }
 
 export async function reverseGeocode(
   lat: number,
   lon: number,
   signal?: AbortSignal,
-): Promise<GeoResult> {
+): Promise<GeoResult | null> {
   try {
     const fromWorker = await reverseViaWorker(lat, lon, signal);
     if (fromWorker) return fromWorker;
   } catch {
-    // Worker missing, CORS, or quota — try the keyless browser geocoder.
+    // Worker missing, CORS, or quota — try keyless browser geocoders.
   }
 
   try {
@@ -214,11 +242,14 @@ export async function reverseGeocode(
     // Offline or blocked.
   }
 
-  return {
-    city: FALLBACK_CITY,
-    countryCode: FALLBACK_COUNTRY,
-    localeHint: FALLBACK_LOCALE,
-  };
+  try {
+    const fromNominatim = await reverseViaNominatim(lat, lon, signal);
+    if (fromNominatim) return fromNominatim;
+  } catch {
+    // Nominatim blocked in the browser — stay unresolved, never fake Gatineau.
+  }
+
+  return null;
 }
 
 /**
