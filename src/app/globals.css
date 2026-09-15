@@ -20,6 +20,8 @@
   --home-gap: 0.25rem;
   /* Space between the header card and the avatar/chat card on home only. */
   --home-block-gap: 0.75rem;
+  --brand-title: clamp(1.5rem, 7.4vw, 3rem);
+  --brand-slogan: clamp(0.9rem, 3.8vw, 1.2rem);
 }
 
 @media (min-width: 640px) {
@@ -98,25 +100,31 @@ body {
 }
 
 /*
- * Open Community + slogan sit at the physical top of the page (above the
- * wordmark/nav card). Home still vertically centers the remaining stack in
- * the leftover space, so this uses the former dead band instead of adding height.
+ * Open Community + slogan sit above the wordmark/nav card.
+ * On home, the banner is vertically centered in the leftover band between
+ * the viewport top and the first chrome card (balanced by a matching 1fr
+ * below the stack so the cards stay in the middle of the screen).
  */
 .brand-banner {
   position: relative;
   z-index: 30;
   flex-shrink: 0;
-  padding: 0 0.25rem 0.125rem;
+  padding: 0.15rem 0.25rem 0.25rem;
   text-align: center;
 }
 
+.brand-banner h1 {
+  font-size: var(--brand-title);
+}
+
+.brand-banner p {
+  font-size: var(--brand-slogan);
+}
+
 /*
- * Wordmark/nav + main share leftover height below the page-top brand banner
- * and above the sticky footer.
- * On home (#home-guide), that remaining stack is vertically centered so it is
- * not stuck under the status bar with a dead band above the footer.
- * `center` is declared first: iOS Safari drops `safe center` as a whole when
- * it is the only value, which is why justify-[safe_center] pinned content top.
+ * Wordmark/nav + main share leftover height above the sticky footer.
+ * On home (#home-guide), a 4-row grid balances leftover space above the
+ * chrome card (banner centered there) and below the avatar card.
  */
 .app-stage {
   position: relative;
@@ -132,10 +140,27 @@ body {
 }
 
 .app-stage:has(#home-guide) {
-  justify-content: center;
-  justify-content: safe center;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr) auto auto minmax(0, 1fr);
+  align-items: stretch;
+  justify-content: stretch;
   overflow: visible;
-  gap: var(--home-block-gap);
+  gap: 0;
+}
+
+.app-stage:has(#home-guide)::after {
+  content: "";
+}
+
+.app-stage:has(#home-guide) > .brand-banner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
 }
 
 .app-stage-main {
@@ -155,7 +180,8 @@ body {
 }
 
 .app-stage:has(#home-guide) > .app-stage-main {
-  flex: 0 1 auto;
+  flex: none;
+  margin-top: var(--home-block-gap);
   justify-content: center;
   overflow: visible;
 }
