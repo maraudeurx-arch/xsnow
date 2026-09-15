@@ -1,7 +1,7 @@
 "use client";
 
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
-import { noteCommunityIdea } from "@/lib/analytics";
+import { noteCommunityIdea, noteIdeaSubmit } from "@/lib/analytics";
 import { interpolate } from "@/lib/i18n";
 import { useI18n } from "@/lib/i18n/locale";
 import {
@@ -23,6 +23,7 @@ import {
   type IdeaFormInput,
   type Involvement,
 } from "@/lib/ideas";
+import { FeedbackRow } from "@/components/FeedbackRow";
 import { copyText } from "@/lib/offers";
 import { useStoredList } from "@/lib/useStoredList";
 
@@ -105,6 +106,7 @@ export function IdeasBoard() {
       : [idea, ...items];
     setStored(next);
     noteCommunityIdea(analyticsSnippet(idea));
+    noteIdeaSubmit(idea.involvement.join("+"));
     setForm(emptyIdeaForm());
     setEditingId(null);
     startShare(idea, true);
@@ -280,6 +282,7 @@ export function IdeasBoard() {
           >
             {copy.newIdea}
           </button>
+          <FeedbackRow surface="vos-idees" />
         </section>
       ) : null}
 

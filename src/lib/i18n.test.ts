@@ -110,6 +110,11 @@ describe("vos idees copy", () => {
     assert.deepEqual(Object.keys(es.ideas), Object.keys(fr.ideas));
     assert.deepEqual(Object.keys(en.chat), Object.keys(fr.chat));
     assert.deepEqual(Object.keys(es.chat), Object.keys(fr.chat));
+    assert.deepEqual(Object.keys(en.shareOpc), Object.keys(fr.shareOpc));
+    assert.deepEqual(Object.keys(es.shareOpc), Object.keys(fr.shareOpc));
+    assert.deepEqual(Object.keys(en.feedback), Object.keys(fr.feedback));
+    assert.deepEqual(Object.keys(es.feedback), Object.keys(fr.feedback));
+    assert.equal(fr.shareOpc.title, "Partager OPC");
     assert.ok(fr.features.vosIdees.title);
     assert.match(fr.systemPrompt, /Vos idées/);
     assert.match(en.systemPrompt, /Your ideas/);
@@ -150,6 +155,10 @@ describe("install tip copy", () => {
   it("keeps iOS home-screen steps in FR/EN/ES", () => {
     assert.match(fr.install.tip, /Partager/);
     assert.match(fr.install.tip, /écran d’accueil/);
+    assert.match(fr.install.tipAndroid, /Android/);
+    assert.match(fr.install.tipAndroid, /écran d’accueil/);
+    assert.match(en.install.tipAndroid, /Home screen/i);
+    assert.match(es.install.tipAndroid, /pantalla de inicio/);
     assert.match(en.install.tip, /Share/);
     assert.match(en.install.tip, /Home Screen/);
     assert.match(es.install.tip, /Compartir/);
@@ -157,6 +166,12 @@ describe("install tip copy", () => {
     assert.equal(fr.install.dismiss, "Compris");
     assert.equal(en.install.dismiss, "Got it");
     assert.equal(es.install.dismiss, "Entendido");
+    assert.deepEqual(Object.keys(en.install), Object.keys(fr.install));
+    assert.deepEqual(Object.keys(es.install), Object.keys(fr.install));
+    assert.match(fr.chat.micPermission, /Android/);
+    assert.match(en.chat.micPermission, /Android/);
+    assert.match(es.chat.micPermission, /Android/);
+    assert.match(fr.geo.errors.denied, /Android/);
   });
 });
 

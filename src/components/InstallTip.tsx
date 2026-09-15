@@ -4,7 +4,7 @@ import { Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useNeedsConsentSheet } from "@/components/ConsentSheet";
 import { useI18n } from "@/lib/i18n/locale";
-import { shouldShowInstallTip, writeInstallTipDismissed } from "@/lib/install-tip";
+import { isAndroidDevice, shouldShowInstallTip, writeInstallTipDismissed } from "@/lib/install-tip";
 import { useHasHydrated } from "@/lib/useAnalyticsConsent";
 
 export function InstallTip({ compact = false }: { compact?: boolean }) {
@@ -44,7 +44,7 @@ function InstallTipInner({ compact }: { compact: boolean }) {
           compact ? "text-[11px]" : "text-sm"
         }`}
       >
-        {m.install.tip}
+        {isAndroidDevice() ? m.install.tipAndroid : m.install.tip}
       </p>
       <button
         type="button"

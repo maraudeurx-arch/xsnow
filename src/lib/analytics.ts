@@ -13,6 +13,9 @@
  * - `monetize_suggestion` — short free text (trim/cap 280) when chat looks like
  *   a monetization idea (keywords: monétiser, monetize, suggestion, service,
  *   activité / activity, vos idées) or when the visitor submits Vos idées
+ * - `idea_submit` — `{ text }` involvement flags (`tete+coeur+mains`) from Vos idées
+ * - `invite_open` — first-touch `?invite=` / `?ref=` code (`code` or `code|src`)
+ * - `feedback_pos` / `feedback_neg` — `{ text }` surface (`accueil` / `vos-idees`)
  * - `offer_created` / `request_created` — anonymized `{ kind }` only (e.g.
  *   `car_morning`). No names, emails, phones, or Interac contacts.
  *
@@ -21,6 +24,7 @@
  */
 
 import { analyticsAllowed } from "./consent.ts";
+import { INVITE_OPEN_SENT_KEY } from "./invite.ts";
 
 export const ANON_ID_KEY = "xsnow.anonId";
 export const SESSION_START_KEY = "xsnow.sessionStartSent";
@@ -70,6 +74,10 @@ export type AnalyticsEvent =
   | { type: "lang"; session: string; t: number; lang: AnalyticsLang }
   | { type: "place"; session: string; t: number; city: string; countryCode: string }
   | { type: "monetize_suggestion"; session: string; t: number; text: string }
+  | { type: "idea_submit"; session: string; t: number; text: string }
+  | { type: "invite_open"; session: string; t: number; text: string }
+  | { type: "feedback_pos"; session: string; t: number; text: string }
+  | { type: "feedback_neg"; session: string; t: number; text: string }
   | { type: "offer_created"; session: string; t: number; kind: string }
   | { type: "request_created"; session: string; t: number; kind: string };
 
@@ -173,10 +181,19 @@ export function toAnalyticsEvent(raw: unknown, session: string, now = Date.now()
     if (!city || !countryCode) return null;
     return { type: "place", session, t: now, city, countryCode };
   }
-  if (type === "monetize_suggestion") {
+  if (type === "monetize_suggestion" || type === "idea_submit") {
     const text = typeof record.text === "string" ? sanitizeSuggestion(record.text) : "";
     if (!text) return null;
-    return { type: "monetize_suggestion", session, t: now, text };
+    return { type, session, t: now, text };
+  }
+  if (type === "invite_open") {
+    const text = typeof record.text === "string" ? sanitizeSuggestion(record.text) : "";
+    if (!text) return null;
+    return { type: "invite_open", session, t: now, text: text.slice(0, 40) };
+  }
+  if (type === "feedback_pos" || type === "feedback_neg") {
+    const text = typeof record.text === "string" ? sanitizeSuggestion(record.text) : "app";
+    return { type, session, t: now, text: (text || "app").slice(0, 40) };
   }
   if (type === "offer_created" || type === "request_created") {
     const kind = typeof record.kind === "string" ? sanitizeOfferKind(record.kind) : "";
@@ -368,6 +385,36 @@ export function noteCommunityIdea(text: string) {
   if (!clean) return;
   const session = readOrCreateAnonId(browserLocal());
   enqueue({ type: "monetize_suggestion", session, t: Date.now(), text: clean });
+}
+
+export function noteIdeaSubmit(flags: string) {
+  if (typeof window === "undefined") return;
+  if (!canSendAnalytics()) return;
+  const clean = sanitizeSuggestion(flags).slice(0, 80);
+  if (!clean) return;
+  const session = readOrCreateAnonId(browserLocal());
+  enqueue({ type: "idea_submit", session, t: Date.now(), text: clean });
+}
+
+export function noteInviteOpen(text: string) {
+  if (typeof window === "undefined") return;
+  if (!canSendAnalytics()) return;
+  const clean = sanitizeSuggestion(text).slice(0, 40);
+  if (!clean) return;
+  const local = browserLocal();
+  const session = readOrCreateAnonId(local);
+  if (storageGet(local, INVITE_OPEN_SENT_KEY) === clean) return;
+  storageSet(local, INVITE_OPEN_SENT_KEY, clean);
+  enqueue({ type: "invite_open", session, t: Date.now(), text: clean });
+}
+
+export function noteFeedback(kind: "pos" | "neg", surface: string) {
+  if (typeof window === "undefined") return;
+  if (!canSendAnalytics()) return;
+  const type = kind === "pos" ? "feedback_pos" : "feedback_neg";
+  const clean = (sanitizeSuggestion(surface) || "app").slice(0, 40);
+  const session = readOrCreateAnonId(browserLocal());
+  enqueue({ type, session, t: Date.now(), text: clean });
 }
 
 export function noteOfferCreated(kind: string) {

@@ -33,6 +33,8 @@ export const fr = {
   },
   install: {
     tip: "Sur iPhone (Safari) : Partager → Sur l’écran d’accueil. L’app s’ouvre ensuite comme une icône.",
+    tipAndroid:
+      "Sur Android (Chrome) : menu ⋮ → Installer l’app, ou Ajouter à l’écran d’accueil. L’app s’ouvre ensuite comme une icône.",
     dismiss: "Compris",
   },
   guide: {
@@ -64,7 +66,7 @@ export const fr = {
     micUnsupported:
       "La dictée n’est pas disponible sur cet appareil. Écris ton message — le clavier reste toujours là.",
     micPermission:
-      "Accès au micro refusé. Sur iPhone : Réglages → Safari → Microphone, ou écris ton message.",
+      "Accès au micro refusé. iPhone : Réglages → Safari → Microphone. Android : Réglages → Applications → Chrome → Autorisations. Ou écris ton message.",
     micSilent: "Je n’ai rien entendu. Réessaie « Parler », ou écris ton message.",
     micNetwork: "Dictée indisponible pour le moment. Écris ton message.",
     micError: "Impossible d’écouter pour le moment. Écris ton message.",
@@ -83,7 +85,7 @@ export const fr = {
         "La géolocalisation n’est pas disponible sur cet appareil. Tu peux continuer avec Gatineau.",
       generic: "Impossible d’obtenir ta position. Tu peux réessayer, ou continuer avec Gatineau.",
       denied:
-        "Safari a refusé la position. Dans Réglages → Safari → Localisation, ou continue avec Gatineau.",
+        "Position refusée. iPhone : Réglages → Safari → Localisation. Android : Réglages → Applications → Chrome → Autorisations. Ou continue avec Gatineau.",
       timeout: "La position a pris trop de temps. Réessaie, ou continue avec Gatineau.",
       unavailable: "Position indisponible pour le moment. Réessaie, ou continue avec Gatineau.",
     },
@@ -674,6 +676,22 @@ export const fr = {
     timeWarn: "Pas de fermes de clics, pas de faux comptes.",
     bandwidthNote:
       "Partage de bande passante (hors OPC) : petits montants, vérifier ton FAI. Ce n’est pas un chemin recommandé ici.",
+  },
+  shareOpc: {
+    title: "Partager OPC",
+    short: "Partager",
+    hint: "Modifiez le texte, puis copiez-le pour un ami, un voisin ou un critique. Le lien garde votre code d’invitation.",
+    edit: "Modifier",
+    copy: "Copier",
+    copied: "Texte copié.",
+    failed: "Copie impossible. Le texte est affiché : sélectionnez-le.",
+  },
+  feedback: {
+    prompt: "Utile ?",
+    useful: "Utile",
+    notUseful: "Pas utile",
+    thanks: "Merci.",
+    localOnly: "Sans stats, ça reste sur cet appareil.",
   },
   ideas: {
     textLabel: "Ton idée",

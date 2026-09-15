@@ -82,6 +82,13 @@ export function AccueilMenu() {
                 {m.menu.vosIdees}
               </Link>
             ))}
+            <Link
+              href="/mon-profil/inviter"
+              className={itemClass(pathMatches(pathname, "/mon-profil/inviter"))}
+              onClick={close}
+            >
+              {m.shareOpc.title}
+            </Link>
           </Group>
           <Group title={m.menu.offres}>
             {OFFERS.map((item) => (

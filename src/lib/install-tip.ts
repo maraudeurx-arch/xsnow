@@ -1,5 +1,5 @@
 /**
- * One-time iOS “Add to Home Screen” tip. Dismiss is stored in localStorage.
+ * One-time iOS / Android “Add to Home Screen” tip. Dismiss is stored in localStorage.
  * `?installTip=1` forces the tip for QA (desktop browser, screenshots).
  */
 
@@ -36,6 +36,12 @@ export function isIosDevice(env: InstallTipEnv = {}) {
     (typeof navigator === "undefined" ? 0 : navigator.maxTouchPoints || 0);
   // iPadOS 13+ reports as Macintosh.
   return platform === "MacIntel" && touch > 1;
+}
+
+export function isAndroidDevice(env: InstallTipEnv = {}) {
+  const ua =
+    env.userAgent ?? (typeof navigator === "undefined" ? "" : navigator.userAgent);
+  return /Android/i.test(ua);
 }
 
 export function isStandaloneDisplay(env: InstallTipEnv = {}) {
@@ -83,5 +89,5 @@ export function shouldShowInstallTip(env: InstallTipEnv = {}) {
     (typeof window === "undefined" ? "" : window.location.search);
   if (forceInstallTipFromSearch(search)) return true;
   if (isStandaloneDisplay(env)) return false;
-  return isIosDevice(env);
+  return isIosDevice(env) || isAndroidDevice(env);
 }

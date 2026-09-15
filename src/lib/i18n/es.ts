@@ -35,6 +35,8 @@ export const es: Messages = {
   },
   install: {
     tip: "En iPhone (Safari): Compartir → Añadir a pantalla de inicio. Luego la app se abre como un icono.",
+    tipAndroid:
+      "En Android (Chrome): menú ⋮ → Instalar la app, o Añadir a pantalla de inicio. Luego la app se abre como un icono.",
     dismiss: "Entendido",
   },
   guide: {
@@ -66,7 +68,7 @@ export const es: Messages = {
     micUnsupported:
       "El dictado no está disponible en este aparato. Escribe tu mensaje — el teclado sigue ahí.",
     micPermission:
-      "Acceso al micrófono denegado. En iPhone: Ajustes → Safari → Micrófono, o escribe tu mensaje.",
+      "Acceso al micrófono denegado. iPhone: Ajustes → Safari → Micrófono. Android: Ajustes → Aplicaciones → Chrome → Permisos. O escribe tu mensaje.",
     micSilent: "No he oído nada. Vuelve a tocar «Hablar», o escribe tu mensaje.",
     micNetwork: "Dictado no disponible por ahora. Escribe tu mensaje.",
     micError: "No se puede escuchar ahora. Escribe tu mensaje.",
@@ -85,7 +87,7 @@ export const es: Messages = {
         "La geolocalización no está disponible en este aparato. Puedes continuar con Gatineau.",
       generic: "No se pudo obtener tu ubicación. Reintenta, o continúa con Gatineau.",
       denied:
-        "Safari denegó la ubicación. En Ajustes → Safari → Localización, o continúa con Gatineau.",
+        "Ubicación denegada. iPhone: Ajustes → Safari → Localización. Android: Ajustes → Aplicaciones → Chrome → Permisos. O continúa con Gatineau.",
       timeout: "La ubicación tardó demasiado. Reintenta, o continúa con Gatineau.",
       unavailable: "Ubicación no disponible por ahora. Reintenta, o continúa con Gatineau.",
     },
@@ -686,6 +688,22 @@ export const es: Messages = {
     timeWarn: "Sin granjas de clics, sin cuentas falsas.",
     bandwidthNote:
       "Compartir ancho de banda (fuera de OPC): importes pequeños, verifica tu operador. No es un camino recomendado aquí.",
+  },
+  shareOpc: {
+    title: "Compartir OPC",
+    short: "Compartir",
+    hint: "Edita el texto y luego cópialo para un amigo, un vecino o un crítico. El enlace conserva tu código de invitación.",
+    edit: "Editar",
+    copy: "Copiar",
+    copied: "Copiado.",
+    failed: "No se pudo copiar. El texto está abajo: selecciónalo.",
+  },
+  feedback: {
+    prompt: "¿Útil?",
+    useful: "Útil",
+    notUseful: "No útil",
+    thanks: "Gracias.",
+    localOnly: "Sin estadísticas, esto se queda en este aparato.",
   },
   ideas: {
     textLabel: "Tu idea",

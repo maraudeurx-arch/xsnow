@@ -6,6 +6,7 @@ import { AvatarChat } from "@/components/AvatarChat";
 import { AvatarDisc } from "@/components/AvatarDisc";
 import { LocationPrompt } from "@/components/LocationPrompt";
 import { useNeedsConsentSheet } from "@/components/ConsentSheet";
+import { FeedbackRow } from "@/components/FeedbackRow";
 import { InstallTip } from "@/components/InstallTip";
 import { AVATARS, avatarById, type Avatar, type AvatarId } from "@/lib/avatars";
 import { welcomeSpeechFor } from "@/lib/content";
@@ -129,9 +130,16 @@ export function Guide() {
             >
               {m.nav.vosIdees}
             </Link>
+            <Link
+              href="/mon-profil/inviter"
+              className="tap inline-flex min-h-9 min-w-0 items-center rounded-full border border-gold/50 bg-gold/10 px-3 text-[11px] font-extrabold text-gold"
+            >
+              {m.shareOpc.short}
+            </Link>
           </nav>
           <InstallTip compact />
           {needsPrompt && !waitingOnConsent ? <LocationPrompt /> : <AvatarChat avatar={chosen} />}
+          {!needsPrompt && !waitingOnConsent ? <FeedbackRow surface="accueil" /> : null}
         </>
       ) : null}
     </section>

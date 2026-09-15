@@ -35,6 +35,8 @@ export const en: Messages = {
   },
   install: {
     tip: "On iPhone (Safari): Share → Add to Home Screen. The app then opens like an icon.",
+    tipAndroid:
+      "On Android (Chrome): menu ⋮ → Install app, or Add to Home screen. The app then opens like an icon.",
     dismiss: "Got it",
   },
   guide: {
@@ -66,7 +68,7 @@ export const en: Messages = {
     micUnsupported:
       "Dictation isn’t available on this device. Type your message — the keyboard is always there.",
     micPermission:
-      "Microphone access denied. On iPhone: Settings → Safari → Microphone, or type your message.",
+      "Microphone access denied. iPhone: Settings → Safari → Microphone. Android: Settings → Apps → Chrome → Permissions. Or type your message.",
     micSilent: "I didn’t hear anything. Try “Speak” again, or type your message.",
     micNetwork: "Dictation unavailable right now. Type your message.",
     micError: "Can’t listen right now. Type your message.",
@@ -84,7 +86,7 @@ export const en: Messages = {
       unsupported: "Geolocation isn’t available on this device. You can continue with Gatineau.",
       generic: "Couldn’t get your location. Try again, or continue with Gatineau.",
       denied:
-        "Safari denied location. In Settings → Safari → Location, or continue with Gatineau.",
+        "Location denied. iPhone: Settings → Safari → Location. Android: Settings → Apps → Chrome → Permissions. Or continue with Gatineau.",
       timeout: "Location took too long. Try again, or continue with Gatineau.",
       unavailable: "Location unavailable right now. Try again, or continue with Gatineau.",
     },
@@ -683,6 +685,22 @@ export const en: Messages = {
     timeWarn: "No click farms, no fake accounts.",
     bandwidthNote:
       "Bandwidth sharing (outside OPC): tiny amounts, check your ISP. Not a recommended path here.",
+  },
+  shareOpc: {
+    title: "Share OPC",
+    short: "Share",
+    hint: "Edit the text, then copy it for a friend, a neighbour, or a critic. The link keeps your invite code.",
+    edit: "Edit",
+    copy: "Copy",
+    copied: "Copied.",
+    failed: "Couldn’t copy. The text is below — select it.",
+  },
+  feedback: {
+    prompt: "Useful?",
+    useful: "Useful",
+    notUseful: "Not useful",
+    thanks: "Thanks.",
+    localOnly: "Without stats, this stays on this device.",
   },
   ideas: {
     textLabel: "Your idea",

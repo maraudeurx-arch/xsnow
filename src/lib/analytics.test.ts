@@ -130,9 +130,27 @@ describe("worker parseStatsEvents", () => {
           name: "Ada",
           t: 6,
         },
+        {
+          type: "idea_submit",
+          session: "aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee",
+          text: "tete+mains",
+          t: 7,
+        },
+        {
+          type: "invite_open",
+          session: "aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee",
+          text: "ami|critique",
+          t: 8,
+        },
+        {
+          type: "feedback_pos",
+          session: "aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee",
+          text: "accueil",
+          t: 9,
+        },
       ],
     });
-    assert.equal(parsed.length, 6);
+    assert.equal(parsed.length, 9);
     assert.equal(parsed[2]?.city, "Gatineau");
     assert.equal("lat" in (parsed[2] ?? {}), false);
     assert.match(parsed[3]?.text ?? "", /\[redacted\]/);
@@ -141,6 +159,26 @@ describe("worker parseStatsEvents", () => {
     assert.equal("email" in (parsed[4] ?? {}), false);
     assert.equal(parsed[5]?.type, "request_created");
     assert.equal("name" in (parsed[5] ?? {}), false);
+    assert.equal(parsed[6]?.type, "idea_submit");
+    assert.equal(parsed[6]?.text, "tete+mains");
+    assert.equal(parsed[7]?.type, "invite_open");
+    assert.equal(parsed[7]?.text, "ami|critique");
+    assert.equal(parsed[8]?.type, "feedback_pos");
+  });
+
+  it("accepts feedback_neg", () => {
+    const parsed = parseStatsEvents({
+      events: [
+        {
+          type: "feedback_neg",
+          session: "aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee",
+          text: "vos-idees",
+          t: 1,
+        },
+      ],
+    });
+    assert.equal(parsed[0]?.type, "feedback_neg");
+    assert.equal(parsed[0]?.text, "vos-idees");
   });
 });
 
