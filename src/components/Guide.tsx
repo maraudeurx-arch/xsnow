@@ -123,6 +123,12 @@ export function Guide() {
             >
               {m.menu.gagnerMaintenant}
             </Link>
+            <Link
+              href="/vos-idees/#form"
+              className="tap inline-flex min-h-9 min-w-0 items-center rounded-full border border-gold/70 bg-gold/20 px-3 text-[11px] font-extrabold text-gold"
+            >
+              {m.nav.vosIdees}
+            </Link>
           </nav>
           <InstallTip compact />
           {needsPrompt && !waitingOnConsent ? <LocationPrompt /> : <AvatarChat avatar={chosen} />}

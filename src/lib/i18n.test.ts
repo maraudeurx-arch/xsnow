@@ -95,6 +95,29 @@ describe("wallet copy", () => {
   });
 });
 
+describe("vos idees copy", () => {
+  it("keeps FR/EN/ES idea capture in sync", () => {
+    assert.equal(fr.nav.vosIdees, "Vos idées");
+    assert.equal(en.nav.vosIdees, "Your ideas");
+    assert.equal(es.nav.vosIdees, "Tus ideas");
+    assert.match(fr.menu.vosIdees, /S’impliquer/);
+    assert.match(en.menu.vosIdees, /Get involved/);
+    assert.match(es.menu.vosIdees, /Implicarte/);
+    assert.equal(fr.chat.ideaPrompt, "Une idée pour la communauté ?");
+    assert.equal(en.ideas.tete, "Head");
+    assert.equal(es.ideas.mains, "Manos");
+    assert.deepEqual(Object.keys(en.ideas), Object.keys(fr.ideas));
+    assert.deepEqual(Object.keys(es.ideas), Object.keys(fr.ideas));
+    assert.deepEqual(Object.keys(en.chat), Object.keys(fr.chat));
+    assert.deepEqual(Object.keys(es.chat), Object.keys(fr.chat));
+    assert.ok(fr.features.vosIdees.title);
+    assert.match(fr.systemPrompt, /Vos idées/);
+    assert.match(en.systemPrompt, /Your ideas/);
+    assert.match(es.systemPrompt, /Tus ideas/);
+    assert.match(fr.welcome, /Vos idées/);
+  });
+});
+
 describe("gagner maintenant copy", () => {
   it("keeps three honest paths and the anti-pattern in FR/EN/ES", () => {
     assert.equal(fr.menu.gagnerMaintenant, "Gagner maintenant");

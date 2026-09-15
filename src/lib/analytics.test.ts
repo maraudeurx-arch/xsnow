@@ -23,6 +23,7 @@ describe("looksLikeMonetizeSuggestion", () => {
     assert.equal(looksLikeMonetizeSuggestion("Un nouveau service de courses"), true);
     assert.equal(looksLikeMonetizeSuggestion("Une activité payante le week-end"), true);
     assert.equal(looksLikeMonetizeSuggestion("A neighbourhood activity for teens"), true);
+    assert.equal(looksLikeMonetizeSuggestion("J’ai une idée pour le quartier"), true);
     assert.equal(looksLikeMonetizeSuggestion("Bonjour, quel temps fait-il ?"), false);
   });
 });
@@ -161,6 +162,35 @@ describe("offer/request analytics", () => {
       t: 9,
       kind: "car_morning",
     });
+  });
+});
+
+describe("community idea analytics", () => {
+  it("maps a Vos idées snippet onto monetize_suggestion without GPS or email", () => {
+    const event = toAnalyticsEvent(
+      {
+        type: "monetize_suggestion",
+        text: "[tete+mains 2h @Hull] Déneiger les allées  write me at ada@example.com",
+        lat: 45.47,
+        email: "ada@example.com",
+      },
+      "anon-session-1",
+      9,
+    );
+    assert.deepEqual(
+      {
+        type: event?.type,
+        text: event && "text" in event ? event.text : "",
+        hasLat: event ? "lat" in event : false,
+        hasEmail: event ? "email" in event : false,
+      },
+      {
+        type: "monetize_suggestion",
+        text: "[tete+mains 2h @Hull] Déneiger les allées write me at [redacted]",
+        hasLat: false,
+        hasEmail: false,
+      },
+    );
   });
 });
 

@@ -1,8 +1,10 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { noteMonetizeSuggestion } from "@/lib/analytics";
+import { looksLikeMonetizeSuggestion, noteMonetizeSuggestion } from "@/lib/analytics";
 import { avatarSystemPromptFor } from "@/lib/content";
+import { looksLikeCommunityIdea, writeIdeaDraft } from "@/lib/ideas";
 import { useI18n } from "@/lib/i18n/locale";
 import { usePlace } from "@/lib/place";
 import { dictationLang } from "@/lib/voices";
@@ -44,6 +46,7 @@ export function AvatarChat({ avatar }: { avatar: Avatar }) {
   const [busy, setBusy] = useState(false);
   const [listening, setListening] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [pendingIdea, setPendingIdea] = useState("");
   const listRef = useRef<HTMLDivElement>(null);
   const abortRef = useRef<AbortController | null>(null);
   const messagesRef = useRef<ChatMessage[]>([]);
@@ -97,6 +100,9 @@ export function AvatarChat({ avatar }: { avatar: Avatar }) {
     const text = raw.trim();
     if (!text || busyRef.current) return;
     noteMonetizeSuggestion(text);
+    if (looksLikeCommunityIdea(text) || looksLikeMonetizeSuggestion(text)) {
+      setPendingIdea(text);
+    }
 
     busyRef.current = true;
     const nextMessages: ChatMessage[] = [
@@ -279,10 +285,22 @@ export function AvatarChat({ avatar }: { avatar: Avatar }) {
         {busy ? (
           <p className="mr-auto text-[11px] text-ice/70">…</p>
         ) : null}
-        {error ? (
-          <p className="text-[11px] leading-snug text-gold" role="status">
-            {error}
-          </p>
+        {messages.length === 0 && !busy ? (
+          <Link
+            href="/vos-idees/#form"
+            className="tap mt-1 inline-flex min-h-11 w-full items-center justify-center rounded-2xl border border-gold/50 bg-gold/10 px-3 text-center text-[12px] font-extrabold text-gold"
+          >
+            {chat.ideaPrompt}
+          </Link>
+        ) : null}
+        {pendingIdea ? (
+          <Link
+            href="/vos-idees/#form"
+            className="tap inline-flex min-h-11 w-full items-center justify-center rounded-2xl border border-gold/50 bg-gold/10 px-3 text-center text-[12px] font-extrabold text-gold"
+            onClick={() => writeIdeaDraft(pendingIdea)}
+          >
+            {chat.ideaCapture}
+          </Link>
         ) : null}
       </div>
 

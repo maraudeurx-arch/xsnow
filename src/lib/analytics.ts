@@ -12,7 +12,7 @@
  * - `place` — `{ city, countryCode }` after geolocation succeeds (city-level only)
  * - `monetize_suggestion` — short free text (trim/cap 280) when chat looks like
  *   a monetization idea (keywords: monétiser, monetize, suggestion, service,
- *   activité / activity)
+ *   activité / activity, vos idées) or when the visitor submits Vos idées
  * - `offer_created` / `request_created` — anonymized `{ kind }` only (e.g.
  *   `car_morning`). No names, emails, phones, or Interac contacts.
  *
@@ -55,6 +55,12 @@ const SUGGESTION_NEEDLES = [
   "activite",
   "activity",
   "actividad",
+  "vos idees",
+  "your ideas",
+  "tus ideas",
+  "une idee",
+  "my idea",
+  "una idea",
 ];
 
 export type AnalyticsLang = "fr" | "en" | "es";
@@ -348,6 +354,16 @@ export function noteMonetizeSuggestion(text: string) {
   if (typeof window === "undefined") return;
   if (!canSendAnalytics()) return;
   if (!looksLikeMonetizeSuggestion(text)) return;
+  const clean = sanitizeSuggestion(text);
+  if (!clean) return;
+  const session = readOrCreateAnonId(browserLocal());
+  enqueue({ type: "monetize_suggestion", session, t: Date.now(), text: clean });
+}
+
+/** Vos idées form: already a suggestion — skip the chat keyword gate. */
+export function noteCommunityIdea(text: string) {
+  if (typeof window === "undefined") return;
+  if (!canSendAnalytics()) return;
   const clean = sanitizeSuggestion(text);
   if (!clean) return;
   const session = readOrCreateAnonId(browserLocal());
