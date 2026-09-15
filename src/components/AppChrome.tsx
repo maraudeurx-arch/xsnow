@@ -18,8 +18,17 @@ export function AppChrome({ children }: { children: ReactNode }) {
         <SeasonalBackdrop />
       </Suspense>
 
+      <header className="brand-banner">
+        <h1 className="mx-auto font-[family-name:var(--font-fraunces)] text-[clamp(1.02rem,4.8vw,2.4rem)] leading-none font-extrabold text-balance text-snow [text-shadow:0_2px_18px_rgba(0,0,0,0.72)]">
+          <BrandCopy field="community" />
+        </h1>
+        <p className="mt-px text-[clamp(0.62rem,1.9vw,0.95rem)] font-semibold tracking-wide text-gold [text-shadow:0_2px_10px_rgba(0,0,0,0.55)]">
+          <BrandCopy field="slogan" />
+        </p>
+      </header>
+
       <div className="app-stage">
-        <header className="relative z-30 shrink-0 overflow-visible">
+        <div className="relative z-30 shrink-0 overflow-visible">
           <div className="chrome-panel overflow-visible rounded-xl px-1.5 py-1">
             <div className="flex w-full items-center justify-between gap-1.5">
               <Link
@@ -32,17 +41,8 @@ export function AppChrome({ children }: { children: ReactNode }) {
             </div>
 
             <HeaderNav />
-
-            <div className="mt-0.5 text-center">
-              <h1 className="mx-auto font-[family-name:var(--font-fraunces)] text-[clamp(1.02rem,4.8vw,2.4rem)] leading-none font-extrabold text-balance text-snow [text-shadow:0_2px_18px_rgba(0,0,0,0.72)]">
-                <BrandCopy field="community" />
-              </h1>
-              <p className="text-[clamp(0.62rem,1.9vw,0.95rem)] font-semibold tracking-wide text-gold [text-shadow:0_2px_10px_rgba(0,0,0,0.55)]">
-                <BrandCopy field="slogan" />
-              </p>
-            </div>
           </div>
-        </header>
+        </div>
 
         <main className="app-stage-main">
           {children}
