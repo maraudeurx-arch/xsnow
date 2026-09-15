@@ -78,9 +78,96 @@ export const es: Messages = {
       unavailable: "Ubicación no disponible por ahora. Reintenta, o continúa con Gatineau.",
     },
   },
+  consent: {
+    title: "Tus opciones, en este aparato",
+    intro: "Dos opciones. La app funciona aunque digas que no.",
+    locationTitle: "Ubicación — opcional",
+    locationBody: "Muestra tu ciudad, luego proximidad / familia. No = {city}.",
+    locationYes: "Sí",
+    locationNo: "No — {city}",
+    analyticsTitle: "Estadísticas anónimas — opcionales",
+    analyticsBody: "Sesión, idioma, ciudad si la aceptaste, ideas de servicios. Para mejorar la app.",
+    analyticsYes: "Sí",
+    analyticsNo: "No",
+    privacy: "Privacidad",
+    changeLater: "Puedes cambiarlo en Mi perfil → Ajustes.",
+  },
+  legal: {
+    privacy: {
+      title: "Privacidad",
+      lead: "Qué recoge Open Community — y qué no hace.",
+      draft:
+        "Borrador para el producto comunitario, no un consejo jurídico. Tenemos en cuenta la LPRPDE (PIPEDA, Canadá) y la Ley 25 de Quebec (Loi 25): consentimiento, limitación de finalidades y conservación limitada.",
+      updated: "Última actualización: septiembre de 2026",
+      sections: [
+        {
+          heading: "Quiénes somos",
+          body: "Open Community (OPC) / Xsnow es una app de ayuda mutua de barrio, con el nombre de tu ciudad. Sitio estático en GitHub Pages. No hace falta una cuenta de correo.",
+        },
+        {
+          heading: "Qué recogemos",
+          body: "En este aparato (localStorage): idioma, avatar, tus anuncios, tus consentimientos, y si aceptas la ubicación: ciudad + coordenadas para el nombre de la ciudad — sin seguimiento continuo. Si aceptas las estadísticas: eventos anónimos a un Worker de Cloudflare (D1): sesión, idioma, ciudad/país si también aceptaste la ubicación, extractos cortos de ideas de monetización (correos y GPS eliminados). El chat del avatar envía tus mensajes al Worker para una respuesta. Sin publicidad de terceros.",
+        },
+        {
+          heading: "Por qué",
+          body: "Mejorar el producto y el crecimiento de la comunidad, y mostrar tu ciudad en la interfaz. No hay cookies publicitarias: no existen.",
+        },
+        {
+          heading: "Qué no hacemos",
+          body: "No vendemos datos personales. Sin seguimiento GPS continuo sin consentimiento. Sin reventa a anunciantes. Puedes rechazarlo todo y seguir usando la app (ciudad de respaldo: Gatineau).",
+        },
+        {
+          heading: "Consentimiento (Canadá / Quebec)",
+          body: "Pedimos un sí claro antes del permiso de ubicación del navegador y antes de enviar estadísticas. Las finalidades se limitan a lo descrito aquí. Puedes cambiar de opinión en Ajustes. Esto expresa nuestra intención respecto de PIPEDA y la Ley 25 — no es un consejo jurídico.",
+        },
+        {
+          heading: "Conservación",
+          body: "Datos locales: hasta que borres los datos del sitio o revoques una opción. Estadísticas: para mejorar el producto, sin GPS. Revocar las estadísticas detiene los envíos.",
+        },
+      ],
+    },
+    terms: {
+      title: "Condiciones",
+      lead: "Reglas cortas del MVP comunitario.",
+      draft: "Borrador para la comunidad, no un contrato de abogado.",
+      updated: "Última actualización: septiembre de 2026",
+      sections: [
+        {
+          heading: "La app",
+          body: "Open Community ayuda a los vecinos a ayudarse y, más adelante, a monetizar servicios locales. Es un producto en construcción.",
+        },
+        {
+          heading: "Tus anuncios",
+          body: "Por ahora, ofertas y peticiones se quedan en este aparato. Un acuerdo entre vecinos no es un contrato con OPC. La fianza de un préstamo es un acuerdo mostrado, no un depósito real en línea.",
+        },
+        {
+          heading: "Emergencias",
+          body: "Esto no es un servicio de emergencia. Si hay peligro, llama al 911.",
+        },
+        {
+          heading: "Cartera",
+          body: "Conectar una cartera es opcional (red de prueba Sepolia).",
+        },
+        {
+          heading: "Uso",
+          body: "Sin uso ilegal, sin acoso. Respeta a tus vecinos. Sigues siendo responsable de tu contenido y tus servicios.",
+        },
+        {
+          heading: "Límites",
+          body: "El servicio se ofrece tal cual. Podemos cambiar o pausar funciones. Consulta Privacidad para los datos.",
+        },
+      ],
+    },
+    about: {
+      extra:
+        "Open Community (OPC) es un proyecto de ayuda mutua de barrio: servicios entre vecinos, visibilidad local y, más adelante, alertas de proximidad. El nombre de tu ciudad aparece si aceptas la ubicación; si no, usamos Gatineau. Pedimos tu acuerdo antes de la geolocalización y antes de las estadísticas anónimas. Puedes rechazar ambas y seguir usando la app. Este texto es informativo, no un consejo jurídico.",
+    },
+  },
   footer: {
     before: "Proximidad y espíritu de ayuda mutua al servicio de ",
     after: ".",
+    privacy: "Privacidad",
+    terms: "Condiciones",
   },
   welcome:
     "Hola, soy tu avatar en el ecosistema Open Community. La proximidad y el espíritu de ayuda mutua de la gente de {city} son nuestra fuerza. Haz saber a tus vecinos un servicio que puedes prestarles a cambio de una compensación: ayudar a mudarse, hacer recados o ayudar en trabajos de la casa. Además, esta aplicación te ofrece servicios gratuitos, como ayudarte a encontrar tu teléfono si lo pierdes, y avisarte si tu hijo, tu pareja o tus padres mayores se alejan del lugar donde deben estar: la escuela, el trabajo o la residencia. Ve a Inicio y elige el servicio que te gustaría recibir, o que quieras ofrecer a tus vecinos de {city}. ¿Tienes sugerencias de tareas y servicios que te gustaría monetizar? Dímelo, y toda la comunidad se beneficiará. Las personas que comparten esta aplicación, y las ideas que se monetizan, recibirán a prorrata de sus esfuerzos. No dudes en preguntarme en cualquier momento: estoy a tu entera disposición.",
@@ -153,7 +240,7 @@ export const es: Messages = {
     },
     reglages: {
       title: "Ajustes",
-      lead: "Idioma de la aplicación. Las notificaciones y la estación de pantalla llegarán aquí.",
+      lead: "Idioma, ubicación y estadísticas de uso. Tus opciones se quedan en este aparato.",
     },
     inviter: {
       title: "Invitar a otros a unirse a la comunidad",
@@ -176,6 +263,16 @@ export const es: Messages = {
       "{placeName} / {community} — {slogan} Nuestra proximidad y nuestro espíritu de ayuda mutua son la garantía de nuestro éxito.",
     language: "Idioma",
     comingSoon: "Las notificaciones y la estación de pantalla llegarán aquí.",
+    locationConsent: "Ubicación",
+    locationHint:
+      "Para el nombre de tu ciudad y, más adelante, la proximidad. Desactivar: volvemos a Gatineau.",
+    analyticsConsent: "Estadísticas de uso anónimas",
+    analyticsHint:
+      "Sesión, idioma, ciudad/país si la ubicación está aceptada, ideas de monetización.",
+    privacy: "Privacidad",
+    terms: "Condiciones",
+    enabled: "Activado",
+    disabled: "Desactivado",
   },
   stubs: {
     mesInfos:

@@ -4,7 +4,7 @@ import { demonymFor } from "./demonym.ts";
 import { en } from "./i18n/en.ts";
 import { es } from "./i18n/es.ts";
 import { fr } from "./i18n/fr.ts";
-import { detectLocale, interpolate, parseLangOverride } from "./i18n/locales.ts";
+import { detectLocale, hrefWithLang, interpolate, parseLangOverride } from "./i18n/locales.ts";
 import { pickSpokenVoice } from "./voices.ts";
 
 describe("detectLocale", () => {
@@ -23,6 +23,15 @@ describe("parseLangOverride", () => {
     assert.equal(parseLangOverride("lang=es&city=Paris"), "es");
     assert.equal(parseLangOverride("?lang=de"), null);
     assert.equal(parseLangOverride("?city=Gatineau"), null);
+  });
+});
+
+describe("hrefWithLang", () => {
+  it("keeps ?lang= only for query-driven UI", () => {
+    assert.equal(hrefWithLang("/vie-privee", "fr", "query"), "/vie-privee?lang=fr");
+    assert.equal(hrefWithLang("/conditions/", "es", "query"), "/conditions/?lang=es");
+    assert.equal(hrefWithLang("/vie-privee", "en", "stored"), "/vie-privee");
+    assert.equal(hrefWithLang("/vie-privee", "en", "auto"), "/vie-privee");
   });
 });
 
@@ -52,6 +61,19 @@ describe("welcome and system prompt follow UI locale", () => {
       interpolate(es.systemPrompt, { city: "Gatineau", placeName: "GATINEAU", avatar: "" }),
       /únicamente en español/,
     );
+  });
+});
+
+describe("legal copy is present in FR/EN/ES", () => {
+  it("keeps the same privacy and terms section counts", () => {
+    assert.equal(fr.legal.privacy.sections.length, 6);
+    assert.equal(en.legal.privacy.sections.length, fr.legal.privacy.sections.length);
+    assert.equal(es.legal.privacy.sections.length, fr.legal.privacy.sections.length);
+    assert.equal(en.legal.terms.sections.length, fr.legal.terms.sections.length);
+    assert.equal(es.legal.terms.sections.length, fr.legal.terms.sections.length);
+    assert.match(fr.legal.privacy.draft, /Loi 25/);
+    assert.match(en.legal.privacy.draft, /Law 25/);
+    assert.match(es.legal.privacy.draft, /Ley 25/);
   });
 });
 

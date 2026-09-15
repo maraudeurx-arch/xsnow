@@ -1,5 +1,7 @@
 /** Must match `basePath` in next.config.ts (GitHub Pages project site). */
 export const BASE_PATH = "/xsnow";
+export const PRIVACY_HREF = "/vie-privee";
+export const TERMS_HREF = "/conditions";
 
 export function assetUrl(path: string) {
   const normalized = path.startsWith("/") ? path : `/${path}`;

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { interpolate } from "@/lib/i18n";
 import { useI18n } from "@/lib/i18n/locale";
+import { usePlace } from "@/lib/place";
 
 const NEARBY = [
   { nameKey: "cafe" as const, kindKey: "commerce" as const, distance: "120 m" },
@@ -14,10 +15,15 @@ const NEARBY = [
 
 export function ProximityBoard() {
   const { m } = useI18n();
+  const { consent, requestLocation } = usePlace();
   const [status, setStatus] = useState<string | null>(null);
   const shown = status ?? m.proximity.demo;
 
   function locate() {
+    if (consent !== "granted") {
+      requestLocation();
+      return;
+    }
     if (!navigator.geolocation) {
       setStatus(m.proximity.unsupported);
       return;

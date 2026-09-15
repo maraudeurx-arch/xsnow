@@ -82,9 +82,9 @@ Le Worker déployé est `https://xsnow-chat.xsnowopc.workers.dev`. Pour un autre
 
 ### Ville du visiteur (géolocalisation)
 
-Après le choix d’avatar, un bandeau demande la position (iPhone Safari : le dialogue natif part du bouton **Autoriser ma position**). On peut passer et rester à **Gatineau**. Consentement + `{ lat, lon, city, updatedAt }` restent dans `localStorage` (`xsnow.geoConsent`, `xsnow.place`) — pas de suivi temps réel.
+Après le choix d’avatar, un bandeau demandait la position. **Désormais, dès la première visite**, une feuille de consentement demande deux choix optionnels : position (nom de ville ; sinon Gatineau) et stats d’usage anonymes. Rien n’est envoyé au Worker `/stats` et le dialogue GPS du navigateur n’apparaît qu’après un **oui**. Les choix restent dans `localStorage` (`xsnow.geoConsent`, `xsnow.analyticsConsent`) et se changent dans **Mon profil → Réglages**. Pages **Vie privée** (`/vie-privee`) et **Conditions** (`/conditions`).
 
-Le mot-drapeau en haut à gauche et le gentilé du pied de page suivent la ville (`Gatinois`, `New-Yorkais`, `habitants de …`). L’accueil parlé et le prompt système citent cette ville. La voix `speechSynthesis` reste française (fr-CA / fr-FR selon le milieu), avec le genre de l’avatar.
+Le mot-drapeau en haut à gauche et le gentilé du pied de page suivent la ville (`Gatinois`, `New-Yorkais`, `habitants de …`). L’accueil parlé et le prompt système citent cette ville.
 
 QA : `?city=New%20York` force New York (mot-drapeau **NEW YORK**, gentilé **New-Yorkais**). `?geo=prompt` réaffiche la demande de position.
 
@@ -123,8 +123,6 @@ Deployed Worker: `https://xsnow-chat.xsnowopc.workers.dev`. Override with `NEXT_
 
 ### Visitor city
 
-After the avatar pick, the home screen asks for geolocation (Safari needs the **Autoriser ma position** tap). Skip falls back to Gatineau. Consent and `{ lat, lon, city, updatedAt }` stay in `localStorage` only — no live tracking yet.
-
-The header wordmark and footer demonym follow the city. Welcome speech and the chat system prompt name that city. TTS stays French (regional French → any French → avatar gender).
+After the avatar pick, the home screen used to ask for geolocation immediately. **First visit now shows a consent sheet**: optional location (city branding; otherwise Gatineau) and optional anonymous usage stats. The browser GPS prompt and `/stats` posts run only after a yes. Choices live in `localStorage` (`xsnow.geoConsent`, `xsnow.analyticsConsent`) and can be changed in **My profile → Settings**. **Privacy** (`/vie-privee`) and **Terms** (`/conditions`).
 
 QA: `?city=New%20York` mocks New York; `?geo=prompt` shows the permission card again.
