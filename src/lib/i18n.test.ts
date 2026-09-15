@@ -282,6 +282,9 @@ describe("legal copy is present in FR/EN/ES", () => {
     assert.match(fr.place.neighborhood, /quartier/);
     assert.match(en.place.neighborhood, /neighbourhood/);
     assert.match(es.place.neighborhood, /barrio/);
+    assert.ok(fr.place.wordmark);
+    assert.ok(en.place.wordmark);
+    assert.ok(es.place.wordmark);
   });
 });
 

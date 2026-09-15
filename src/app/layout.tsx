@@ -18,11 +18,11 @@ const fraunces = Fraunces({
 
 export const metadata: Metadata = {
   title: {
-    default: "GATINEAU — Open Community",
-    template: "%s · GATINEAU",
+    default: "Open Community",
+    template: "%s · Open Community",
   },
   description:
-    "GATINEAU / Open Community — Monétisé Vous! Proximité, entraide et visibilité locale.",
+    "Open Community — Monétisé Vous! Proximité, entraide et visibilité locale.",
   applicationName: "Open Community",
   manifest: "/manifest.webmanifest",
   icons: {

@@ -140,6 +140,7 @@ function PlaceProviderInner({ children }: { children: ReactNode }) {
   const consent = stored.consent;
   const branding = brandingForPlace(activePlace.city, locale, {
     neighborhood: m.place.neighborhood,
+    wordmark: m.place.wordmark,
     demonym: m.place.demonym,
   });
   const source: PlaceSource = overridePlace
@@ -281,6 +282,7 @@ function UnresolvedPlaceFallback({ children }: { children: ReactNode }) {
   const { locale, m } = useI18n();
   const branding = brandingForPlace("", locale, {
     neighborhood: m.place.neighborhood,
+    wordmark: m.place.wordmark,
     demonym: m.place.demonym,
   });
   return (

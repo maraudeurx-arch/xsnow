@@ -94,13 +94,13 @@ export type PlaceBranding = {
 export function brandingForPlace(
   city: string,
   locale: Locale,
-  labels: { neighborhood: string; demonym: string },
+  labels: { neighborhood: string; wordmark: string; demonym: string },
 ): PlaceBranding {
   const trimmed = city.trim();
   if (!trimmed) {
     return {
       city: labels.neighborhood,
-      placeName: placeName(labels.neighborhood),
+      placeName: placeName(labels.wordmark),
       demonym: labels.demonym,
       resolved: false,
     };

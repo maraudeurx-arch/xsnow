@@ -219,6 +219,7 @@ describe("live place vs Gatineau seed", () => {
   it("uses neighbourhood branding until a city is known", () => {
     const pending = brandingForPlace("", "fr", {
       neighborhood: "votre quartier",
+      wordmark: "votre quartier",
       demonym: "habitants du quartier",
     });
     assert.equal(pending.resolved, false);
@@ -228,6 +229,7 @@ describe("live place vs Gatineau seed", () => {
 
     const live = brandingForPlace("Port-au-Prince", "fr", {
       neighborhood: "votre quartier",
+      wordmark: "votre quartier",
       demonym: "habitants du quartier",
     });
     assert.equal(live.resolved, true);

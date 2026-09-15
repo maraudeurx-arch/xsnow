@@ -7,6 +7,7 @@ export const en: Messages = {
   },
   place: {
     neighborhood: "your neighbourhood",
+    wordmark: "neighbourhood",
     demonym: "neighbours",
   },
   nav: {

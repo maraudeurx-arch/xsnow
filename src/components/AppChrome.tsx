@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Suspense, type ReactNode } from "react";
 import { BrandLogo } from "@/components/BrandLogo";
 import { HeaderNav } from "@/components/HeaderNav";
-import { PlaceWordmark } from "@/components/PlaceWordmark";
+import { PlaceWordmark, PlaceDocumentTitle } from "@/components/PlaceWordmark";
 import { SeasonalBackdrop, SeasonScene } from "@/components/SeasonalBackdrop";
 import { SiteFooter } from "@/components/SiteFooter";
 import { BrandCopy } from "@/components/BrandCopy";
@@ -13,6 +13,7 @@ export function AppChrome({ children }: { children: ReactNode }) {
 
   return (
     <div className="safe-frame relative flex flex-col overflow-hidden bg-sky-400">
+      <PlaceDocumentTitle />
       <Suspense fallback={<SeasonScene season={calendarSeason} />}>
         <SeasonalBackdrop />
       </Suspense>

@@ -5,6 +5,7 @@ export const fr = {
   },
   place: {
     neighborhood: "votre quartier",
+    wordmark: "votre quartier",
     demonym: "habitants du quartier",
   },
   nav: {
