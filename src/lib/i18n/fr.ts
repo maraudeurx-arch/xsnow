@@ -124,7 +124,7 @@ export const fr = {
       sections: [
         {
           heading: "Qui nous sommes",
-          body: "Open Community (OPC) / Xsnow est une app d’entraide de quartier, affichée avec le nom de ta ville. Site statique sur GitHub Pages. Aucun compte e-mail obligatoire. Responsable public : Politzer. Lancement souple indépendant — pas une société enregistrée. Détail : page Qui est derrière OPC.",
+          body: "Open Community (OPC) / Xsnow est une app d’entraide de quartier, affichée avec le nom de ta ville. Site statique sur GitHub Pages. Aucun compte e-mail obligatoire. Responsable public : Politzer. Lancement souple indépendant — pas une société enregistrée. Contact : GitHub Issues, ou opencommunity.opc@gmail.com. Détail : page Qui est derrière OPC.",
         },
         {
           heading: "Ce que nous collectons",
@@ -203,7 +203,7 @@ export const fr = {
         },
         {
           heading: "Contact",
-          body: "Pour l’instant, le contact public est GitHub Issues sur le dépôt xsnow. Un e-mail de contact OPC dédié viendra plus tard (indiqué comme « e-mail de contact à venir »). N’utilisez pas une adresse personnelle inventée.",
+          body: "Le contact public est GitHub Issues sur le dépôt xsnow, et l’e-mail dédié opencommunity.opc@gmail.com. Politzer reste le responsable public. N’utilisez pas une autre adresse personnelle.",
         },
       ],
     },
@@ -252,7 +252,7 @@ export const fr = {
         },
         {
           heading: "Divulgation responsable",
-          body: "Pour signaler une faille ou un problème : GitHub Issues sur le dépôt xsnow (canal actuel). Un e-mail de contact OPC dédié viendra plus tard.",
+          body: "Pour signaler une faille ou un problème : GitHub Issues sur le dépôt xsnow, ou opencommunity.opc@gmail.com.",
         },
         {
           heading: "Limites honnêtes",
@@ -285,7 +285,6 @@ export const fr = {
     github: "Code source sur GitHub",
     issues: "Contact actuel : GitHub Issues",
     emailLabel: "E-mail de contact OPC",
-    emailSoon: "e-mail de contact à venir",
     securityMd: "Politique de sécurité (SECURITY.md)",
   },
   footer: {

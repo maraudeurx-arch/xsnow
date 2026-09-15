@@ -4,6 +4,8 @@ import {
   GITHUB_ISSUES_URL,
   GITHUB_REPO_URL,
   GITHUB_SECURITY_MD_URL,
+  OPC_PUBLIC_EMAIL,
+  OPC_PUBLIC_MAILTO,
 } from "@/lib/paths";
 import { useI18n } from "@/lib/i18n/locale";
 
@@ -31,7 +33,9 @@ export function TrustContact({ showSecurityPolicy = false }: { showSecurityPolic
       <li>
         <span className="font-semibold text-snow">{m.trust.emailLabel}</span>
         {" — "}
-        <span>{m.trust.emailSoon}</span>
+        <a href={OPC_PUBLIC_MAILTO} className="font-extrabold text-gold hover:underline" rel="noopener noreferrer">
+          {OPC_PUBLIC_EMAIL}
+        </a>
       </li>
       {showSecurityPolicy ? (
         <li>

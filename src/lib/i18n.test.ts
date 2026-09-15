@@ -313,7 +313,6 @@ describe("transparency copy stays honest", () => {
       messages.trust.github,
       messages.trust.issues,
       messages.trust.emailLabel,
-      messages.trust.emailSoon,
       messages.trust.securityMd,
       ...docs.flatMap((doc) => [
         doc.title,
@@ -325,23 +324,30 @@ describe("transparency copy stays honest", () => {
     return parts.join("\n");
   }
 
-  it("names Politzer, GitHub, and Issues without a company or personal email", () => {
+  it("names Politzer, GitHub, Issues, and the public OPC email — no personal address", () => {
+    const publicEmail = /opencommunity\.opc@gmail\.com/;
     for (const pack of [fr, en, es]) {
       const text = flattenTrust(pack);
       assert.match(text, /Politzer/);
       assert.match(text, /maraudeurx-arch/);
       assert.match(text, /GitHub Issues/);
+      assert.match(text, publicEmail);
       assert.doesNotMatch(text, /icloud/i);
       assert.doesNotMatch(text, /Politzerestigene/i);
-      assert.doesNotMatch(text, /@[a-z0-9.-]+\.[a-z]{2,}/i);
       assert.doesNotMatch(text, /0x[a-fA-F0-9]{40}/);
+      const emails = text.match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi) ?? [];
+      assert.ok(emails.length > 0);
+      for (const email of emails) {
+        assert.equal(email.toLowerCase(), "opencommunity.opc@gmail.com");
+      }
     }
     assert.match(fr.legal.about.sections[0].body, /pas une société enregistrée/);
     assert.match(en.legal.about.sections[0].body, /not a registered corporation/);
     assert.match(es.legal.about.sections[0].body, /no es una sociedad registrada/);
-    assert.match(fr.trust.emailSoon, /e-mail de contact à venir/);
-    assert.match(en.trust.emailSoon, /coming soon/i);
-    assert.match(es.trust.emailSoon, /próximamente/);
+    assert.match(fr.legal.about.sections[3].body, publicEmail);
+    assert.match(fr.legal.security.sections[3].body, publicEmail);
+    assert.match(en.legal.security.sections[3].body, publicEmail);
+    assert.match(es.legal.security.sections[3].body, publicEmail);
   });
 
   it("states peer-to-peer payments and no OPC payment contracts", () => {

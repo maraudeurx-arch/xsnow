@@ -10,11 +10,13 @@ export const PROOFS_HREF = "/preuves-de-revenus";
 /** Canonical public URL (GitHub Pages). Used in share posts and deep links. */
 export const PUBLIC_SITE_URL = "https://maraudeurx-arch.github.io/xsnow/";
 
-/** Public GitHub identity — Issues is the current contact channel. */
+/** Public GitHub identity and dedicated OPC contact email (no personal addresses). */
 export const GITHUB_REPO_URL = "https://github.com/maraudeurx-arch/xsnow";
 export const GITHUB_ISSUES_URL = "https://github.com/maraudeurx-arch/xsnow/issues";
 export const GITHUB_SECURITY_MD_URL =
   "https://github.com/maraudeurx-arch/xsnow/blob/main/SECURITY.md";
+export const OPC_PUBLIC_EMAIL = "opencommunity.opc@gmail.com";
+export const OPC_PUBLIC_MAILTO = `mailto:${OPC_PUBLIC_EMAIL}`;
 
 export const TRUST_NAV = [
   { href: PRIVACY_HREF, footerKey: "privacy" as const },

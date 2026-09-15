@@ -126,7 +126,7 @@ export const es: Messages = {
       sections: [
         {
           heading: "Quiénes somos",
-          body: "Open Community (OPC) / Xsnow es una app de ayuda mutua de barrio, con el nombre de tu ciudad. Sitio estático en GitHub Pages. No hace falta una cuenta de correo. Responsable público: Politzer. Lanzamiento suave independiente — no es una sociedad registrada. Detalle: página Quién está detrás de OPC.",
+          body: "Open Community (OPC) / Xsnow es una app de ayuda mutua de barrio, con el nombre de tu ciudad. Sitio estático en GitHub Pages. No hace falta una cuenta de correo. Responsable público: Politzer. Lanzamiento suave independiente — no es una sociedad registrada. Contacto: GitHub Issues, o opencommunity.opc@gmail.com. Detalle: página Quién está detrás de OPC.",
         },
         {
           heading: "Qué recogemos",
@@ -205,7 +205,7 @@ export const es: Messages = {
         },
         {
           heading: "Contacto",
-          body: "Por ahora, el canal de contacto público son las GitHub Issues del repositorio xsnow. Un correo de contacto OPC dedicado llegará más tarde (indicado como «correo de contacto próximamente»). No uses una dirección personal inventada.",
+          body: "El contacto público son las GitHub Issues del repositorio xsnow, y el correo dedicado opencommunity.opc@gmail.com. Politzer sigue siendo el responsable público. No uses otra dirección personal.",
         },
       ],
     },
@@ -253,7 +253,7 @@ export const es: Messages = {
         },
         {
           heading: "Divulgación responsable",
-          body: "Para informar de una falla o un problema: GitHub Issues en el repositorio xsnow (canal actual). Un correo de contacto OPC dedicado llegará más tarde.",
+          body: "Para informar de una falla o un problema: GitHub Issues en el repositorio xsnow, o opencommunity.opc@gmail.com.",
         },
         {
           heading: "Límites honestos",
@@ -286,7 +286,6 @@ export const es: Messages = {
     github: "Código fuente en GitHub",
     issues: "Contacto actual: GitHub Issues",
     emailLabel: "Correo de contacto OPC",
-    emailSoon: "correo de contacto próximamente",
     securityMd: "Política de seguridad (SECURITY.md)",
   },
   footer: {

@@ -38,9 +38,7 @@ export function LocalizedLegal({ kind }: { kind: LegalKind }) {
       <p className="mt-3 text-[11px] text-ice/70">{copy.updated}</p>
       {extra ? <p className="mt-4 text-[13px] leading-relaxed text-ice/85">{extra}</p> : null}
       <LegalSections sections={copy.sections} />
-      {kind === "about" || kind === "security" ? (
-        <TrustContact showSecurityPolicy={kind === "security"} />
-      ) : null}
+      <TrustContact showSecurityPolicy={kind === "security"} />
       <div className="mt-5 flex flex-wrap items-center justify-between gap-2">
         <LegalLinks className="text-sm" />
       </div>

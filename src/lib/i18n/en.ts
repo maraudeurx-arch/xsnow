@@ -126,7 +126,7 @@ export const en: Messages = {
       sections: [
         {
           heading: "Who we are",
-          body: "Open Community (OPC) / Xsnow is a neighbourhood mutual-aid app, branded with your city name. Static site on GitHub Pages. No email account required. Public person responsible: Politzer. Independent soft launch — not a registered corporation. Details: Who is behind OPC.",
+          body: "Open Community (OPC) / Xsnow is a neighbourhood mutual-aid app, branded with your city name. Static site on GitHub Pages. No email account required. Public person responsible: Politzer. Independent soft launch — not a registered corporation. Contact: GitHub Issues, or opencommunity.opc@gmail.com. Details: Who is behind OPC.",
         },
         {
           heading: "What we collect",
@@ -205,7 +205,7 @@ export const en: Messages = {
         },
         {
           heading: "Contact",
-          body: "For now, the public contact channel is GitHub Issues on the xsnow repository. A dedicated OPC public email will come later (shown as “contact email coming soon”). Do not use an invented personal address.",
+          body: "Public contact is GitHub Issues on the xsnow repository, and the dedicated email opencommunity.opc@gmail.com. Politzer remains the public person responsible. Do not use a personal address.",
         },
       ],
     },
@@ -253,7 +253,7 @@ export const en: Messages = {
         },
         {
           heading: "Responsible disclosure",
-          body: "To report a vulnerability or a problem: GitHub Issues on the xsnow repository (current channel). A dedicated OPC contact email will come later.",
+          body: "To report a vulnerability or a problem: GitHub Issues on the xsnow repository, or opencommunity.opc@gmail.com.",
         },
         {
           heading: "Honest limits",
@@ -286,7 +286,6 @@ export const en: Messages = {
     github: "Source code on GitHub",
     issues: "Current contact: GitHub Issues",
     emailLabel: "OPC contact email",
-    emailSoon: "contact email coming soon",
     securityMd: "Security policy (SECURITY.md)",
   },
   footer: {

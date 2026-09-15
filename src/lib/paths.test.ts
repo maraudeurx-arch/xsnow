@@ -6,6 +6,8 @@ import {
   GITHUB_REPO_URL,
   HOW_IT_WORKS_HREF,
   isPublicInfoPath,
+  OPC_PUBLIC_EMAIL,
+  OPC_PUBLIC_MAILTO,
   PRIVACY_HREF,
   PROOFS_HREF,
   SECURITY_HREF,
@@ -25,6 +27,9 @@ describe("public trust paths", () => {
     assert.equal(PROOFS_HREF, "/preuves-de-revenus");
     assert.equal(GITHUB_REPO_URL, "https://github.com/maraudeurx-arch/xsnow");
     assert.equal(GITHUB_ISSUES_URL, "https://github.com/maraudeurx-arch/xsnow/issues");
+    assert.equal(OPC_PUBLIC_EMAIL, "opencommunity.opc@gmail.com");
+    assert.equal(OPC_PUBLIC_MAILTO, "mailto:opencommunity.opc@gmail.com");
+    assert.doesNotMatch(OPC_PUBLIC_EMAIL, /icloud/i);
   });
 
   it("treats trust pages as readable without the consent sheet", () => {
