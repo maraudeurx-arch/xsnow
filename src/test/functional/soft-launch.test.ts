@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { APP_RELEASE_DATE, APP_VERSION } from "../../lib/app-version.ts";
+import { en } from "../../lib/i18n/en.ts";
+import { es } from "../../lib/i18n/es.ts";
 import { fr } from "../../lib/i18n/fr.ts";
 import { interpolate } from "../../lib/i18n/locales.ts";
 import {
@@ -11,7 +13,9 @@ import {
 } from "../../lib/ideas.ts";
 import {
   FEATURED_CAR_MORNING_ID,
+  IMPORTED_OFFERS_KEY,
   OFFERS_KEY,
+  OFFER_REQUESTS_KEY,
   canPublish,
   carMorningDefaults,
   isInjectedSeedId,
@@ -24,7 +28,13 @@ import {
   parsePublicCatalog,
   type PublicCatalog,
 } from "../../lib/public-catalog.ts";
-import { SERVICE_SEEDS } from "../../lib/services.ts";
+import {
+  SERVICE_KINDS,
+  SERVICE_SEEDS,
+  SERVICES,
+  type ServiceKind,
+  type ServiceListing,
+} from "../../lib/services.ts";
 import { readList, writeList } from "../../lib/storage.ts";
 
 function memoryWindow() {
@@ -71,6 +81,19 @@ function visibleIdeas(stored: unknown[], catalog: PublicCatalog) {
   return { items, catalogIdeas };
 }
 
+/** Same merge as ServiceBoard: drop leftover seed ids, then catalog extras for that kind. */
+function visibleServices(
+  stored: ServiceListing[],
+  catalog: PublicCatalog,
+  kind: ServiceKind,
+) {
+  const local = stored.filter((item) => !isInjectedSeedId(item.id));
+  const extras = catalog.services.filter(
+    (item) => item.service === kind && !local.some((row) => row.id === item.id),
+  );
+  return [...local, ...extras];
+}
+
 describe("fresh storage empty slate", () => {
   it("lists no Mes services / En demande offers and no bundled Gatineau car", () => {
     const mock = memoryWindow();
@@ -101,6 +124,38 @@ describe("fresh storage empty slate", () => {
       assert.match(fr.offers.emptyList, /Pas encore d’offre sur cet appareil/);
       assert.match(fr.offers.browseEmpty, /appareil neuf commence vide/);
       assert.doesNotMatch(fr.offers.browseEmpty, /featured-car-morning/);
+      assert.deepEqual(readList(IMPORTED_OFFERS_KEY), []);
+      assert.deepEqual(readList(OFFER_REQUESTS_KEY), []);
+    } finally {
+      mock.restore();
+    }
+  });
+
+  it("lists no Mes services kind boards from empty storage or demo seeds", () => {
+    const mock = memoryWindow();
+    try {
+      for (const kind of SERVICE_KINDS) {
+        assert.deepEqual(readList(SERVICES[kind].storageKey), []);
+        const leftoverSeeds = visibleServices(SERVICE_SEEDS[kind], EMPTY_PUBLIC_CATALOG, kind);
+        assert.equal(leftoverSeeds.length, 0, kind);
+      }
+
+      const catalog = parsePublicCatalog({
+        version: APP_VERSION,
+        offers: [],
+        ideas: [],
+        services: SERVICE_KINDS.flatMap((kind) => SERVICE_SEEDS[kind]),
+      });
+      assert.equal(catalog.services.length, 0);
+      for (const kind of SERVICE_KINDS) {
+        assert.equal(visibleServices(readList(SERVICES[kind].storageKey), catalog, kind).length, 0);
+      }
+
+      assert.match(fr.services.empty, /Aucune annonce/);
+      assert.match(en.services.empty, /No listings/);
+      assert.match(es.services.empty, /Ningún anuncio/);
+      assert.doesNotMatch(fr.services.empty, /seed-/);
+      assert.doesNotMatch(fr.services.courses.title, /Plateau/);
     } finally {
       mock.restore();
     }
@@ -129,6 +184,9 @@ describe("Vos idées stay on-device", () => {
       assert.equal(freshPhone.items.length, 0);
       assert.equal(freshPhone.catalogIdeas.length, 0);
       assert.equal(EMPTY_PUBLIC_CATALOG.ideas.length, 0);
+      assert.match(fr.ideas.wallEmpty, /Pas encore d’idée ici/);
+      assert.match(en.ideas.wallEmpty, /No idea here yet/);
+      assert.match(es.ideas.wallEmpty, /Aún no hay ninguna idea/);
     } finally {
       mock.restore();
     }

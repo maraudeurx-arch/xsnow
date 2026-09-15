@@ -33,4 +33,12 @@ describe("service kinds", () => {
     assert.match(formatMoney(15, "CAD", "fr-CA"), /15/);
     assert.equal(formatMoney(12, "NOT-A-CURRENCY"), "12 NOT-A-CURRENCY");
   });
+
+  it("gives each kind its own empty-by-default storage key", () => {
+    const keys = SERVICE_KINDS.map((kind) => SERVICES[kind].storageKey);
+    assert.equal(new Set(keys).size, SERVICE_KINDS.length);
+    for (const kind of SERVICE_KINDS) {
+      assert.equal(SERVICES[kind].storageKey, `xsnow.services.${kind}`);
+    }
+  });
 });

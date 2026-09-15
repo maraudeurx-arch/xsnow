@@ -25,9 +25,11 @@ npm run test:unit
 Still Node, still no browser. Module-level flows that compose storage + catalog + offers + ideas:
 
 - Fresh `localStorage`: Mes services / En demande empty (legacy featured car id dropped)
+- Neighbourhood service kinds (`courses`, `demenagement`, `garde`, `pret`) stay empty; demo `seed-*` ids never list
 - Vos idées stay on-device; an empty catalog does not resurrect them
 - Publish gate: incomplete car offers and unpublished catalog rows never list
-- About copy includes the shipped `APP_VERSION`
+- Onboarding helpers: avatar → welcome speech → geo (`welcomeSpeechReady` / welcome gate / `canShowConsentSheet`)
+- Transparency routes exist; About/version note and contact use `APP_VERSION` / `OPC_PUBLIC_EMAIL`
 
 ## End-to-end (`npm run test:e2e`)
 
@@ -57,8 +59,10 @@ Critical paths:
 
 - Home: **Open Community** banner, avatar picker rings
 - Fresh storage: Mes services / En demande empty (no bundled Gatineau car offer)
+- Fresh storage: `/services/{kind}` boards empty (no demo seed titles)
 - Vos idées: submit stays in `localStorage`; clearing it is not filled back from the empty catalog
-- Transparency: About (version), Comment ça marche, Sécurité, Vie privée
+- Onboarding: avatar picker before geo; About readable without the consent sheet
+- Transparency: footer trust pages, shipped `APP_VERSION`, public OPC email / GitHub
 - Connect is visible; the suite does **not** open WalletConnect (no project id required)
 
 CI: `.github/workflows/build.yml` runs unit + functional on every PR/`main` push, and Playwright after `npm run build`.

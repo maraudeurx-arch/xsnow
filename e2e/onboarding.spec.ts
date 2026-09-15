@@ -1,4 +1,6 @@
 import { expect, test as fresh } from "@playwright/test";
+import { APP_VERSION } from "../src/lib/app-version";
+import { OPC_PUBLIC_EMAIL } from "../src/lib/paths";
 
 fresh.describe("new visitor onboarding order", () => {
   fresh("shows the four avatars before geo, then geo after a choice", async ({ page }) => {
@@ -65,5 +67,16 @@ fresh.describe("new visitor onboarding order", () => {
     await expect(page.getByRole("button", { name: "Réécouter" })).toBeVisible();
     await expect(page.getByText("Position — optionnelle")).toHaveCount(0);
     await expect(page.getByRole("dialog")).toHaveCount(0);
+  });
+
+  fresh("lets a new visitor read About version and contact without geo", async ({ page }) => {
+    const version = new RegExp(`Version ${APP_VERSION.replaceAll(".", "\\.")}`);
+    await page.goto("./about/");
+    await expect(page.getByRole("heading", { name: "Qui est derrière OPC" })).toBeVisible();
+    await expect(page.getByText("Choisis ton avatar")).toHaveCount(0);
+    await expect(page.getByRole("dialog")).toHaveCount(0);
+    await expect(page.getByText("Position — optionnelle")).toHaveCount(0);
+    await expect(page.getByText(version)).toBeVisible();
+    await expect(page.getByRole("link", { name: OPC_PUBLIC_EMAIL })).toBeVisible();
   });
 });
