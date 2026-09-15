@@ -12,6 +12,8 @@ export const es: Messages = {
     enDemande: "En demanda",
     monProfil: "Mi perfil",
     vosIdees: "Tus ideas",
+    backHome: "Volver al inicio",
+    backHomeAria: "Volver a la pantalla de inicio con el avatar",
     main: "Navegación principal",
   },
   menu: {

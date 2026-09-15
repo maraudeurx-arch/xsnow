@@ -100,6 +100,12 @@ describe("vos idees copy", () => {
     assert.equal(fr.nav.vosIdees, "Vos idées");
     assert.equal(en.nav.vosIdees, "Your ideas");
     assert.equal(es.nav.vosIdees, "Tus ideas");
+    assert.equal(fr.nav.backHome, "Retour à l’accueil");
+    assert.equal(en.nav.backHome, "Back to Home");
+    assert.equal(es.nav.backHome, "Volver al inicio");
+    assert.ok(fr.nav.backHomeAria);
+    assert.deepEqual(Object.keys(en.nav), Object.keys(fr.nav));
+    assert.deepEqual(Object.keys(es.nav), Object.keys(fr.nav));
     assert.match(fr.menu.vosIdees, /S’impliquer/);
     assert.match(en.menu.vosIdees, /Get involved/);
     assert.match(es.menu.vosIdees, /Implicarte/);

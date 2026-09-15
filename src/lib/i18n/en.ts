@@ -12,6 +12,8 @@ export const en: Messages = {
     enDemande: "In demand",
     monProfil: "My profile",
     vosIdees: "Your ideas",
+    backHome: "Back to Home",
+    backHomeAria: "Back to the home screen with the avatar",
     main: "Main navigation",
   },
   menu: {

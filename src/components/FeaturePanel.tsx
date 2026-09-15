@@ -1,15 +1,18 @@
 import { type ReactNode } from "react";
+import { HomeBackLink } from "@/components/HomeBackLink";
 
 export function FeaturePanel({
   title,
   lead,
   children,
   compact = false,
+  homeBack = true,
 }: {
   title: string;
   lead: string;
   children: ReactNode;
   compact?: boolean;
+  homeBack?: boolean;
 }) {
   return (
     <section
@@ -17,6 +20,11 @@ export function FeaturePanel({
         compact ? "p-3 sm:p-5" : "p-4 sm:p-6"
       }`}
     >
+      {homeBack ? (
+        <div className="sticky top-0 z-10 -mx-1 mb-3 rounded-2xl bg-[rgba(8,8,12,0.96)] py-1 backdrop-blur-md">
+          <HomeBackLink />
+        </div>
+      ) : null}
       <h2
         className={`font-[family-name:var(--font-fraunces)] text-balance font-extrabold text-snow ${
           compact ? "text-xl" : "text-2xl"

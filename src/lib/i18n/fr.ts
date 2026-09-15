@@ -10,6 +10,8 @@ export const fr = {
     enDemande: "En demande",
     monProfil: "Mon profil",
     vosIdees: "Vos idées",
+    backHome: "Retour à l’accueil",
+    backHomeAria: "Retour à l’écran d’accueil avec l’avatar",
     main: "Navigation principale",
   },
   menu: {
