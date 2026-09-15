@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { noteLang, notePlace, noteSessionStart } from "@/lib/analytics";
+import { noteLang, notePlace, noteSessionStart, noteInviteOpen } from "@/lib/analytics";
+import { captureInviteFromSearch, inviteOpenFingerprint } from "@/lib/invite";
 import { useI18n } from "@/lib/i18n/locale";
 import { usePlace } from "@/lib/place";
 import { useAnalyticsConsent } from "@/lib/useAnalyticsConsent";
@@ -14,10 +15,14 @@ export function AnalyticsRoot() {
   const lastLang = useRef<string | null>(null);
 
   useEffect(() => {
+    if (typeof window === "undefined") return;
+    // First-touch invite/ref is stored even without stats consent.
+    const touch = captureInviteFromSearch(window.location.search);
     if (!granted) {
       lastLang.current = null;
       return;
     }
+    if (touch) noteInviteOpen(inviteOpenFingerprint(touch));
     noteSessionStart();
   }, [granted]);
 

@@ -1,7 +1,12 @@
-import { LocalizedStubProfile } from "@/components/LocalizedStub";
+import { InviteShareBoard } from "@/components/InviteShareBoard";
+import { LocalizedProfileStub } from "@/components/LocalizedFeature";
 
 export const metadata = { title: "Inviter" };
 
 export default function InviterPage() {
-  return <LocalizedStubProfile feature="inviter" stub="inviter" />;
+  return (
+    <LocalizedProfileStub feature="inviter">
+      <InviteShareBoard />
+    </LocalizedProfileStub>
+  );
 }

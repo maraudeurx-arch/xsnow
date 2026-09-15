@@ -11,6 +11,7 @@ export const en: Messages = {
     mesServices: "My services",
     enDemande: "In demand",
     monProfil: "My profile",
+    vosIdees: "Your ideas",
     main: "Main navigation",
   },
   menu: {
@@ -24,6 +25,7 @@ export const en: Messages = {
       "Get an alert if your child, partner, or elderly parents leave the place they’re meant to be",
     business: "Promote your business with ads",
     monetise: "Monetize yourself: your image, your voice.",
+    vosIdees: "Your ideas · Get involved",
     gagnerMaintenant: "Earn now",
     sondages: "Answer surveys and earn money",
     reportage: "With AI, create reports about your neighbourhood",
@@ -33,6 +35,8 @@ export const en: Messages = {
   },
   install: {
     tip: "On iPhone (Safari): Share → Add to Home Screen. The app then opens like an icon.",
+    tipAndroid:
+      "On Android (Chrome): menu ⋮ → Install app, or Add to Home screen. The app then opens like an icon.",
     dismiss: "Got it",
   },
   guide: {
@@ -64,10 +68,12 @@ export const en: Messages = {
     micUnsupported:
       "Dictation isn’t available on this device. Type your message — the keyboard is always there.",
     micPermission:
-      "Microphone access denied. On iPhone: Settings → Safari → Microphone, or type your message.",
+      "Microphone access denied. iPhone: Settings → Safari → Microphone. Android: Settings → Apps → Chrome → Permissions. Or type your message.",
     micSilent: "I didn’t hear anything. Try “Speak” again, or type your message.",
     micNetwork: "Dictation unavailable right now. Type your message.",
     micError: "Can’t listen right now. Type your message.",
+    ideaPrompt: "An idea for the community?",
+    ideaCapture: "Save in Your ideas",
   },
   geo: {
     section: "Allow location",
@@ -80,7 +86,7 @@ export const en: Messages = {
       unsupported: "Geolocation isn’t available on this device. You can continue with Gatineau.",
       generic: "Couldn’t get your location. Try again, or continue with Gatineau.",
       denied:
-        "Safari denied location. In Settings → Safari → Location, or continue with Gatineau.",
+        "Location denied. iPhone: Settings → Safari → Location. Android: Settings → Apps → Chrome → Permissions. Or continue with Gatineau.",
       timeout: "Location took too long. Try again, or continue with Gatineau.",
       unavailable: "Location unavailable right now. Try again, or continue with Gatineau.",
     },
@@ -177,9 +183,9 @@ export const en: Messages = {
     terms: "Terms",
   },
   welcome:
-    "Hello, I’m your avatar in the Open Community ecosystem. The proximity and mutual-aid spirit of the people of {city} are our strength. Let your neighbours know about a service you can offer in exchange for compensation: helping someone move, running errands, or helping with work around the house. This app also gives you free services, like helping you find your phone if you lose it, and alerting you if your child, partner, or elderly parents leave the place they’re meant to be: school, work, or a retirement home. Go to Home and choose the service you’d like to receive, or that you’d like to offer your neighbours in {city}. Do you have suggestions for tasks and services you’d like to monetize? Let me know, and the whole community will benefit. People who share this app, and ideas that get monetized, will be rewarded in proportion to their efforts. Don’t hesitate to ask me anything at any time — I’m entirely at your disposal.",
+    "Hello, I’m your avatar in the Open Community ecosystem. The proximity and mutual-aid spirit of the people of {city} are our strength. Let your neighbours know about a service you can offer in exchange for compensation: helping someone move, running errands, or helping with work around the house. This app also gives you free services, like helping you find your phone if you lose it, and alerting you if your child, partner, or elderly parents leave the place they’re meant to be: school, work, or a retirement home. Go to Home and choose the service you’d like to receive, or that you’d like to offer your neighbours in {city}. To get involved right now: Home → Your ideas — one sentence, then Head, Heart, or Hands. Do you have suggestions for tasks and services you’d like to monetize? Let me know, or note them in Your ideas, and the whole community will benefit. People who share this app, and ideas that get monetized, will be rewarded in proportion to their efforts. Don’t hesitate to ask me anything at any time — I’m entirely at your disposal.",
   systemPrompt:
-    "You are the visitor’s avatar in Open Community, in {city}. You speak only in English, you stay warm, concrete and brief. You help with neighbourhood mutual aid: errands and delivery, moving help, work around the house, child or pet sitting, lending or borrowing items, morning car loans (Interac, borrower pays for gas), a lost phone, alerts if a child, partner, or elderly parents leave (school, work, retirement home). You invite them to tap Home, under {placeName} on the left, or My services / In demand / Earn now, to choose a service to offer or receive. Earn now explains three honest paths (neighbour offers, UX tests / research panels, hotspot or presence). You discourage ad-watching farms, click farms, and fake accounts. You do not pretend to be a human. In a real emergency, point them to 911. You are at the visitor’s disposal for any question about Open Community. Your appearance: {avatar}.",
+    "You are the local Open Community guide in {city} — an honest director, useful first (cash + community). You are not a human and you are not an agent with external tools (no web, no email, no wallet). You speak only in English, stay concrete and brief. Neighbourhood mutual aid: errands, moving, housework, sitting, item loans, morning car loans (Interac, borrower pays for gas; mention insurance — OPC is not the insurer and not a payment processor), lost phone, proximity alerts. No ad farms, click farms, fake accounts, or scam talk. Route immediately: an idea → Your ideas (text + Head think/vote, Heart support/share, Hands do/give time, 30 s); earn → Earn now / My services / In demand. Invite them to tap Home, under {placeName} on the left, or My services / In demand / Earn now / Your ideas. If they have an idea, rephrase it and push them to Your ideas; also capture monetization suggestions. Real emergency: 911. Examples: U: I want money fast. A: No looping ads. Three paths: My services (neighbour, Interac), In demand, or Earn now (UX tests / panels, hotspot). An idea? Open Your ideas — Head, Heart, Hands. U: We could shovel driveways. A: Solid. Note it in Your ideas (Hands, Head if you vote the rate). Neighbour payment = Interac. U: Can you look that up online? A: No, I’m the in-app guide, not an external agent. Tell me the idea or open Your ideas / Earn now / My services. Your appearance: {avatar}.",
   features: {
     business: {
       title: "Promote your business with ads",
@@ -261,12 +267,17 @@ export const en: Messages = {
       title: "About Open Community (OPC)",
       lead: "Proximity, mutual aid and local visibility — Monetize Yourself!",
     },
+    vosIdees: {
+      title: "Your ideas",
+      lead: "Get involved: Head, Heart, Hands — one idea in under 30 seconds.",
+    },
   },
   profile: {
     infos: "My info",
     reglages: "Settings",
     inviter: "Invite others to join the community",
     aPropos: "About Open Community (OPC)",
+    vosIdees: "Your ideas · Get involved",
     infosBody: "Your details and wallet stay on this device.",
     reglagesHint: "The language you pick is saved on this device. It overrides the phone language.",
     inviterBody: "Share Open Community with a neighbour, a shop, a family.",
@@ -278,7 +289,7 @@ export const en: Messages = {
     locationHint:
       "For your city name and, later, proximity. Turn off: we go back to Gatineau.",
     analyticsConsent: "Anonymous usage stats",
-    analyticsHint: "Session, language, city/country if location is allowed, monetization ideas.",
+    analyticsHint: "Session, language, city/country if location is allowed, ideas (Your ideas / chat).",
     privacy: "Privacy",
     terms: "Terms",
     enabled: "On",
@@ -680,5 +691,57 @@ export const en: Messages = {
     timeWarn: "No click farms, no fake accounts.",
     bandwidthNote:
       "Bandwidth sharing (outside OPC): tiny amounts, check your ISP. Not a recommended path here.",
+  },
+  shareOpc: {
+    title: "Share OPC",
+    short: "Share",
+    hint: "Edit the text, then copy it for a friend, a neighbour, or a critic. The link keeps your invite code.",
+    edit: "Edit",
+    copy: "Copy",
+    copied: "Copied.",
+    failed: "Couldn’t copy. The text is below — select it.",
+  },
+  feedback: {
+    prompt: "Useful?",
+    useful: "Useful",
+    notUseful: "Not useful",
+    thanks: "Thanks.",
+    localOnly: "Without stats, this stays on this device.",
+  },
+  ideas: {
+    textLabel: "Your idea",
+    textPh: "e.g. Shovel neighbourhood driveways on Saturday",
+    textRequired: "Write your idea in one sentence.",
+    involvementLabel: "How you get involved",
+    involvementHint: "Tick one or more: Head, Heart, Hands.",
+    tete: "Head",
+    teteHint: "Think, vote, refine",
+    coeur: "Heart",
+    coeurHint: "Support, share, encourage",
+    mains: "Hands",
+    mainsHint: "Do, offer time",
+    involvementRequired: "Pick at least Head, Heart, or Hands.",
+    hoursLabel: "Hours / week (optional)",
+    hoursShare: "Hours / week",
+    hoursPh: "e.g. 2",
+    neighborhoodLabel: "Neighbourhood (optional)",
+    neighborhoodShare: "Neighbourhood",
+    neighborhoodPh: "Hull, Aylmer, Plateau…",
+    submit: "Send the idea",
+    thankYou: "Thank you — you belong here.",
+    thankYouBody:
+      "Your idea is on the wall. Head, Heart, Hands: that’s how Open Community moves. Share it if you want, or add another.",
+    wallTitle: "Idea wall (this device)",
+    wallEmpty: "No idea here yet. The first one is often the most useful.",
+    editIdea: "Edit",
+    share: "Text to share",
+    shareHint: "Edit the text, then copy it for a neighbour or a group.",
+    shareEdit: "Edit",
+    shareCopy: "Copy",
+    shareCopied: "Copied.",
+    shareFailed: "Couldn’t copy. The text is below — select it.",
+    hoursLine: "{hours} h / week",
+    newIdea: "Another idea",
+    shareHeading: "Open Community idea",
   },
 };

@@ -9,6 +9,7 @@ export const fr = {
     mesServices: "Mes services",
     enDemande: "En demande",
     monProfil: "Mon profil",
+    vosIdees: "Vos idées",
     main: "Navigation principale",
   },
   menu: {
@@ -22,6 +23,7 @@ export const fr = {
       "Sois alerté si ton enfant, ton conjoint ou tes parents âgés s’éloignent de l’endroit où ils sont censés être",
     business: "Faites connaître votre business par des pubs",
     monetise: "Monétiser vous : votre image, votre voix.",
+    vosIdees: "Vos idées · S’impliquer",
     gagnerMaintenant: "Gagner maintenant",
     sondages: "Répondre à des sondages et gagner de l’argent",
     reportage: "Avec l’IA, crée des reportages sur votre quartier",
@@ -31,6 +33,8 @@ export const fr = {
   },
   install: {
     tip: "Sur iPhone (Safari) : Partager → Sur l’écran d’accueil. L’app s’ouvre ensuite comme une icône.",
+    tipAndroid:
+      "Sur Android (Chrome) : menu ⋮ → Installer l’app, ou Ajouter à l’écran d’accueil. L’app s’ouvre ensuite comme une icône.",
     dismiss: "Compris",
   },
   guide: {
@@ -62,10 +66,12 @@ export const fr = {
     micUnsupported:
       "La dictée n’est pas disponible sur cet appareil. Écris ton message — le clavier reste toujours là.",
     micPermission:
-      "Accès au micro refusé. Sur iPhone : Réglages → Safari → Microphone, ou écris ton message.",
+      "Accès au micro refusé. iPhone : Réglages → Safari → Microphone. Android : Réglages → Applications → Chrome → Autorisations. Ou écris ton message.",
     micSilent: "Je n’ai rien entendu. Réessaie « Parler », ou écris ton message.",
     micNetwork: "Dictée indisponible pour le moment. Écris ton message.",
     micError: "Impossible d’écouter pour le moment. Écris ton message.",
+    ideaPrompt: "Une idée pour la communauté ?",
+    ideaCapture: "Noter dans Vos idées",
   },
   geo: {
     section: "Autoriser la position",
@@ -79,7 +85,7 @@ export const fr = {
         "La géolocalisation n’est pas disponible sur cet appareil. Tu peux continuer avec Gatineau.",
       generic: "Impossible d’obtenir ta position. Tu peux réessayer, ou continuer avec Gatineau.",
       denied:
-        "Safari a refusé la position. Dans Réglages → Safari → Localisation, ou continue avec Gatineau.",
+        "Position refusée. iPhone : Réglages → Safari → Localisation. Android : Réglages → Applications → Chrome → Autorisations. Ou continue avec Gatineau.",
       timeout: "La position a pris trop de temps. Réessaie, ou continue avec Gatineau.",
       unavailable: "Position indisponible pour le moment. Réessaie, ou continue avec Gatineau.",
     },
@@ -176,9 +182,9 @@ export const fr = {
     terms: "Conditions",
   },
   welcome:
-    "Bonjour, je suis ton avatar dans l’écosystème Open Community. La proximité et l’esprit d’entraide des gens de {city} font notre force. Fais connaître à tes voisins un service que tu peux leur rendre en échange d’une compensation : ça peut être aider à déménager, faire des courses, ou aider à des travaux dans la maison. De plus, cette application t’offre des services gratuits, comme t’aider à retrouver ton téléphone si tu le perds, et t’avertir si ton enfant, ton conjoint ou tes parents âgés s’éloignent de l’endroit où ils sont censés être : l’école, le travail, ou la maison de retraite. Va dans Accueil et choisis le service dont tu aimerais bénéficier, ou que tu voudrais offrir à tes voisins de {city}. Avez-vous des suggestions de tâches et de services que vous aimeriez monétiser ? Faites-moi savoir, et toute la communauté en profitera. De plus, les gens qui partagent cette application, et des idées qui sont monétisées, recevront au prorata de leurs efforts. N’hésitez pas à me questionner à tout moment, je suis à votre entière disposition.",
+    "Bonjour, je suis ton avatar dans l’écosystème Open Community. La proximité et l’esprit d’entraide des gens de {city} font notre force. Fais connaître à tes voisins un service que tu peux leur rendre en échange d’une compensation : ça peut être aider à déménager, faire des courses, ou aider à des travaux dans la maison. De plus, cette application t’offre des services gratuits, comme t’aider à retrouver ton téléphone si tu le perds, et t’avertir si ton enfant, ton conjoint ou tes parents âgés s’éloignent de l’endroit où ils sont censés être : l’école, le travail, ou la maison de retraite. Va dans Accueil et choisis le service dont tu aimerais bénéficier, ou que tu voudrais offrir à tes voisins de {city}. Pour t’impliquer tout de suite : Accueil → Vos idées — une phrase, puis Tête, Cœur ou Mains. Avez-vous des suggestions de tâches et de services que vous aimeriez monétiser ? Faites-moi savoir, ou note-les dans Vos idées, et toute la communauté en profitera. De plus, les gens qui partagent cette application, et des idées qui sont monétisées, recevront au prorata de leurs efforts. N’hésitez pas à me questionner à tout moment, je suis à votre entière disposition.",
   systemPrompt:
-    "Tu es l’avatar du visiteur dans Open Community, à {city}. Tu parles uniquement en français, tu tutoies, tu restes chaleureux, concret et bref. Tu aides sur l’entraide de quartier : courses et livraison, aide au déménagement, travaux à la maison, garde d’enfants ou d’animaux, prêt ou emprunt d’objets, prêt de voiture le matin (Interac, essence à la charge de l’emprunteur), téléphone perdu, alertes si un enfant, un conjoint ou des parents âgés s’éloignent (école, travail, maison de retraite). Tu invites à toucher Accueil, sous {placeName} à gauche, ou Mes services / En demande / Gagner maintenant, pour choisir un service à offrir ou à recevoir. Gagner maintenant explique trois chemins honnêtes (offres voisins, tests UX / panels, hotspot ou présence). Tu décourages les fermes de pubs, les fermes de clics et les faux comptes. Tu ne prétends pas être un humain. En cas d’urgence réelle, oriente vers le 911. Tu es à la disposition du visiteur pour toute question sur Open Community. Ton apparence : {avatar}.",
+    "Tu es le guide local Open Community à {city} — directeur honnête, utile d’abord (cash + communauté). Tu n’es pas un humain et tu n’es pas un agent avec des outils externes (pas de web, pas d’e-mail, pas de wallet). Tu parles uniquement en français, tu tutoies, tu restes concret et bref. Entraide de quartier : courses, déménagement, travaux, garde, prêt d’objets, prêt de voiture le matin (Interac, essence à l’emprunteur ; rappeler l’assurance — OPC n’est ni l’assureur ni un processeur de paiement), téléphone perdu, alertes proches. Pas de ferme de pubs, de clics, de faux comptes, ni de discours arnaque. Oriente tout de suite : une idée → Vos idées (texte + Tête réfléchir/voter, Cœur soutenir/partager, Mains faire/offrir du temps, 30 s) ; gagner → Gagner maintenant / Mes services / En demande. Invite à toucher Accueil, sous {placeName} à gauche, ou Mes services / En demande / Gagner maintenant / Vos idées. Si le visiteur a une idée, reformule-la et pousse-le vers Vos idées ; capture aussi les suggestions de monétisation. Urgence réelle : 911. Exemples : U: Je veux de l’argent vite. A: Pas de pubs en boucle. Trois chemins : Mes services (voisin, Interac), En demande, ou Gagner maintenant (tests UX / panels, hotspot). Une idée ? Ouvre Vos idées — Tête, Cœur, Mains. U: On pourrait déneiger les allées. A: Solide. Note-la dans Vos idées (Mains, Tête si tu votes le tarif). Paiement voisin = Interac. U: Tu peux chercher ça sur internet ? A: Non, je suis le guide dans l’app, pas un agent externe. Dis-moi l’idée ou ouvre Vos idées / Gagner maintenant / Mes services. Ton apparence : {avatar}.",
   features: {
     business: {
       title: "Faites connaître votre business par des pubs",
@@ -260,12 +266,17 @@ export const fr = {
       title: "À propos de Open Community (OPC)",
       lead: "Proximité, entraide et visibilité locale — Monétisé Vous!",
     },
+    vosIdees: {
+      title: "Vos idées",
+      lead: "S’impliquer : Tête, Cœur, Mains — une idée en moins de 30 secondes.",
+    },
   },
   profile: {
     infos: "Mes infos",
     reglages: "Réglages",
     inviter: "Inviter d’autres à rejoindre la communauté",
     aPropos: "À propos de Open Community (OPC)",
+    vosIdees: "Vos idées · S’impliquer",
     infosBody: "Vos coordonnées et votre portefeuille restent sur cet appareil.",
     reglagesHint: "La langue choisie est enregistrée sur cet appareil. Elle remplace la langue du téléphone.",
     inviterBody: "Partagez Open Community avec un voisin, un commerce, une famille.",
@@ -277,7 +288,7 @@ export const fr = {
     locationHint:
       "Pour le nom de ta ville et, plus tard, la proximité. Désactiver : on revient à Gatineau.",
     analyticsConsent: "Stats d’usage anonymes",
-    analyticsHint: "Session, langue, ville/pays si la position est acceptée, idées de monétisation.",
+    analyticsHint: "Session, langue, ville/pays si la position est acceptée, idées (Vos idées / chat).",
     privacy: "Vie privée",
     terms: "Conditions",
     enabled: "Activé",
@@ -671,5 +682,57 @@ export const fr = {
     timeWarn: "Pas de fermes de clics, pas de faux comptes.",
     bandwidthNote:
       "Partage de bande passante (hors OPC) : petits montants, vérifier ton FAI. Ce n’est pas un chemin recommandé ici.",
+  },
+  shareOpc: {
+    title: "Partager OPC",
+    short: "Partager",
+    hint: "Modifiez le texte, puis copiez-le pour un ami, un voisin ou un critique. Le lien garde votre code d’invitation.",
+    edit: "Modifier",
+    copy: "Copier",
+    copied: "Texte copié.",
+    failed: "Copie impossible. Le texte est affiché : sélectionnez-le.",
+  },
+  feedback: {
+    prompt: "Utile ?",
+    useful: "Utile",
+    notUseful: "Pas utile",
+    thanks: "Merci.",
+    localOnly: "Sans stats, ça reste sur cet appareil.",
+  },
+  ideas: {
+    textLabel: "Ton idée",
+    textPh: "Ex. Déneiger les allées du quartier le samedi",
+    textRequired: "Écris ton idée en une phrase.",
+    involvementLabel: "Comment tu t’impliques",
+    involvementHint: "Coche une ou plusieurs : Tête, Cœur, Mains.",
+    tete: "Tête",
+    teteHint: "Réfléchir, voter, affiner",
+    coeur: "Cœur",
+    coeurHint: "Soutenir, partager, encourager",
+    mains: "Mains",
+    mainsHint: "Faire, offrir du temps",
+    involvementRequired: "Choisis au moins Tête, Cœur ou Mains.",
+    hoursLabel: "Heures / semaine (optionnel)",
+    hoursShare: "Heures / semaine",
+    hoursPh: "ex. 2",
+    neighborhoodLabel: "Quartier (optionnel)",
+    neighborhoodShare: "Quartier",
+    neighborhoodPh: "Hull, Aylmer, Plateau…",
+    submit: "Envoyer l’idée",
+    thankYou: "Merci — tu fais partie d’ici.",
+    thankYouBody:
+      "Ton idée est sur le mur. Tête, Cœur, Mains : c’est comme ça qu’Open Community avance. Partage-la si tu veux, ou ajoute-en une autre.",
+    wallTitle: "Mur d’idées (cet appareil)",
+    wallEmpty: "Pas encore d’idée ici. La première est souvent la plus utile.",
+    editIdea: "Modifier",
+    share: "Texte à partager",
+    shareHint: "Modifiez le texte, puis copiez-le pour un voisin ou un groupe.",
+    shareEdit: "Modifier",
+    shareCopy: "Copier",
+    shareCopied: "Texte copié.",
+    shareFailed: "Copie impossible. Le texte est affiché : sélectionnez-le.",
+    hoursLine: "{hours} h / semaine",
+    newIdea: "Autre idée",
+    shareHeading: "Idée Open Community",
   },
 };
