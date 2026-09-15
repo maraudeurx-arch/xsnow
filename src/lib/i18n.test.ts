@@ -48,6 +48,12 @@ describe("car morning offer copy", () => {
     assert.ok(es.offers.paymentTitle);
     assert.match(fr.offers.insuranceHint, /assureur/);
     assert.match(en.offers.terms, /not the insurer/);
+    assert.equal(fr.offers.shareEdit, "Modifier");
+    assert.equal(fr.offers.shareCopy, "Copier");
+    assert.equal(en.offers.shareEdit, "Edit");
+    assert.equal(en.offers.shareCopy, "Copy");
+    assert.equal(es.offers.shareEdit, "Editar");
+    assert.equal(es.offers.shareCopy, "Copiar");
   });
 });
 

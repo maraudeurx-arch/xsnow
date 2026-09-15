@@ -15,7 +15,10 @@ import {
   publishIssues,
   sharePostFr,
   toSharePayload,
+  draftShareText,
+  readEditedShareText,
   shareTextKey,
+  writeEditedShareText,
 } from "./offers.ts";
 
 describe("publishIssues", () => {
@@ -117,6 +120,39 @@ describe("mergeBrowseOffers", () => {
 describe("edited share text persistence", () => {
   it("uses opc-share-text:<id> keys", () => {
     assert.equal(shareTextKey("abc"), "opc-share-text:abc");
+  });
+
+  it("reloads last edited text per offer id", () => {
+    const data = new Map<string, string>();
+    const previous = (globalThis as { window?: unknown }).window;
+    (globalThis as { window: unknown }).window = {
+      localStorage: {
+        getItem: (key: string) => data.get(key) ?? null,
+        setItem: (key: string, value: string) => {
+          data.set(key, value);
+        },
+      },
+    };
+
+    try {
+      const offer = offerFromForm({
+        ...carMorningDefaults(),
+        interacContact: "me@opc.test",
+        insuranceOk: true,
+      });
+      const generated = draftShareText(offer);
+      assert.match(generated, /github\.io\/xsnow/);
+      writeEditedShareText(offer.id, "Texte Marketplace modifié");
+      assert.equal(readEditedShareText(offer.id), "Texte Marketplace modifié");
+      assert.equal(draftShareText(offer), "Texte Marketplace modifié");
+      assert.equal(data.get(`opc-share-text:${offer.id}`), "Texte Marketplace modifié");
+    } finally {
+      if (previous === undefined) {
+        delete (globalThis as { window?: unknown }).window;
+      } else {
+        (globalThis as { window: unknown }).window = previous;
+      }
+    }
   });
 });
 

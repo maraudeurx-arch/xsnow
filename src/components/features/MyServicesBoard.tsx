@@ -56,6 +56,7 @@ export function MyServicesBoard() {
     setShareStatus("");
     requestAnimationFrame(() => {
       shareBox.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      shareArea.current?.focus();
     });
   }
 
@@ -283,7 +284,10 @@ export function MyServicesBoard() {
           <textarea
             ref={shareArea}
             value={shareText}
-            onChange={(event) => editShareText(event.target.value)}
+            onChange={(event) => {
+              setShareText(event.target.value);
+              editShareText(event.target.value);
+            }}
             rows={8}
             className={`${fieldClass} min-h-[140px] py-2 text-xs leading-relaxed`}
           />
