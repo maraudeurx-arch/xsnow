@@ -1,12 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { AvatarChat } from "@/components/AvatarChat";
 import { AvatarDisc } from "@/components/AvatarDisc";
 import { LocationPrompt } from "@/components/LocationPrompt";
-import { useNeedsConsentSheet } from "@/components/ConsentSheet";
+import {
+  useConsentUnanswered,
+  useWelcomeGate,
+} from "@/components/ConsentSheet";
 import { InstallTip } from "@/components/InstallTip";
 import { AVATARS, avatarById, type Avatar, type AvatarId } from "@/lib/avatars";
 import { welcomeSpeechFor } from "@/lib/content";
@@ -16,10 +19,19 @@ import { usePlace } from "@/lib/place";
 import {
   hasPlayedWelcomeFor,
   markWelcomePlayed,
-  readWelcomeSpokenCity,
   useSpeech,
+  type SpeakOptions,
 } from "@/lib/speech";
-import { shouldRespeakWelcome, welcomeSpeechReady } from "@/lib/welcome-place";
+import {
+  beginWelcomeIntent,
+  isWelcomeInFlight,
+  openWelcomeGate,
+  readWelcomeGate,
+} from "@/lib/welcome-gate";
+import {
+  WELCOME_AUTOPLAY_GRACE_MS,
+  welcomeSpeechReady,
+} from "@/lib/welcome-place";
 import { useStoredAvatar } from "@/lib/useStoredAvatar";
 
 const pickerSize =
@@ -32,45 +44,60 @@ const shortcutClass =
 export function Guide() {
   const [avatarId, setAvatarId] = useStoredAvatar();
   const [picking, setPicking] = useState(false);
-  const { speak } = useSpeech();
-  const { city, needsPrompt, locating, resolved, consent, source } = usePlace();
+  const { speak, prime } = useSpeech();
+  const { city, needsPrompt } = usePlace();
   const { locale, m } = useI18n();
-  const waitingOnConsent = useNeedsConsentSheet();
+  const unanswered = useConsentUnanswered();
+  const welcomeGateOpen = useWelcomeGate();
 
   const showPicker = !avatarId || picking;
   const chosen = avatarId ? avatarById(avatarId) : null;
 
+  const playWelcome = useCallback(
+    (gender: Avatar["gender"]) => {
+      beginWelcomeIntent();
+      let engineStarted = false;
+      const grace = window.setTimeout(() => {
+        if (!engineStarted) openWelcomeGate();
+      }, WELCOME_AUTOPLAY_GRACE_MS);
+      const options: SpeakOptions = {
+        onEngineStart: () => {
+          engineStarted = true;
+        },
+        onSettled: () => {
+          window.clearTimeout(grace);
+          openWelcomeGate();
+        },
+      };
+      speak(welcomeSpeechFor(city, locale), gender, options);
+    },
+    [city, locale, speak],
+  );
+
   function chooseAvatar(id: AvatarId) {
+    const next = avatarById(id);
+    prime();
+    if (!hasPlayedWelcomeFor(id)) {
+      markWelcomePlayed(id);
+      playWelcome(next.gender);
+    } else if (!readWelcomeGate()) {
+      openWelcomeGate();
+    }
     setAvatarId(id);
     setPicking(false);
   }
 
   useEffect(() => {
     if (!chosen) return;
-    if (
-      !welcomeSpeechReady({
-        consent,
-        locating,
-        hasOverride: source === "override",
-        waitingOnConsent,
-      })
-    ) {
+    if (!welcomeSpeechReady({ hasAvatar: true })) return;
+    if (readWelcomeGate() || isWelcomeInFlight()) return;
+    if (hasPlayedWelcomeFor(chosen.id)) {
+      openWelcomeGate();
       return;
     }
-    const already = hasPlayedWelcomeFor(chosen.id);
-    if (
-      already &&
-      !shouldRespeakWelcome({
-        previousCity: readWelcomeSpokenCity(chosen.id),
-        nextCity: city,
-        nextResolved: resolved,
-      })
-    ) {
-      return;
-    }
-    markWelcomePlayed(chosen.id, city);
-    speak(welcomeSpeechFor(city, locale), chosen.gender);
-  }, [chosen, city, consent, locale, locating, resolved, source, speak, waitingOnConsent]);
+    markWelcomePlayed(chosen.id);
+    playWelcome(chosen.gender);
+  }, [chosen, playWelcome]);
 
   return (
     <section
@@ -142,7 +169,7 @@ export function Guide() {
             <ShareHomeButton />
           </nav>
           <InstallTip compact />
-          {needsPrompt && !waitingOnConsent ? (
+          {needsPrompt && !unanswered && Boolean(avatarId) && welcomeGateOpen ? (
             <LocationPrompt />
           ) : (
             <AvatarChat avatar={chosen} />

@@ -2,17 +2,39 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useSyncExternalStore } from "react";
 import { interpolate, hrefWithLang } from "@/lib/i18n";
 import { useI18n } from "@/lib/i18n/locale";
 import { isPublicInfoPath, PRIVACY_HREF } from "@/lib/paths";
 import { usePlace } from "@/lib/place";
 import { useAnalyticsConsent, useHasHydrated } from "@/lib/useAnalyticsConsent";
+import { useStoredAvatar } from "@/lib/useStoredAvatar";
+import { readWelcomeGate, subscribeWelcomeGate } from "@/lib/welcome-gate";
+import { canShowConsentSheet } from "@/lib/welcome-place";
 
-export function useNeedsConsentSheet() {
+export function useWelcomeGate() {
+  return useSyncExternalStore(subscribeWelcomeGate, readWelcomeGate, () => false);
+}
+
+/** True once hydrated if location or analytics still need an answer. */
+export function useConsentUnanswered() {
   const hydrated = useHasHydrated();
   const { consent } = usePlace();
   const { consent: analytics } = useAnalyticsConsent();
   return hydrated && (consent === "unset" || analytics === "unset");
+}
+
+export function useNeedsConsentSheet() {
+  const unanswered = useConsentUnanswered();
+  const [avatarId] = useStoredAvatar();
+  const welcomeGateOpen = useWelcomeGate();
+  return (
+    unanswered &&
+    canShowConsentSheet({
+      hasAvatar: Boolean(avatarId),
+      welcomeGateOpen,
+    })
+  );
 }
 
 export function ConsentSheet() {
@@ -21,11 +43,12 @@ export function ConsentSheet() {
   const { m, locale, source } = useI18n();
   const { city, consent, locating, error, requestLocation, skipLocation } = usePlace();
   const { consent: analytics, setConsent } = useAnalyticsConsent();
+  const readyForSheet = useNeedsConsentSheet();
 
   const onLegal = isPublicInfoPath(pathname);
   const needsLocation = consent === "unset";
   const needsAnalytics = analytics === "unset";
-  const open = hydrated && !onLegal && (needsLocation || needsAnalytics);
+  const open = hydrated && !onLegal && readyForSheet && (needsLocation || needsAnalytics);
   const fallbackCity = city;
 
   if (!open) return null;
