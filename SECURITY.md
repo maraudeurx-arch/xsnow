@@ -1,5 +1,7 @@
 # Security (soft launch)
 
+Public summary in the app (FR / EN / ES): [Sécurité](https://maraudeurx-arch.github.io/xsnow/securite/). Responsible disclosure today: [GitHub Issues](https://github.com/maraudeurx-arch/xsnow/issues). There is **no independent third-party audit yet**.
+
 Visitor ideas, chat, share text, offer notes, and monetization suggestions are **untrusted data**. They never become Git, never become HTML, and never become executable URLs.
 
 ## What visitors cannot do

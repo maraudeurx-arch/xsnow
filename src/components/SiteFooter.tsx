@@ -14,8 +14,9 @@ export function SiteFooter() {
         {m.footer.before}
         <span className="font-extrabold text-gold">{demonym}</span>
         {m.footer.after}
-        <span className="text-snow/50"> · </span>
-        <LegalLinks className="inline text-[10px] leading-snug [text-shadow:0_1px_8px_rgba(0,0,0,0.7)]" />
+      </p>
+      <p className="mt-0.5 text-[10px] leading-snug font-medium text-snow [text-shadow:0_1px_8px_rgba(0,0,0,0.7)]">
+        <LegalLinks className="inline text-[10px] leading-snug" />
       </p>
     </footer>
   );

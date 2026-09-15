@@ -272,6 +272,23 @@ describe("legal copy is present in FR/EN/ES", () => {
     assert.match(es.legal.privacy.draft, /Ley 25/);
   });
 
+  it("keeps transparency documents aligned", () => {
+    assert.deepEqual(Object.keys(en.legal), Object.keys(fr.legal));
+    assert.deepEqual(Object.keys(es.legal), Object.keys(fr.legal));
+    assert.deepEqual(Object.keys(en.trust), Object.keys(fr.trust));
+    assert.deepEqual(Object.keys(es.trust), Object.keys(fr.trust));
+    assert.deepEqual(Object.keys(en.footer), Object.keys(fr.footer));
+    assert.deepEqual(Object.keys(es.footer), Object.keys(fr.footer));
+    assert.equal(fr.legal.about.sections.length, 4);
+    assert.equal(fr.legal.how.sections.length, 4);
+    assert.equal(fr.legal.security.sections.length, 5);
+    assert.equal(fr.legal.proofs.sections.length, 3);
+    for (const kind of ["about", "how", "security", "proofs"] as const) {
+      assert.equal(en.legal[kind].sections.length, fr.legal[kind].sections.length);
+      assert.equal(es.legal[kind].sections.length, fr.legal[kind].sections.length);
+    }
+  });
+
   it("does not tell skip/deny visitors they live in Gatineau", () => {
     assert.doesNotMatch(fr.geo.skip, /Gatineau/);
     assert.doesNotMatch(en.geo.skip, /Gatineau/);
@@ -285,6 +302,83 @@ describe("legal copy is present in FR/EN/ES", () => {
     assert.ok(fr.place.wordmark);
     assert.ok(en.place.wordmark);
     assert.ok(es.place.wordmark);
+  });
+});
+
+describe("transparency copy stays honest", () => {
+  function flattenTrust(messages: typeof fr) {
+    const docs = [messages.legal.about, messages.legal.how, messages.legal.security, messages.legal.proofs];
+    const parts = [
+      messages.legal.about.extra,
+      messages.trust.github,
+      messages.trust.issues,
+      messages.trust.emailLabel,
+      messages.trust.emailSoon,
+      messages.trust.securityMd,
+      ...docs.flatMap((doc) => [
+        doc.title,
+        doc.lead,
+        doc.draft,
+        ...doc.sections.map((section) => `${section.heading} ${section.body}`),
+      ]),
+    ];
+    return parts.join("\n");
+  }
+
+  it("names Politzer, GitHub, and Issues without a company or personal email", () => {
+    for (const pack of [fr, en, es]) {
+      const text = flattenTrust(pack);
+      assert.match(text, /Politzer/);
+      assert.match(text, /maraudeurx-arch/);
+      assert.match(text, /GitHub Issues/);
+      assert.doesNotMatch(text, /icloud/i);
+      assert.doesNotMatch(text, /Politzerestigene/i);
+      assert.doesNotMatch(text, /@[a-z0-9.-]+\.[a-z]{2,}/i);
+      assert.doesNotMatch(text, /0x[a-fA-F0-9]{40}/);
+    }
+    assert.match(fr.legal.about.sections[0].body, /pas une société enregistrée/);
+    assert.match(en.legal.about.sections[0].body, /not a registered corporation/);
+    assert.match(es.legal.about.sections[0].body, /no es una sociedad registrada/);
+    assert.match(fr.trust.emailSoon, /e-mail de contact à venir/);
+    assert.match(en.trust.emailSoon, /coming soon/i);
+    assert.match(es.trust.emailSoon, /próximamente/);
+  });
+
+  it("states peer-to-peer payments and no OPC payment contracts", () => {
+    assert.match(fr.legal.how.sections[1].body, /pair à pair/);
+    assert.match(fr.legal.how.sections[1].body, /Interac/);
+    assert.match(fr.legal.how.sections[1].body, /PayPal\.me/);
+    assert.match(fr.legal.how.sections[1].body, /ne redistribue pas/);
+    assert.match(fr.legal.how.sections[1].body, /escrow/);
+    assert.match(en.legal.how.sections[1].body, /peer-to-peer/i);
+    assert.match(en.legal.how.sections[1].body, /does not hold/);
+    assert.match(es.legal.how.sections[1].body, /entre pares/);
+    assert.match(fr.legal.how.sections[2].body, /Aucun revenu n’est garanti/);
+    assert.match(en.legal.how.sections[2].body, /No income is guaranteed/);
+    assert.match(fr.legal.how.sections[3].body, /Aucun contrat intelligent de paiement OPC/);
+    assert.match(en.legal.how.sections[3].body, /No OPC payment smart contracts/);
+    assert.match(es.legal.how.sections[3].body, /Ningún contrato inteligente de pago de OPC/);
+    assert.match(fr.legal.how.sections[3].body, /WalletConnect/);
+    assert.match(en.legal.terms.sections.find((s) => s.heading === "Wallet")!.body, /no OPC payment smart contracts/i);
+  });
+
+  it("does not fake an audit or revenue proofs", () => {
+    assert.match(fr.legal.security.sections[4].body, /pas encore d’audit de sécurité indépendant/);
+    assert.match(en.legal.security.sections[4].body, /no independent third-party security audit yet/i);
+    assert.match(es.legal.security.sections[4].body, /Aún no hay una auditoría de seguridad independiente/);
+    assert.match(fr.legal.security.sections[0].body, /texte brut/);
+    assert.match(en.legal.security.sections[0].body, /plain text/i);
+    assert.match(fr.legal.security.sections[0].body, /n’a pas d’upload/);
+    assert.match(en.legal.security.sections[2].body, /does not open a pull request/i);
+    assert.match(fr.legal.proofs.sections[0].body, /ne revendique aucune preuve de revenus/);
+    assert.match(en.legal.proofs.sections[0].body, /claims no revenue proofs/i);
+    assert.match(es.legal.proofs.sections[0].body, /no reivindica ninguna prueba de ingresos/);
+    assert.match(fr.legal.proofs.draft, /Aucune capture d’écran fabriquée/);
+    assert.match(en.legal.proofs.sections[1].body, /consent/);
+    for (const pack of [fr, en, es]) {
+      const text = flattenTrust(pack);
+      assert.doesNotMatch(text, /CertiK|OpenZeppelin|Trail of Bits/i);
+    }
   });
 });
 
