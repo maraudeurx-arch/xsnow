@@ -8,9 +8,10 @@ import {
   DRAFT_HOTSPOT_ID,
   DRAFT_UX_SESSION_ID,
   encodeSharePayload,
-  featuredCarMorningOffer,
+  FEATURED_CAR_MORNING_ID,
   formatHourFr,
   hotspotDefaults,
+  isInjectedSeedId,
   mergeBrowseOffers,
   normalizePaypalMe,
   offerFromForm,
@@ -92,6 +93,13 @@ describe("sharePostFr", () => {
     assert.match(text, /en-demande/);
     assert.match(text, /Non-fumeur/);
     assert.match(text, /babillard/);
+    const untitledArea = offerFromForm({
+      ...carMorningDefaults(),
+      neighborhood: "",
+      interacContact: "opc@example.com",
+      insuranceOk: true,
+    });
+    assert.doesNotMatch(sharePostFr(untitledArea), /Gatineau/);
   });
 });
 
@@ -135,21 +143,57 @@ describe("paypal.me", () => {
 });
 
 describe("mergeBrowseOffers", () => {
-  it("shows the featured car morning offer when nothing is published", () => {
+  it("starts empty: no bundled Gatineau car listing", () => {
     const list = mergeBrowseOffers([], [], null);
-    assert.equal(list[0]?.id, featuredCarMorningOffer().id);
-    assert.equal(list[0]?.kind, "car_morning");
+    assert.equal(list.length, 0);
+    assert.equal(list.some((item) => item.id === FEATURED_CAR_MORNING_ID), false);
+    assert.equal(isInjectedSeedId(FEATURED_CAR_MORNING_ID), true);
+    assert.equal(isInjectedSeedId("seed-courses-1"), true);
   });
 
-  it("prefers a published local offer over the featured placeholder", () => {
+  it("keeps a published local offer on this device only", () => {
     const mine = offerFromForm({
       ...carMorningDefaults(),
       interacContact: "me@opc.test",
       insuranceOk: true,
     });
     const list = mergeBrowseOffers([mine], [], null);
-    assert.equal(list.some((item) => item.id === featuredCarMorningOffer().id), false);
+    assert.equal(list.length, 1);
     assert.equal(list[0]?.interacContact, "me@opc.test");
+    assert.equal(mergeBrowseOffers([], [], null).some((item) => item.id === mine.id), false);
+  });
+
+  it("shows approved catalog offers without mixing in another device’s list", () => {
+    const catalog = offerFromForm({
+      ...hotspotDefaults(),
+      title: "Hotspot approuvé",
+      interacContact: "catalog@opc.test",
+    });
+    const otherDevice = offerFromForm({
+      ...carMorningDefaults(),
+      title: "Offre d’un autre téléphone",
+      interacContact: "other@opc.test",
+      insuranceOk: true,
+    });
+    const list = mergeBrowseOffers([], [], null, [catalog]);
+    assert.equal(list.length, 1);
+    assert.equal(list[0]?.title, "Hotspot approuvé");
+    assert.equal(list.some((item) => item.id === otherDevice.id), false);
+  });
+
+  it("drops the legacy featured id even if it was stored", () => {
+    const featured = {
+      ...offerFromForm({
+        ...carMorningDefaults(),
+        interacContact: "hidden@opc.test",
+        insuranceOk: true,
+      }),
+      id: FEATURED_CAR_MORNING_ID,
+      published: true,
+      neighborhood: "Gatineau",
+    };
+    const list = mergeBrowseOffers([featured], [], null);
+    assert.equal(list.length, 0);
   });
 });
 
@@ -222,7 +266,8 @@ describe("earn-now offer templates", () => {
     const list = mergeBrowseOffers([hotspot, ux], [], null);
     assert.equal(list.some((item) => item.id === DRAFT_HOTSPOT_ID), false);
     assert.equal(list.some((item) => item.id === DRAFT_UX_SESSION_ID), false);
-    assert.equal(list.some((item) => item.id === featuredCarMorningOffer().id), true);
+    assert.equal(list.length, 0);
+    assert.equal(list.some((item) => item.id === FEATURED_CAR_MORNING_ID), false);
   });
 
   it("shares hotspot offers with kind=hotspot and no gas line", () => {

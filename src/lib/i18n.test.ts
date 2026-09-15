@@ -262,7 +262,7 @@ describe("welcome and system prompt follow UI locale", () => {
 
 describe("legal copy is present in FR/EN/ES", () => {
   it("keeps the same privacy and terms section counts", () => {
-    assert.equal(fr.legal.privacy.sections.length, 6);
+    assert.equal(fr.legal.privacy.sections.length, 7);
     assert.equal(en.legal.privacy.sections.length, fr.legal.privacy.sections.length);
     assert.equal(es.legal.privacy.sections.length, fr.legal.privacy.sections.length);
     assert.equal(en.legal.terms.sections.length, fr.legal.terms.sections.length);
@@ -279,7 +279,7 @@ describe("legal copy is present in FR/EN/ES", () => {
     assert.deepEqual(Object.keys(es.trust), Object.keys(fr.trust));
     assert.deepEqual(Object.keys(en.footer), Object.keys(fr.footer));
     assert.deepEqual(Object.keys(es.footer), Object.keys(fr.footer));
-    assert.equal(fr.legal.about.sections.length, 4);
+    assert.equal(fr.legal.about.sections.length, 5);
     assert.equal(fr.legal.how.sections.length, 4);
     assert.equal(fr.legal.security.sections.length, 5);
     assert.equal(fr.legal.proofs.sections.length, 3);
@@ -287,6 +287,13 @@ describe("legal copy is present in FR/EN/ES", () => {
       assert.equal(en.legal[kind].sections.length, fr.legal[kind].sections.length);
       assert.equal(es.legal[kind].sections.length, fr.legal[kind].sections.length);
     }
+    assert.match(fr.legal.about.sections[4].body, /version/);
+    assert.match(en.legal.about.sections[4].body, /public catalog/i);
+    assert.match(es.legal.about.sections[4].body, /catálogo público/);
+    assert.match(fr.profile.deviceLocalNote, /cet appareil/);
+    assert.match(en.profile.releaseNotesBody, /0\.3\.0/);
+    assert.deepEqual(Object.keys(en.profile), Object.keys(fr.profile));
+    assert.deepEqual(Object.keys(es.profile), Object.keys(fr.profile));
   });
 
   it("does not tell skip/deny visitors they live in Gatineau", () => {

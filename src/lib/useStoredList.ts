@@ -45,7 +45,11 @@ export function useStoredList<T>(key: string) {
   return [items, setItems] as const;
 }
 
-/** Like useStoredList, but writes `seed` the first time the key is absent. */
+/**
+ * Like useStoredList, but writes `seed` the first time the key is absent.
+ * Do not use this for personal offers, ideas, or demo listings — new devices
+ * must start empty. Approved community content belongs in the versioned catalog.
+ */
 export function useSeededList<T>(key: string, seed: T[]) {
   const empty = useRef<T[]>([]);
   const seedRef = useRef(seed);
