@@ -1,7 +1,12 @@
-import { LocalizedStubFeature } from "@/components/LocalizedStub";
+import { LocalizedFeature } from "@/components/LocalizedFeature";
+import { DemandBoard } from "@/components/features/DemandBoard";
 
 export const metadata = { title: "En demande" };
 
 export default function EnDemandePage() {
-  return <LocalizedStubFeature feature="enDemande" stub="enDemande" />;
+  return (
+    <LocalizedFeature feature="enDemande">
+      <DemandBoard />
+    </LocalizedFeature>
+  );
 }

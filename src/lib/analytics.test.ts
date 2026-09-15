@@ -115,12 +115,52 @@ describe("worker parseStatsEvents", () => {
           t: 4,
         },
         { type: "place", session: "nope", city: "X", countryCode: "CA" },
+        {
+          type: "offer_created",
+          session: "aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee",
+          kind: "car_morning",
+          email: "secret@opc.test",
+          t: 5,
+        },
+        {
+          type: "request_created",
+          session: "aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee",
+          kind: "car_morning",
+          name: "Ada",
+          t: 6,
+        },
       ],
     });
-    assert.equal(parsed.length, 4);
+    assert.equal(parsed.length, 6);
     assert.equal(parsed[2]?.city, "Gatineau");
     assert.equal("lat" in (parsed[2] ?? {}), false);
     assert.match(parsed[3]?.text ?? "", /\[redacted\]/);
+    assert.equal(parsed[4]?.type, "offer_created");
+    assert.equal(parsed[4]?.text, "car_morning");
+    assert.equal("email" in (parsed[4] ?? {}), false);
+    assert.equal(parsed[5]?.type, "request_created");
+    assert.equal("name" in (parsed[5] ?? {}), false);
+  });
+});
+
+describe("offer/request analytics", () => {
+  it("keeps kind only and drops contact-like fields", () => {
+    const event = toAnalyticsEvent(
+      {
+        type: "offer_created",
+        kind: "Car Morning!!",
+        email: "owner@opc.test",
+        phone: "8195550101",
+      },
+      "anon-session-1",
+      9,
+    );
+    assert.deepEqual(event, {
+      type: "offer_created",
+      session: "anon-session-1",
+      t: 9,
+      kind: "car_morning",
+    });
   });
 });
 

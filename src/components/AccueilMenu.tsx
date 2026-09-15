@@ -23,7 +23,10 @@ const itemClass = (active: boolean) =>
       : "border-white/10 bg-white/[0.04] text-snow/90 hover:border-violet/40 hover:bg-white/[0.07]"
   }`;
 
-const COMMUNITY = [{ href: "/proximite", key: "proximite" as const }];
+const COMMUNITY = [
+  { href: "/proximite", key: "proximite" as const },
+  { href: "/en-demande/?kind=car-morning", key: "carMorning" as const },
+];
 const SAFETY = [
   { href: "/telephone", key: "telephone" as const },
   { href: "/alertes", key: "alertes" as const },
@@ -69,7 +72,7 @@ export function AccueilMenu() {
               <Link
                 key={item.href}
                 href={item.href}
-                className={itemClass(pathMatches(pathname, item.href))}
+                className={itemClass(pathMatches(pathname, item.href.split("?")[0]))}
                 onClick={close}
               >
                 {m.menu[item.key]}

@@ -3,6 +3,9 @@ export const BASE_PATH = "/xsnow";
 export const PRIVACY_HREF = "/vie-privee";
 export const TERMS_HREF = "/conditions";
 
+/** Canonical public URL (GitHub Pages). Used in share posts and deep links. */
+export const PUBLIC_SITE_URL = "https://maraudeurx-arch.github.io/xsnow/";
+
 export function assetUrl(path: string) {
   const normalized = path.startsWith("/") ? path : `/${path}`;
   return `${BASE_PATH}${normalized}`;
