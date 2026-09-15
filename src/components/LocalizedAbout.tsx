@@ -1,5 +1,6 @@
 "use client";
 
+import { LegalLinks } from "@/components/LegalLinks";
 import { LocalizedProfileStub } from "@/components/LocalizedFeature";
 import { interpolate } from "@/lib/i18n";
 import { useI18n } from "@/lib/i18n/locale";
@@ -17,6 +18,8 @@ export function LocalizedAbout() {
           slogan: m.brand.slogan,
         })}
       </p>
+      <p className="mt-3 text-sm leading-relaxed text-ice/85">{m.legal.about.extra}</p>
+      <LegalLinks className="mt-4 text-sm" />
     </LocalizedProfileStub>
   );
 }

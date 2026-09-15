@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { AvatarChat } from "@/components/AvatarChat";
 import { AvatarDisc } from "@/components/AvatarDisc";
 import { LocationPrompt } from "@/components/LocationPrompt";
+import { useNeedsConsentSheet } from "@/components/ConsentSheet";
 import { AVATARS, avatarById, type Avatar, type AvatarId } from "@/lib/avatars";
 import { welcomeSpeechFor } from "@/lib/content";
 import { useI18n } from "@/lib/i18n/locale";
@@ -25,6 +26,7 @@ export function Guide() {
   const { speak } = useSpeech();
   const { city, ready, needsPrompt } = usePlace();
   const { locale, m } = useI18n();
+  const waitingOnConsent = useNeedsConsentSheet();
 
   const showPicker = !avatarId || picking;
   const chosen = avatarId ? avatarById(avatarId) : null;
@@ -35,11 +37,11 @@ export function Guide() {
   }
 
   useEffect(() => {
-    if (!chosen || !ready) return;
+    if (!chosen || !ready || waitingOnConsent) return;
     if (hasPlayedWelcomeFor(chosen.id)) return;
     markWelcomePlayed(chosen.id);
     speak(welcomeSpeechFor(city, locale), chosen.gender);
-  }, [chosen, city, locale, ready, speak]);
+  }, [chosen, city, locale, ready, speak, waitingOnConsent]);
 
   return (
     <section
@@ -97,7 +99,7 @@ export function Guide() {
               </button>
             </div>
           </div>
-          {needsPrompt ? <LocationPrompt /> : <AvatarChat avatar={chosen} />}
+          {needsPrompt && !waitingOnConsent ? <LocationPrompt /> : <AvatarChat avatar={chosen} />}
         </>
       ) : null}
     </section>

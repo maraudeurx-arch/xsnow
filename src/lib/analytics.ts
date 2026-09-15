@@ -13,7 +13,12 @@
  * - `monetize_suggestion` — short free text (trim/cap 280) when chat looks like
  *   a monetization idea (keywords: monétiser, monetize, suggestion, service,
  *   activité / activity)
+ *
+ * Nothing is queued or POSTed until analytics consent is granted
+ * (`xsnow.analyticsConsent` = granted).
  */
+
+import { analyticsAllowed } from "./consent.ts";
 
 export const ANON_ID_KEY = "xsnow.anonId";
 export const SESSION_START_KEY = "xsnow.sessionStartSent";
@@ -63,6 +68,17 @@ type QueueSink = (events: AnalyticsEvent[]) => void;
 let queue: AnalyticsEvent[] = [];
 let flushTimer: ReturnType<typeof setTimeout> | null = null;
 let sink: QueueSink | null = null;
+let consentOverride: boolean | null = null;
+
+/** Test helper. `null` restores localStorage consent. */
+export function setAnalyticsConsentOverride(value: boolean | null) {
+  consentOverride = value;
+}
+
+export function canSendAnalytics() {
+  if (consentOverride != null) return consentOverride;
+  return analyticsAllowed();
+}
 
 export function statsEndpoint(base?: string) {
   const raw =
@@ -197,6 +213,7 @@ function browserLocal() {
 }
 
 export function enqueue(event: AnalyticsEvent) {
+  if (!canSendAnalytics()) return;
   queue.push(event);
   if (queue.length >= 6) {
     flush();
@@ -249,6 +266,10 @@ export function flush() {
     clearTimeout(flushTimer);
     flushTimer = null;
   }
+  if (!canSendAnalytics()) {
+    queue = [];
+    return;
+  }
   if (!queue.length) return;
   const batch = queue;
   queue = [];
@@ -268,6 +289,7 @@ function bindPageHide() {
 
 export function noteSessionStart() {
   if (typeof window === "undefined") return;
+  if (!canSendAnalytics()) return;
   bindPageHide();
   const session = readOrCreateAnonId(browserLocal());
   const tab = browserSession();
@@ -278,6 +300,7 @@ export function noteSessionStart() {
 
 export function noteLang(lang: AnalyticsLang) {
   if (typeof window === "undefined") return;
+  if (!canSendAnalytics()) return;
   bindPageHide();
   const session = readOrCreateAnonId(browserLocal());
   enqueue({ type: "lang", session, t: Date.now(), lang });
@@ -285,6 +308,7 @@ export function noteLang(lang: AnalyticsLang) {
 
 export function notePlace(city: string, countryCode: string) {
   if (typeof window === "undefined") return;
+  if (!canSendAnalytics()) return;
   const cleanCity = sanitizeCity(city);
   const cleanCountry = sanitizeCountryCode(countryCode);
   if (!cleanCity || !cleanCountry) return;
@@ -304,6 +328,7 @@ export function notePlace(city: string, countryCode: string) {
 
 export function noteMonetizeSuggestion(text: string) {
   if (typeof window === "undefined") return;
+  if (!canSendAnalytics()) return;
   if (!looksLikeMonetizeSuggestion(text)) return;
   const clean = sanitizeSuggestion(text);
   if (!clean) return;

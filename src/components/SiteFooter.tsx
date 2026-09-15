@@ -1,5 +1,6 @@
 "use client";
 
+import { LegalLinks } from "@/components/LegalLinks";
 import { demonymFor } from "@/lib/demonym";
 import { useI18n } from "@/lib/i18n/locale";
 import { usePlace } from "@/lib/place";
@@ -15,6 +16,7 @@ export function SiteFooter() {
         <span className="font-extrabold text-gold">{demonymFor(city, locale)}</span>
         {m.footer.after}
       </p>
+      <LegalLinks className="mt-0.5 text-[10px] leading-none [text-shadow:0_1px_8px_rgba(0,0,0,0.7)]" />
     </footer>
   );
 }

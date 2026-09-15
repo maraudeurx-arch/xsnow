@@ -55,6 +55,19 @@ describe("welcome and system prompt follow UI locale", () => {
   });
 });
 
+describe("legal copy is present in FR/EN/ES", () => {
+  it("keeps the same privacy and terms section counts", () => {
+    assert.equal(fr.legal.privacy.sections.length, 6);
+    assert.equal(en.legal.privacy.sections.length, fr.legal.privacy.sections.length);
+    assert.equal(es.legal.privacy.sections.length, fr.legal.privacy.sections.length);
+    assert.equal(en.legal.terms.sections.length, fr.legal.terms.sections.length);
+    assert.equal(es.legal.terms.sections.length, fr.legal.terms.sections.length);
+    assert.match(fr.legal.privacy.draft, /Loi 25/);
+    assert.match(en.legal.privacy.draft, /Law 25/);
+    assert.match(es.legal.privacy.draft, /Ley 25/);
+  });
+});
+
 describe("demonymFor locales", () => {
   it("translates footer gentilés", () => {
     assert.equal(demonymFor("Gatineau", "fr"), "Gatinois");

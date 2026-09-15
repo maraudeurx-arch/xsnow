@@ -1,12 +1,15 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import {
+  enqueue,
   looksLikeCoordinates,
   looksLikeMonetizeSuggestion,
+  pendingEvents,
   readOrCreateAnonId,
   resetAnalyticsQueue,
   sanitizeCity,
   sanitizeSuggestion,
+  setAnalyticsConsentOverride,
   statsEndpoint,
   toAnalyticsEvent,
 } from "./analytics.ts";
@@ -118,5 +121,19 @@ describe("worker parseStatsEvents", () => {
     assert.equal(parsed[2]?.city, "Gatineau");
     assert.equal("lat" in (parsed[2] ?? {}), false);
     assert.match(parsed[3]?.text ?? "", /\[redacted\]/);
+  });
+});
+
+describe("analytics consent gate", () => {
+  it("does not enqueue until consent is granted", () => {
+    resetAnalyticsQueue();
+    setAnalyticsConsentOverride(false);
+    enqueue({ type: "session_start", session: "s", t: 1 });
+    assert.deepEqual(pendingEvents(), []);
+    setAnalyticsConsentOverride(true);
+    enqueue({ type: "session_start", session: "s", t: 1 });
+    assert.equal(pendingEvents().length, 1);
+    resetAnalyticsQueue();
+    setAnalyticsConsentOverride(null);
   });
 });
