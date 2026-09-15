@@ -268,6 +268,32 @@ describe("community idea analytics", () => {
   });
 });
 
+describe("client-side stats event parsing", () => {
+  it("keeps idea_submit / invite_open text and drops GPS", () => {
+    const idea = toAnalyticsEvent(
+      { type: "idea_submit", text: "tete+mains", lat: 45.47, email: "ada@opc.test" },
+      "anon-session-1",
+      3,
+    );
+    assert.deepEqual(idea, {
+      type: "idea_submit",
+      session: "anon-session-1",
+      t: 3,
+      text: "tete+mains",
+    });
+    const invite = toAnalyticsEvent(
+      { type: "invite_open", text: "ami|critique<script>", lon: -75.7 },
+      "anon-session-1",
+      4,
+    );
+    assert.equal(invite?.type, "invite_open");
+    assert.equal(invite && "text" in invite ? invite.text : "", "ami|critique");
+    assert.equal(invite && "lon" in invite, false);
+    assert.equal(toAnalyticsEvent({ type: "unknown" }, "anon-session-1"), null);
+    assert.equal(toAnalyticsEvent({ type: "place", city: "", countryCode: "CA" }, "s"), null);
+  });
+});
+
 describe("analytics consent gate", () => {
   it("does not enqueue until consent is granted", () => {
     resetAnalyticsQueue();

@@ -32,12 +32,21 @@ describe("hrefWithLang", () => {
     assert.equal(hrefWithLang("/conditions/", "es", "query"), "/conditions/?lang=es");
     assert.equal(hrefWithLang("/vie-privee", "en", "stored"), "/vie-privee");
     assert.equal(hrefWithLang("/vie-privee", "en", "auto"), "/vie-privee");
+    assert.equal(hrefWithLang("/vos-idees/#form", "en", "query"), "/vos-idees/?lang=en#form");
   });
 });
 
 describe("interpolate", () => {
   it("fills {city} placeholders", () => {
     assert.equal(interpolate("Hello {city}", { city: "Gatineau" }), "Hello Gatineau");
+  });
+
+  it("fills several keys and leaves unknown ones empty", () => {
+    assert.equal(
+      interpolate("{community} — {slogan}", { community: "Open Community", slogan: "Monétisé Vous!" }),
+      "Open Community — Monétisé Vous!",
+    );
+    assert.equal(interpolate("Ville {city}", {}), "Ville ");
   });
 });
 

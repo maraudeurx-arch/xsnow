@@ -59,4 +59,43 @@ describe("public catalog 0.3.0", () => {
     assert.equal(catalog.offers.length, 0);
     assert.equal(catalog.ideas.length, 0);
   });
+
+  it("drops unpublished offers and keeps only a numbered catalog version", async () => {
+    const unpublished = offerFromForm({
+      ...carMorningDefaults(),
+      interacContact: "draft@opc.test",
+      insuranceOk: true,
+    });
+    unpublished.published = false;
+    const catalog = parsePublicCatalog({
+      version: "",
+      offers: [unpublished],
+      ideas: [],
+      services: [],
+    });
+    assert.equal(catalog.version, APP_VERSION);
+    assert.equal(catalog.offers.length, 0);
+
+    const http404 = await loadPublicCatalog(async () => ({
+      ok: false,
+      json: async () => ({ version: "9.9.9", offers: [{ id: FEATURED_CAR_MORNING_ID }] }),
+    }));
+    assert.equal(http404.offers.length, 0);
+    assert.equal(http404.version, APP_VERSION);
+  });
+
+  it("loads the shipped JSON through the catalog gate", async () => {
+    const catalog = await loadPublicCatalog(async (input) => {
+      assert.equal(input, catalogAssetUrl());
+      return {
+        ok: true,
+        json: async () =>
+          JSON.parse(readFileSync(new URL("../../public/catalog/0.3.0.json", import.meta.url), "utf8")),
+      };
+    });
+    assert.equal(catalog.version, "0.3.0");
+    assert.equal(catalog.offers.length, 0);
+    assert.equal(catalog.ideas.length, 0);
+    assert.equal(catalog.services.length, 0);
+  });
 });

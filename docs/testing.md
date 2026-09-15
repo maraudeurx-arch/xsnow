@@ -1,0 +1,64 @@
+# Testing pyramid (Open Community / xsnow)
+
+The app is a static Next.js export. Tests stay in three layers so PRs fail fast without a browser, then smoke the GitHub Pages-shaped `out/` build.
+
+## Unit (`npm run test:unit` or `npm test`)
+
+Node’s built-in runner (`node --test`) plus `--experimental-strip-types`. Fast, no browser.
+
+Covers pure lib helpers:
+
+- UGC sanitization (`src/lib/sanitize.ts`)
+- Geo / place fallbacks (no fake Gatineau on far coordinates)
+- Invite query parsing
+- Versioned public catalog / publish gate
+- Client-side stats event shaping
+- i18n helpers and FR/EN/ES copy sync
+
+```bash
+npm test          # unit + functional
+npm run test:unit
+```
+
+## Functional (`npm run test:functional`)
+
+Still Node, still no browser. Module-level flows that compose storage + catalog + offers + ideas:
+
+- Fresh `localStorage`: Mes services / En demande empty (legacy featured car id dropped)
+- Vos idées stay on-device; an empty catalog does not resurrect them
+- Publish gate: incomplete car offers and unpublished catalog rows never list
+- About copy includes the shipped `APP_VERSION`
+
+## End-to-end (`npm run test:e2e`)
+
+Playwright against a **production-like static export**, one iPhone viewport (`390×844`).
+
+1. Build the Pages artifact:
+
+   ```bash
+   npm run build
+   ```
+
+2. Install the browser once (local):
+
+   ```bash
+   npx playwright install chromium
+   ```
+
+3. Run the smoke suite (serves `out/` at `/xsnow/`, same `basePath` as GitHub Pages):
+
+   ```bash
+   npm run test:e2e
+   ```
+
+`scripts/serve-e2e.mjs` maps `/xsnow/` → `out/` because `npx serve out` would 404 `_next` assets requested under `/xsnow`. Same command: `npm run serve:static`.
+
+Critical paths:
+
+- Home: **Open Community** banner, avatar picker rings
+- Fresh storage: Mes services / En demande empty (no bundled Gatineau car offer)
+- Vos idées: submit stays in `localStorage`; clearing it is not filled back from the empty catalog
+- Transparency: About (version), Comment ça marche, Sécurité, Vie privée
+- Connect is visible; the suite does **not** open WalletConnect (no project id required)
+
+CI: `.github/workflows/build.yml` runs unit + functional on every PR/`main` push, and Playwright after `npm run build`.

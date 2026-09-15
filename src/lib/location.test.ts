@@ -6,12 +6,16 @@ import { fr } from "./i18n/fr.ts";
 import { interpolate } from "./i18n/locales.ts";
 import {
   acceptGeoResult,
+  distanceKm,
   frenchVoiceLangFor,
   geoResultFromPayload,
   inferLocaleHint,
   isImplausibleSeedCity,
+  isNearSeedCity,
   parseCityOverride,
   parseGeoPromptOverride,
+  SEED_LAT,
+  SEED_LON,
 } from "./geo-logic.ts";
 import {
   brandingForPlace,
@@ -155,8 +159,34 @@ describe("pickFrenchVoice", () => {
 });
 
 const HAITI = { lat: 18.5392, lon: -72.335 };
+const TOKYO = { lat: 35.6762, lon: 139.6503 };
+const PARIS = { lat: 48.8566, lon: 2.3522 };
+const SYDNEY = { lat: -33.8688, lon: 151.2093 };
+const OTTAWA = { lat: 45.4215, lon: -75.6972 };
 
 describe("live place vs Gatineau seed", () => {
+  it("measures Ottawa as near the seed and far cities as not Gatineau", () => {
+    assert.ok(distanceKm(SEED_LAT, SEED_LON, SEED_LAT, SEED_LON) < 0.01);
+    assert.equal(isNearSeedCity(OTTAWA.lat, OTTAWA.lon), true);
+    assert.equal(isNearSeedCity(TOKYO.lat, TOKYO.lon), false);
+    assert.equal(isNearSeedCity(PARIS.lat, PARIS.lon), false);
+    assert.equal(isNearSeedCity(SYDNEY.lat, SYDNEY.lon), false);
+    assert.ok(distanceKm(SEED_LAT, SEED_LON, TOKYO.lat, TOKYO.lon) > 80);
+    assert.equal(isImplausibleSeedCity("Gatineau", TOKYO.lat, TOKYO.lon), true);
+    assert.equal(isImplausibleSeedCity("Gatineau", PARIS.lat, PARIS.lon), true);
+    assert.equal(isImplausibleSeedCity("Gatineau", SYDNEY.lat, SYDNEY.lon), true);
+    assert.equal(isImplausibleSeedCity("Gatineau", OTTAWA.lat, OTTAWA.lon), false);
+    assert.equal(acceptGeoResult(TOKYO.lat, TOKYO.lon, { city: "Gatineau" }), false);
+    assert.equal(
+      acceptGeoResult(TOKYO.lat, TOKYO.lon, {
+        city: "Tokyo",
+        countryCode: "JP",
+        localeHint: "en-US",
+      }),
+      true,
+    );
+  });
+
   it("rejects a Gatineau geocode stamp on Haiti coordinates", () => {
     assert.equal(isImplausibleSeedCity("Gatineau", HAITI.lat, HAITI.lon), true);
     assert.equal(
