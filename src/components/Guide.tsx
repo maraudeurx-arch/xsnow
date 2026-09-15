@@ -27,7 +27,7 @@ const pickerSize =
 const chosenSize = "size-[var(--home-avatar)]";
 
 const shortcutClass =
-  "inline-flex min-h-[var(--home-chip-h)] w-full items-center justify-center rounded-lg border border-gold/65 bg-[rgba(8,8,12,0.92)] px-2 text-center text-[11px] font-extrabold leading-tight text-gold shadow-[0_4px_12px_rgba(0,0,0,0.3)]";
+  "inline-flex min-h-[var(--home-chip-h)] w-full items-center justify-center rounded-lg border border-gold/65 bg-[rgba(8,8,12,0.92)] px-1.5 text-center text-[10px] font-extrabold leading-tight text-gold shadow-[0_4px_12px_rgba(0,0,0,0.3)]";
 
 export function Guide() {
   const [avatarId, setAvatarId] = useStoredAvatar();
@@ -78,7 +78,7 @@ export function Guide() {
       className={`flex min-h-0 w-full flex-col ${
         showPicker
           ? "items-center justify-center gap-1.5"
-          : "items-stretch justify-center gap-0 self-stretch"
+          : "h-full min-h-0 items-stretch justify-center gap-0 self-stretch"
       }`}
     >
       {showPicker ? (
@@ -115,14 +115,14 @@ export function Guide() {
           </div>
         </div>
       ) : chosen ? (
-        <div className="home-stage flex w-full flex-col gap-[var(--home-gap)] rounded-2xl px-2 py-1.5">
+        <div className="home-stage flex min-h-0 w-full flex-col gap-[var(--home-stack-gap)] overflow-hidden rounded-2xl px-[var(--home-card-pad-x)] py-[var(--home-card-pad-y)]">
           <div className="flex shrink-0 items-center gap-2">
             <AvatarDisc avatar={chosen} className={chosenSize} priority />
-            <div className="flex min-w-0 flex-1 items-center gap-1.5">
+            <div className="flex min-w-0 flex-1 items-center gap-2">
               <ReplayButton gender={chosen.gender} />
               <button
                 type="button"
-                className="inline-flex min-h-[var(--home-chip-h)] min-w-0 flex-1 items-center justify-center rounded-full border border-white/20 bg-white/[0.06] px-2 text-[11px] font-semibold tracking-wide text-snow hover:border-violet/50 hover:bg-white/[0.09]"
+                className="inline-flex min-h-[var(--home-chip-h)] min-w-0 flex-1 items-center justify-center rounded-full border border-white/20 bg-white/[0.06] px-2 text-[10px] font-semibold tracking-wide text-snow hover:border-violet/50 hover:bg-white/[0.09]"
                 onClick={() => setPicking(true)}
               >
                 {m.guide.changeAvatar}
@@ -131,7 +131,7 @@ export function Guide() {
           </div>
           <nav
             aria-label={m.guide.offerShortcuts}
-            className="grid shrink-0 grid-cols-2 gap-1.5"
+            className="grid shrink-0 grid-cols-2 gap-[var(--home-chip-gap)]"
           >
             <Link href="/gagner-maintenant" className={shortcutClass}>
               {m.menu.gagnerMaintenant}
@@ -193,7 +193,7 @@ function ReplayButton({ gender }: { gender: Avatar["gender"] }) {
     <button
       type="button"
       data-welcome-replay
-      className="inline-flex min-h-[var(--home-chip-h)] min-w-0 flex-1 items-center justify-center gap-1 rounded-full border border-cobalt/55 bg-cobalt px-2 text-[11px] font-semibold tracking-wide text-snow shadow-[0_4px_14px_rgba(37,99,235,0.32)]"
+      className="inline-flex min-h-[var(--home-chip-h)] min-w-0 flex-1 items-center justify-center gap-1 rounded-full border border-cobalt/55 bg-cobalt px-2 text-[10px] font-semibold tracking-wide text-snow shadow-[0_4px_14px_rgba(37,99,235,0.32)]"
       aria-label={m.guide.replay}
       onClick={() => replay(gender)}
     >

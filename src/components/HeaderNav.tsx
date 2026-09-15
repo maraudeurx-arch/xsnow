@@ -20,7 +20,7 @@ export function HeaderNav() {
   return (
     <nav
       aria-label={m.nav.main}
-      className="relative mt-0.5 grid w-full grid-cols-5 items-stretch gap-1 overflow-visible"
+      className="relative mt-1 grid w-full grid-cols-5 items-stretch gap-[var(--home-nav-gap)] overflow-visible"
     >
       <AccueilMenu key={pathname} compact />
       {HEADER_HREFS.map((item) => {

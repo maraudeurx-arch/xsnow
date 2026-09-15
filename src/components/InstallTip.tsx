@@ -34,14 +34,14 @@ function InstallTipInner({ compact }: { compact: boolean }) {
 
   return (
     <aside
-      className={`flex items-center gap-2 rounded-lg border border-white/15 bg-white/[0.05] text-left ${
-        compact ? "px-2 py-1" : "p-3"
+      className={`flex shrink-0 items-center gap-2 rounded-lg border border-white/15 bg-white/[0.05] text-left ${
+        compact ? "px-2 py-0.5" : "p-3"
       }`}
       role="note"
     >
       <p
         className={`min-w-0 flex-1 text-snow/90 ${
-          compact ? "line-clamp-2 text-[10px] leading-snug" : "text-sm leading-relaxed"
+          compact ? "line-clamp-2 text-[9px] leading-snug" : "text-sm leading-relaxed"
         }`}
       >
         {isAndroidDevice() ? m.install.tipAndroid : m.install.tip}
@@ -49,7 +49,7 @@ function InstallTipInner({ compact }: { compact: boolean }) {
       <button
         type="button"
         className={`shrink-0 rounded-full border border-white/20 bg-white/5 px-2.5 text-[11px] font-bold text-snow ${
-          compact ? "min-h-8" : "tap"
+          compact ? "min-h-7 px-2 text-[10px]" : "tap"
         }`}
         onClick={() => {
           writeInstallTipDismissed();
