@@ -3,6 +3,7 @@ import { describe, it } from "node:test";
 import {
   INSTALL_TIP_KEY,
   forceInstallTipFromSearch,
+  isAndroidDevice,
   isIosDevice,
   isStandaloneDisplay,
   readInstallTipDismissed,
@@ -22,12 +23,32 @@ function memoryStore(initial: Record<string, string> = {}) {
   };
 }
 
+const ANDROID_CHROME =
+  "Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Mobile Safari/537.36";
+const IPHONE =
+  "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X)";
+
 describe("isIosDevice", () => {
   it("detects iPhone and iPadOS-as-Mac", () => {
-    assert.equal(isIosDevice({ userAgent: "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X)" }), true);
+    assert.equal(isIosDevice({ userAgent: IPHONE }), true);
     assert.equal(isIosDevice({ userAgent: "Mozilla/5.0 (iPad; CPU OS 17_0 like Mac OS X)" }), true);
-    assert.equal(isIosDevice({ userAgent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15)", platform: "MacIntel", maxTouchPoints: 5 }), true);
-    assert.equal(isIosDevice({ userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64)", platform: "Win32", maxTouchPoints: 0 }), false);
+    assert.equal(
+      isIosDevice({ userAgent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15)", platform: "MacIntel", maxTouchPoints: 5 }),
+      true,
+    );
+    assert.equal(
+      isIosDevice({ userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64)", platform: "Win32", maxTouchPoints: 0 }),
+      false,
+    );
+    assert.equal(isIosDevice({ userAgent: ANDROID_CHROME }), false);
+  });
+});
+
+describe("isAndroidDevice", () => {
+  it("detects Android Chrome, not iPhone", () => {
+    assert.equal(isAndroidDevice({ userAgent: ANDROID_CHROME }), true);
+    assert.equal(isAndroidDevice({ userAgent: IPHONE }), false);
+    assert.equal(isAndroidDevice({ userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64)" }), false);
   });
 });
 
@@ -42,7 +63,7 @@ describe("install tip visibility", () => {
     const store = memoryStore();
     assert.equal(
       shouldShowInstallTip({
-        userAgent: "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X)",
+        userAgent: IPHONE,
         store,
       }),
       true,
@@ -52,7 +73,7 @@ describe("install tip visibility", () => {
     assert.equal(readInstallTipDismissed(store), true);
     assert.equal(
       shouldShowInstallTip({
-        userAgent: "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X)",
+        userAgent: IPHONE,
         store,
       }),
       false,
@@ -62,7 +83,7 @@ describe("install tip visibility", () => {
   it("does not show in standalone even on iPhone", () => {
     assert.equal(
       shouldShowInstallTip({
-        userAgent: "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X)",
+        userAgent: IPHONE,
         standalone: true,
         store: memoryStore(),
       }),
@@ -71,7 +92,14 @@ describe("install tip visibility", () => {
     assert.equal(isStandaloneDisplay({ standalone: true }), true);
   });
 
-  it("QA flag still works on desktop until dismissed", () => {
+  it("shows on Android Chrome until dismissed", () => {
+    const store = memoryStore();
+    assert.equal(shouldShowInstallTip({ userAgent: ANDROID_CHROME, store }), true);
+    writeInstallTipDismissed(store);
+    assert.equal(shouldShowInstallTip({ userAgent: ANDROID_CHROME, store }), false);
+  });
+
+  it("shows via ?installTip=1 on desktop", () => {
     const store = memoryStore();
     assert.equal(
       shouldShowInstallTip({

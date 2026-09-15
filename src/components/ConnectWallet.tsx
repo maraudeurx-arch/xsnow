@@ -1,7 +1,8 @@
 "use client";
 
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { useId, useState } from "react";
+import { usePathname } from "next/navigation";
+import { useEffect, useId, useState } from "react";
 import { useI18n } from "@/lib/i18n/locale";
 import { hasWalletConnectProjectId } from "@/lib/wallet";
 
@@ -10,8 +11,13 @@ const btnClass =
 
 function UnconfiguredConnect() {
   const { m } = useI18n();
+  const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const hintId = useId();
+
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
 
   return (
     <div className="relative inline-flex flex-col items-end">

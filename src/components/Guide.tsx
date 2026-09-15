@@ -7,6 +7,7 @@ import { AvatarChat } from "@/components/AvatarChat";
 import { AvatarDisc } from "@/components/AvatarDisc";
 import { LocationPrompt } from "@/components/LocationPrompt";
 import { useNeedsConsentSheet } from "@/components/ConsentSheet";
+import { FeedbackRow } from "@/components/FeedbackRow";
 import { InstallTip } from "@/components/InstallTip";
 import { AVATARS, avatarById, type Avatar, type AvatarId } from "@/lib/avatars";
 import { welcomeSpeechFor } from "@/lib/content";
@@ -113,20 +114,9 @@ export function Guide() {
             <Link href="/gagner-maintenant" className={shortcutClass}>
               {m.menu.gagnerMaintenant}
             </Link>
-            <a
-              href="#avatar-chat"
-              className={shortcutClass}
-              onClick={(event) => {
-                event.preventDefault();
-                const input = document.getElementById("avatar-chat-input");
-                document
-                  .getElementById("avatar-chat")
-                  ?.scrollIntoView({ behavior: "smooth", block: "nearest" });
-                if (input instanceof HTMLInputElement) input.focus();
-              }}
-            >
-              {m.guide.vosIdees}
-            </a>
+            <Link href="/vos-idees/#form" className={shortcutClass}>
+              {m.nav.vosIdees}
+            </Link>
             <ShareHomeButton />
           </nav>
           <InstallTip compact />
@@ -135,6 +125,9 @@ export function Guide() {
           ) : (
             <AvatarChat avatar={chosen} />
           )}
+          {!needsPrompt && !waitingOnConsent ? (
+            <FeedbackRow surface="accueil" />
+          ) : null}
         </div>
       ) : null}
     </section>
@@ -168,7 +161,7 @@ function ShareHomeButton() {
       className={`${shortcutClass} col-span-2`}
       onClick={() => void shareApp()}
     >
-      {m.guide.partager}
+      {m.shareOpc.short}
     </button>
   );
 }

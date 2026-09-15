@@ -11,6 +11,10 @@ export const STATS_EVENT_TYPES = [
   "lang",
   "place",
   "monetize_suggestion",
+  "idea_submit",
+  "invite_open",
+  "feedback_pos",
+  "feedback_neg",
   "offer_created",
   "request_created",
 ] as const;
@@ -50,6 +54,10 @@ function isType(value: unknown): value is StatsEventType {
     value === "lang" ||
     value === "place" ||
     value === "monetize_suggestion" ||
+    value === "idea_submit" ||
+    value === "invite_open" ||
+    value === "feedback_pos" ||
+    value === "feedback_neg" ||
     value === "offer_created" ||
     value === "request_created"
   );
@@ -103,10 +111,19 @@ export function parseStatsEvents(raw: unknown): StoredStatsEvent[] {
       row.city = city;
       row.countryCode = countryCode;
     }
-    if (event.type === "monetize_suggestion") {
-      const text = typeof event.text === "string" ? clip(event.text, 280) : "";
+    if (event.type === "monetize_suggestion" || event.type === "idea_submit") {
+      const text = typeof event.text === "string" ? clip(event.text, event.type === "idea_submit" ? 80 : 280) : "";
       if (!text) continue;
       row.text = text;
+    }
+    if (event.type === "invite_open") {
+      const text = typeof event.text === "string" ? clip(event.text, 40) : "";
+      if (!text) continue;
+      row.text = text;
+    }
+    if (event.type === "feedback_pos" || event.type === "feedback_neg") {
+      const text = typeof event.text === "string" ? clip(event.text, 40) : "app";
+      row.text = text || "app";
     }
     if (event.type === "offer_created" || event.type === "request_created") {
       const kindRaw = typeof event.kind === "string" ? event.kind : "";
@@ -158,6 +175,11 @@ export type StatsSummary = {
   langs: Record<string, number>;
   places: Array<{ city: string; countryCode: string; n: number }>;
   suggestions: Array<{ text: string; t: number }>;
+  inviteOpens: number;
+  ideaSubmits: number;
+  feedbackPos: number;
+  feedbackNeg: number;
+  invites: Array<{ text: string; n: number }>;
 };
 
 export const EMPTY_SUMMARY: StatsSummary = {
@@ -165,6 +187,11 @@ export const EMPTY_SUMMARY: StatsSummary = {
   langs: {},
   places: [],
   suggestions: [],
+  inviteOpens: 0,
+  ideaSubmits: 0,
+  feedbackPos: 0,
+  feedbackNeg: 0,
+  invites: [],
 };
 
 export async function readStatsSummary(db: D1Like): Promise<StatsSummary> {
@@ -203,6 +230,26 @@ export async function readStatsSummary(db: D1Like): Promise<StatsSummary> {
     .bind()
     .all<{ text: string; t: number }>();
 
+  const countOf = async (type: string) => {
+    const row = await db
+      .prepare(`SELECT COUNT(*) AS n FROM events WHERE type = ?`)
+      .bind(type)
+      .first<{ n: number }>();
+    return Number(row?.n ?? 0);
+  };
+
+  const inviteRows = await db
+    .prepare(
+      `SELECT suggestion AS text, COUNT(*) AS n
+       FROM events
+       WHERE type = 'invite_open' AND suggestion IS NOT NULL
+       GROUP BY suggestion
+       ORDER BY n DESC
+       LIMIT 40`,
+    )
+    .bind()
+    .all<{ text: string; n: number }>();
+
   const langs: Record<string, number> = {};
   for (const row of langRows.results) {
     langs[row.key] = row.n;
@@ -213,5 +260,10 @@ export async function readStatsSummary(db: D1Like): Promise<StatsSummary> {
     langs,
     places: placeRows.results,
     suggestions: suggestionRows.results,
+    inviteOpens: await countOf("invite_open"),
+    ideaSubmits: await countOf("idea_submit"),
+    feedbackPos: await countOf("feedback_pos"),
+    feedbackNeg: await countOf("feedback_neg"),
+    invites: inviteRows.results,
   };
 }
