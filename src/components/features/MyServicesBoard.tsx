@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useMemo, useRef, useState } from "react";
 import { noteOfferCreated } from "@/lib/analytics";
 import { interpolate } from "@/lib/i18n";
 import { useI18n } from "@/lib/i18n/locale";
@@ -33,6 +33,7 @@ export function MyServicesBoard() {
   const [saved, setSaved] = useState(false);
   const [shareText, setShareText] = useState("");
   const [shareStatus, setShareStatus] = useState<"ok" | "fail" | "">("");
+  const shareBox = useRef<HTMLElement | null>(null);
 
   const editing = useMemo(
     () => items.find((item) => item.id === editingId) ?? null,
@@ -50,6 +51,9 @@ export function MyServicesBoard() {
     setShareText(text);
     const ok = await copyText(text);
     setShareStatus(ok ? "ok" : "fail");
+    requestAnimationFrame(() => {
+      shareBox.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    });
   }
 
   function onSubmit(event: FormEvent<HTMLFormElement>) {
@@ -249,6 +253,23 @@ export function MyServicesBoard() {
         {saved ? <p className="text-sm text-gold">{m.services.saved}</p> : null}
       </form>
 
+      {shareText ? (
+        <section
+          ref={shareBox}
+          className="space-y-2 rounded-2xl border border-gold/30 bg-gold/5 p-3"
+        >
+          <p className="text-sm font-bold text-gold">
+            {shareStatus === "ok" ? copy.shareCopied : copy.shareFailed}
+          </p>
+          <textarea
+            readOnly
+            value={shareText}
+            rows={8}
+            className={`${fieldClass} min-h-[140px] py-2 text-xs leading-relaxed`}
+          />
+        </section>
+      ) : null}
+
       <section className="space-y-3">
         <h3 className="text-base font-extrabold">{copy.listTitle}</h3>
         {items.length === 0 ? (
@@ -302,20 +323,6 @@ export function MyServicesBoard() {
           </ul>
         )}
       </section>
-
-      {shareText ? (
-        <section className="space-y-2 rounded-2xl border border-gold/30 bg-gold/5 p-3">
-          <p className="text-sm font-bold text-gold">
-            {shareStatus === "ok" ? copy.shareCopied : copy.shareFailed}
-          </p>
-          <textarea
-            readOnly
-            value={shareText}
-            rows={8}
-            className={`${fieldClass} min-h-[140px] py-2 text-xs leading-relaxed`}
-          />
-        </section>
-      ) : null}
     </div>
   );
 }
