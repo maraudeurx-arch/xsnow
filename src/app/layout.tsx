@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Fraunces, Outfit } from "next/font/google";
 import { AppChrome } from "@/components/AppChrome";
 import { Providers } from "@/app/providers";
+import { assetUrl } from "@/lib/paths";
 import "./globals.css";
 
 const outfit = Outfit({
@@ -21,14 +22,26 @@ export const metadata: Metadata = {
   },
   description:
     "GATINEAU / Open Community — Monétisé Vous! Proximité, entraide et visibilité locale.",
-  applicationName: "GATINEAU",
+  applicationName: "Open Community",
+  manifest: "/manifest.webmanifest",
+  icons: {
+    icon: [
+      { url: assetUrl("/icon.png"), sizes: "64x64", type: "image/png" },
+      { url: assetUrl("/brand/app-icon-192.png"), sizes: "192x192", type: "image/png" },
+      { url: assetUrl("/brand/app-icon-512.png"), sizes: "512x512", type: "image/png" },
+    ],
+    apple: [{ url: assetUrl("/apple-touch-icon.png"), sizes: "180x180", type: "image/png" }],
+  },
   appleWebApp: {
     capable: true,
-    title: "GATINEAU",
+    title: "Open Community",
     statusBarStyle: "black-translucent",
   },
   formatDetection: {
     telephone: false,
+  },
+  other: {
+    "apple-mobile-web-app-capable": "yes",
   },
 };
 

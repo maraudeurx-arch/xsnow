@@ -28,11 +28,17 @@ export const es: Messages = {
     reportage: "Con IA, crea reportajes sobre tu barrio",
     scenarios: "Crea escenarios de humor / animación",
     carMorning: "Préstamo de coche (mañanas)",
+    offres: "Ofertas",
+  },
+  install: {
+    tip: "En iPhone (Safari): Compartir → Añadir a pantalla de inicio. Luego la app se abre como un icono.",
+    dismiss: "Entendido",
   },
   guide: {
     pickAvatar: "Elige tu avatar",
     changeAvatar: "Cambiar de avatar",
     replay: "Volver a escuchar",
+    offerShortcuts: "Atajos a Mis servicios y En demanda",
     avatars: {
       "homme-blanc": "Hombre, piel clara",
       "femme-blanche": "Mujer, piel clara",
@@ -561,13 +567,16 @@ export const es: Messages = {
     save: "Guardar",
     cancelEdit: "Cancelar",
     listTitle: "Tus ofertas",
-    emptyList: "Aún no hay ninguna oferta publicada en este aparato.",
+    emptyList:
+      "Aún no hay ninguna oferta en este aparato. Publica un préstamo de coche por la mañana (Interac, la gasolina la paga quien toma el coche) — los vecinos lo verán en En demanda.",
     share: "Texto para compartir",
     shareEdit: "Editar",
     shareCopy: "Copiar",
     shareHint: "Edita el texto y luego cópialo para Marketplace o un grupo.",
     shareCopied: "Copiado — pégalo en Marketplace o en un grupo.",
     shareFailed: "No se pudo copiar. El texto está abajo: selecciónalo.",
+    publishSuccess: "Oferta publicada. Para compartirla: Editar y luego Copiar.",
+    publishSuccessLink: "Los vecinos piden en En demanda.",
     edit: "Editar",
     published: "Publicada",
     terms:
@@ -576,7 +585,9 @@ export const es: Messages = {
     needInsurance: "Confirma el seguro antes de publicar.",
     needGas: "Que la gasolina la pague quien toma el coche es obligatorio en esta oferta.",
     browseEmpty:
-      "No hay ofertas por ahora. Abre un enlace compartido, o vuelve tras la publicación.",
+      "Aún no hay ofertas del barrio aquí. Abre un enlace compartido, o publica la tuya en Mis servicios.",
+    emptyRequests:
+      "Aún no hay solicitudes. Cuando un vecino reserve, aparecerá aquí.",
     request: "Pedir",
     requesting: "Solicitud en curso",
     closeRequest: "Cerrar",

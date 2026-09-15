@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useMemo, useRef, useState } from "react";
+import Link from "next/link";
 import { noteOfferCreated } from "@/lib/analytics";
 import { interpolate } from "@/lib/i18n";
 import { useI18n } from "@/lib/i18n/locale";
@@ -35,6 +36,7 @@ export function MyServicesBoard() {
   const [shareText, setShareText] = useState("");
   const [shareOfferId, setShareOfferId] = useState<string | null>(null);
   const [shareStatus, setShareStatus] = useState<"ok" | "fail" | "">("");
+  const [firstPublish, setFirstPublish] = useState(false);
   const shareBox = useRef<HTMLElement | null>(null);
   const shareArea = useRef<HTMLTextAreaElement | null>(null);
 
@@ -97,11 +99,13 @@ export function MyServicesBoard() {
 
     const next = offerFromForm(form, editing ?? undefined);
     const existed = items.some((item) => item.id === next.id);
+    const isFirstPublish = !existed && items.length === 0;
     setItems(existed ? items.map((item) => (item.id === next.id ? next : item)) : [next, ...items]);
     setSaved(true);
     setError("");
     setEditingId(null);
     setForm(carMorningDefaults());
+    setFirstPublish(isFirstPublish);
     void openShare(next);
     if (!existed) noteOfferCreated(next.kind);
   }
@@ -281,6 +285,17 @@ export function MyServicesBoard() {
           className="space-y-2 rounded-2xl border border-gold/30 bg-gold/5 p-3"
         >
           <p className="text-sm font-bold text-gold">{copy.shareHint}</p>
+          {firstPublish ? (
+            <p className="text-sm leading-relaxed text-snow/90">
+              {copy.publishSuccess}{" "}
+              <Link
+                href="/en-demande"
+                className="font-extrabold text-gold underline decoration-gold/50 underline-offset-2"
+              >
+                {copy.publishSuccessLink}
+              </Link>
+            </p>
+          ) : null}
           <textarea
             ref={shareArea}
             value={shareText}
@@ -319,7 +334,9 @@ export function MyServicesBoard() {
       <section className="space-y-3">
         <h3 className="text-base font-extrabold">{copy.listTitle}</h3>
         {items.length === 0 ? (
-          <p className="text-sm text-snow/60">{copy.emptyList}</p>
+          <div className="rounded-2xl border border-dashed border-white/15 bg-white/[0.03] p-3">
+            <p className="text-sm leading-relaxed text-snow/75">{copy.emptyList}</p>
+          </div>
         ) : (
           <ul className="space-y-3">
             {items.map((item) => (
