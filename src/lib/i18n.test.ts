@@ -66,6 +66,23 @@ describe("car morning offer copy", () => {
   });
 });
 
+describe("wallet copy", () => {
+  it("keeps FR/EN/ES Connect labels in sync", () => {
+    assert.deepEqual(Object.keys(en.wallet), Object.keys(fr.wallet));
+    assert.deepEqual(Object.keys(es.wallet), Object.keys(fr.wallet));
+    assert.equal(fr.wallet.connect, "Connect");
+    assert.equal(en.wallet.connect, "Connect");
+    assert.equal(es.wallet.connect, "Connect");
+    assert.equal(fr.wallet.wrongNetwork, "Mauvais réseau");
+    assert.equal(en.wallet.wrongNetwork, "Wrong network");
+    assert.equal(es.wallet.wrongNetwork, "Red incorrecta");
+    assert.match(fr.wallet.needsConfig, /WalletConnect/);
+    assert.match(fr.wallet.needsConfig, /configur/);
+    assert.match(en.wallet.needsConfig, /not configured/i);
+    assert.match(es.wallet.needsConfig, /no está configurado/);
+  });
+});
+
 describe("install tip copy", () => {
   it("keeps iOS home-screen steps in FR/EN/ES", () => {
     assert.match(fr.install.tip, /Partager/);

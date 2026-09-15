@@ -306,8 +306,9 @@ export const en: Messages = {
     connect: "Connect",
     disconnect: "Disconnect wallet",
     connectAria: "Connect wallet",
-    guest: "Guest · Sepolia",
     wrongNetwork: "Wrong network",
+    needsConfig:
+      "WalletConnect is not configured: missing project id in the deploy.",
   },
   notFound: {
     title: "Page not found",

@@ -305,8 +305,9 @@ export const fr = {
     connect: "Connect",
     disconnect: "Déconnecter le portefeuille",
     connectAria: "Connecter le portefeuille",
-    guest: "Invité · Sepolia",
     wrongNetwork: "Mauvais réseau",
+    needsConfig:
+      "WalletConnect n’est pas configuré : identifiant projet manquant au déploiement.",
   },
   notFound: {
     title: "Page introuvable",
