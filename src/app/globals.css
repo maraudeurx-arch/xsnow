@@ -13,13 +13,20 @@
   --safe-right: env(safe-area-inset-right, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --safe-left: env(safe-area-inset-left, 0px);
-  --home-logo: 2.75rem;
-  --home-nav-h: 2.5rem;
-  --home-chip-h: 2.5rem;
-  --home-avatar: min(13vw, 7dvh, 3.2rem);
+  --home-logo: 2.55rem;
+  --home-nav-h: 2.3rem;
+  --home-chip-h: 2.2rem;
+  --home-avatar: min(12vw, 6.2dvh, 2.85rem);
   --home-gap: 0.25rem;
   /* Space between the header card and the avatar/chat card on home only. */
-  --home-block-gap: 0.75rem;
+  --home-block-gap: 0.9rem;
+  /* Gaps inside the avatar/chat card — larger than --home-gap so rows don’t collide. */
+  --home-stack-gap: 0.5rem;
+  --home-nav-gap: 0.32rem;
+  --home-chip-gap: 0.4rem;
+  --home-card-pad-x: 0.5rem;
+  --home-card-pad-y: 0.4rem;
+  --home-avatar-ring: 0.32rem;
   --brand-title: clamp(1.5rem, 7.4vw, 3rem);
   --brand-slogan: clamp(0.9rem, 3.8vw, 1.2rem);
 }
@@ -28,30 +35,50 @@
   :root {
     --home-logo: 4.5rem;
     --home-nav-h: 2.75rem;
-    --home-chip-h: 2.75rem;
+    --home-chip-h: 2.6rem;
     --home-avatar: min(16vw, 10dvh, 4.5rem);
     --home-gap: 0.4rem;
+    --home-block-gap: 1.05rem;
+    --home-stack-gap: 0.6rem;
+    --home-nav-gap: 0.4rem;
+    --home-chip-gap: 0.5rem;
+    --home-card-pad-x: 0.7rem;
+    --home-card-pad-y: 0.55rem;
   }
 }
 
 /* Safari / Chrome toolbars shrink dvh well below 844. */
 @media (max-height: 700px) {
   :root {
-    --home-logo: 2.35rem;
-    --home-nav-h: 2.25rem;
-    --home-chip-h: 2.25rem;
-    --home-avatar: min(12vw, 6.4dvh, 2.85rem);
+    --home-logo: 2.15rem;
+    --home-nav-h: 2.05rem;
+    --home-chip-h: 1.95rem;
+    --home-avatar: min(11vw, 5.5dvh, 2.45rem);
     --home-gap: 0.2rem;
+    --home-block-gap: 0.72rem;
+    --home-stack-gap: 0.38rem;
+    --home-nav-gap: 0.28rem;
+    --home-chip-gap: 0.34rem;
+    --home-card-pad-x: 0.45rem;
+    --home-card-pad-y: 0.3rem;
+    --home-avatar-ring: 0.28rem;
   }
 }
 
 @media (max-height: 620px) {
   :root {
-    --home-logo: 2.15rem;
-    --home-nav-h: 2.15rem;
-    --home-chip-h: 2.15rem;
-    --home-avatar: min(11vw, 5.8dvh, 2.6rem);
+    --home-logo: 1.95rem;
+    --home-nav-h: 1.95rem;
+    --home-chip-h: 1.85rem;
+    --home-avatar: min(10vw, 4.9dvh, 2.25rem);
     --home-gap: 0.15rem;
+    --home-block-gap: 0.58rem;
+    --home-stack-gap: 0.3rem;
+    --home-nav-gap: 0.24rem;
+    --home-chip-gap: 0.28rem;
+    --home-card-pad-x: 0.4rem;
+    --home-card-pad-y: 0.24rem;
+    --home-avatar-ring: 0.24rem;
   }
 }
 
@@ -142,7 +169,8 @@ body {
 .app-stage:has(#home-guide) {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  grid-template-rows: minmax(0, 1fr) auto auto minmax(0, 1fr);
+  /* Banner keeps its content; the chat card is the row that may shrink. */
+  grid-template-rows: minmax(min-content, 1fr) auto minmax(0, auto) minmax(0, 1fr);
   align-items: stretch;
   justify-content: stretch;
   overflow: visible;
@@ -181,9 +209,16 @@ body {
 
 .app-stage:has(#home-guide) > .app-stage-main {
   flex: none;
+  min-height: 0;
   margin-top: var(--home-block-gap);
   justify-content: center;
-  overflow: visible;
+  /* Accueil menu lives in the header card; clip here so the two home cards
+     cannot spill into each other or the footer. */
+  overflow: hidden;
+}
+
+.app-stage:has(#home-guide) > .app-stage-main > #home-guide {
+  max-height: 100%;
 }
 
 .tap {
@@ -191,7 +226,7 @@ body {
   min-width: 44px;
 }
 
-/* Home compact controls: 40px default, 36px on short Safari/Chrome dvh. */
+/* Home compact controls: ~37px default, ~33px on short Safari/Chrome dvh. */
 .tap-sm {
   min-height: var(--home-nav-h);
   min-width: var(--home-nav-h);
@@ -344,15 +379,21 @@ body {
 .chrome-panel {
   background: linear-gradient(180deg, rgba(8, 8, 12, 0.82) 0%, rgba(8, 8, 12, 0.7) 100%);
   border: 1px solid rgba(255, 255, 255, 0.12);
-  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.36);
   backdrop-filter: blur(14px);
 }
 
 .home-stage {
   background: linear-gradient(180deg, rgba(10, 12, 18, 0.82) 0%, rgba(6, 7, 10, 0.88) 100%);
   border: 1px solid rgba(255, 255, 255, 0.12);
-  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.45);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.42);
   backdrop-filter: blur(14px);
+  min-height: 0;
+}
+
+/* Ring glow sits outside the disc box — keep a gutter so it cannot cover chips. */
+.home-stage .avatar-disc {
+  margin: var(--home-avatar-ring);
 }
 
 /* Per-avatar picker rings: --avatar-ring is set on the disc from gender mapping. */

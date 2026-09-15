@@ -9,7 +9,7 @@ import { hasWalletConnectProjectId } from "@/lib/wallet";
 const btnClass = (compact: boolean) =>
   `inline-flex shrink-0 items-center justify-center border border-cobalt/60 bg-cobalt font-extrabold tracking-wide text-snow shadow-[0_4px_14px_rgba(37,99,235,0.38)] transition hover:brightness-110 ${
     compact
-      ? "min-h-[var(--home-nav-h)] w-full min-w-0 rounded-lg px-0.5 py-0 text-[10px] leading-[1.05]"
+      ? "min-h-[var(--home-nav-h)] w-full min-w-0 rounded-lg px-0.5 py-0 text-[9px] leading-[1.05]"
       : "tap min-h-11 rounded-full px-3 py-0.5 text-[12px]"
   }`;
 

@@ -52,11 +52,11 @@ export function FeedbackRow({
     <div
       className={`flex flex-wrap items-center gap-1 ${
         compact
-          ? "mt-0.5 rounded-lg border border-white/10 bg-white/[0.04] px-2 py-0.5"
+          ? "mt-0 rounded-lg border border-white/10 bg-white/[0.04] px-2 py-0.5"
           : "rounded-2xl border border-white/10 bg-white/[0.04] px-2.5 py-2"
       }`}
     >
-      <p className={`mr-auto font-semibold text-snow/80 ${compact ? "text-[10px]" : "text-[11px]"}`}>
+      <p className={`mr-auto font-semibold text-snow/80 ${compact ? "text-[9px]" : "text-[11px]"}`}>
         {copy.prompt}
       </p>
       {done ? (
@@ -68,7 +68,7 @@ export function FeedbackRow({
           <button
             type="button"
             className={`rounded-full border border-gold/45 bg-gold/10 font-extrabold text-gold ${
-              compact ? "min-h-8 min-w-8 px-2 text-[10px]" : "tap min-h-11 min-w-11 px-3 text-[12px]"
+              compact ? "min-h-7 min-w-7 px-1.5 text-[9px]" : "tap min-h-11 min-w-11 px-3 text-[12px]"
             }`}
             onClick={() => pick("pos")}
           >
@@ -77,7 +77,7 @@ export function FeedbackRow({
           <button
             type="button"
             className={`rounded-full border border-white/20 bg-white/5 font-bold text-snow ${
-              compact ? "min-h-8 min-w-8 px-2 text-[10px]" : "tap min-h-11 min-w-11 px-3 text-[12px]"
+              compact ? "min-h-7 min-w-7 px-1.5 text-[9px]" : "tap min-h-11 min-w-11 px-3 text-[12px]"
             }`}
             onClick={() => pick("neg")}
           >

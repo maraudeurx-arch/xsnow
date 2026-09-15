@@ -29,8 +29,8 @@ export function AppChrome({ children }: { children: ReactNode }) {
         </header>
 
         <div className="relative z-30 shrink-0 overflow-visible">
-          <div className="chrome-panel overflow-visible rounded-xl px-1.5 py-1">
-            <div className="flex w-full items-center justify-between gap-1.5">
+          <div className="chrome-panel overflow-visible rounded-xl px-1.5 py-0.5">
+            <div className="flex w-full items-center justify-between gap-2">
               <Link
                 href="/"
                 className="inline-flex items-center text-[1.02rem] leading-none font-black tracking-tight text-gold [text-shadow:0_2px_12px_rgba(0,0,0,0.55)] sm:text-[1.45rem]"

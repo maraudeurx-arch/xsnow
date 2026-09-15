@@ -264,17 +264,17 @@ export function AvatarChat({ avatar }: { avatar: Avatar }) {
   return (
     <section
       id="avatar-chat"
-      className="flex w-full shrink-0 flex-col rounded-xl border border-gold/25 bg-[linear-gradient(180deg,rgba(18,20,26,0.78)_0%,rgba(8,8,10,0.86)_100%)] p-1.5 text-left shadow-[0_8px_24px_rgba(0,0,0,0.28)]"
+      className="flex min-h-0 w-full flex-1 flex-col gap-1 rounded-xl border border-gold/25 bg-[linear-gradient(180deg,rgba(18,20,26,0.78)_0%,rgba(8,8,10,0.86)_100%)] p-1 text-left shadow-[0_8px_24px_rgba(0,0,0,0.28)]"
       aria-label={chat.title}
     >
       <div className="flex shrink-0 items-center gap-2 px-1">
-        <h2 className="text-[11px] font-extrabold tracking-wide text-snow">
+        <h2 className="text-[10px] font-extrabold tracking-wide text-snow">
           {chat.title}
         </h2>
         {messages.length === 0 && !busy ? (
           <Link
             href="/vos-idees/#form"
-            className="ml-auto text-[10px] font-extrabold text-gold hover:underline"
+            className="ml-auto text-[9px] font-extrabold text-gold hover:underline"
           >
             {chat.ideaPrompt}
           </Link>
@@ -287,14 +287,14 @@ export function AvatarChat({ avatar }: { avatar: Avatar }) {
         ref={listRef}
         className={`min-h-0 space-y-1 overflow-y-auto px-1 ${
           messages.length > 0 || busy || pendingIdea || error
-            ? "mt-1 max-h-[min(28dvh,11rem)] py-0.5"
+            ? "flex-1 py-0.5 max-h-[min(22dvh,8.5rem)]"
             : "h-0 overflow-hidden p-0"
         }`}
       >
         {messages.map((message, index) => (
           <p
             key={`${message.role}-${index}`}
-            className={`max-w-[92%] rounded-2xl px-2.5 py-1.5 text-[12px] leading-snug ${
+            className={`max-w-[92%] rounded-2xl px-2 py-1 text-[11px] leading-snug ${
               message.role === "user"
                 ? "ml-auto bg-cobalt text-snow"
                 : "mr-auto border border-white/10 bg-white/[0.06] text-snow/95"
@@ -309,7 +309,7 @@ export function AvatarChat({ avatar }: { avatar: Avatar }) {
         {pendingIdea ? (
           <Link
             href="/vos-idees/#form"
-            className="inline-flex min-h-9 w-full items-center justify-center rounded-xl border border-gold/50 bg-gold/10 px-3 text-center text-[11px] font-extrabold text-gold"
+            className="inline-flex min-h-8 w-full items-center justify-center rounded-xl border border-gold/50 bg-gold/10 px-3 text-center text-[10px] font-extrabold text-gold"
             onClick={() => writeIdeaDraft(pendingIdea)}
           >
             {chat.ideaCapture}
@@ -323,7 +323,7 @@ export function AvatarChat({ avatar }: { avatar: Avatar }) {
       </div>
 
       <form
-        className="mt-1 flex shrink-0 items-center gap-1"
+        className="mt-0.5 flex shrink-0 items-center gap-1.5"
         onSubmit={(event) => {
           event.preventDefault();
           forgetRecognition();
@@ -340,7 +340,7 @@ export function AvatarChat({ avatar }: { avatar: Avatar }) {
           placeholder={chat.placeholder}
           aria-label={chat.placeholder}
           maxLength={CHAT_TEXT_MAX}
-          className="min-h-[var(--home-nav-h)] min-w-0 flex-1 rounded-full border border-white/15 bg-night px-3 text-[16px] text-snow outline-none placeholder:text-snow/55 focus:border-gold/70"
+          className="min-h-[var(--home-nav-h)] min-w-0 flex-1 rounded-full border border-white/15 bg-night px-2.5 text-[16px] text-snow outline-none placeholder:text-snow/55 focus:border-gold/70"
         />
         <button
           type="button"
