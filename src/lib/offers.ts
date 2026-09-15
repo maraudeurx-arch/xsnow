@@ -287,18 +287,19 @@ function base64UrlToBytes(value: string) {
 
 export function encodeSharePayload(payload: SharePayload) {
   const json = JSON.stringify(payload);
-  if (typeof Buffer !== "undefined") {
-    return Buffer.from(json, "utf8").toString("base64url");
+  // Prefer btoa: browser Buffer polyfills often lack "base64url".
+  if (typeof btoa === "function") {
+    return bytesToBase64Url(new TextEncoder().encode(json));
   }
-  return bytesToBase64Url(new TextEncoder().encode(json));
+  return Buffer.from(json, "utf8").toString("base64url");
 }
 
 export function decodeSharePayload(raw: string): SharePayload | null {
   try {
     const json =
-      typeof Buffer !== "undefined"
-        ? Buffer.from(raw, "base64url").toString("utf8")
-        : new TextDecoder().decode(base64UrlToBytes(raw));
+      typeof atob === "function"
+        ? new TextDecoder().decode(base64UrlToBytes(raw))
+        : Buffer.from(raw, "base64url").toString("utf8");
     const parsed = JSON.parse(json) as SharePayload;
     if (!isOfferKind(parsed.k)) return null;
     if (typeof parsed.t !== "string" || typeof parsed.f !== "string" || typeof parsed.u !== "string") {

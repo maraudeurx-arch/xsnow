@@ -6,6 +6,7 @@ import { interpolate } from "@/lib/i18n";
 import { useI18n } from "@/lib/i18n/locale";
 import {
   OFFERS_KEY,
+  PUBLIC_OFFER_SITE_URL,
   canPublish,
   carMorningDefaults,
   copyText,
@@ -47,7 +48,12 @@ export function MyServicesBoard() {
   }
 
   async function shareOffer(offer: CommunityOffer) {
-    const text = sharePostFr(offer);
+    let text = "";
+    try {
+      text = sharePostFr(offer);
+    } catch {
+      text = `${offer.title}\n${PUBLIC_OFFER_SITE_URL}`;
+    }
     setShareText(text);
     const ok = await copyText(text);
     setShareStatus(ok ? "ok" : "fail");

@@ -82,6 +82,8 @@ describe("share payload round-trip", () => {
     assert.equal(decoded?.p, 35);
     assert.equal(decoded?.y, "gatineauopc");
     assert.match(demandPath(decoded ?? undefined), /\?kind=car-morning&o=/);
+    assert.equal(encoded.includes("+"), false);
+    assert.equal(encoded.includes("/"), false);
   });
 });
 
