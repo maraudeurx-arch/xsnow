@@ -62,7 +62,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <head>
         <meta httpEquiv="Content-Security-Policy" content={CONTENT_SECURITY_POLICY} />
       </head>
-      <body className="min-h-full min-h-dvh">
+      <body className="min-h-full min-h-svh min-h-dvh">
         <Providers>
           <AppChrome>{children}</AppChrome>
         </Providers>
