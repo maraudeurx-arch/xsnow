@@ -3,6 +3,7 @@ import { defineConfig, devices } from "@playwright/test";
 const port = process.env.E2E_PORT || "4173";
 const host = process.env.E2E_HOST || "127.0.0.1";
 const basePath = "/xsnow";
+const iphone = devices["iPhone 12"];
 
 export default defineConfig({
   testDir: "./e2e",
@@ -14,8 +15,9 @@ export default defineConfig({
   reporter: process.env.CI ? [["github"], ["list"]] : "list",
   use: {
     baseURL: `http://${host}:${port}${basePath}/`,
+    browserName: "chromium",
     viewport: { width: 390, height: 844 },
-    userAgent: devices["iPhone 12"].userAgent,
+    userAgent: iphone.userAgent,
     isMobile: true,
     hasTouch: true,
     locale: "fr-CA",
@@ -30,8 +32,15 @@ export default defineConfig({
   },
   projects: [
     {
-      name: "iphone-390",
-      use: { ...devices["iPhone 12"], viewport: { width: 390, height: 844 } },
+      name: "chromium-390",
+      use: {
+        browserName: "chromium",
+        viewport: { width: 390, height: 844 },
+        userAgent: iphone.userAgent,
+        isMobile: true,
+        hasTouch: true,
+        deviceScaleFactor: 3,
+      },
     },
   ],
 });

@@ -27,7 +27,7 @@ test.describe("Open Community soft-launch smoke", () => {
 
     await page.getByRole("link", { name: "En demande" }).click();
     await expect(page).toHaveURL(/en-demande/);
-    await expect(page.getByText(/appareil neuf commence vide/)).toBeVisible();
+    await expect(page.getByText(/Pas encore d’offre ici/)).toBeVisible();
     await expect(page.getByText(/pas d’offre Gatineau injectée/i)).toBeVisible();
     await expect(page.getByText(/Aucune demande pour l’instant/)).toBeVisible();
   });
