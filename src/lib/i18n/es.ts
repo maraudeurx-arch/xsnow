@@ -154,7 +154,7 @@ export const es: Messages = {
         },
         {
           heading: "Cartera",
-          body: "Conectar una cartera es opcional (red de prueba Sepolia).",
+          body: "Conectar una cartera es opcional. Ethereum (red principal) está admitida; puedes cambiar de red después de conectar.",
         },
         {
           heading: "Uso",
@@ -313,7 +313,7 @@ export const es: Messages = {
     connect: "Connect",
     disconnect: "Desconectar la cartera",
     connectAria: "Conectar la cartera",
-    wrongNetwork: "Red incorrecta",
+    wrongNetwork: "Cambiar de red",
     needsConfig:
       "WalletConnect no está configurado: falta el identificador de proyecto en el despliegue.",
   },

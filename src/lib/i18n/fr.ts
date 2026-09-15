@@ -152,7 +152,7 @@ export const fr = {
         },
         {
           heading: "Portefeuille",
-          body: "Connecter un portefeuille est optionnel (réseau de test Sepolia).",
+          body: "Connecter un portefeuille est optionnel. Ethereum (réseau principal) est pris en charge ; tu peux changer de réseau après la connexion.",
         },
         {
           heading: "Usage",
@@ -310,7 +310,7 @@ export const fr = {
     connect: "Connect",
     disconnect: "Déconnecter le portefeuille",
     connectAria: "Connecter le portefeuille",
-    wrongNetwork: "Mauvais réseau",
+    wrongNetwork: "Changer de réseau",
     needsConfig:
       "WalletConnect n’est pas configuré : identifiant projet manquant au déploiement.",
   },

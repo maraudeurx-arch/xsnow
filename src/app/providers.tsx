@@ -16,15 +16,16 @@ import {
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { type ReactNode } from "react";
 import { WagmiProvider } from "wagmi";
-import { sepolia } from "wagmi/chains";
 import { AnalyticsRoot } from "@/components/AnalyticsRoot";
 import { ConsentSheet } from "@/components/ConsentSheet";
 import type { Locale } from "@/lib/i18n";
 import { LocaleProvider, useI18n } from "@/lib/i18n/locale";
 import { PlaceProvider } from "@/lib/place";
 import { SpeechProvider } from "@/lib/speech";
+import { primaryChain, resolveWalletChains } from "@/lib/wallet-chains";
 import {
   StubWalletProvider,
+  enableTestnets,
   walletConnectProjectId,
 } from "@/lib/wallet";
 import "@rainbow-me/rainbowkit/styles.css";
@@ -38,6 +39,7 @@ function rainbowKitLocale(locale: Locale): RainbowKitLocale {
 const queryClient = new QueryClient();
 
 const projectId = walletConnectProjectId();
+const walletChains = resolveWalletChains(enableTestnets());
 
 const walletConfig = projectId
   ? getDefaultConfig({
@@ -46,7 +48,7 @@ const walletConfig = projectId
       appUrl: "https://maraudeurx-arch.github.io/xsnow/",
       appIcon: "https://maraudeurx-arch.github.io/xsnow/brand/app-icon-192.png",
       projectId,
-      chains: [sepolia],
+      chains: walletChains,
       ssr: true,
       wallets: [
         {
@@ -70,7 +72,7 @@ function RainbowStack({ children }: { children: ReactNode }) {
       <QueryClientProvider client={queryClient}>
         <RainbowKitProvider
           locale={rainbowLocale}
-          initialChain={sepolia}
+          initialChain={primaryChain}
           modalSize="compact"
           theme={darkTheme({
             accentColor: "#2563eb",

@@ -73,9 +73,21 @@ describe("wallet copy", () => {
     assert.equal(fr.wallet.connect, "Connect");
     assert.equal(en.wallet.connect, "Connect");
     assert.equal(es.wallet.connect, "Connect");
-    assert.equal(fr.wallet.wrongNetwork, "Mauvais réseau");
-    assert.equal(en.wallet.wrongNetwork, "Wrong network");
-    assert.equal(es.wallet.wrongNetwork, "Red incorrecta");
+    assert.equal(fr.wallet.wrongNetwork, "Changer de réseau");
+    assert.equal(en.wallet.wrongNetwork, "Switch network");
+    assert.equal(es.wallet.wrongNetwork, "Cambiar de red");
+    const walletTerms = (sections: { heading: string; body: string }[]) =>
+      sections.find((section) => /portefeuille|wallet|cartera/i.test(section.heading));
+    const frWallet = walletTerms(fr.legal.terms.sections);
+    const enWallet = walletTerms(en.legal.terms.sections);
+    const esWallet = walletTerms(es.legal.terms.sections);
+    assert.ok(frWallet && enWallet && esWallet);
+    assert.doesNotMatch(frWallet.body, /Sepolia/);
+    assert.doesNotMatch(enWallet.body, /Sepolia/);
+    assert.doesNotMatch(esWallet.body, /Sepolia/);
+    assert.match(enWallet.body, /mainnet/i);
+    assert.match(frWallet.body, /réseau principal/);
+    assert.match(esWallet.body, /red principal/);
     assert.match(fr.wallet.needsConfig, /WalletConnect/);
     assert.match(fr.wallet.needsConfig, /configur/);
     assert.match(en.wallet.needsConfig, /not configured/i);
