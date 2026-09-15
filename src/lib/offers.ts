@@ -8,6 +8,7 @@ export const PUBLIC_OFFER_SITE_URL = "https://maraudeurx-arch.github.io/xsnow/";
 export const OFFERS_KEY = "xsnow.offers";
 export const IMPORTED_OFFERS_KEY = "xsnow.importedOffers";
 export const OFFER_REQUESTS_KEY = "xsnow.offerRequests";
+export const SHARE_TEXT_KEY_PREFIX = "opc-share-text:";
 
 export const OFFER_KINDS = ["car_morning"] as const;
 export type OfferKind = (typeof OFFER_KINDS)[number];
@@ -382,6 +383,38 @@ export function mergeBrowseOffers(
     list.unshift(featuredCarMorningOffer());
   }
   return list.sort((a, b) => (a.updatedAt < b.updatedAt ? 1 : -1));
+}
+
+export function shareTextKey(offerId: string) {
+  return `${SHARE_TEXT_KEY_PREFIX}${offerId}`;
+}
+
+export function readEditedShareText(offerId: string) {
+  if (typeof window === "undefined" || !offerId) return "";
+  try {
+    return window.localStorage.getItem(shareTextKey(offerId)) || "";
+  } catch {
+    return "";
+  }
+}
+
+export function writeEditedShareText(offerId: string, text: string) {
+  if (typeof window === "undefined" || !offerId) return;
+  try {
+    window.localStorage.setItem(shareTextKey(offerId), text);
+  } catch {
+    // Private mode / quota
+  }
+}
+
+export function draftShareText(offer: CommunityOffer) {
+  const saved = readEditedShareText(offer.id);
+  if (saved.trim()) return saved;
+  try {
+    return sharePostFr(offer);
+  } catch {
+    return `${offer.title}\n${PUBLIC_OFFER_SITE_URL}`;
+  }
 }
 
 export async function copyText(text: string) {

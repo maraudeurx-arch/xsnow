@@ -15,6 +15,7 @@ import {
   publishIssues,
   sharePostFr,
   toSharePayload,
+  shareTextKey,
 } from "./offers.ts";
 
 describe("publishIssues", () => {
@@ -110,6 +111,12 @@ describe("mergeBrowseOffers", () => {
     const list = mergeBrowseOffers([mine], [], null);
     assert.equal(list.some((item) => item.id === featuredCarMorningOffer().id), false);
     assert.equal(list[0]?.interacContact, "me@opc.test");
+  });
+});
+
+describe("edited share text persistence", () => {
+  it("uses opc-share-text:<id> keys", () => {
+    assert.equal(shareTextKey("abc"), "opc-share-text:abc");
   });
 });
 

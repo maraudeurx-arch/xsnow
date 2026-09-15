@@ -6,16 +6,16 @@ import { interpolate } from "@/lib/i18n";
 import { useI18n } from "@/lib/i18n/locale";
 import {
   OFFERS_KEY,
-  PUBLIC_OFFER_SITE_URL,
   canPublish,
   carMorningDefaults,
   copyText,
+  draftShareText,
   formatCad,
   formatHourFr,
   formFromOffer,
   offerFromForm,
   publishIssues,
-  sharePostFr,
+  writeEditedShareText,
   type CommunityOffer,
   type OfferFormInput,
 } from "@/lib/offers";
@@ -33,8 +33,10 @@ export function MyServicesBoard() {
   const [error, setError] = useState("");
   const [saved, setSaved] = useState(false);
   const [shareText, setShareText] = useState("");
+  const [shareOfferId, setShareOfferId] = useState<string | null>(null);
   const [shareStatus, setShareStatus] = useState<"ok" | "fail" | "">("");
   const shareBox = useRef<HTMLElement | null>(null);
+  const shareArea = useRef<HTMLTextAreaElement | null>(null);
 
   const editing = useMemo(
     () => items.find((item) => item.id === editingId) ?? null,
@@ -47,19 +49,32 @@ export function MyServicesBoard() {
     setError("");
   }
 
-  async function shareOffer(offer: CommunityOffer) {
-    let text = "";
-    try {
-      text = sharePostFr(offer);
-    } catch {
-      text = `${offer.title}\n${PUBLIC_OFFER_SITE_URL}`;
-    }
+  function openShare(offer: CommunityOffer) {
+    const text = draftShareText(offer);
+    setShareOfferId(offer.id);
     setShareText(text);
-    const ok = await copyText(text);
-    setShareStatus(ok ? "ok" : "fail");
+    setShareStatus("");
     requestAnimationFrame(() => {
       shareBox.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
     });
+  }
+
+  function editShareText(next: string) {
+    setShareText(next);
+    setShareStatus("");
+    if (shareOfferId) writeEditedShareText(shareOfferId, next);
+  }
+
+  async function copyShare() {
+    const ok = await copyText(shareText);
+    setShareStatus(ok ? "ok" : "fail");
+    if (ok && shareOfferId) writeEditedShareText(shareOfferId, shareText);
+  }
+
+  function focusShareEditor() {
+    shareArea.current?.focus();
+    shareArea.current?.setSelectionRange(0, 0);
+    shareBox.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }
 
   function onSubmit(event: FormEvent<HTMLFormElement>) {
@@ -86,7 +101,7 @@ export function MyServicesBoard() {
     setError("");
     setEditingId(null);
     setForm(carMorningDefaults());
-    void shareOffer(next);
+    void openShare(next);
     if (!existed) noteOfferCreated(next.kind);
   }
 
@@ -264,15 +279,36 @@ export function MyServicesBoard() {
           ref={shareBox}
           className="space-y-2 rounded-2xl border border-gold/30 bg-gold/5 p-3"
         >
-          <p className="text-sm font-bold text-gold">
-            {shareStatus === "ok" ? copy.shareCopied : copy.shareFailed}
-          </p>
+          <p className="text-sm font-bold text-gold">{copy.shareHint}</p>
           <textarea
-            readOnly
+            ref={shareArea}
             value={shareText}
+            onChange={(event) => editShareText(event.target.value)}
             rows={8}
             className={`${fieldClass} min-h-[140px] py-2 text-xs leading-relaxed`}
           />
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              type="button"
+              className="tap rounded-full border border-white/20 bg-white/5 text-sm font-bold"
+              onClick={focusShareEditor}
+            >
+              {copy.shareEdit}
+            </button>
+            <button
+              type="button"
+              className="tap rounded-full bg-gold text-sm font-extrabold text-night"
+              onClick={() => void copyShare()}
+            >
+              {copy.shareCopy}
+            </button>
+          </div>
+          {shareStatus === "ok" ? (
+            <p className="text-xs font-semibold text-gold">{copy.shareCopied}</p>
+          ) : null}
+          {shareStatus === "fail" ? (
+            <p className="text-xs font-semibold text-gold">{copy.shareFailed}</p>
+          ) : null}
         </section>
       ) : null}
 
@@ -319,7 +355,7 @@ export function MyServicesBoard() {
                   <button
                     type="button"
                     className="tap rounded-full bg-gold text-sm font-extrabold text-night"
-                    onClick={() => void shareOffer(item)}
+                    onClick={() => openShare(item)}
                   >
                     {copy.share}
                   </button>
