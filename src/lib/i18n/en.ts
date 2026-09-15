@@ -412,7 +412,7 @@ export const en: Messages = {
       "Your offers, requests, ideas, share texts, and Interac/PayPal details stay on this device. Nothing personal appears for another visitor until GOV + owner approve a numbered public release (public catalog).",
     releaseNotesTitle: "Release notes",
     releaseNotesBody:
-      "0.3.0 — Soft launch: empty public catalog. No bundled Gatineau morning car loan for every install. Fresh devices start empty.",
+      "0.3.1 — Regional ambiance after location (Caribbean, Africa, Europe, Asia, South America). Canada and the USA keep the four seasons. Before location is known, the autumn background stays. Public catalog is still empty.",
     language: "Language",
     comingSoon: "Notifications and display season will land here.",
     locationConsent: "Location",

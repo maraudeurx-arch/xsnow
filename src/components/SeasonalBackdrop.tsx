@@ -1,13 +1,27 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import type { CSSProperties, ReactNode } from "react";
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type CSSProperties,
+  type ReactNode,
+} from "react";
 import { assetUrl } from "@/lib/paths";
+import { usePlace } from "@/lib/place";
+import {
+  ambianceAttr,
+  ambianceKey,
+  parseRegionParam,
+  photoForAmbiance,
+  resolveAmbiance,
+  type ResolvedAmbiance,
+} from "@/lib/region";
 import {
   parseSeasonParam,
-  seasonFromDate,
   seasonParticles,
-  SEASON_PHOTO,
   type Season,
   type SeasonParticle,
 } from "@/lib/season";
@@ -15,6 +29,7 @@ import {
 const PETAL_COLORS = ["#ffb7c5", "#fff6f8", "#fbcfe8", "#f9a8d4"];
 const LEAF_COLORS = ["#f59e0b", "#fbbf24", "#ea580c", "#b45309", "#9f1239"];
 const FLAKE_COLORS = ["#ffffff", "#f8fafc", "#e0f2fe", "#fffbeb"];
+const FADE_MS = 560;
 
 function MapleLeaf() {
   return (
@@ -124,37 +139,152 @@ function Field({ season }: { season: Season }) {
   return <AutumnField particles={particles} />;
 }
 
-export function SeasonScene({ season, children }: { season: Season; children?: ReactNode }) {
+function BackdropPhoto({
+  jpeg,
+  webp,
+  onLoad,
+  fetchPriority = "auto",
+}: {
+  jpeg: string;
+  webp?: string;
+  onLoad?: () => void;
+  fetchPriority?: "high" | "low" | "auto";
+}) {
+  const loadedFor = useRef<string | null>(null);
+  const token = `${jpeg}|${webp ?? ""}`;
+
+  const markLoaded = () => {
+    if (loadedFor.current === token) return;
+    loadedFor.current = token;
+    onLoad?.();
+  };
+
+  const img = (
+    // Plain img: next/image omitted basePath and 404'd on GitHub Pages.
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={assetUrl(jpeg)}
+      alt=""
+      width={1080}
+      height={608}
+      decoding="async"
+      draggable={false}
+      fetchPriority={fetchPriority}
+      className="season-photo"
+      onLoad={markLoaded}
+      ref={(el) => {
+        if (el && el.complete && el.naturalWidth > 0) markLoaded();
+      }}
+    />
+  );
+
+  if (!webp) return img;
   return (
-    <div aria-hidden data-season={season} className="pointer-events-none absolute inset-0 overflow-hidden">
-      <div className="season-wash" data-season={season} />
-      {/* Plain img: next/image omitted basePath and 404'd on GitHub Pages. */}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src={assetUrl(SEASON_PHOTO[season])}
-        alt=""
-        width={1024}
-        height={1820}
-        decoding="async"
-        draggable={false}
-        className="season-photo"
+    <picture className="season-photo-frame">
+      <source type="image/webp" srcSet={assetUrl(webp)} />
+      {img}
+    </picture>
+  );
+}
+
+export function SeasonScene({
+  season,
+  ambiance,
+  children,
+  className,
+  onPhotoLoad,
+  fetchPriority = "auto",
+}: {
+  season?: Season;
+  ambiance?: ResolvedAmbiance;
+  children?: ReactNode;
+  className?: string;
+  onPhotoLoad?: () => void;
+  fetchPriority?: "high" | "low" | "auto";
+}) {
+  const resolved = ambiance ?? { type: "season" as const, season: season ?? "autumn" };
+  const photo = photoForAmbiance(resolved);
+  const attr = ambianceAttr(resolved);
+  const seasonAttr = resolved.type === "season" ? resolved.season : undefined;
+
+  return (
+    <div
+      aria-hidden
+      data-ambiance={attr}
+      data-season={seasonAttr}
+      className={`pointer-events-none absolute inset-0 overflow-hidden ${className ?? ""}`.trim()}
+    >
+      <div className="season-wash" data-ambiance={attr} data-season={seasonAttr} />
+      <BackdropPhoto
+        jpeg={photo.jpeg}
+        webp={photo.webp}
+        onLoad={onPhotoLoad}
+        fetchPriority={fetchPriority}
       />
-      <div className="season-sun" data-season={season} />
-      <div className="season-scrim" data-season={season} />
+      <div className="season-sun" data-ambiance={attr} data-season={seasonAttr} />
+      <div className="season-scrim" data-ambiance={attr} data-season={seasonAttr} />
       {children}
     </div>
   );
 }
 
-export function SeasonalBackdrop() {
-  const params = useSearchParams();
-  const season = parseSeasonParam(params.get("season")) ?? seasonFromDate();
+function AmbianceStack({ target }: { target: ResolvedAmbiance }) {
+  const targetKey = ambianceKey(target);
+  const [displayed, setDisplayed] = useState<ResolvedAmbiance>(target);
+  const [readyKey, setReadyKey] = useState<string | null>(null);
+  const displayedKey = ambianceKey(displayed);
+  const incoming = targetKey === displayedKey ? null : target;
+  const incomingReady = Boolean(incoming) && readyKey === targetKey;
+
+  useEffect(() => {
+    if (!incoming || !incomingReady) return;
+    const reduce =
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const ms = reduce ? 0 : FADE_MS;
+    const next = incoming;
+    const id = window.setTimeout(() => {
+      setDisplayed(next);
+    }, ms);
+    return () => window.clearTimeout(id);
+  }, [incoming, incomingReady]);
 
   return (
-    <SeasonScene season={season}>
-      <div className="absolute inset-0">
-        <Field season={season} />
-      </div>
-    </SeasonScene>
+    <>
+      <SeasonScene ambiance={displayed} fetchPriority="high">
+        {displayed.type === "season" ? (
+          <div className="absolute inset-0">
+            <Field season={displayed.season} />
+          </div>
+        ) : null}
+      </SeasonScene>
+      {incoming ? (
+        <SeasonScene
+          key={targetKey}
+          ambiance={incoming}
+          className={incomingReady ? "ambiance-layer is-visible" : "ambiance-layer"}
+          fetchPriority="low"
+          onPhotoLoad={() => setReadyKey(targetKey)}
+        />
+      ) : null}
+    </>
   );
+}
+
+export function SeasonalBackdrop() {
+  const params = useSearchParams();
+  const { countryCode } = usePlace();
+  const seasonOverride = parseSeasonParam(params.get("season"));
+  const regionOverride = parseRegionParam(params.get("region"));
+  const target = useMemo(
+    () =>
+      resolveAmbiance({
+        countryCode,
+        seasonOverride,
+        regionOverride,
+      }),
+    [countryCode, seasonOverride, regionOverride],
+  );
+
+  return <AmbianceStack target={target} />;
 }

@@ -412,7 +412,7 @@ export const es: Messages = {
       "Tus ofertas, solicitudes, ideas, textos para compartir y datos Interac/PayPal se quedan en este aparato. Nada personal aparece en el de otro visitante hasta que GOV + el propietario aprueben una publicación en una versión numerada (catálogo público).",
     releaseNotesTitle: "Notas de la versión",
     releaseNotesBody:
-      "0.3.0 — Lanzamiento suave: catálogo público vacío. Ya no se inyecta un préstamo de coche de Gatineau en cada instalación. Un aparato nuevo empieza vacío.",
+      "0.3.1 — Ambiente regional tras la ubicación (Caribe, África, Europa, Asia, Sudamérica). Canadá y EE. UU. conservan las cuatro estaciones. Antes de saber la ubicación, se mantiene el fondo de otoño. El catálogo público sigue vacío.",
     language: "Idioma",
     comingSoon: "Las notificaciones y la estación de pantalla llegarán aquí.",
     locationConsent: "Ubicación",

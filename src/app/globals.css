@@ -305,6 +305,32 @@ body {
     linear-gradient(180deg, #4aa3ff 0%, #f4b942 48%, #c2410c 100%);
 }
 
+.season-wash[data-ambiance="caribbean"] {
+  background: linear-gradient(180deg, #1d8cff 0%, #3ec1ff 38%, #2ad4c4 100%);
+}
+
+.season-wash[data-ambiance="africa"] {
+  background: linear-gradient(180deg, #f4b942 0%, #e07a2f 48%, #8a4a12 100%);
+}
+
+.season-wash[data-ambiance="europe"] {
+  background: linear-gradient(180deg, #4aa3ff 0%, #9dd4ff 40%, #5dad5a 100%);
+}
+
+.season-wash[data-ambiance="asia"] {
+  background: linear-gradient(180deg, #8ec5ff 0%, #7fbf88 48%, #2f7a4a 100%);
+}
+
+.season-wash[data-ambiance="southamerica"] {
+  background: linear-gradient(180deg, #1d8cff 0%, #5eb8ff 42%, #2f6b3a 100%);
+}
+
+.season-photo-frame {
+  position: absolute;
+  inset: 0;
+  display: block;
+}
+
 .season-photo {
   position: absolute;
   inset: 0;
@@ -312,6 +338,15 @@ body {
   height: 100%;
   object-fit: cover;
   object-position: center top;
+}
+
+.ambiance-layer {
+  opacity: 0;
+  transition: opacity 0.56s ease;
+}
+
+.ambiance-layer.is-visible {
+  opacity: 1;
 }
 
 [data-season="spring"] .season-photo,
@@ -374,6 +409,48 @@ body {
 
 .season-sun[data-season="autumn"] {
   opacity: 0.45;
+}
+
+[data-ambiance="caribbean"] .season-photo {
+  object-position: center 42%;
+  filter: brightness(0.88) saturate(1.05);
+}
+
+[data-ambiance="africa"] .season-photo {
+  object-position: center 55%;
+  filter: brightness(0.9) saturate(1.04);
+}
+
+[data-ambiance="europe"] .season-photo {
+  object-position: center 58%;
+  filter: brightness(0.9) saturate(1.02);
+}
+
+[data-ambiance="asia"] .season-photo {
+  object-position: center 46%;
+  filter: brightness(0.9) saturate(1.04);
+}
+
+[data-ambiance="southamerica"] .season-photo {
+  object-position: center 42%;
+  filter: brightness(0.9) saturate(1.02);
+}
+
+.season-sun[data-ambiance="caribbean"],
+.season-sun[data-ambiance="africa"],
+.season-sun[data-ambiance="europe"],
+.season-sun[data-ambiance="asia"],
+.season-sun[data-ambiance="southamerica"] {
+  opacity: 0;
+}
+
+.season-scrim[data-ambiance="caribbean"],
+.season-scrim[data-ambiance="africa"],
+.season-scrim[data-ambiance="europe"],
+.season-scrim[data-ambiance="asia"],
+.season-scrim[data-ambiance="southamerica"] {
+  background:
+    linear-gradient(180deg, rgba(6, 8, 14, 0.5) 0%, rgba(6, 8, 14, 0.18) 30%, rgba(6, 8, 14, 0.22) 64%, rgba(6, 8, 14, 0.55) 100%);
 }
 
 .chrome-panel {
@@ -535,6 +612,10 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .ambiance-layer {
+    transition: none;
+  }
+
   .season-flake,
   .season-petal,
   .season-firefly,

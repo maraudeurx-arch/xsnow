@@ -12,18 +12,20 @@ import {
 import { FEATURED_CAR_MORNING_ID, offerFromForm, carMorningDefaults, mergeBrowseOffers } from "./offers.ts";
 import { SERVICE_SEEDS } from "./services.ts";
 
-describe("public catalog 0.3.0", () => {
+describe("public catalog current version", () => {
   it("ships an empty versioned JSON next to the app", () => {
-    const raw = JSON.parse(readFileSync(new URL("../../public/catalog/0.3.0.json", import.meta.url), "utf8"));
+    const raw = JSON.parse(
+      readFileSync(new URL(`../../public/catalog/${APP_VERSION}.json`, import.meta.url), "utf8"),
+    );
     const catalog = parsePublicCatalog(raw);
-    assert.equal(APP_VERSION, "0.3.0");
-    assert.equal(catalog.version, "0.3.0");
+    assert.equal(APP_VERSION, "0.3.1");
+    assert.equal(catalog.version, APP_VERSION);
     assert.deepEqual(catalog.offers, []);
     assert.deepEqual(catalog.ideas, []);
     assert.deepEqual(catalog.services, []);
     assert.equal(EMPTY_PUBLIC_CATALOG.offers.length, 0);
-    assert.equal(catalogAssetPath(), "/catalog/0.3.0.json");
-    assert.equal(catalogAssetUrl(), "/xsnow/catalog/0.3.0.json");
+    assert.equal(catalogAssetPath(), `/catalog/${APP_VERSION}.json`);
+    assert.equal(catalogAssetUrl(), `/xsnow/catalog/${APP_VERSION}.json`);
   });
 
   it("never promotes the legacy featured car id or demo service seeds", () => {
@@ -90,10 +92,10 @@ describe("public catalog 0.3.0", () => {
       return {
         ok: true,
         json: async () =>
-          JSON.parse(readFileSync(new URL("../../public/catalog/0.3.0.json", import.meta.url), "utf8")),
+          JSON.parse(readFileSync(new URL(`../../public/catalog/${APP_VERSION}.json`, import.meta.url), "utf8")),
       };
     });
-    assert.equal(catalog.version, "0.3.0");
+    assert.equal(catalog.version, APP_VERSION);
     assert.equal(catalog.offers.length, 0);
     assert.equal(catalog.ideas.length, 0);
     assert.equal(catalog.services.length, 0);

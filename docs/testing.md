@@ -10,6 +10,7 @@ Covers pure lib helpers:
 
 - UGC sanitization (`src/lib/sanitize.ts`)
 - Geo / place fallbacks (no fake Gatineau on far coordinates)
+- Country ISO → regional ambiance (`src/lib/region.ts`)
 - Invite query parsing
 - Versioned public catalog / publish gate
 - Client-side stats event shaping
@@ -60,6 +61,7 @@ Critical paths:
 - Home: **Open Community** banner, avatar picker rings
 - Fresh storage: Mes services / En demande empty (no bundled Gatineau car offer)
 - Fresh storage: `/services/{kind}` boards empty (no demo seed titles)
+- Regional ambiance: autumn before geo; Caribbean for `?city=Port-au-Prince`; CA stays seasonal
 - Vos idées: submit stays in `localStorage`; clearing it is not filled back from the empty catalog
 - Onboarding: avatar picker before geo; About readable without the consent sheet
 - Transparency: footer trust pages, shipped `APP_VERSION`, public OPC email / GitHub
