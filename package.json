@@ -8,7 +8,11 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "node --experimental-strip-types --test src/lib/*.test.ts"
+    "test": "node --experimental-strip-types --test src/lib/*.test.ts src/test/**/*.test.ts",
+    "test:unit": "node --experimental-strip-types --test src/lib/*.test.ts",
+    "test:functional": "node --experimental-strip-types --test src/test/**/*.test.ts",
+    "test:e2e": "playwright test",
+    "serve:static": "node scripts/serve-e2e.mjs"
   },
   "engines": {
     "node": ">=20"
@@ -23,6 +27,7 @@
     "wagmi": "^2.19.5"
   },
   "devDependencies": {
+    "@playwright/test": "^1.55.1",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",

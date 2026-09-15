@@ -78,6 +78,17 @@ describe("sanitizeUntrustedText", () => {
     const twice = sanitizeUntrustedText(once, { max: 280, redactEmails: true });
     assert.equal(once, twice);
   });
+
+  it("treats non-strings as empty and strips nested/file payloads", () => {
+    assert.equal(sanitizeUntrustedText(null), "");
+    assert.equal(sanitizeUntrustedText(42), "");
+    const nested = sanitizeUntrustedText(
+      "<div><style>body{}</style><iframe src=javascript:1></iframe> Idée file://secret</div>",
+      { max: 500 },
+    );
+    assert.doesNotMatch(nested, /<style|<iframe|file:/i);
+    assert.match(nested, /Idée/);
+  });
 });
 
 describe("safeHttpUrl", () => {
@@ -88,6 +99,14 @@ describe("safeHttpUrl", () => {
     assert.equal(safeHttpUrl("data:text/html,hi"), "");
     assert.equal(safeHttpUrl("/internal"), "");
     assert.equal(hostnameOfHttpUrl("https://www.paypal.me/opc"), "www.paypal.me");
+  });
+
+  it("rejects file URLs, credentials, and non-strings", () => {
+    assert.equal(safeHttpUrl("file:///etc/passwd"), "");
+    assert.equal(safeHttpUrl("https://user:pass@example.com/secret"), "");
+    assert.equal(safeHttpUrl(null), "");
+    assert.equal(safeHttpUrl(undefined), "");
+    assert.equal(hostnameOfHttpUrl("javascript:alert(1)"), "");
   });
 });
 

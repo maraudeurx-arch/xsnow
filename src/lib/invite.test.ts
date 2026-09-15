@@ -75,4 +75,19 @@ describe("invite query params", () => {
     assert.equal(second, first);
     assert.notEqual(first, DEFAULT_SHARE_CODE);
   });
+
+  it("drops executable junk and empty invite params", () => {
+    assert.equal(parseInviteSearch("?invite="), null);
+    assert.equal(parseInviteSearch("?invite=!!!"), null);
+    assert.deepEqual(parseInviteSearch("?invite=javascript:alert(1)"), {
+      code: "javascriptalert1",
+      src: "",
+    });
+    assert.deepEqual(parseInviteSearch("?invite=OPC_Ada-99&src=GitHub!!"), {
+      code: "opc_ada-99",
+      src: "github",
+    });
+    assert.equal(sanitizeInviteCode("javascript:alert(1)").includes(":"), false);
+    assert.equal(publicInviteUrl("<script>"), "https://maraudeurx-arch.github.io/xsnow/?invite=script");
+  });
 });

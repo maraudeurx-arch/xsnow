@@ -58,6 +58,17 @@ npm run build
 
 Le build écrit le site statique dans `out/`.
 
+### Tests
+
+Pyramide unitaire → fonctionnel → e2e (Playwright). Détail : [`docs/testing.md`](docs/testing.md).
+
+```bash
+npm test              # Node, lib + flux (sans navigateur)
+npm run build         # export statique dans out/
+npx playwright install chromium
+npm run test:e2e      # smoke iPhone 390×844 sur out/ via /xsnow/
+```
+
 ### Connect / WalletConnect (Reown)
 
 Sans `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID` au moment de `npm run build`, **Connect** affiche un court message : la connexion n’est pas configurée. Il ne simule pas un portefeuille.
@@ -136,6 +147,17 @@ npm run dev
 ```
 
 Open http://localhost:3000/xsnow/ then `npm run build` (writes `out/`).
+
+### Tests
+
+Unit → functional → Playwright e2e. See [`docs/testing.md`](docs/testing.md).
+
+```bash
+npm test
+npm run build
+npx playwright install chromium
+npm run test:e2e
+```
 
 ### Avatar chat (Cloudflare Workers AI, no login)
 
