@@ -66,3 +66,15 @@ export function browserLanguages(): string[] {
 export function interpolate(template: string, vars: Record<string, string>) {
   return template.replace(/\{(\w+)\}/g, (_, key: string) => vars[key] ?? "");
 }
+
+/** Keep `?lang=` on in-app links during QA so legal pages match the UI locale. */
+export function hrefWithLang(href: string, locale: Locale, source: "query" | "stored" | "auto") {
+  if (source !== "query") return href;
+  const params = new URLSearchParams();
+  params.set("lang", locale);
+  const hashIndex = href.indexOf("#");
+  const hash = hashIndex >= 0 ? href.slice(hashIndex) : "";
+  const path = hashIndex >= 0 ? href.slice(0, hashIndex) : href;
+  const join = path.includes("?") ? "&" : "?";
+  return `${path}${join}${params.toString()}${hash}`;
+}

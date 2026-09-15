@@ -82,13 +82,11 @@ export const es: Messages = {
     title: "Tus opciones, en este aparato",
     intro: "Dos opciones. La app funciona aunque digas que no.",
     locationTitle: "Ubicación — opcional",
-    locationBody:
-      "Para mostrar el nombre de tu ciudad y, más adelante, proximidad / alertas de familia. Si rechazas, nos quedamos en {city}.",
+    locationBody: "Muestra tu ciudad, luego proximidad / familia. No = {city}.",
     locationYes: "Sí",
     locationNo: "No — {city}",
     analyticsTitle: "Estadísticas anónimas — opcionales",
-    analyticsBody:
-      "Sesión, idioma, ciudad/país si aceptaste la ubicación, ideas de monetización. Para mejorar el producto.",
+    analyticsBody: "Sesión, idioma, ciudad si la aceptaste, ideas de servicios. Para mejorar la app.",
     analyticsYes: "Sí",
     analyticsNo: "No",
     privacy: "Privacidad",

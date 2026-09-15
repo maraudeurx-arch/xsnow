@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { interpolate } from "@/lib/i18n";
+import { interpolate, hrefWithLang } from "@/lib/i18n";
 import { useI18n } from "@/lib/i18n/locale";
 import { FALLBACK_CITY } from "@/lib/location";
 import { pathStartsWith, PRIVACY_HREF, TERMS_HREF } from "@/lib/paths";
@@ -19,7 +19,7 @@ export function useNeedsConsentSheet() {
 export function ConsentSheet() {
   const hydrated = useHasHydrated();
   const pathname = usePathname();
-  const { m } = useI18n();
+  const { m, locale, source } = useI18n();
   const { city, consent, locating, error, requestLocation, skipLocation } = usePlace();
   const { consent: analytics, setConsent } = useAnalyticsConsent();
 
@@ -49,7 +49,7 @@ export function ConsentSheet() {
         <p className="mt-1 text-[12px] leading-snug text-snow/85">{m.consent.intro}</p>
 
         {needsLocation ? (
-          <div className="mt-3 rounded-xl border border-white/10 bg-white/[0.04] p-2.5">
+          <div className="mt-2 rounded-xl border border-white/10 bg-white/[0.04] p-2">
             <p className="text-[12px] font-extrabold text-snow">{m.consent.locationTitle}</p>
             <p className="mt-1 text-[11px] leading-snug text-snow/80">
               {interpolate(m.consent.locationBody, { city: fallbackCity })}
@@ -81,7 +81,7 @@ export function ConsentSheet() {
         ) : null}
 
         {needsAnalytics ? (
-          <div className="mt-2 rounded-xl border border-white/10 bg-white/[0.04] p-2.5">
+          <div className="mt-1.5 rounded-xl border border-white/10 bg-white/[0.04] p-2">
             <p className="text-[12px] font-extrabold text-snow">{m.consent.analyticsTitle}</p>
             <p className="mt-1 text-[11px] leading-snug text-snow/80">{m.consent.analyticsBody}</p>
             <div className="mt-2 grid grid-cols-2 gap-1.5">
@@ -103,8 +103,11 @@ export function ConsentSheet() {
           </div>
         ) : null}
 
-        <p className="mt-2.5 text-[11px] leading-snug text-ice/80">
-          <Link href={PRIVACY_HREF} className="font-extrabold text-gold hover:underline">
+        <p className="mt-2 text-[11px] leading-snug text-ice/80">
+          <Link
+            href={hrefWithLang(PRIVACY_HREF, locale, source)}
+            className="font-extrabold text-gold hover:underline"
+          >
             {m.consent.privacy}
           </Link>
           {" · "}

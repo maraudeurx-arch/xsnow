@@ -80,13 +80,11 @@ export const fr = {
     title: "Tes choix, sur cet appareil",
     intro: "Deux options. L’app marche même si tu dis non.",
     locationTitle: "Position — optionnelle",
-    locationBody:
-      "Pour afficher le nom de ta ville, et plus tard la proximité / alertes famille. Refuser : on reste à {city}.",
+    locationBody: "Nom de ta ville à l’écran, plus tard proximité / famille. Non = {city}.",
     locationYes: "Oui",
     locationNo: "Non — {city}",
     analyticsTitle: "Stats anonymes — optionnelles",
-    analyticsBody:
-      "Session, langue, ville/pays si tu as accepté la position, idées de monétisation. Pour améliorer le produit.",
+    analyticsBody: "Session, langue, ville si tu as accepté, idées de services. Pour améliorer l’app.",
     analyticsYes: "Oui",
     analyticsNo: "Non",
     privacy: "Vie privée",

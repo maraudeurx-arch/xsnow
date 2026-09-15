@@ -3,11 +3,12 @@
 import Link from "next/link";
 import { FeaturePanel } from "@/components/FeaturePanel";
 import { LegalLinks } from "@/components/LegalLinks";
+import { hrefWithLang } from "@/lib/i18n";
 import { useI18n } from "@/lib/i18n/locale";
 import type { Messages } from "@/lib/i18n";
 
 export function LocalizedLegal({ kind }: { kind: "privacy" | "terms" }) {
-  const { m } = useI18n();
+  const { m, locale, source } = useI18n();
   const copy: Messages["legal"]["privacy"] = m.legal[kind];
 
   return (
@@ -27,7 +28,7 @@ export function LocalizedLegal({ kind }: { kind: "privacy" | "terms" }) {
       <div className="mt-5 flex flex-wrap items-center justify-between gap-2">
         <LegalLinks className="text-sm" />
         <Link
-          href="/"
+          href={hrefWithLang("/", locale, source)}
           className="inline-flex min-h-11 items-center text-sm font-extrabold text-gold hover:underline"
         >
           ← {m.nav.accueil}

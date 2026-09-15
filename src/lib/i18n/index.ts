@@ -22,6 +22,7 @@ export {
   LOCALES,
   browserLanguages,
   detectLocale,
+  hrefWithLang,
   interpolate,
   isLocale,
   parseLangOverride,
