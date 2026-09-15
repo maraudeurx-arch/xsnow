@@ -1,19 +1,25 @@
-/** City / gentilé — later swapped from user location. */
+import { DEFAULT_LOCALE, getMessages, interpolate, type Locale } from "./i18n";
+
+/** Fallback city / gentilé — live branding comes from `usePlace()`. */
 export const LOCATION = {
-  city: "GATINEAU",
+  city: "Gatineau",
+  cityDisplay: "GATINEAU",
   locationLabel: "Gatinois",
 } as const;
 
 export const BRAND = {
-  name: LOCATION.city,
+  name: LOCATION.cityDisplay,
   community: "Open Community",
   slogan: "Monétisé Vous!",
   footerBefore: "Proximité et Esprit d’entraide au service des ",
   footerAfter: ".",
 } as const;
 
-export const WELCOME_SPEECH =
-  "Bonjour, je suis ton avatar dans l’écosystème Open Community. La proximité et l’esprit d’entraide des gens de Gatineau font notre force. Fais connaître à tes voisins un service que tu peux leur rendre en échange d’une compensation : ça peut être aider à déménager, faire des courses, ou aider à des travaux dans la maison. De plus, cette application t’offre des services gratuits, comme t’aider à retrouver ton téléphone si tu le perds, et t’avertir si ton enfant, ton conjoint ou tes parents âgés s’éloignent de l’endroit où ils sont censés être : l’école, le travail, ou la maison de retraite. Va dans Accueil et choisis le service dont tu aimerais bénéficier, ou que tu voudrais offrir à tes voisins de Gatineau. Avez-vous des suggestions de tâches et de services que vous aimeriez monétiser ? Faites-moi savoir, et toute la communauté en profitera. De plus, les gens qui partagent cette application, et des idées qui sont monétisées, recevront au prorata de leurs efforts. N’hésitez pas à me questionner à tout moment, je suis à votre entière disposition.";
+export function welcomeSpeechFor(city: string, locale: Locale = DEFAULT_LOCALE) {
+  return interpolate(getMessages(locale).welcome, { city });
+}
+
+export const WELCOME_SPEECH = welcomeSpeechFor(LOCATION.city);
 
 export const AVATAR_CHAT = {
   title: "Parle à ton avatar",
@@ -32,8 +38,19 @@ export const AVATAR_CHAT = {
   micError: "Impossible d’écouter pour le moment. Écris ton message.",
 } as const;
 
-export const AVATAR_SYSTEM_PROMPT =
-  "Tu es l’avatar du visiteur dans Open Community, à Gatineau. Tu parles uniquement en français, tu tutoies, tu restes chaleureux, concret et bref. Tu aides sur l’entraide de quartier : courses et livraison, aide au déménagement, travaux à la maison, garde d’enfants ou d’animaux, prêt ou emprunt d’objets, téléphone perdu, alertes si un enfant, un conjoint ou des parents âgés s’éloignent (école, travail, maison de retraite). Tu invites à toucher Accueil, sous GATINEAU à gauche, pour choisir un service à offrir ou à recevoir. Tu ne prétends pas être un humain. En cas d’urgence réelle, oriente vers le 911. Tu es à la disposition du visiteur pour toute question sur Open Community.";
+export function avatarSystemPromptFor(
+  city: string,
+  placeName: string,
+  locale: Locale = DEFAULT_LOCALE,
+  avatar = "",
+) {
+  return interpolate(getMessages(locale).systemPrompt, { city, placeName, avatar });
+}
+
+export const AVATAR_SYSTEM_PROMPT = avatarSystemPromptFor(
+  LOCATION.city,
+  LOCATION.cityDisplay,
+);
 
 export const COMMUNITY_MENU = [
   {
@@ -71,7 +88,7 @@ export const PROFESSIONNELLE_MENU = [
     href: "/monetise",
     label: "Monétiser vous : votre image, votre voix.",
     speech:
-      "Monétiser vous : votre image, votre voix. Proposez votre présence à la communauté de Gatineau.",
+      "Monétiser vous : votre image, votre voix. Proposez votre présence à la communauté de votre ville.",
   },
   {
     href: "/sondages",
@@ -115,7 +132,7 @@ export const FEATURE_COPY = {
   },
   telephone: {
     title: "Retrouve ton téléphone perdu",
-    lead: "Signalez l’appareil. La proximité de GATINEAU devient un filet de sécurité.",
+    lead: "Signalez l’appareil. La proximité de votre ville devient un filet de sécurité.",
   },
   alertes: {
     title: "Alertes de proximité",
@@ -163,7 +180,7 @@ export const FEATURE_COPY = {
   },
   monProfil: {
     title: "Mon profil",
-    lead: "Votre fiche Gatineau : infos, réglages, invitations.",
+    lead: "Votre fiche locale : infos, réglages, invitations.",
   },
   mesInfos: {
     title: "Mes infos",

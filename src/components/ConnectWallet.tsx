@@ -1,6 +1,7 @@
 "use client";
 
 import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { useI18n } from "@/lib/i18n/locale";
 import { hasWalletConnectProjectId, useStubWallet } from "@/lib/wallet";
 
 const btnClass =
@@ -8,10 +9,11 @@ const btnClass =
 
 function StubConnect() {
   const wallet = useStubWallet();
+  const { m } = useI18n();
   if (!wallet) {
     return (
       <button type="button" className={btnClass}>
-        Connect
+        {m.wallet.connect}
       </button>
     );
   }
@@ -21,14 +23,15 @@ function StubConnect() {
       type="button"
       className={btnClass}
       onClick={wallet.connected ? wallet.disconnect : wallet.connect}
-      aria-label={wallet.connected ? "Déconnecter le portefeuille" : "Connecter le portefeuille"}
+      aria-label={wallet.connected ? m.wallet.disconnect : m.wallet.connectAria}
     >
-      {wallet.label}
+      {wallet.connected ? m.wallet.guest : m.wallet.connect}
     </button>
   );
 }
 
 function RainbowConnect() {
+  const { m } = useI18n();
   return (
     <ConnectButton.Custom>
       {({ account, chain, openAccountModal, openChainModal, openConnectModal, mounted }) => {
@@ -48,9 +51,9 @@ function RainbowConnect() {
             }
           >
             {!connected
-              ? "Connect"
+              ? m.wallet.connect
               : chain.unsupported
-                ? "Mauvais réseau"
+                ? m.wallet.wrongNetwork
                 : account.displayName}
           </button>
         );

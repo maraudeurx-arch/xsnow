@@ -4,3 +4,11 @@ compatibility_date = "2026-09-01"
 
 [ai]
 binding = "AI"
+
+# Anonymous /stats events. Coordinator: `npx wrangler d1 create xsnow-stats`
+# then paste database_id and `npx wrangler d1 migrations apply xsnow-stats --remote`.
+# [[d1_databases]]
+# binding = "DB"
+# database_name = "xsnow-stats"
+# database_id = "<id-from-wrangler-d1-create>"
+# migrations_dir = "migrations"

@@ -1,24 +1,16 @@
 "use client";
 
 import { useState } from "react";
+import { interpolate } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n/locale";
 import { useStoredList } from "@/lib/useStoredList";
-
-const SUGGESTIONS = [
-  "Voisin",
-  "Commerçant",
-  "Bénévole",
-  "Parent",
-  "Grand-parent",
-  "Livreur",
-  "Étudiant",
-  "Aidant",
-];
 
 const KEY = "xsnow.attributes";
 
 export function AttributesBoard() {
   const [selected, setSelected] = useStoredList<string>(KEY);
   const [custom, setCustom] = useState("");
+  const { m } = useI18n();
 
   function toggle(tag: string) {
     const next = selected.includes(tag)
@@ -39,7 +31,7 @@ export function AttributesBoard() {
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap gap-2">
-        {SUGGESTIONS.map((tag) => {
+        {m.attributes.suggestions.map((tag) => {
           const on = selected.includes(tag);
           return (
             <button
@@ -59,7 +51,7 @@ export function AttributesBoard() {
         <input
           value={custom}
           onChange={(event) => setCustom(event.target.value)}
-          placeholder="Autre attribut"
+          placeholder={m.attributes.other}
           className="tap flex-1 rounded-full border border-white/15 bg-white/5 px-3 text-sm outline-none focus:border-gold"
         />
         <button
@@ -67,13 +59,15 @@ export function AttributesBoard() {
           onClick={addCustom}
           className="tap rounded-full bg-cobalt px-4 font-extrabold text-snow"
         >
-          Ajouter
+          {m.attributes.add}
         </button>
       </div>
       {selected.length ? (
-        <p className="text-sm text-ice/80">Vos attributs : {selected.join(" · ")}</p>
+        <p className="text-sm text-ice/80">
+          {interpolate(m.attributes.yours, { list: selected.join(" · ") })}
+        </p>
       ) : (
-        <p className="text-sm text-snow/60">Aucun attribut pour l’instant.</p>
+        <p className="text-sm text-snow/60">{m.attributes.none}</p>
       )}
     </div>
   );

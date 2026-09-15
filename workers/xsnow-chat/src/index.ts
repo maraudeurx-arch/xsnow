@@ -3,12 +3,29 @@
  * Deploy: npx wrangler login && npx wrangler deploy
  *
  * Visitors never log in. GitHub Pages origin is allowed via CORS.
+ * `POST /` = chat
+ * `GET|POST /geo` = reverse geocode {lat,lon}
+ * `POST /stats` = anonymous usage events (no PII)
+ * `GET /stats/summary` = aggregate counts
+ *
+ * D1: `npx wrangler d1 create xsnow-stats` then set database_id in wrangler.toml
+ * and `npx wrangler d1 migrations apply xsnow-stats --remote`.
  */
+
+import { parseLatLon, reverseGeocode } from "./geo";
+import {
+  EMPTY_SUMMARY,
+  insertStatsEvents,
+  parseStatsEvents,
+  readStatsSummary,
+  type D1Like,
+} from "./stats";
 
 export interface Env {
   AI: {
     run: (model: string, inputs: Record<string, unknown>) => Promise<unknown>;
   };
+  DB?: D1Like;
 }
 
 const MODEL = "@cf/meta/llama-3.2-3b-instruct";
@@ -37,7 +54,7 @@ type ChatTurn = {
 
 function corsHeaders(origin: string | null): Record<string, string> {
   const headers: Record<string, string> = {
-    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type",
     "Access-Control-Max-Age": "86400",
     Vary: "Origin",
@@ -155,12 +172,162 @@ function replyFromAi(payload: unknown): string {
   return "";
 }
 
+function isGeoPath(pathname: string) {
+  return pathname === "/geo" || pathname.endsWith("/geo");
+}
+
+function isStatsSummaryPath(pathname: string) {
+  const value = pathname.replace(/\/+$/, "") || "/";
+  return value === "/stats/summary" || value.endsWith("/stats/summary");
+}
+
+function isStatsPath(pathname: string) {
+  const value = pathname.replace(/\/+$/, "") || "/";
+  return value === "/stats" || value.endsWith("/stats");
+}
+
+async function readJsonBody(request: Request, origin: string | null): Promise<{ ok: true; value: unknown } | { ok: false; response: Response }> {
+  const declaredLength = Number(request.headers.get("Content-Length") || "0");
+  if (declaredLength > MAX_BODY_BYTES) {
+    return { ok: false, response: json({ error: "payload_too_large" }, 413, origin) };
+  }
+
+  let rawText: string;
+  try {
+    rawText = await request.text();
+  } catch {
+    return { ok: false, response: json({ error: "bad_request" }, 400, origin) };
+  }
+
+  if (rawText.length > MAX_BODY_BYTES) {
+    return { ok: false, response: json({ error: "payload_too_large" }, 413, origin) };
+  }
+
+  try {
+    return { ok: true, value: JSON.parse(rawText) as unknown };
+  } catch {
+    return { ok: false, response: json({ error: "bad_request" }, 400, origin) };
+  }
+}
+
+async function handleStats(request: Request, env: Env, origin: string | null): Promise<Response> {
+  if (request.method !== "POST") {
+    return json({ error: "method_not_allowed" }, 405, origin);
+  }
+  if (tooMany(clientIp(request))) {
+    return json({ error: "rate_limited" }, 429, origin);
+  }
+
+  const body = await readJsonBody(request, origin);
+  if (!body.ok) return body.response;
+
+  const events = parseStatsEvents(body.value);
+  if (!events.length) {
+    return json({ error: "bad_request" }, 400, origin);
+  }
+
+  if (env.DB) {
+    try {
+      await insertStatsEvents(env.DB, events);
+    } catch {
+      return json({ error: "store_failed" }, 503, origin);
+    }
+  }
+
+  return json({ ok: true, stored: events.length, persisted: Boolean(env.DB) }, 200, origin);
+}
+
+async function handleStatsSummary(request: Request, env: Env, origin: string | null): Promise<Response> {
+  if (request.method !== "GET") {
+    return json({ error: "method_not_allowed" }, 405, origin);
+  }
+  if (tooMany(clientIp(request))) {
+    return json({ error: "rate_limited" }, 429, origin);
+  }
+  if (!env.DB) {
+    return json({ ...EMPTY_SUMMARY, persisted: false }, 200, origin);
+  }
+  try {
+    const summary = await readStatsSummary(env.DB);
+    return json({ ...summary, persisted: true }, 200, origin);
+  } catch {
+    return json({ error: "store_failed" }, 503, origin);
+  }
+}
+
+async function handleGeo(request: Request, origin: string | null): Promise<Response> {
+  if (request.method !== "GET" && request.method !== "POST") {
+    return json({ error: "method_not_allowed" }, 405, origin);
+  }
+
+  if (tooMany(clientIp(request))) {
+    return json({ error: "rate_limited" }, 429, origin);
+  }
+
+  if (request.method === "GET") {
+    const url = new URL(request.url);
+    const parsed = parseLatLon({
+      lat: url.searchParams.get("lat"),
+      lon: url.searchParams.get("lon"),
+    });
+    if (!parsed) return json({ error: "bad_request" }, 400, origin);
+    const result = await reverseGeocode(parsed.lat, parsed.lon);
+    return json(result, 200, origin);
+  }
+
+  const declaredLength = Number(request.headers.get("Content-Length") || "0");
+  if (declaredLength > MAX_BODY_BYTES) {
+    return json({ error: "payload_too_large" }, 413, origin);
+  }
+
+  let rawText: string;
+  try {
+    rawText = await request.text();
+  } catch {
+    return json({ error: "bad_request" }, 400, origin);
+  }
+
+  if (rawText.length > MAX_BODY_BYTES) {
+    return json({ error: "payload_too_large" }, 413, origin);
+  }
+
+  let parsedJson: unknown;
+  try {
+    parsedJson = JSON.parse(rawText) as unknown;
+  } catch {
+    return json({ error: "bad_request" }, 400, origin);
+  }
+
+  const coords = parseLatLon(
+    parsedJson && typeof parsedJson === "object"
+      ? (parsedJson as { lat?: unknown; lon?: unknown; longitude?: unknown })
+      : {},
+  );
+  if (!coords) return json({ error: "bad_request" }, 400, origin);
+
+  const result = await reverseGeocode(coords.lat, coords.lon);
+  return json(result, 200, origin);
+}
+
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const origin = request.headers.get("Origin");
+    const pathname = new URL(request.url).pathname;
 
     if (request.method === "OPTIONS") {
       return new Response(null, { status: 204, headers: corsHeaders(origin) });
+    }
+
+    if (isGeoPath(pathname)) {
+      return handleGeo(request, origin);
+    }
+
+    if (isStatsSummaryPath(pathname)) {
+      return handleStatsSummary(request, env, origin);
+    }
+
+    if (isStatsPath(pathname)) {
+      return handleStats(request, env, origin);
     }
 
     if (request.method !== "POST") {

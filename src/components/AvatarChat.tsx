@@ -1,7 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { AVATAR_CHAT, AVATAR_SYSTEM_PROMPT } from "@/lib/content";
+import { noteMonetizeSuggestion } from "@/lib/analytics";
+import { avatarSystemPromptFor } from "@/lib/content";
+import { useI18n } from "@/lib/i18n/locale";
+import { usePlace } from "@/lib/place";
+import { dictationLang } from "@/lib/voices";
 import {
   classifyDictationError,
   dictationSupported,
@@ -14,23 +18,27 @@ import { ChatFault, completeChat, type ChatMessage } from "@/lib/llm";
 import type { Avatar } from "@/lib/avatars";
 import { useSpeech } from "@/lib/speech";
 
-function faultCopy(caught: unknown) {
-  if (caught instanceof ChatFault && caught.kind === "network") {
-    return AVATAR_CHAT.networkError;
-  }
-  return AVATAR_CHAT.genericError;
-}
-
-function micCopy(kind: DictationErrorKind) {
-  if (kind === "unsupported") return AVATAR_CHAT.micUnsupported;
-  if (kind === "permission") return AVATAR_CHAT.micPermission;
-  if (kind === "silent") return AVATAR_CHAT.micSilent;
-  if (kind === "network") return AVATAR_CHAT.micNetwork;
-  return AVATAR_CHAT.micError;
-}
-
 export function AvatarChat({ avatar }: { avatar: Avatar }) {
   const { speak, prime, stop } = useSpeech();
+  const { city, placeName, localeHint } = usePlace();
+  const { locale, m } = useI18n();
+  const chat = m.chat;
+  const avatarLabel = m.guide.avatars[avatar.id];
+
+  function faultCopy(caught: unknown) {
+    if (caught instanceof ChatFault && caught.kind === "network") {
+      return chat.networkError;
+    }
+    return chat.genericError;
+  }
+
+  function micCopy(kind: DictationErrorKind) {
+    if (kind === "unsupported") return chat.micUnsupported;
+    if (kind === "permission") return chat.micPermission;
+    if (kind === "silent") return chat.micSilent;
+    if (kind === "network") return chat.micNetwork;
+    return chat.micError;
+  }
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [busy, setBusy] = useState(false);
@@ -88,6 +96,7 @@ export function AvatarChat({ avatar }: { avatar: Avatar }) {
   async function sendText(raw: string) {
     const text = raw.trim();
     if (!text || busyRef.current) return;
+    noteMonetizeSuggestion(text);
 
     busyRef.current = true;
     const nextMessages: ChatMessage[] = [
@@ -106,7 +115,7 @@ export function AvatarChat({ avatar }: { avatar: Avatar }) {
 
     try {
       const reply = await completeChat({
-        system: `${AVATAR_SYSTEM_PROMPT} Ton apparence : ${avatar.label}.`,
+        system: avatarSystemPromptFor(city, placeName, locale, avatarLabel),
         messages: nextMessages,
         signal: controller.signal,
       });
@@ -129,11 +138,11 @@ export function AvatarChat({ avatar }: { avatar: Avatar }) {
     }
   }
 
-  function beginDictation(lang: "fr-CA" | "fr-FR") {
+  function beginDictation(lang: string) {
     const Ctor = getSpeechRecognitionCtor();
     if (!Ctor) {
       setListening(false);
-      setError(AVATAR_CHAT.micUnsupported);
+      setError(chat.micUnsupported);
       return;
     }
 
@@ -171,7 +180,7 @@ export function AvatarChat({ avatar }: { avatar: Avatar }) {
 
     recog.onerror = (event) => {
       if (event.error === "aborted") return;
-      if (event.error === "language-not-supported" && lang === "fr-CA") {
+      if (event.error === "language-not-supported" && !retryFrFrRef.current) {
         retryFrFrRef.current = true;
         return;
       }
@@ -184,7 +193,9 @@ export function AvatarChat({ avatar }: { avatar: Avatar }) {
       if (recogRef.current !== recog) return;
       if (retryFrFrRef.current) {
         retryFrFrRef.current = false;
-        beginDictation("fr-FR");
+        beginDictation(
+          locale === "fr" ? "fr-FR" : locale === "es" ? "es-MX" : "en-GB",
+        );
         return;
       }
       recogRef.current = null;
@@ -202,7 +213,7 @@ export function AvatarChat({ avatar }: { avatar: Avatar }) {
     } catch {
       listeningRef.current = false;
       setListening(false);
-      setError(AVATAR_CHAT.micError);
+      setError(chat.micError);
     }
   }
 
@@ -228,24 +239,24 @@ export function AvatarChat({ avatar }: { avatar: Avatar }) {
 
     if (busyRef.current) return;
     if (!dictationSupported()) {
-      setError(AVATAR_CHAT.micUnsupported);
+      setError(chat.micUnsupported);
       return;
     }
 
     heardRef.current = "";
     sentFromMicRef.current = false;
     retryFrFrRef.current = false;
-    beginDictation("fr-CA");
+    beginDictation(dictationLang(locale, localeHint));
   }
 
   return (
     <section
       className="flex min-h-0 w-full flex-1 flex-col rounded-2xl border border-white/10 bg-[linear-gradient(180deg,rgba(18,20,26,0.92)_0%,rgba(8,8,10,0.92)_100%)] p-2 text-left shadow-[0_12px_32px_rgba(0,0,0,0.35)] backdrop-blur-md"
-      aria-label={AVATAR_CHAT.title}
+      aria-label={chat.title}
     >
       <div className="flex shrink-0 items-center px-1">
         <h2 className="text-[12px] font-extrabold tracking-wide text-snow">
-          {AVATAR_CHAT.title}
+          {chat.title}
         </h2>
       </div>
 
@@ -289,8 +300,8 @@ export function AvatarChat({ avatar }: { avatar: Avatar }) {
         <input
           value={input}
           onChange={(event) => setInput(event.target.value)}
-          placeholder={AVATAR_CHAT.placeholder}
-          aria-label={AVATAR_CHAT.placeholder}
+          placeholder={chat.placeholder}
+          aria-label={chat.placeholder}
           className="min-h-[44px] min-w-0 flex-1 rounded-full border border-white/15 bg-night px-3 text-[13px] text-snow outline-none focus:border-gold/70"
         />
         <button
@@ -300,20 +311,20 @@ export function AvatarChat({ avatar }: { avatar: Avatar }) {
               ? "mic-listen border-gold/70 bg-gold/15 text-gold"
               : "border-white/20 bg-white/[0.06] text-snow"
           } disabled:opacity-50`}
-          aria-label={listening ? AVATAR_CHAT.listening : AVATAR_CHAT.speak}
+          aria-label={listening ? chat.listening : chat.speak}
           aria-pressed={listening}
           disabled={busy && !listening}
           onClick={onMicTap}
         >
           <MicIcon />
-          {listening ? AVATAR_CHAT.listening : AVATAR_CHAT.speak}
+          {listening ? chat.listening : chat.speak}
         </button>
         <button
           type="submit"
           className="tap inline-flex shrink-0 items-center justify-center rounded-full border border-cobalt/55 bg-cobalt px-2.5 text-[11px] font-extrabold text-snow disabled:opacity-50"
           disabled={busy}
         >
-          {AVATAR_CHAT.send}
+          {chat.send}
         </button>
       </form>
     </section>

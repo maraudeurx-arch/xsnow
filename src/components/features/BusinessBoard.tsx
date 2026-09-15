@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useState } from "react";
+import { useI18n } from "@/lib/i18n/locale";
 import { uid } from "@/lib/storage";
 import { useStoredList } from "@/lib/useStoredList";
 
@@ -17,6 +18,7 @@ const KEY = "xsnow.businesses";
 export function BusinessBoard() {
   const [items, setItems] = useStoredList<Business>(KEY);
   const [saved, setSaved] = useState(false);
+  const { m } = useI18n();
 
   function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -37,11 +39,11 @@ export function BusinessBoard() {
   return (
     <div className="space-y-5">
       <form onSubmit={onSubmit} className="grid gap-3">
-        <Field name="name" label="Nom du commerce" required />
-        <Field name="category" label="Catégorie" placeholder="Café, réparation, services…" />
-        <Field name="city" label="Ville ou quartier" placeholder="Plateau, Rosemont…" />
+        <Field name="name" label={m.business.name} required />
+        <Field name="category" label={m.business.category} placeholder={m.business.categoryPh} />
+        <Field name="city" label={m.business.city} placeholder={m.business.cityPh} />
         <label className="grid gap-1 text-sm font-semibold">
-          Description
+          {m.business.description}
           <textarea
             name="description"
             rows={3}
@@ -49,10 +51,10 @@ export function BusinessBoard() {
           />
         </label>
         <button type="submit" className="tap rounded-full bg-cobalt font-extrabold text-snow">
-          Publier dans Open Community
+          {m.business.publish}
         </button>
         {saved ? (
-          <p className="text-sm text-gold">Enregistré sur cet appareil. La vitrine publique arrive bientôt.</p>
+          <p className="text-sm text-gold">{m.business.saved}</p>
         ) : null}
       </form>
 
@@ -61,7 +63,7 @@ export function BusinessBoard() {
           <li key={item.id} className="rounded-2xl border border-white/10 bg-white/5 p-3">
             <p className="font-bold">{item.name}</p>
             <p className="text-xs text-ice/80">
-              {item.category || "Commerce"} · {item.city || "Quartier"}
+              {item.category || m.business.fallbackCategory} · {item.city || m.business.fallbackCity}
             </p>
             {item.description ? <p className="mt-1 text-sm text-snow/80">{item.description}</p> : null}
           </li>
