@@ -668,6 +668,12 @@ export const es: Messages = {
     missionsUserTesting: "UserTesting",
     missionsExternalHint: "Sitios externos conocidos — sales de Open Community (nueva pestaña).",
     missionsLocal: "Encuestas OPC (pronto)",
+    missionsMicro1Title: "Anotación IA / robots (micro1)",
+    missionsMicro1Body:
+      "Etiquetado y evaluación remota de salidas de modelos (IA / robots). Rango anunciado en su ficha: unos 50–90 USD/h. Canadá figura entre los países elegibles. Candidatura solo en el sitio de micro1 — no a través de OPC.",
+    missionsMicro1Disclaimer:
+      "Tarifa no garantizada · selección · horas intermitentes · OPC no es el empleador · no pagues a OPC para postular.",
+    missionsMicro1Cta: "Postular en micro1",
     timeTitle: "Tiempo y conexión",
     timeBody:
       "Publica una oferta en Mis servicios: hotspot / conexión, una mano, o presencia. Indica una tarifa y tus reglas. El vecino paga por Interac.",

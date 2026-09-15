@@ -2,9 +2,7 @@
 
 import Link from "next/link";
 import { useI18n } from "@/lib/i18n/locale";
-
-const PROLIFIC_URL = "https://www.prolific.com/";
-const USERTESTING_URL = "https://www.usertesting.com/";
+import { MICRO1_APPLY_URL, PROLIFIC_URL, USERTESTING_URL } from "@/lib/paid-missions";
 
 const cardClass =
   "space-y-3 rounded-2xl border border-white/10 bg-white/[0.04] p-3 shadow-[0_8px_24px_rgba(0,0,0,0.28)]";
@@ -59,6 +57,21 @@ export function EarnNowBoard() {
           <li>{copy.missionsExample2}</li>
           <li>{copy.missionsExample3}</li>
         </ul>
+        <div className="space-y-2 rounded-xl border border-gold/35 bg-gold/5 p-3">
+          <h4 className="text-base font-extrabold text-snow">{copy.missionsMicro1Title}</h4>
+          <p className="text-sm leading-relaxed text-ice/90">{copy.missionsMicro1Body}</p>
+          <p role="note" className="text-xs font-semibold leading-relaxed text-gold">
+            {copy.missionsMicro1Disclaimer}
+          </p>
+          <a
+            href={MICRO1_APPLY_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={ghostCtaClass}
+          >
+            {copy.missionsMicro1Cta}
+          </a>
+        </div>
         <div className="grid gap-2">
           <a
             href={USERTESTING_URL}

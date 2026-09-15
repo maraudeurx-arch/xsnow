@@ -665,6 +665,12 @@ export const en: Messages = {
     missionsUserTesting: "UserTesting",
     missionsExternalHint: "Well-known external sites — you leave Open Community (new tab).",
     missionsLocal: "OPC surveys (soon)",
+    missionsMicro1Title: "AI / robot annotation (micro1)",
+    missionsMicro1Body:
+      "Remote labeling and evaluation of AI / robotics model outputs. Range shown on their listing: about US$50–90/hour. Canada is among eligible countries. Apply only on micro1’s site — not through OPC.",
+    missionsMicro1Disclaimer:
+      "Rate not guaranteed · selection · intermittent hours · OPC is not the employer · no payment to OPC to apply.",
+    missionsMicro1Cta: "Apply on micro1",
     timeTitle: "Time & connection",
     timeBody:
       "Publish a My services offer: hotspot / connection, a helping hand, or presence. Set a rate and your rules. The neighbour pays by Interac.",

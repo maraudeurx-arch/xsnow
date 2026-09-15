@@ -656,6 +656,12 @@ export const fr = {
     missionsUserTesting: "UserTesting",
     missionsExternalHint: "Sites externes reconnus — tu quittes Open Community (nouvel onglet).",
     missionsLocal: "Sondages OPC (bientôt)",
+    missionsMicro1Title: "Annotation IA / robots (micro1)",
+    missionsMicro1Body:
+      "Étiquetage et évaluation à distance de sorties de modèles (IA / robots). Fourchette affichée sur leur offre : ~50–90 USD/h. Le Canada figure parmi les pays éligibles. Candidature uniquement chez micro1 — pas chez OPC.",
+    missionsMicro1Disclaimer:
+      "Tarif non garanti · sélection · heures intermittentes · OPC n’est pas l’employeur · aucun paiement à OPC pour postuler.",
+    missionsMicro1Cta: "Postuler chez micro1",
     timeTitle: "Temps & connexion",
     timeBody:
       "Publie une offre Mes services : hotspot / connexion, un coup de main, ou une présence. Indique un tarif et tes règles. Le voisin paie en Interac.",
