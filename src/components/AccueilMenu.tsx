@@ -56,7 +56,7 @@ export function AccueilMenu() {
     <div className="relative z-40 shrink-0" data-accueil>
       <button
         type="button"
-        className={`${headerNavBtnClass(false)} tap`}
+        className={`${headerNavBtnClass(false)} tap min-h-11`}
         aria-expanded={open}
         onClick={() => setOpen((next) => !next)}
       >

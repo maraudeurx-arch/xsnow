@@ -708,7 +708,7 @@ export const fr = {
     involvementRequired: "Choisis au moins Tête, Cœur ou Mains.",
     hoursLabel: "Heures / semaine (optionnel)",
     hoursShare: "Heures / semaine",
-    hoursPh: "2",
+    hoursPh: "ex. 2",
     neighborhoodLabel: "Quartier (optionnel)",
     neighborhoodShare: "Quartier",
     neighborhoodPh: "Hull, Aylmer, Plateau…",

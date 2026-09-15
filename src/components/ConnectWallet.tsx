@@ -1,17 +1,23 @@
 "use client";
 
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { useId, useState } from "react";
+import { usePathname } from "next/navigation";
+import { useEffect, useId, useState } from "react";
 import { useI18n } from "@/lib/i18n/locale";
 import { hasWalletConnectProjectId } from "@/lib/wallet";
 
 const btnClass =
-  "inline-flex min-h-[22px] shrink-0 items-center justify-center rounded-full border border-cobalt/60 bg-cobalt px-2 py-0.5 text-[11px] font-extrabold tracking-wide text-snow shadow-[0_4px_14px_rgba(37,99,235,0.38)] transition hover:brightness-110";
+  "tap inline-flex min-h-11 shrink-0 items-center justify-center rounded-full border border-cobalt/60 bg-cobalt px-3 py-0.5 text-[11px] font-extrabold tracking-wide text-snow shadow-[0_4px_14px_rgba(37,99,235,0.38)] transition hover:brightness-110";
 
 function UnconfiguredConnect() {
   const { m } = useI18n();
+  const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const hintId = useId();
+
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
 
   return (
     <div className="relative inline-flex flex-col items-end">

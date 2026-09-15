@@ -720,7 +720,7 @@ export const es: Messages = {
     involvementRequired: "Elige al menos Cabeza, Corazón o Manos.",
     hoursLabel: "Horas / semana (opcional)",
     hoursShare: "Horas / semana",
-    hoursPh: "2",
+    hoursPh: "ej. 2",
     neighborhoodLabel: "Barrio (opcional)",
     neighborhoodShare: "Barrio",
     neighborhoodPh: "Hull, Aylmer, Plateau…",
