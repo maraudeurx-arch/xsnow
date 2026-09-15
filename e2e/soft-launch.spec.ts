@@ -1,3 +1,6 @@
+import { APP_VERSION } from "../src/lib/app-version";
+import { OPC_PUBLIC_EMAIL } from "../src/lib/paths";
+import { SERVICE_KINDS, SERVICE_SEEDS, SERVICES } from "../src/lib/services";
 import { expect, test } from "./helpers";
 
 test.describe("Open Community soft-launch smoke", () => {
@@ -32,6 +35,17 @@ test.describe("Open Community soft-launch smoke", () => {
     await expect(page.getByText(/Aucune demande pour l’instant/)).toBeVisible();
   });
 
+  test("fresh storage: neighbourhood service boards stay empty", async ({ page }) => {
+    for (const kind of SERVICE_KINDS) {
+      await page.goto(`./services/${kind}/`);
+      await expect(page.getByRole("heading", { name: SERVICES[kind].title, level: 2 })).toBeVisible();
+      await expect(page.getByText("Aucune annonce pour ce filtre.")).toBeVisible();
+      for (const listing of SERVICE_SEEDS[kind]) {
+        await expect(page.getByText(listing.title)).toHaveCount(0);
+      }
+    }
+  });
+
   test("Vos idées stay on this device and do not come back from the empty catalog", async ({ page }) => {
     const idea = `Déneiger les allées OPC-e2e ${Date.now()}`;
     await page.goto("./vos-idees/");
@@ -59,23 +73,38 @@ test.describe("Open Community soft-launch smoke", () => {
   });
 
   test("transparency pages are reachable from the footer", async ({ page }) => {
+    const version = new RegExp(`Version ${APP_VERSION.replaceAll(".", "\\.")}`);
     await page.goto("./");
     const footer = page.locator("footer");
     await footer.getByRole("link", { name: "À propos" }).click();
     await expect(page).toHaveURL(/about/);
     await expect(page.getByRole("heading", { name: "Qui est derrière OPC" })).toBeVisible();
-    await expect(page.getByText(/Version 0\.3\.0/)).toBeVisible();
+    await expect(page.getByText(version)).toBeVisible();
+    await expect(page.getByRole("link", { name: OPC_PUBLIC_EMAIL })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Code source sur GitHub" })).toBeVisible();
 
     await footer.getByRole("link", { name: "Comment ça marche" }).click();
     await expect(page).toHaveURL(/comment-ca-marche/);
     await expect(page.getByRole("heading", { name: "Comment ça marche" })).toBeVisible();
+    await expect(page.getByRole("link", { name: OPC_PUBLIC_EMAIL })).toBeVisible();
 
     await footer.getByRole("link", { name: "Sécurité" }).click();
     await expect(page).toHaveURL(/securite/);
     await expect(page.getByRole("heading", { name: "Sécurité" })).toBeVisible();
+    await expect(page.getByRole("link", { name: OPC_PUBLIC_EMAIL })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Politique de sécurité (SECURITY.md)" })).toBeVisible();
 
     await footer.getByRole("link", { name: "Vie privée" }).click();
     await expect(page).toHaveURL(/vie-privee/);
     await expect(page.getByRole("heading", { name: "Vie privée" })).toBeVisible();
+    await expect(page.getByRole("link", { name: OPC_PUBLIC_EMAIL })).toBeVisible();
+
+    await footer.getByRole("link", { name: "Conditions" }).click();
+    await expect(page).toHaveURL(/conditions/);
+    await expect(page.getByRole("heading", { name: "Conditions" })).toBeVisible();
+
+    await footer.getByRole("link", { name: "Preuves" }).click();
+    await expect(page).toHaveURL(/preuves-de-revenus/);
+    await expect(page.getByRole("heading", { name: "Preuves de revenus" })).toBeVisible();
   });
 });
