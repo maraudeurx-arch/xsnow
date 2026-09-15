@@ -42,7 +42,7 @@ export {
   type GeoResult,
   type PlaceBranding,
   type StoredPlace,
-};
+} from "@/lib/place-logic";
 
 export const PLACE_STORAGE_KEY = "xsnow.place";
 export const GEO_CONSENT_KEY = "xsnow.geoConsent";
