@@ -27,6 +27,7 @@ import {
 import { SHARE_TEXT_MAX } from "@/lib/sanitize";
 import { FeedbackRow } from "@/components/FeedbackRow";
 import { copyText } from "@/lib/offers";
+import { usePublicCatalog } from "@/lib/usePublicCatalog";
 import { useStoredList } from "@/lib/useStoredList";
 
 const fieldClass =
@@ -35,10 +36,15 @@ const fieldClass =
 export function IdeasBoard() {
   const { m } = useI18n();
   const copy = m.ideas;
+  const catalog = usePublicCatalog();
   const [stored, setStored] = useStoredList<CommunityIdea>(IDEAS_KEY);
   const items = useMemo(
     () => stored.map(parseStoredIdea).filter((item): item is CommunityIdea => Boolean(item)),
     [stored],
+  );
+  const catalogIdeas = useMemo(
+    () => catalog.ideas.filter((idea) => !items.some((item) => item.id === idea.id)),
+    [catalog.ideas, items],
   );
   const [form, setForm] = useState<IdeaFormInput>(emptyIdeaForm);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -292,7 +298,8 @@ export function IdeasBoard() {
 
       <section className="space-y-2">
         <h3 className="text-base font-extrabold text-snow">{copy.wallTitle}</h3>
-        {items.length === 0 ? (
+        <p className="text-xs leading-relaxed text-snow/65">{copy.wallHint}</p>
+        {items.length === 0 && catalogIdeas.length === 0 ? (
           <p className="rounded-2xl border border-dashed border-white/15 bg-white/[0.03] p-3 text-sm leading-relaxed text-snow/75">
             {copy.wallEmpty}
           </p>
@@ -327,6 +334,24 @@ export function IdeasBoard() {
                     {copy.share}
                   </button>
                 </div>
+              </li>
+            ))}
+            {catalogIdeas.map((idea) => (
+              <li
+                key={idea.id}
+                className="rounded-2xl border border-white/10 bg-white/[0.04] p-3 text-left"
+              >
+                <span className="rounded-full bg-ice/20 px-2 py-0.5 text-[11px] font-extrabold uppercase tracking-wide text-ice">
+                  {copy.catalogBadge}
+                </span>
+                <p className="mt-2 text-sm leading-relaxed text-snow">{idea.text}</p>
+                <p className="mt-1.5 text-[11px] font-semibold tracking-wide text-gold">
+                  {idea.involvement.map((key) => copy[key]).join(" · ")}
+                  {idea.hoursPerWeek
+                    ? ` · ${interpolate(copy.hoursLine, { hours: idea.hoursPerWeek })}`
+                    : ""}
+                  {idea.neighborhood ? ` · ${idea.neighborhood}` : ""}
+                </p>
               </li>
             ))}
           </ul>

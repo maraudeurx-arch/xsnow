@@ -148,6 +148,10 @@ export const es: Messages = {
           heading: "Conservación",
           body: "Datos locales: hasta que borres los datos del sitio o revoques una opción. Estadísticas: para mejorar el producto, sin GPS. Revocar las estadísticas detiene los envíos.",
         },
+        {
+          heading: "Anuncios personales",
+          body: "Tus ofertas (Mis servicios), solicitudes (En demanda), ideas (Tus ideas) y textos para compartir se quedan en este aparato. No es un feed social global. Un enlace que copias tú puede mostrar una oferta a quien lo abra. Para que algo aparezca en todos los teléfonos, hace falta la aprobación de GOV + el propietario y una versión numerada (catálogo público).",
+        },
       ],
     },
     terms: {
@@ -207,6 +211,10 @@ export const es: Messages = {
           heading: "Contacto",
           body: "El contacto público son las GitHub Issues del repositorio xsnow, y el correo dedicado opencommunity.opc@gmail.com. Politzer sigue siendo el responsable público. No uses otra dirección personal.",
         },
+        {
+          heading: "Datos locales y versiones",
+          body: "La versión de la app se muestra aquí. Las ofertas, solicitudes e ideas personales se quedan en el aparato hasta una publicación aprobada (GOV + propietario) en una versión numerada. El catálogo público de esta versión está vacío en el lanzamiento suave.",
+        },
       ],
     },
     how: {
@@ -241,7 +249,7 @@ export const es: Messages = {
       sections: [
         {
           heading: "Datos de los visitantes",
-          body: "Las ideas, el chat, los textos para compartir y las notas de ofertas se tratan como texto plano no fiable. Nunca se convierten en HTML ejecutado, nunca en Git, nunca en un archivo subido. Este MVP no tiene carga de archivos, imágenes ni adjuntos.",
+          body: "Las ideas, el chat, los textos para compartir y las notas de ofertas se tratan como texto plano no fiable. Nunca se convierten en HTML ejecutado, nunca en Git, nunca en un archivo subido. Este MVP no tiene carga de archivos, imágenes ni adjuntos. Las ofertas e ideas personales se quedan en el aparato hasta una versión numerada aprobada.",
         },
         {
           heading: "Saneamiento",
@@ -357,11 +365,11 @@ export const es: Messages = {
     },
     mesServices: {
       title: "Mis servicios",
-      lead: "Publica lo que ofreces a los vecinos. Primer servicio: préstamo de coche por la mañana, pago Interac.",
+      lead: "Publica lo que ofreces. Se queda en este aparato hasta una versión pública aprobada.",
     },
     enDemande: {
       title: "En demanda",
-      lead: "Reserva una oferta del barrio — préstamo de coche por la mañana, Interac, gasolina aparte.",
+      lead: "Ofertas de este aparato, de un enlace compartido, o del catálogo de esta versión. Una instalación nueva empieza vacía.",
     },
     monProfil: {
       title: "Mi perfil",
@@ -399,6 +407,12 @@ export const es: Messages = {
     inviterBody: "Comparte Open Community con un vecino, un comercio, una familia.",
     aProposBody:
       "{placeName} / {community} — {slogan} Nuestra proximidad y nuestro espíritu de ayuda mutua son la garantía de nuestro éxito.",
+    versionLabel: "Versión",
+    deviceLocalNote:
+      "Tus ofertas, solicitudes, ideas, textos para compartir y datos Interac/PayPal se quedan en este aparato. Nada personal aparece en el de otro visitante hasta que GOV + el propietario aprueben una publicación en una versión numerada (catálogo público).",
+    releaseNotesTitle: "Notas de la versión",
+    releaseNotesBody:
+      "0.3.0 — Lanzamiento suave: catálogo público vacío. Ya no se inyecta un préstamo de coche de Gatineau en cada instalación. Un aparato nuevo empieza vacío.",
     language: "Idioma",
     comingSoon: "Las notificaciones y la estación de pantalla llegarán aquí.",
     locationConsent: "Ubicación",
@@ -716,7 +730,7 @@ export const es: Messages = {
     cancelEdit: "Cancelar",
     listTitle: "Tus ofertas",
     emptyList:
-      "Aún no hay ninguna oferta en este aparato. Publica un préstamo de coche por la mañana (Interac, la gasolina la paga quien toma el coche) — los vecinos lo verán en En demanda.",
+      "Aún no hay ninguna oferta en este aparato. El formulario de arriba es una plantilla vacía, no el anuncio de otra persona. Los vecinos lo verán en En demanda solo con un enlace que compartas, o tras una versión pública aprobada.",
     share: "Texto para compartir",
     shareEdit: "Editar",
     shareCopy: "Copiar",
@@ -733,7 +747,7 @@ export const es: Messages = {
     needInsurance: "Confirma el seguro antes de publicar.",
     needGas: "Que la gasolina la pague quien toma el coche es obligatorio en esta oferta.",
     browseEmpty:
-      "Aún no hay ofertas del barrio aquí. Abre un enlace compartido, o publica la tuya en Mis servicios.",
+      "Aún no hay ofertas aquí. Un aparato nuevo empieza vacío — no se inyecta un anuncio de Gatineau. Abre un enlace compartido, o publica la tuya en Mis servicios.",
     emptyRequests:
       "Aún no hay solicitudes. Cuando un vecino reserve, aparecerá aquí.",
     request: "Pedir",
@@ -769,6 +783,9 @@ export const es: Messages = {
     perMorning: "/ mañana",
     gasBadge: "Gasolina: prestatario",
     featuredBadge: "Destacada",
+    catalogBadge: "Catálogo",
+    deviceHint:
+      "Solo en este aparato, hasta una publicación aprobada en una versión numerada. Un enlace que copies puede mostrar esta oferta a quien lo abra.",
     requestMailSubject: "Solicitud: {title}",
     requestMailBody:
       "Hola,\n\nQuiero reservar « {title} » el {date}.\n\n{name}\n{contact}\n\n{message}\n\n— Open Community",
@@ -778,7 +795,7 @@ export const es: Messages = {
       "Ver anuncios en bucle, las granjas de clics y las cuentas falsas no están admitidos.",
     neighborsTitle: "Ofertas de vecinos",
     neighborsBody:
-      "El camino más real: publicar o reservar un servicio de barrio. El préstamo de coche por la mañana (Interac, gasolina aparte) ya está en línea.",
+      "El camino más real: publicar o reservar un servicio de barrio en este aparato. El préstamo de coche por la mañana (Interac, gasolina aparte) es una plantilla — no una oferta ya en línea para todo el mundo.",
     neighborsCtaServices: "Publicar en Mis servicios",
     neighborsCtaDemand: "Ver En demanda",
     neighborsCtaCar: "Préstamo de coche (mañanas)",
@@ -848,8 +865,10 @@ export const es: Messages = {
     submit: "Enviar la idea",
     thankYou: "Gracias — formas parte de aquí.",
     thankYouBody:
-      "Tu idea está en el muro. Cabeza, Corazón, Manos: así avanza Open Community. Compártela si quieres, o añade otra.",
+      "Tu idea está en el muro de este aparato. Otros teléfonos no la ven hasta que GOV + el propietario la aprueben en una versión numerada. Cabeza, Corazón, Manos: así avanza Open Community. Compártela si quieres, o añade otra.",
     wallTitle: "Muro de ideas (este aparato)",
+    wallHint:
+      "Tus ideas se quedan aquí. No aparecen en otro teléfono hasta que estén en una versión pública aprobada.",
     wallEmpty: "Aún no hay ninguna idea aquí. La primera suele ser la más útil.",
     editIdea: "Editar",
     share: "Texto para compartir",
@@ -861,5 +880,6 @@ export const es: Messages = {
     hoursLine: "{hours} h / semana",
     newIdea: "Otra idea",
     shareHeading: "Idea Open Community",
+    catalogBadge: "Catálogo",
   },
 };

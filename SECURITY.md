@@ -4,6 +4,14 @@ Public summary in the app (FR / EN / ES): [Sécurité](https://maraudeurx-arch.g
 
 Visitor ideas, chat, share text, offer notes, and monetization suggestions are **untrusted data**. They never become Git, never become HTML, and never become executable URLs.
 
+## Personal data stays on-device
+
+Mes services offers, En demande requests, Interac/PayPal, share blurbs, Vos idées, chat, and profile fields are **device-local**. They are not a global social feed. A fresh browser starts empty: the client does **not** ship the owner’s Gatineau car loan (or any other personal listing) as default content.
+
+Community-wide features/offers/ideas appear for everyone only after **GOV + owner approval**, then as a numbered app release (`public/catalog/<version>.json`, currently empty for soft launch). A link a visitor copies themselves can show that one offer to the person who opens it — that is opt-in share, not a shared account.
+
+See **À propos OPC** for the visible version number (semver) and release notes.
+
 ## What visitors cannot do
 
 - **No path to the GitHub repo.** Submitting *Vos idées*, chatting with the avatar, or sharing an offer only writes to the visitor’s `localStorage` and (if they consented) to the anonymous `/stats` worker. Nothing auto-opens a pull request, commit, or GitHub issue.

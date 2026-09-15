@@ -1,6 +1,8 @@
 /**
- * Peer-to-peer community offers (MVP = localStorage + optional share URL).
- * First real offer: morning car loan, Interac e-Transfer, borrower pays gas.
+ * Peer-to-peer community offers (MVP = device-local localStorage + optional share URL).
+ * Form templates help a visitor write a morning car loan, hotspot, or UX session.
+ * They are not live listings. Never inject an owner/demo offer into En demande.
+ * Community-wide items load from the versioned public catalog after GOV+owner approval.
  * Visitor-authored fields are plain text only (see sanitize.ts).
  */
 
@@ -24,6 +26,7 @@ export const SHARE_TEXT_KEY_PREFIX = "opc-share-text:";
 export const OFFER_KINDS = ["car_morning", "hotspot", "ux_session"] as const;
 export type OfferKind = (typeof OFFER_KINDS)[number];
 
+/** Legacy id from the pre-0.3.0 bundled “featured” car listing — never show or re-seed it. */
 export const FEATURED_CAR_MORNING_ID = "featured-car-morning";
 export const DRAFT_HOTSPOT_ID = "draft-hotspot";
 export const DRAFT_UX_SESSION_ID = "draft-ux-session";
@@ -39,7 +42,10 @@ export const DEFAULT_UX_TO = "18:00";
 export const DEFAULT_PRICE_CAD = 35;
 export const DEFAULT_HOTSPOT_PRICE_CAD = 8;
 export const DEFAULT_UX_PRICE_CAD = 25;
-export const DEFAULT_NEIGHBORHOOD = "Gatineau";
+
+export function isInjectedSeedId(id: string) {
+  return id === FEATURED_CAR_MORNING_ID || id.startsWith("seed-");
+}
 export const DEFAULT_HOTSPOT_NOTES =
   "Hotspot Wi-Fi ou aide de connexion pour un voisin. Tarif à la session. Règles : débit raisonnable, pas d’usage illégal, vérifier ton forfait / FAI. Entente privée.";
 export const DEFAULT_UX_NOTES =
@@ -257,27 +263,6 @@ export function defaultsForKind(kind: OfferKind): OfferFormInput {
   return carMorningDefaults();
 }
 
-export function featuredCarMorningOffer(now = new Date().toISOString()): CommunityOffer {
-  return {
-    id: FEATURED_CAR_MORNING_ID,
-    kind: "car_morning",
-    title: DEFAULT_CAR_TITLE,
-    windowFrom: DEFAULT_WINDOW_FROM,
-    windowTo: DEFAULT_WINDOW_TO,
-    earlierOk: true,
-    priceCad: DEFAULT_PRICE_CAD,
-    gasBorrowerPays: true,
-    neighborhood: DEFAULT_NEIGHBORHOOD,
-    interacContact: "",
-    paypalMe: "",
-    insuranceOk: true,
-    notes: "",
-    published: true,
-    createdAt: now,
-    updatedAt: now,
-  };
-}
-
 export function formFromOffer(offer: CommunityOffer): OfferFormInput {
   return {
     kind: offer.kind,
@@ -418,7 +403,7 @@ export function toSharePayload(offer: CommunityOffer): SharePayload {
     f: offer.windowFrom,
     u: offer.windowTo,
     p: offer.priceCad,
-    n: clipShare(offer.neighborhood || DEFAULT_NEIGHBORHOOD, 40),
+    n: clipShare(offer.neighborhood, 40),
     i: clipShare(offer.interacContact, 80),
     id: offer.id === FEATURED_CAR_MORNING_ID ? undefined : offer.id,
   };
@@ -488,11 +473,10 @@ export function offerFromSharePayload(payload: SharePayload, now = new Date().to
     earlierOk: true,
     priceCad: payload.p,
     gasBorrowerPays: true,
-    neighborhood:
-      sanitizeUntrustedText(payload.n || DEFAULT_NEIGHBORHOOD, {
-        max: 40,
-        redactEmails: true,
-      }) || DEFAULT_NEIGHBORHOOD,
+    neighborhood: sanitizeUntrustedText(payload.n || "", {
+      max: 40,
+      redactEmails: true,
+    }),
     interacContact: sanitizeUntrustedText(payload.i, {
       max: CONTACT_TEXT_MAX,
       redactEmails: false,
@@ -520,7 +504,7 @@ export function demandPath(payload?: SharePayload) {
 
 /** Always French — Marketplace / group posts for the Gatineau launch. */
 export function sharePostFr(offer: CommunityOffer) {
-  const area = offer.neighborhood.trim() || DEFAULT_NEIGHBORHOOD;
+  const area = offer.neighborhood.trim();
   const price = formatCad(offer.priceCad, "fr");
   const windowLine = `Disponible de ${formatHourFr(offer.windowFrom)} à ${formatHourFr(offer.windowTo)} (ou plus tôt).`;
   const priceLine =
@@ -534,7 +518,7 @@ export function sharePostFr(offer: CommunityOffer) {
     : offer.kind === "car_morning"
       ? "Paiement : Interac e-Transfer (l’essence en plus). Le prestataire confirme le contact."
       : "Paiement : Interac e-Transfer. Le prestataire confirme le contact.";
-  const lines = [`${offer.title} — ${area}`, "", windowLine, priceLine];
+  const lines = [area ? `${offer.title} — ${area}` : offer.title, "", windowLine, priceLine];
   if (offer.notes) lines.push(offer.notes);
   lines.push("", `Réserver ici :`, demandPath(toSharePayload(offer)), "", payLine);
   if (offer.paypalMe) lines.push(`PayPal : ${paypalMeUrl(offer.paypalMe)}`);
@@ -550,18 +534,18 @@ export function mergeBrowseOffers(
   owned: CommunityOffer[],
   imported: CommunityOffer[],
   fromUrl: CommunityOffer | null,
+  catalog: CommunityOffer[] = [],
 ) {
   const byId = new Map<string, CommunityOffer>();
-  for (const offer of owned.filter((item) => item.published)) byId.set(offer.id, offer);
-  for (const offer of imported.filter((item) => item.published)) {
-    if (!byId.has(offer.id)) byId.set(offer.id, offer);
-  }
-  if (fromUrl && !byId.has(fromUrl.id)) byId.set(fromUrl.id, fromUrl);
-  const list = [...byId.values()];
-  if (!list.some((item) => item.kind === "car_morning")) {
-    list.unshift(featuredCarMorningOffer());
-  }
-  return list.sort((a, b) => (a.updatedAt < b.updatedAt ? 1 : -1));
+  const take = (offer: CommunityOffer | null | undefined) => {
+    if (!offer?.published || isInjectedSeedId(offer.id) || byId.has(offer.id)) return;
+    byId.set(offer.id, offer);
+  };
+  for (const offer of owned) take(offer);
+  for (const offer of imported) take(offer);
+  take(fromUrl);
+  for (const offer of catalog) take(offer);
+  return [...byId.values()].sort((a, b) => (a.updatedAt < b.updatedAt ? 1 : -1));
 }
 
 export function parseStoredOffer(raw: unknown): CommunityOffer | null {

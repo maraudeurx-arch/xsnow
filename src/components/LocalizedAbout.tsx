@@ -1,5 +1,6 @@
 "use client";
 
+import { AppVersionNote } from "@/components/AppVersionNote";
 import { LegalLinks } from "@/components/LegalLinks";
 import { LegalSections } from "@/components/LocalizedLegal";
 import { LocalizedProfileStub } from "@/components/LocalizedFeature";
@@ -13,7 +14,8 @@ export function LocalizedAbout() {
   const { placeName } = usePlace();
   return (
     <LocalizedProfileStub feature="aPropos">
-      <p className="text-sm leading-relaxed text-ice/85">
+      <AppVersionNote />
+      <p className="mt-3 text-sm leading-relaxed text-ice/85">
         {interpolate(m.profile.aProposBody, {
           placeName,
           community: m.brand.community,

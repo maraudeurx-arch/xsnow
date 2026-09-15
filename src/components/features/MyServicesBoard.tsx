@@ -28,6 +28,7 @@ import {
   unpublishedTemplateOffer,
   writeEditedShareText,
   clipShareText,
+  isInjectedSeedId,
   type CommunityOffer,
   type OfferFormInput,
   type OfferKind,
@@ -85,7 +86,10 @@ function MyServicesBoardInner() {
   const initialTemplate = parseOfferTemplateQuery(searchParams.get("template"));
   const [stored, setItems] = useStoredList<CommunityOffer>(OFFERS_KEY);
   const items = useMemo(
-    () => stored.map(parseStoredOffer).filter((item): item is CommunityOffer => Boolean(item)),
+    () =>
+      stored
+        .map(parseStoredOffer)
+        .filter((item): item is CommunityOffer => Boolean(item && !isInjectedSeedId(item.id))),
     [stored],
   );
   const [form, setForm] = useState<OfferFormInput>(() =>
@@ -509,6 +513,7 @@ function MyServicesBoardInner() {
 
       <section className="space-y-3">
         <h3 className="text-base font-extrabold">{copy.listTitle}</h3>
+        <p className="text-xs leading-relaxed text-snow/65">{copy.deviceHint}</p>
         {items.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-white/15 bg-white/[0.03] p-3">
             <p className="text-sm leading-relaxed text-snow/75">{copy.emptyList}</p>

@@ -7,7 +7,6 @@ import { noteRequestCreated } from "@/lib/analytics";
 import { interpolate } from "@/lib/i18n";
 import { useI18n } from "@/lib/i18n/locale";
 import {
-  FEATURED_CAR_MORNING_ID,
   IMPORTED_OFFERS_KEY,
   OFFERS_KEY,
   OFFER_REQUESTS_KEY,
@@ -30,6 +29,7 @@ import {
   type OfferRequest,
 } from "@/lib/offers";
 import { uid } from "@/lib/storage";
+import { usePublicCatalog } from "@/lib/usePublicCatalog";
 import { useStoredList } from "@/lib/useStoredList";
 
 const fieldClass =
@@ -56,6 +56,7 @@ function DemandBoardInner() {
   const { locale, m } = useI18n();
   const copy = m.offers;
   const searchParams = useSearchParams();
+  const catalog = usePublicCatalog();
   const [owned] = useStoredList<CommunityOffer>(OFFERS_KEY);
   const [importedRaw, setImported] = useStoredList<CommunityOffer>(IMPORTED_OFFERS_KEY);
   const [requestsRaw, setRequests] = useStoredList<OfferRequest>(OFFER_REQUESTS_KEY);
@@ -84,8 +85,12 @@ function DemandBoardInner() {
   }, [searchParams]);
 
   const offers = useMemo(
-    () => mergeBrowseOffers(ownedClean, imported, fromUrl),
-    [fromUrl, imported, ownedClean],
+    () => mergeBrowseOffers(ownedClean, imported, fromUrl, catalog.offers),
+    [catalog.offers, fromUrl, imported, ownedClean],
+  );
+  const catalogIds = useMemo(
+    () => new Set(catalog.offers.map((item) => item.id)),
+    [catalog.offers],
   );
 
   const today = useMemo(() => {
@@ -154,6 +159,7 @@ function DemandBoardInner() {
   return (
     <div className="space-y-6">
       <p className="text-sm leading-relaxed text-ice/85">{copy.terms}</p>
+      <p className="text-xs leading-relaxed text-snow/65">{copy.deviceHint}</p>
 
       {offers.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-white/15 bg-white/[0.03] p-3">
@@ -177,9 +183,9 @@ function DemandBoardInner() {
               className="rounded-2xl border border-white/10 bg-white/5 p-3"
             >
               <div className="flex flex-wrap items-center gap-2">
-                {offer.id === FEATURED_CAR_MORNING_ID ? (
+                {catalogIds.has(offer.id) ? (
                   <span className="rounded-full bg-ice/20 px-2 py-0.5 text-[11px] font-extrabold uppercase tracking-wide text-ice">
-                    {copy.featuredBadge}
+                    {copy.catalogBadge}
                   </span>
                 ) : (
                   <span className="rounded-full bg-gold/20 px-2 py-0.5 text-[11px] font-extrabold uppercase tracking-wide text-gold">

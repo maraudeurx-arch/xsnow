@@ -148,6 +148,10 @@ export const en: Messages = {
           heading: "Retention",
           body: "Local data: until you clear site data or revoke a choice. Stats: to improve the product, without GPS. Revoking stats stops further sends.",
         },
+        {
+          heading: "Personal listings",
+          body: "Your offers (My services), requests (In demand), ideas (Your ideas) and share texts stay on this device. This is not a global social feed. A link you copy yourself can show an offer to the person who opens it. For something to appear for everyone, GOV + owner must approve it, then it ships in a numbered release (public catalog).",
+        },
       ],
     },
     terms: {
@@ -207,6 +211,10 @@ export const en: Messages = {
           heading: "Contact",
           body: "Public contact is GitHub Issues on the xsnow repository, and the dedicated email opencommunity.opc@gmail.com. Politzer remains the public person responsible. Do not use a personal address.",
         },
+        {
+          heading: "On-device data and versions",
+          body: "The app version is shown here. Personal offers, requests and ideas stay on the device until GOV + owner approve a numbered public release. This version’s public catalog is empty for the soft launch.",
+        },
       ],
     },
     how: {
@@ -241,7 +249,7 @@ export const en: Messages = {
       sections: [
         {
           heading: "Visitor data",
-          body: "Ideas, chat, share text, and offer notes are treated as untrusted plain text. They never become executed HTML, never become Git, and never become an uploaded file. This MVP has no file, image, or attachment uploads.",
+          body: "Ideas, chat, share text, and offer notes are treated as untrusted plain text. They never become executed HTML, never become Git, and never become an uploaded file. This MVP has no file, image, or attachment uploads. Personal offers and ideas stay on the device until an approved numbered release.",
         },
         {
           heading: "Sanitization",
@@ -357,11 +365,11 @@ export const en: Messages = {
     },
     mesServices: {
       title: "My services",
-      lead: "Publish what you offer neighbours. First service: morning car loan, Interac payment.",
+      lead: "Publish what you offer. It stays on this device until an approved public release.",
     },
     enDemande: {
       title: "In demand",
-      lead: "Book a neighbourhood offer — morning car loan, Interac, gas separate.",
+      lead: "Offers from this device, a shared link, or this version’s catalog. A fresh install starts empty.",
     },
     monProfil: {
       title: "My profile",
@@ -399,6 +407,12 @@ export const en: Messages = {
     inviterBody: "Share Open Community with a neighbour, a shop, a family.",
     aProposBody:
       "{placeName} / {community} — {slogan} Our proximity and spirit of mutual aid is the guarantee of our success.",
+    versionLabel: "Version",
+    deviceLocalNote:
+      "Your offers, requests, ideas, share texts, and Interac/PayPal details stay on this device. Nothing personal appears for another visitor until GOV + owner approve a numbered public release (public catalog).",
+    releaseNotesTitle: "Release notes",
+    releaseNotesBody:
+      "0.3.0 — Soft launch: empty public catalog. No bundled Gatineau morning car loan for every install. Fresh devices start empty.",
     language: "Language",
     comingSoon: "Notifications and display season will land here.",
     locationConsent: "Location",
@@ -714,7 +728,7 @@ export const en: Messages = {
     cancelEdit: "Cancel",
     listTitle: "Your offers",
     emptyList:
-      "No offer on this device yet. Publish a morning car loan (Interac, borrower pays for gas) — neighbours will see it in In demand.",
+      "No offer on this device yet. The form above is an empty template, not someone else’s listing. Neighbours see it in In demand only via a link you share, or after an approved public release.",
     share: "Text to share",
     shareEdit: "Edit",
     shareCopy: "Copy",
@@ -731,7 +745,7 @@ export const en: Messages = {
     needInsurance: "Confirm insurance approval before publishing.",
     needGas: "Borrower-pays-gas is required for this offer.",
     browseEmpty:
-      "No neighbourhood offers here yet. Open a shared link, or publish yours in My services.",
+      "No neighbourhood offers here yet. A fresh device starts empty — no bundled Gatineau listing. Open a shared link, or publish yours in My services.",
     emptyRequests:
       "No requests yet. When a neighbour books, it will show up here.",
     request: "Request",
@@ -767,6 +781,9 @@ export const en: Messages = {
     perMorning: "/ morning",
     gasBadge: "Gas: borrower",
     featuredBadge: "Featured",
+    catalogBadge: "Catalog",
+    deviceHint:
+      "On this device only, until an approved numbered release. A link you copy can show this offer to the person who opens it.",
     requestMailSubject: "Request: {title}",
     requestMailBody:
       "Hello,\n\nI’d like to book “{title}” on {date}.\n\n{name}\n{contact}\n\n{message}\n\n— Open Community",
@@ -776,7 +793,7 @@ export const en: Messages = {
       "Watching ads in a loop, click farms, and fake accounts are not supported.",
     neighborsTitle: "Neighbour offers",
     neighborsBody:
-      "The most real path: publish or book a neighbourhood service. The morning car loan (Interac, gas extra) is already live.",
+      "The most real path: publish or book a neighbourhood service on this device. The morning car loan (Interac, gas extra) is a template — not a listing already live for everyone.",
     neighborsCtaServices: "Publish in My services",
     neighborsCtaDemand: "See In demand",
     neighborsCtaCar: "Car loan (mornings)",
@@ -846,8 +863,10 @@ export const en: Messages = {
     submit: "Send the idea",
     thankYou: "Thank you — you belong here.",
     thankYouBody:
-      "Your idea is on the wall. Head, Heart, Hands: that’s how Open Community moves. Share it if you want, or add another.",
+      "Your idea is on this device’s wall. Other phones do not see it until GOV + owner approve it in a numbered release. Head, Heart, Hands: that’s how Open Community moves. Share it if you want, or add another.",
     wallTitle: "Idea wall (this device)",
+    wallHint:
+      "Your ideas stay here. They do not appear on another phone until they are in an approved public release.",
     wallEmpty: "No idea here yet. The first one is often the most useful.",
     editIdea: "Edit",
     share: "Text to share",
@@ -859,5 +878,6 @@ export const en: Messages = {
     hoursLine: "{hours} h / week",
     newIdea: "Another idea",
     shareHeading: "Open Community idea",
+    catalogBadge: "Catalog",
   },
 };

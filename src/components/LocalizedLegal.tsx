@@ -1,5 +1,6 @@
 "use client";
 
+import { AppVersionNote } from "@/components/AppVersionNote";
 import { FeaturePanel } from "@/components/FeaturePanel";
 import { LegalLinks } from "@/components/LegalLinks";
 import { TrustContact } from "@/components/TrustContact";
@@ -36,6 +37,11 @@ export function LocalizedLegal({ kind }: { kind: LegalKind }) {
         {copy.draft}
       </p>
       <p className="mt-3 text-[11px] text-ice/70">{copy.updated}</p>
+      {kind === "about" ? (
+        <div className="mt-4">
+          <AppVersionNote />
+        </div>
+      ) : null}
       {extra ? <p className="mt-4 text-[13px] leading-relaxed text-ice/85">{extra}</p> : null}
       <LegalSections sections={copy.sections} />
       <TrustContact showSecurityPolicy={kind === "security"} />

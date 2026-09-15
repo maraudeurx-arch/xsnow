@@ -137,6 +137,10 @@ function seedId(kind: ServiceKind, n: number) {
   return `seed-${kind}-${n}`;
 }
 
+/**
+ * Example listing shapes for tests / future approved catalog entries.
+ * Never auto-write these into visitor localStorage. Soft launch starts empty.
+ */
 export const SERVICE_SEEDS: Record<ServiceKind, ServiceListing[]> = {
   courses: [
     {

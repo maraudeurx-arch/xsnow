@@ -1,13 +1,13 @@
 "use client";
 
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 import { interpolate } from "@/lib/i18n";
 import { useI18n } from "@/lib/i18n/locale";
+import { isInjectedSeedId } from "@/lib/offers";
 import { uid } from "@/lib/storage";
 import {
   CURRENCIES,
   SERVICES,
-  SERVICE_SEEDS,
   formatMoney,
   type CollateralStatus,
   type ListingSide,
@@ -15,7 +15,8 @@ import {
   type ServiceKind,
   type ServiceListing,
 } from "@/lib/services";
-import { useSeededList } from "@/lib/useStoredList";
+import { usePublicCatalog } from "@/lib/usePublicCatalog";
+import { useStoredList } from "@/lib/useStoredList";
 
 type Filter = "tous" | ListingSide;
 
@@ -26,12 +27,23 @@ export function ServiceBoard({ kind }: { kind: ServiceKind }) {
   const { locale, m } = useI18n();
   const moneyLocale = locale === "fr" ? "fr-CA" : locale === "es" ? "es" : "en-CA";
   const def = SERVICES[kind];
-  const [items, setItems] = useSeededList<ServiceListing>(
-    def.storageKey,
-    SERVICE_SEEDS[kind],
-  );
+  const catalog = usePublicCatalog();
+  const [stored, setItems] = useStoredList<ServiceListing>(def.storageKey);
   const [filter, setFilter] = useState<Filter>("tous");
   const [saved, setSaved] = useState(false);
+
+  useEffect(() => {
+    const cleaned = stored.filter((item) => !isInjectedSeedId(item.id));
+    if (cleaned.length !== stored.length) setItems(cleaned);
+  }, [setItems, stored]);
+
+  const items = useMemo(() => {
+    const local = stored.filter((item) => !isInjectedSeedId(item.id));
+    const extras = catalog.services.filter(
+      (item) => item.service === kind && !local.some((row) => row.id === item.id),
+    );
+    return [...local, ...extras];
+  }, [catalog.services, kind, stored]);
 
   const visible = useMemo(
     () => (filter === "tous" ? items : items.filter((item) => item.side === filter)),
@@ -65,7 +77,7 @@ export function ServiceBoard({ kind }: { kind: ServiceKind }) {
       if (!next.objectName || !next.collateralAmount) return;
     }
 
-    setItems([next, ...items]);
+    setItems([next, ...stored.filter((item) => !isInjectedSeedId(item.id))]);
     setSaved(true);
     event.currentTarget.reset();
   }

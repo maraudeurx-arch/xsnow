@@ -1,5 +1,6 @@
 /**
- * Local community ideas (tête / cœur / mains). Persist on-device.
+ * Local community ideas (tête / cœur / mains). Persist on-device only.
+ * Other phones never see them until GOV+owner approval ships a versioned public catalog.
  * Optional analytics: anonymized `monetize_suggestion` via existing /stats.
  */
 

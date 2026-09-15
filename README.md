@@ -10,7 +10,7 @@ Application web communautaire (Next.js App Router + TypeScript + Tailwind), expo
 
 **https://maraudeurx-arch.github.io/xsnow/**
 
-Visitor ideas and chat are untrusted plain text (never HTML, never git). See **[SECURITY.md](SECURITY.md)**.
+Visitor ideas and chat are untrusted plain text (never HTML, never git). Personal offers stay on-device until an approved numbered release. See **[SECURITY.md](SECURITY.md)** and `public/catalog/CHANGELOG.md`.
 
 Chaque push sur `main` construit `out/` et le publie avec `.github/workflows/deploy-pages.yml`. Aucun serveur Node, aucun Vercel.
 
