@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { interpolate, hrefWithLang } from "@/lib/i18n";
 import { useI18n } from "@/lib/i18n/locale";
-import { pathStartsWith, PRIVACY_HREF, TERMS_HREF } from "@/lib/paths";
+import { isPublicInfoPath, PRIVACY_HREF } from "@/lib/paths";
 import { usePlace } from "@/lib/place";
 import { useAnalyticsConsent, useHasHydrated } from "@/lib/useAnalyticsConsent";
 
@@ -22,8 +22,7 @@ export function ConsentSheet() {
   const { city, consent, locating, error, requestLocation, skipLocation } = usePlace();
   const { consent: analytics, setConsent } = useAnalyticsConsent();
 
-  const onLegal =
-    pathStartsWith(pathname, PRIVACY_HREF) || pathStartsWith(pathname, TERMS_HREF);
+  const onLegal = isPublicInfoPath(pathname);
   const needsLocation = consent === "unset";
   const needsAnalytics = analytics === "unset";
   const open = hydrated && !onLegal && (needsLocation || needsAnalytics);

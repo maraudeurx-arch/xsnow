@@ -126,7 +126,7 @@ export const es: Messages = {
       sections: [
         {
           heading: "Quiénes somos",
-          body: "Open Community (OPC) / Xsnow es una app de ayuda mutua de barrio, con el nombre de tu ciudad. Sitio estático en GitHub Pages. No hace falta una cuenta de correo.",
+          body: "Open Community (OPC) / Xsnow es una app de ayuda mutua de barrio, con el nombre de tu ciudad. Sitio estático en GitHub Pages. No hace falta una cuenta de correo. Responsable público: Politzer. Lanzamiento suave independiente — no es una sociedad registrada. Contacto: GitHub Issues, o opencommunity.opc@gmail.com. Detalle: página Quién está detrás de OPC.",
         },
         {
           heading: "Qué recogemos",
@@ -170,7 +170,7 @@ export const es: Messages = {
         },
         {
           heading: "Cartera",
-          body: "Conectar una cartera es opcional. Ethereum (red principal) está admitida; puedes cambiar de red después de conectar.",
+          body: "Conectar una cartera es opcional. Ethereum (red principal) está admitida; puedes cambiar de red después de conectar. WalletConnect sirve para la identidad de cartera y una preparación web3 futura: ningún contrato inteligente de pago de OPC está en servicio para los servicios hoy.",
         },
         {
           heading: "Uso",
@@ -183,15 +183,120 @@ export const es: Messages = {
       ],
     },
     about: {
+      title: "Quién está detrás de OPC",
+      lead: "Identidad pública, responsabilidad y cómo contactarnos — sin empresa inventada.",
+      draft:
+        "Texto informativo para el lanzamiento suave. No es un consejo jurídico ni una ficha de empresa.",
+      updated: "Última actualización: septiembre de 2026",
       extra:
         "Open Community (OPC) es un proyecto de ayuda mutua de barrio: servicios entre vecinos, visibilidad local y, más adelante, alertas de proximidad. El nombre de tu ciudad aparece si aceptas la ubicación; si no, mostramos «tu barrio» (o tu última ciudad conocida). Pedimos tu acuerdo antes de la geolocalización y antes de las estadísticas anónimas. Puedes rechazar ambas y seguir usando la app. Este texto es informativo, no un consejo jurídico.",
+      sections: [
+        {
+          heading: "Responsable público",
+          body: "El nombre de pila público de la persona responsable es Politzer. Open Community (OPC) / Xsnow es un lanzamiento suave independiente: no es una sociedad registrada, ni una corporación, ni una compañía constituida. Aquí no se inventa ninguna razón social.",
+        },
+        {
+          heading: "Origen y ciudad mostrada",
+          body: "El proyecto nació en Gatineau (Quebec). La app muestra el nombre de la ciudad del visitante si acepta la ubicación; si no, «tu barrio» (o la última ciudad conocida). No es la expansión de una empresa registrada: es una etiqueta local en el aparato.",
+        },
+        {
+          heading: "Código y revisión",
+          body: "El código es público en GitHub (cuenta maraudeurx-arch, repositorio xsnow). Las ideas y sugerencias de los visitantes nunca se fusionan automáticamente en el código. Los cambios de producto llegan a git tras una revisión humana (gobernanza del proyecto + propietario — «GOV + owner»). Sin auto-merge.",
+        },
+        {
+          heading: "Contacto",
+          body: "El contacto público son las GitHub Issues del repositorio xsnow, y el correo dedicado opencommunity.opc@gmail.com. Politzer sigue siendo el responsable público. No uses otra dirección personal.",
+        },
+      ],
     },
+    how: {
+      title: "Cómo funciona",
+      lead: "Modelo económico honesto: ayuda mutua de barrio, pagos entre pares.",
+      draft: "Cómo funciona hoy. No es un prospecto ni una garantía de ingresos.",
+      updated: "Última actualización: septiembre de 2026",
+      sections: [
+        {
+          heading: "Ayuda mutua de barrio",
+          body: "OPC es un tablón comunitario: los vecinos publican ofertas y peticiones (recados, mudanza, cuidado, préstamo de objetos, préstamo de coche por la mañana, etc.). Un acuerdo entre vecinos no es un contrato con OPC.",
+        },
+        {
+          heading: "Cómo se mueve el dinero hoy",
+          body: "Los pagos de hoy son entre pares: transferencia Interac e-Transfer o enlaces PayPal.me entre usuarios. OPC no retiene, no cobra, no pone en depósito (escrow) y no redistribuye los fondos de los usuarios. La «fianza» de un préstamo de objeto es un acuerdo mostrado, no un depósito real en línea.",
+        },
+        {
+          heading: "Ingresos no garantizados",
+          body: "Ningún ingreso está garantizado. Los importes, si los hay, dependen de acuerdos privados entre vecinos o de sitios externos (tests UX, paneles) que abandonas. OPC no es el empleador.",
+        },
+        {
+          heading: "Cartera y contratos inteligentes",
+          body: "Conectar una cartera (WalletConnect) es opcional. Sirve para la identidad de cartera y una preparación web3 futura. Ningún contrato inteligente de pago de OPC está en servicio para los servicios hoy. La app no custodia cripto ni dinero fiat.",
+        },
+      ],
+    },
+    security: {
+      title: "Seguridad",
+      lead: "Lo que el lanzamiento suave endurece — y lo que aún no está auditado.",
+      draft: "Resumen técnico, no una certificación. No se inventa ninguna auditoría de terceros.",
+      updated: "Última actualización: septiembre de 2026",
+      sections: [
+        {
+          heading: "Datos de los visitantes",
+          body: "Las ideas, el chat, los textos para compartir y las notas de ofertas se tratan como texto plano no fiable. Nunca se convierten en HTML ejecutado, nunca en Git, nunca en un archivo subido. Este MVP no tiene carga de archivos, imágenes ni adjuntos.",
+        },
+        {
+          heading: "Saneamiento",
+          body: "Las cadenas de los visitantes se sanean: se quitan etiquetas HTML, se bloquean esquemas peligrosos (javascript:, data:, file:), a veces se ocultan correos, se neutralizan blobs binarios. Consulta SECURITY.md en el repositorio.",
+        },
+        {
+          heading: "Sin auto-merge",
+          body: "Enviar una idea, hablar con el avatar o compartir una oferta no abre un pull request y no modifica el código. Solo revisión humana (gobernanza del proyecto + propietario).",
+        },
+        {
+          heading: "Divulgación responsable",
+          body: "Para informar de una falla o un problema: GitHub Issues en el repositorio xsnow, o opencommunity.opc@gmail.com.",
+        },
+        {
+          heading: "Límites honestos",
+          body: "Aún no hay una auditoría de seguridad independiente de un tercero. No la inventes. La app no custodia cripto ni fiat; OPC no es un procesador de pagos.",
+        },
+      ],
+    },
+    proofs: {
+      title: "Pruebas de ingresos",
+      lead: "Solo mostramos lo que es real — hoy: nada que reivindicar.",
+      draft: "Página de transparencia. Ninguna captura fabricada, ningún retiro inventado.",
+      updated: "Última actualización: septiembre de 2026",
+      sections: [
+        {
+          heading: "Hoy",
+          body: "Open Community no reivindica ninguna prueba de ingresos, ningún retiro de usuario ni ningún volumen de intercambios. Aún no hay capturas, recibos ni totales públicos.",
+        },
+        {
+          heading: "Más adelante, si hay intercambios locales reales",
+          body: "Cuando ocurran intercambios locales reales, se podrán añadir aquí pruebas anonimizadas opcionales, solo con el consentimiento de las personas implicadas. Nada se inventará mientras tanto.",
+        },
+        {
+          heading: "Lo que no encontrarás aquí",
+          body: "Ninguna captura fabricada, ningún testimonio inventado, ningún importe retirado mostrado. Si esta página no tiene cifras, es voluntario y honesto.",
+        },
+      ],
+    },
+  },
+  trust: {
+    github: "Código fuente en GitHub",
+    issues: "Contacto actual: GitHub Issues",
+    emailLabel: "Correo de contacto OPC",
+    securityMd: "Política de seguridad (SECURITY.md)",
   },
   footer: {
     before: "Proximidad y espíritu de ayuda mutua al servicio de ",
     after: ".",
     privacy: "Privacidad",
     terms: "Condiciones",
+    about: "Acerca de",
+    how: "Cómo funciona",
+    security: "Seguridad",
+    proofs: "Pruebas",
   },
   welcome:
     "Hola, soy tu avatar en el ecosistema Open Community. La proximidad y el espíritu de ayuda mutua de la gente de {city} son nuestra fuerza. Haz saber a tus vecinos un servicio que puedes prestarles a cambio de una compensación: ayudar a mudarse, hacer recados o ayudar en trabajos de la casa. Además, esta aplicación te ofrece servicios gratuitos, como ayudarte a encontrar tu teléfono si lo pierdes, y avisarte si tu hijo, tu pareja o tus padres mayores se alejan del lugar donde deben estar: la escuela, el trabajo o la residencia. Ve a Inicio y elige el servicio que te gustaría recibir, o que quieras ofrecer a tus vecinos de {city}. Para implicarte ya: Inicio → Tus ideas — una frase. ¿Tienes sugerencias de tareas y servicios que te gustaría monetizar? Dímelo, o anótalas en Tus ideas, y toda la comunidad se beneficiará. Las personas que comparten esta aplicación, y las ideas que se monetizan, recibirán a prorrata de sus esfuerzos. No dudes en preguntarme en cualquier momento: estoy a tu entera disposición.",
