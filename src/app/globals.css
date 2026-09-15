@@ -18,6 +18,8 @@
   --home-chip-h: 2.5rem;
   --home-avatar: min(13vw, 7dvh, 3.2rem);
   --home-gap: 0.25rem;
+  /* Space between the header card and the avatar/chat card on home only. */
+  --home-block-gap: 0.75rem;
 }
 
 @media (min-width: 640px) {
@@ -119,6 +121,7 @@ body {
   justify-content: center;
   justify-content: safe center;
   overflow: visible;
+  gap: var(--home-block-gap);
 }
 
 .app-stage-main {
