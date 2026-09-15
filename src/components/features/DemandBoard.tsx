@@ -125,7 +125,16 @@ function DemandBoardInner() {
     <div className="space-y-6">
       <p className="text-sm leading-relaxed text-ice/85">{copy.terms}</p>
 
-      {offers.length === 0 ? <p className="text-sm text-snow/60">{copy.browseEmpty}</p> : null}
+      {offers.length === 0 ? (
+        <div className="rounded-2xl border border-dashed border-white/15 bg-white/[0.03] p-3">
+          <p className="text-sm leading-relaxed text-snow/75">{copy.browseEmpty}</p>
+          <p className="mt-2 text-center text-xs">
+            <Link href="/mes-services" className="font-bold text-gold underline decoration-gold/50 underline-offset-2">
+              {m.nav.mesServices}
+            </Link>
+          </p>
+        </div>
+      ) : null}
 
       <ul className="space-y-3">
         {offers.map((offer) => {
@@ -220,9 +229,13 @@ function DemandBoardInner() {
         <ConfirmLinks offer={paid} request={requests[0]} />
       ) : null}
 
-      {requests.length > 0 ? (
-        <section className="space-y-2">
-          <h3 className="text-base font-extrabold">{copy.yourRequests}</h3>
+      <section className="space-y-2">
+        <h3 className="text-base font-extrabold">{copy.yourRequests}</h3>
+        {requests.length === 0 ? (
+          <div className="rounded-2xl border border-dashed border-white/15 bg-white/[0.03] p-3">
+            <p className="text-sm leading-relaxed text-snow/75">{copy.emptyRequests}</p>
+          </div>
+        ) : (
           <ul className="space-y-2">
             {requests.map((item) => (
               <li key={item.id} className="rounded-2xl border border-white/10 bg-white/5 p-3 text-sm">
@@ -234,8 +247,8 @@ function DemandBoardInner() {
               </li>
             ))}
           </ul>
-        </section>
-      ) : null}
+        )}
+      </section>
 
       <p className="text-center text-xs text-snow/55">
         <Link href="/mes-services" className="underline decoration-gold/50 underline-offset-2">

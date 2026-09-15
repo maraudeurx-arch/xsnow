@@ -26,11 +26,17 @@ export const fr = {
     reportage: "Avec l’IA, crée des reportages sur votre quartier",
     scenarios: "Crée des scénarios humour / animé",
     carMorning: "Prêt de voiture (matins)",
+    offres: "Offres",
+  },
+  install: {
+    tip: "Sur iPhone (Safari) : Partager → Sur l’écran d’accueil. L’app s’ouvre ensuite comme une icône.",
+    dismiss: "Compris",
   },
   guide: {
     pickAvatar: "Choisis ton avatar",
     changeAvatar: "Changer d’avatar",
     replay: "Réécouter",
+    offerShortcuts: "Raccourcis Mes services et En demande",
     avatars: {
       "homme-blanc": "Homme, peau claire",
       "femme-blanche": "Femme, peau claire",
@@ -549,13 +555,16 @@ export const fr = {
     save: "Enregistrer",
     cancelEdit: "Annuler",
     listTitle: "Vos offres",
-    emptyList: "Aucune offre publiée sur cet appareil pour l’instant.",
+    emptyList:
+      "Pas encore d’offre sur cet appareil. Publiez un prêt de voiture le matin (Interac, essence à la charge de l’emprunteur) — les voisins le verront dans En demande.",
     share: "Texte à partager",
     shareEdit: "Modifier",
     shareCopy: "Copier",
     shareHint: "Modifiez le texte, puis copiez-le pour Marketplace ou un groupe.",
     shareCopied: "Texte copié — collez-le dans Marketplace ou un groupe.",
     shareFailed: "Copie impossible. Le texte est affiché ci-dessous : sélectionnez-le.",
+    publishSuccess: "Offre publiée. Pour la partager : Modifier, puis Copier.",
+    publishSuccessLink: "Les voisins demandent dans En demande.",
     edit: "Modifier",
     published: "Publiée",
     terms:
@@ -564,7 +573,9 @@ export const fr = {
     needInsurance: "Cochez la confirmation d’assurance pour publier.",
     needGas: "L’essence à la charge de l’emprunteur est obligatoire pour cette offre.",
     browseEmpty:
-      "Aucune offre pour l’instant. Ouvrez un lien partagé, ou revenez après publication.",
+      "Pas encore d’offre du quartier ici. Ouvrez un lien partagé, ou publiez la vôtre dans Mes services.",
+    emptyRequests:
+      "Aucune demande pour l’instant. Quand un voisin réserve, ça apparaîtra ici.",
     request: "Demander",
     requesting: "Demande en cours",
     closeRequest: "Fermer",

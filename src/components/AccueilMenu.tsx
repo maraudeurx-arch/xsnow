@@ -17,16 +17,18 @@ export const headerNavBtnClass = (active = false, compact = false) =>
   }`;
 
 const itemClass = (active: boolean) =>
-  `flex items-center rounded-lg border px-1.5 py-1 text-left text-[11px] leading-snug font-semibold whitespace-normal ${
+  `flex min-h-11 items-center rounded-lg border px-1.5 py-1 text-left text-[11px] leading-snug font-semibold whitespace-normal ${
     active
       ? "border-gold/70 bg-gold/10 text-gold"
       : "border-white/10 bg-white/[0.04] text-snow/90 hover:border-violet/40 hover:bg-white/[0.07]"
   }`;
 
-const COMMUNITY = [
-  { href: "/proximite", key: "proximite" as const },
+const OFFERS = [
+  { href: "/mes-services", key: "mesServices" as const },
+  { href: "/en-demande", key: "enDemande" as const },
   { href: "/en-demande/?kind=car-morning", key: "carMorning" as const },
 ];
+const COMMUNITY = [{ href: "/proximite", key: "proximite" as const }];
 const SAFETY = [
   { href: "/telephone", key: "telephone" as const },
   { href: "/alertes", key: "alertes" as const },
@@ -52,7 +54,7 @@ export function AccueilMenu() {
     <div className="relative z-40 shrink-0" data-accueil>
       <button
         type="button"
-        className={headerNavBtnClass(false)}
+        className={`${headerNavBtnClass(false)} tap`}
         aria-expanded={open}
         onClick={() => setOpen((next) => !next)}
       >
@@ -67,6 +69,18 @@ export function AccueilMenu() {
           aria-label={m.nav.accueilProposals}
           className="absolute top-full left-0 z-50 mt-1.5 max-h-[min(68dvh,32rem)] w-[min(calc(100vw-1.5rem),20rem)] space-y-1.5 overflow-y-auto overflow-x-hidden rounded-xl border border-white/10 bg-[linear-gradient(180deg,rgba(18,20,26,0.98)_0%,rgba(8,8,10,0.98)_100%)] p-1.5 pr-1 shadow-[0_16px_40px_rgba(0,0,0,0.45)] backdrop-blur-md"
         >
+          <Group title={m.menu.offres}>
+            {OFFERS.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={itemClass(pathMatches(pathname, item.href.split("?")[0]))}
+                onClick={close}
+              >
+                {item.key === "carMorning" ? m.menu.carMorning : m.nav[item.key]}
+              </Link>
+            ))}
+          </Group>
           <Group title={m.menu.communaute}>
             {COMMUNITY.map((item) => (
               <Link

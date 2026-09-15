@@ -30,20 +30,25 @@ export function HeaderNav() {
       </div>
 
       <div className="grid w-full grid-cols-3 items-center gap-1">
-        {HEADER_HREFS.map((item) => (
-          <Link
-            key={item.href}
-            href={item.href}
-            className={`${headerNavBtnClass(
-              item.href === "/mon-profil"
-                ? pathStartsWith(pathname, item.href)
-                : pathMatches(pathname, item.href),
-              true,
-            )} justify-self-center`}
-          >
-            {m.nav[item.key]}
-          </Link>
-        ))}
+        {HEADER_HREFS.map((item) => {
+          const active =
+            item.href === "/mon-profil"
+              ? pathStartsWith(pathname, item.href)
+              : pathMatches(pathname, item.href);
+          const offer = item.href !== "/mon-profil";
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              aria-current={active ? "page" : undefined}
+              className={`${headerNavBtnClass(active, true)} tap w-full justify-self-stretch text-[12px] ${
+                offer && !active ? "border-gold/45" : ""
+              }`}
+            >
+              {m.nav[item.key]}
+            </Link>
+          );
+        })}
       </div>
     </nav>
   );

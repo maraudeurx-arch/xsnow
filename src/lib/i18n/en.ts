@@ -28,11 +28,17 @@ export const en: Messages = {
     reportage: "With AI, create reports about your neighbourhood",
     scenarios: "Create comedy / animated scenarios",
     carMorning: "Car loan (mornings)",
+    offres: "Offers",
+  },
+  install: {
+    tip: "On iPhone (Safari): Share → Add to Home Screen. The app then opens like an icon.",
+    dismiss: "Got it",
   },
   guide: {
     pickAvatar: "Choose your avatar",
     changeAvatar: "Change avatar",
     replay: "Listen again",
+    offerShortcuts: "Shortcuts to My services and In demand",
     avatars: {
       "homme-blanc": "Man, light skin",
       "femme-blanche": "Woman, light skin",
@@ -558,13 +564,16 @@ export const en: Messages = {
     save: "Save",
     cancelEdit: "Cancel",
     listTitle: "Your offers",
-    emptyList: "No offer published on this device yet.",
+    emptyList:
+      "No offer on this device yet. Publish a morning car loan (Interac, borrower pays for gas) — neighbours will see it in In demand.",
     share: "Text to share",
     shareEdit: "Edit",
     shareCopy: "Copy",
     shareHint: "Edit the text, then copy it for Marketplace or a group.",
     shareCopied: "Copied — paste it into Marketplace or a group.",
     shareFailed: "Couldn’t copy. The text is below — select it.",
+    publishSuccess: "Offer published. To share it: Edit, then Copy.",
+    publishSuccessLink: "Neighbours request in In demand.",
     edit: "Edit",
     published: "Published",
     terms:
@@ -572,7 +581,10 @@ export const en: Messages = {
     needInterac: "Add an Interac email or mobile number to publish.",
     needInsurance: "Confirm insurance approval before publishing.",
     needGas: "Borrower-pays-gas is required for this offer.",
-    browseEmpty: "No offers yet. Open a shared link, or come back after someone publishes.",
+    browseEmpty:
+      "No neighbourhood offers here yet. Open a shared link, or publish yours in My services.",
+    emptyRequests:
+      "No requests yet. When a neighbour books, it will show up here.",
     request: "Request",
     requesting: "Request in progress",
     closeRequest: "Close",

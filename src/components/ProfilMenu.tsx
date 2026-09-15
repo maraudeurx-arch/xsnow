@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { headerNavBtnClass } from "@/components/AccueilMenu";
+import { InstallTip } from "@/components/InstallTip";
 import { LanguageSwitch } from "@/components/LanguageSwitch";
 import { useI18n } from "@/lib/i18n/locale";
 import { pathMatches } from "@/lib/paths";
@@ -19,19 +20,22 @@ export function ProfilMenu() {
   const { m } = useI18n();
 
   return (
-    <nav aria-label={m.nav.monProfil} className="grid gap-1.5">
-      {PROFILE_LINKS.map((item) => (
-        <Link
-          key={item.href}
-          href={item.href}
-          className={`${headerNavBtnClass(pathMatches(pathname, item.href))} w-full min-h-11 justify-start px-3 py-2 text-left whitespace-normal`}
-        >
-          {m.profile[item.key]}
-        </Link>
-      ))}
-      <div className="mt-2 rounded-2xl border border-white/10 bg-white/[0.04] p-3">
-        <LanguageSwitch />
-      </div>
-    </nav>
+    <div className="grid gap-3">
+      <InstallTip />
+      <nav aria-label={m.nav.monProfil} className="grid gap-1.5">
+        {PROFILE_LINKS.map((item) => (
+          <Link
+            key={item.href}
+            href={item.href}
+            className={`${headerNavBtnClass(pathMatches(pathname, item.href))} w-full min-h-11 justify-start px-3 py-2 text-left whitespace-normal`}
+          >
+            {m.profile[item.key]}
+          </Link>
+        ))}
+        <div className="mt-2 rounded-2xl border border-white/10 bg-white/[0.04] p-3">
+          <LanguageSwitch />
+        </div>
+      </nav>
+    </div>
   );
 }

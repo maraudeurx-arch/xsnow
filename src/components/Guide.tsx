@@ -1,10 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { AvatarChat } from "@/components/AvatarChat";
 import { AvatarDisc } from "@/components/AvatarDisc";
 import { LocationPrompt } from "@/components/LocationPrompt";
 import { useNeedsConsentSheet } from "@/components/ConsentSheet";
+import { InstallTip } from "@/components/InstallTip";
 import { AVATARS, avatarById, type Avatar, type AvatarId } from "@/lib/avatars";
 import { welcomeSpeechFor } from "@/lib/content";
 import { useI18n } from "@/lib/i18n/locale";
@@ -99,6 +101,24 @@ export function Guide() {
               </button>
             </div>
           </div>
+          <nav
+            aria-label={m.guide.offerShortcuts}
+            className="flex shrink-0 flex-wrap items-center justify-center gap-1.5 px-1"
+          >
+            <Link
+              href="/mes-services"
+              className="tap inline-flex min-h-9 min-w-0 items-center rounded-full border border-gold/50 bg-gold/10 px-3 text-[11px] font-extrabold text-gold"
+            >
+              {m.nav.mesServices}
+            </Link>
+            <Link
+              href="/en-demande"
+              className="tap inline-flex min-h-9 min-w-0 items-center rounded-full border border-gold/50 bg-gold/10 px-3 text-[11px] font-extrabold text-gold"
+            >
+              {m.nav.enDemande}
+            </Link>
+          </nav>
+          <InstallTip compact />
           {needsPrompt && !waitingOnConsent ? <LocationPrompt /> : <AvatarChat avatar={chosen} />}
         </>
       ) : null}

@@ -44,6 +44,9 @@ describe("interpolate", () => {
 describe("car morning offer copy", () => {
   it("keeps FR/EN/ES labels in sync", () => {
     assert.equal(fr.menu.carMorning, "Prêt de voiture (matins)");
+    assert.equal(fr.menu.offres, "Offres");
+    assert.equal(en.menu.offres, "Offers");
+    assert.equal(es.menu.offres, "Ofertas");
     assert.ok(en.offers.insuranceLabel);
     assert.ok(es.offers.paymentTitle);
     assert.match(fr.offers.insuranceHint, /assureur/);
@@ -54,6 +57,26 @@ describe("car morning offer copy", () => {
     assert.equal(en.offers.shareCopy, "Copy");
     assert.equal(es.offers.shareEdit, "Editar");
     assert.equal(es.offers.shareCopy, "Copiar");
+    assert.match(fr.offers.publishSuccess, /Modifier/);
+    assert.match(fr.offers.publishSuccessLink, /En demande/);
+    assert.match(en.offers.emptyList, /In demand/);
+    assert.match(es.offers.emptyRequests, /solicitudes/);
+    assert.deepEqual(Object.keys(en.offers), Object.keys(fr.offers));
+    assert.deepEqual(Object.keys(es.offers), Object.keys(fr.offers));
+  });
+});
+
+describe("install tip copy", () => {
+  it("keeps iOS home-screen steps in FR/EN/ES", () => {
+    assert.match(fr.install.tip, /Partager/);
+    assert.match(fr.install.tip, /écran d’accueil/);
+    assert.match(en.install.tip, /Share/);
+    assert.match(en.install.tip, /Home Screen/);
+    assert.match(es.install.tip, /Compartir/);
+    assert.match(es.install.tip, /pantalla de inicio/);
+    assert.equal(fr.install.dismiss, "Compris");
+    assert.equal(en.install.dismiss, "Got it");
+    assert.equal(es.install.dismiss, "Entendido");
   });
 });
 
