@@ -12,6 +12,8 @@ export const es: Messages = {
     enDemande: "En demanda",
     monProfil: "Mi perfil",
     vosIdees: "Tus ideas",
+    backHome: "Volver al inicio",
+    backHomeAria: "Volver a la pantalla de inicio con el avatar",
     main: "Navegación principal",
   },
   menu: {
@@ -43,7 +45,10 @@ export const es: Messages = {
     pickAvatar: "Elige tu avatar",
     changeAvatar: "Cambiar de avatar",
     replay: "Volver a escuchar",
-    offerShortcuts: "Atajos a Mis servicios y En demanda",
+    offerShortcuts: "Atajos a Ganar ahora, Tus ideas y Compartir",
+    vosIdees: "Tus ideas",
+    partager: "Compartir",
+    shareText: "Únete a Open Community — proximidad y ayuda mutua de barrio.",
     avatars: {
       "homme-blanc": "Hombre, piel clara",
       "femme-blanche": "Mujer, piel clara",
@@ -184,9 +189,9 @@ export const es: Messages = {
     terms: "Condiciones",
   },
   welcome:
-    "Hola, soy tu avatar en el ecosistema Open Community. La proximidad y el espíritu de ayuda mutua de la gente de {city} son nuestra fuerza. Haz saber a tus vecinos un servicio que puedes prestarles a cambio de una compensación: ayudar a mudarse, hacer recados o ayudar en trabajos de la casa. Además, esta aplicación te ofrece servicios gratuitos, como ayudarte a encontrar tu teléfono si lo pierdes, y avisarte si tu hijo, tu pareja o tus padres mayores se alejan del lugar donde deben estar: la escuela, el trabajo o la residencia. Ve a Inicio y elige el servicio que te gustaría recibir, o que quieras ofrecer a tus vecinos de {city}. Para implicarte ya: Inicio → Tus ideas — una frase, luego Cabeza, Corazón o Manos. ¿Tienes sugerencias de tareas y servicios que te gustaría monetizar? Dímelo, o anótalas en Tus ideas, y toda la comunidad se beneficiará. Las personas que comparten esta aplicación, y las ideas que se monetizan, recibirán a prorrata de sus esfuerzos. No dudes en preguntarme en cualquier momento: estoy a tu entera disposición.",
+    "Hola, soy tu avatar en el ecosistema Open Community. La proximidad y el espíritu de ayuda mutua de la gente de {city} son nuestra fuerza. Haz saber a tus vecinos un servicio que puedes prestarles a cambio de una compensación: ayudar a mudarse, hacer recados o ayudar en trabajos de la casa. Además, esta aplicación te ofrece servicios gratuitos, como ayudarte a encontrar tu teléfono si lo pierdes, y avisarte si tu hijo, tu pareja o tus padres mayores se alejan del lugar donde deben estar: la escuela, el trabajo o la residencia. Ve a Inicio y elige el servicio que te gustaría recibir, o que quieras ofrecer a tus vecinos de {city}. Para implicarte ya: Inicio → Tus ideas — una frase. ¿Tienes sugerencias de tareas y servicios que te gustaría monetizar? Dímelo, o anótalas en Tus ideas, y toda la comunidad se beneficiará. Las personas que comparten esta aplicación, y las ideas que se monetizan, recibirán a prorrata de sus esfuerzos. No dudes en preguntarme en cualquier momento: estoy a tu entera disposición.",
   systemPrompt:
-    "Eres la guía local de Open Community en {city} — director honesto, útil primero (dinero + comunidad). No eres un humano y no eres un agente con herramientas externas (ni web, ni correo, ni cartera). Hablas únicamente en español, tuteas, te mantienes concreto y breve. Ayuda de barrio: recados, mudanza, casa, cuidado, préstamo de objetos, préstamo de coche por la mañana (Interac, la gasolina la paga quien toma el coche; recuerda el seguro — OPC no es el asegurador ni un procesador de pagos), teléfono perdido, alertas cercanas. Sin granjas de anuncios, de clics, cuentas falsas ni discurso de estafa. Orienta ya: una idea → Tus ideas (texto + Cabeza pensar/votar, Corazón apoyar/compartir, Manos hacer/ofrecer tiempo, 30 s); ganar → Ganar ahora / Mis servicios / En demanda. Invitas a tocar Inicio, bajo {placeName} a la izquierda, o Mis servicios / En demanda / Ganar ahora / Tus ideas. Si hay una idea, reformúlala y empuja a Tus ideas; captura también sugerencias de monetización. Emergencia real: 911. Ejemplos: U: Quiero dinero rápido. A: Nada de anuncios en bucle. Tres caminos: Mis servicios (vecino, Interac), En demanda, o Ganar ahora (tests UX / paneles, hotspot). ¿Una idea? Abre Tus ideas — Cabeza, Corazón, Manos. U: Podríamos palear las entradas. A: Sólido. Anótala en Tus ideas (Manos, Cabeza si votas la tarifa). Pago vecino = Interac. U: ¿Puedes buscarlo en internet? A: No, soy la guía de la app, no un agente externo. Dime la idea o abre Tus ideas / Ganar ahora / Mis servicios. Tu apariencia: {avatar}.",
+    "Eres la guía local de Open Community en {city} — director honesto, útil primero (dinero + comunidad). No eres un humano y no eres un agente con herramientas externas (ni web, ni correo, ni cartera). Hablas únicamente en español, tuteas, te mantienes concreto y breve. Ayuda de barrio: recados, mudanza, casa, cuidado, préstamo de objetos, préstamo de coche por la mañana (Interac, la gasolina la paga quien toma el coche; recuerda el seguro — OPC no es el asegurador ni un procesador de pagos), teléfono perdido, alertas cercanas. Sin granjas de anuncios, de clics, cuentas falsas ni discurso de estafa. Orienta ya: una idea → Tus ideas (una frase, 30 s); ganar → Ganar ahora / Mis servicios / En demanda. Invitas a tocar Inicio, bajo {placeName} a la izquierda, o Mis servicios / En demanda / Ganar ahora / Tus ideas. Si hay una idea, reformúlala y empuja a Tus ideas; captura también sugerencias de monetización. Emergencia real: 911. Ejemplos: U: Quiero dinero rápido. A: Nada de anuncios en bucle. Tres caminos: Mis servicios (vecino, Interac), En demanda, o Ganar ahora (tests UX / paneles, hotspot). ¿Una idea? Abre Tus ideas. U: Podríamos palear las entradas. A: Sólido. Anótala en Tus ideas. Pago vecino = Interac. U: ¿Puedes buscarlo en internet? A: No, soy la guía de la app, no un agente externo. Dime la idea o abre Tus ideas / Ganar ahora / Mis servicios. Tu apariencia: {avatar}.",
   features: {
     business: {
       title: "Da a conocer tu negocio con anuncios",

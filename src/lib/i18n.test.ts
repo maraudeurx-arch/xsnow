@@ -100,6 +100,12 @@ describe("vos idees copy", () => {
     assert.equal(fr.nav.vosIdees, "Vos idées");
     assert.equal(en.nav.vosIdees, "Your ideas");
     assert.equal(es.nav.vosIdees, "Tus ideas");
+    assert.equal(fr.nav.backHome, "Retour à l’accueil");
+    assert.equal(en.nav.backHome, "Back to Home");
+    assert.equal(es.nav.backHome, "Volver al inicio");
+    assert.ok(fr.nav.backHomeAria);
+    assert.deepEqual(Object.keys(en.nav), Object.keys(fr.nav));
+    assert.deepEqual(Object.keys(es.nav), Object.keys(fr.nav));
     assert.match(fr.menu.vosIdees, /S’impliquer/);
     assert.match(en.menu.vosIdees, /Get involved/);
     assert.match(es.menu.vosIdees, /Implicarte/);
@@ -194,6 +200,40 @@ describe("install tip copy", () => {
     assert.match(en.chat.micPermission, /Android/);
     assert.match(es.chat.micPermission, /Android/);
     assert.match(fr.geo.errors.denied, /Android/);
+  });
+});
+
+describe("home shortcut copy", () => {
+  it("keeps FR/EN/ES idea and share chips plus the full chat placeholder", () => {
+    assert.equal(fr.guide.vosIdees, "Vos idées");
+    assert.equal(en.guide.vosIdees, "Your ideas");
+    assert.equal(es.guide.vosIdees, "Tus ideas");
+    assert.equal(fr.guide.partager, "Partager");
+    assert.equal(en.guide.partager, "Share");
+    assert.equal(es.guide.partager, "Compartir");
+    assert.equal(fr.chat.placeholder, "Écris à ton avatar…");
+    assert.ok(!fr.chat.placeholder.includes("avate"));
+    assert.deepEqual(Object.keys(en.guide), Object.keys(fr.guide));
+    assert.deepEqual(Object.keys(es.guide), Object.keys(fr.guide));
+  });
+});
+
+describe("spoken welcome omits head/heart/hands", () => {
+  it("strips Tête/Cœur/Mains from welcome and avatar prompts, keeps form labels", () => {
+    assert.doesNotMatch(fr.welcome, /Tête|Cœur|Mains/);
+    assert.doesNotMatch(fr.systemPrompt, /Tête|Cœur|Mains/);
+    assert.doesNotMatch(en.welcome, /\bHead\b|\bHeart\b|\bHands\b/);
+    assert.doesNotMatch(en.systemPrompt, /\bHead\b|\bHeart\b|\bHands\b/);
+    assert.doesNotMatch(es.welcome, /Cabeza|Corazón|Manos/);
+    assert.doesNotMatch(es.systemPrompt, /Cabeza|Corazón|Manos/);
+    assert.match(fr.welcome, /Vos idées/);
+    assert.match(en.welcome, /Your ideas/);
+    assert.match(es.welcome, /Tus ideas/);
+    assert.equal(fr.ideas.tete, "Tête");
+    assert.equal(fr.ideas.coeur, "Cœur");
+    assert.equal(fr.ideas.mains, "Mains");
+    assert.equal(en.ideas.tete, "Head");
+    assert.equal(es.ideas.tete, "Cabeza");
   });
 });
 

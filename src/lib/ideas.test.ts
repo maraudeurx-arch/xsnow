@@ -98,7 +98,12 @@ describe("GOV-like avatar prompt stays inside Workers AI clip", () => {
       assert.ok(filled.length < WORKER_SYSTEM_PROMPT_MAX, `${filled.length} >= ${WORKER_SYSTEM_PROMPT_MAX}`);
     }
     assert.match(fr.systemPrompt, /Vos idées/);
-    assert.match(fr.systemPrompt, /Tête/);
+    assert.doesNotMatch(fr.welcome, /Tête|Cœur|Mains/);
+    assert.doesNotMatch(fr.systemPrompt, /Tête|Cœur|Mains/);
+    assert.doesNotMatch(en.welcome, /\bHead\b|\bHeart\b|\bHands\b/);
+    assert.doesNotMatch(en.systemPrompt, /\bHead\b|\bHeart\b|\bHands\b/);
+    assert.doesNotMatch(es.welcome, /Cabeza|Corazón|Manos/);
+    assert.doesNotMatch(es.systemPrompt, /Cabeza|Corazón|Manos/);
     assert.match(fr.systemPrompt, /Interac/);
     assert.match(fr.systemPrompt, /pas un agent/);
     assert.match(en.systemPrompt, /Your ideas/);

@@ -7,7 +7,7 @@ import { useI18n } from "@/lib/i18n/locale";
 import { hasWalletConnectProjectId } from "@/lib/wallet";
 
 const btnClass =
-  "tap inline-flex min-h-11 shrink-0 items-center justify-center rounded-full border border-cobalt/60 bg-cobalt px-3 py-0.5 text-[11px] font-extrabold tracking-wide text-snow shadow-[0_4px_14px_rgba(37,99,235,0.38)] transition hover:brightness-110";
+  "tap inline-flex min-h-11 shrink-0 items-center justify-center rounded-full border border-cobalt/60 bg-cobalt px-3 py-0.5 text-[12px] font-extrabold tracking-wide text-snow shadow-[0_4px_14px_rgba(37,99,235,0.38)] transition hover:brightness-110";
 
 function UnconfiguredConnect() {
   const { m } = useI18n();

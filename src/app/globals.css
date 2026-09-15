@@ -33,6 +33,8 @@ body {
   overflow: hidden;
   background: #4aa3ff;
   color: var(--snow);
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 body {
@@ -183,12 +185,34 @@ body {
 .season-scrim[data-season="spring"],
 .season-scrim[data-season="summer"] {
   background:
-    linear-gradient(180deg, rgba(6, 12, 24, 0.42) 0%, rgba(6, 12, 24, 0.12) 30%, rgba(6, 12, 24, 0.1) 62%, rgba(6, 12, 24, 0.4) 100%);
+    linear-gradient(180deg, rgba(6, 8, 14, 0.58) 0%, rgba(6, 8, 14, 0.28) 28%, rgba(6, 8, 14, 0.32) 64%, rgba(6, 8, 14, 0.62) 100%);
 }
 
 .season-scrim[data-season="autumn"] {
   background:
-    linear-gradient(180deg, rgba(40, 16, 4, 0.38) 0%, rgba(40, 16, 4, 0.1) 32%, rgba(40, 16, 4, 0.12) 62%, rgba(40, 16, 4, 0.4) 100%);
+    linear-gradient(180deg, rgba(8, 6, 10, 0.66) 0%, rgba(12, 8, 8, 0.42) 26%, rgba(14, 8, 6, 0.46) 62%, rgba(8, 6, 8, 0.72) 100%);
+}
+
+[data-season="autumn"] .season-photo {
+  filter: brightness(0.72) saturate(0.88);
+}
+
+.season-sun[data-season="autumn"] {
+  opacity: 0.45;
+}
+
+.chrome-panel {
+  background: linear-gradient(180deg, rgba(8, 8, 12, 0.82) 0%, rgba(8, 8, 12, 0.7) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(14px);
+}
+
+.home-stage {
+  background: linear-gradient(180deg, rgba(10, 12, 18, 0.82) 0%, rgba(6, 7, 10, 0.88) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(14px);
 }
 
 .season-flake,

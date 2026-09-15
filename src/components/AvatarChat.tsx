@@ -257,18 +257,19 @@ export function AvatarChat({ avatar }: { avatar: Avatar }) {
 
   return (
     <section
-      className="flex min-h-0 w-full flex-1 flex-col rounded-2xl border border-white/10 bg-[linear-gradient(180deg,rgba(18,20,26,0.92)_0%,rgba(8,8,10,0.92)_100%)] p-2 text-left shadow-[0_12px_32px_rgba(0,0,0,0.35)] backdrop-blur-md"
+      id="avatar-chat"
+      className="flex min-h-0 w-full flex-1 flex-col rounded-2xl border border-gold/25 bg-[linear-gradient(180deg,rgba(18,20,26,0.78)_0%,rgba(8,8,10,0.86)_100%)] p-2 text-left shadow-[0_8px_24px_rgba(0,0,0,0.28)]"
       aria-label={chat.title}
     >
       <div className="flex shrink-0 items-center px-1">
-        <h2 className="text-[12px] font-extrabold tracking-wide text-snow">
+        <h2 className="text-[13px] font-extrabold tracking-wide text-snow">
           {chat.title}
         </h2>
       </div>
 
       <div
         ref={listRef}
-        className="mt-1.5 min-h-0 flex-1 space-y-1.5 overflow-y-auto px-1 py-1"
+        className="mt-1 min-h-0 flex-1 space-y-1.5 overflow-y-auto px-1 py-1"
       >
         {messages.map((message, index) => (
           <p
@@ -305,7 +306,7 @@ export function AvatarChat({ avatar }: { avatar: Avatar }) {
       </div>
 
       <form
-        className="mt-1 flex shrink-0 items-center gap-1"
+        className="mt-1 flex shrink-0 flex-col gap-1.5"
         onSubmit={(event) => {
           event.preventDefault();
           forgetRecognition();
@@ -316,34 +317,37 @@ export function AvatarChat({ avatar }: { avatar: Avatar }) {
         }}
       >
         <input
+          id="avatar-chat-input"
           value={input}
           onChange={(event) => setInput(event.target.value)}
           placeholder={chat.placeholder}
           aria-label={chat.placeholder}
-          className="min-h-[44px] min-w-0 flex-1 rounded-full border border-white/15 bg-night px-3 text-[13px] text-snow outline-none focus:border-gold/70"
+          className="min-h-11 w-full min-w-0 rounded-full border border-white/15 bg-night px-3.5 text-[16px] text-snow outline-none placeholder:text-snow/55 focus:border-gold/70"
         />
-        <button
-          type="button"
-          className={`tap inline-flex shrink-0 items-center justify-center gap-1 rounded-full border px-2 text-[10px] font-extrabold ${
-            listening
-              ? "mic-listen border-gold/70 bg-gold/15 text-gold"
-              : "border-white/20 bg-white/[0.06] text-snow"
-          } disabled:opacity-50`}
-          aria-label={listening ? chat.listening : chat.speak}
-          aria-pressed={listening}
-          disabled={busy && !listening}
-          onClick={onMicTap}
-        >
-          <MicIcon />
-          {listening ? chat.listening : chat.speak}
-        </button>
-        <button
-          type="submit"
-          className="tap inline-flex shrink-0 items-center justify-center rounded-full border border-cobalt/55 bg-cobalt px-2.5 text-[11px] font-extrabold text-snow disabled:opacity-50"
-          disabled={busy}
-        >
-          {chat.send}
-        </button>
+        <div className="grid grid-cols-2 gap-1.5">
+          <button
+            type="button"
+            className={`tap inline-flex min-h-11 items-center justify-center gap-1 rounded-full border text-[12px] font-extrabold ${
+              listening
+                ? "mic-listen border-gold/70 bg-gold/15 text-gold"
+                : "border-white/20 bg-white/[0.06] text-snow"
+            } disabled:opacity-50`}
+            aria-label={listening ? chat.listening : chat.speak}
+            aria-pressed={listening}
+            disabled={busy && !listening}
+            onClick={onMicTap}
+          >
+            <MicIcon />
+            {listening ? chat.listening : chat.speak}
+          </button>
+          <button
+            type="submit"
+            className="tap inline-flex min-h-11 items-center justify-center rounded-full border border-cobalt/55 bg-cobalt px-3 text-[12px] font-extrabold text-snow disabled:opacity-50"
+            disabled={busy}
+          >
+            {chat.send}
+          </button>
+        </div>
       </form>
     </section>
   );

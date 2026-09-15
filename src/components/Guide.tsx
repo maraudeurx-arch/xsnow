@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { AvatarChat } from "@/components/AvatarChat";
 import { AvatarDisc } from "@/components/AvatarDisc";
 import { LocationPrompt } from "@/components/LocationPrompt";
@@ -11,6 +12,7 @@ import { InstallTip } from "@/components/InstallTip";
 import { AVATARS, avatarById, type Avatar, type AvatarId } from "@/lib/avatars";
 import { welcomeSpeechFor } from "@/lib/content";
 import { useI18n } from "@/lib/i18n/locale";
+import { PUBLIC_SITE_URL } from "@/lib/paths";
 import { usePlace } from "@/lib/place";
 import {
   hasPlayedWelcomeFor,
@@ -21,7 +23,10 @@ import { useStoredAvatar } from "@/lib/useStoredAvatar";
 
 const pickerSize =
   "size-[min(26vw,17dvh,6.6rem)] sm:size-[min(22vw,8.5rem)]";
-const chosenSize = "size-[min(18vw,12dvh,4.4rem)]";
+const chosenSize = "size-[min(16vw,10.5dvh,4rem)]";
+
+const shortcutClass =
+  "tap inline-flex min-h-11 w-full items-center justify-center rounded-xl border border-gold/65 bg-[rgba(8,8,12,0.92)] px-2.5 text-center text-[12px] font-extrabold leading-tight text-gold shadow-[0_6px_16px_rgba(0,0,0,0.35)]";
 
 export function Guide() {
   const [avatarId, setAvatarId] = useStoredAvatar();
@@ -51,14 +56,14 @@ export function Guide() {
       className={`flex h-full min-h-0 w-full flex-1 self-stretch flex-col ${
         showPicker
           ? "items-center justify-center gap-1.5"
-          : "items-stretch gap-1.5"
+          : "items-stretch gap-0"
       }`}
     >
       {showPicker ? (
         <div
           role="group"
           aria-label={m.guide.pickAvatar}
-          className="flex min-h-0 w-full flex-col items-center gap-1.5"
+          className="home-stage flex min-h-0 w-full flex-col items-center gap-1.5 rounded-2xl px-3 py-3"
         >
           <p className="text-[13px] leading-none font-extrabold tracking-wide text-snow [text-shadow:0_2px_10px_rgba(0,0,0,0.7)] sm:text-sm">
             {m.guide.pickAvatar}
@@ -88,14 +93,14 @@ export function Guide() {
           </div>
         </div>
       ) : chosen ? (
-        <>
-          <div className="flex shrink-0 items-center justify-center gap-2 pt-0.5">
+        <div className="home-stage flex min-h-0 w-full flex-1 flex-col gap-2 rounded-2xl px-2.5 py-2">
+          <div className="flex shrink-0 items-center justify-center gap-2.5 pt-0.5">
             <AvatarDisc avatar={chosen} className={chosenSize} priority />
-            <div className="flex shrink-0 flex-col items-start gap-1">
+            <div className="flex shrink-0 flex-col items-stretch gap-1.5">
               <ReplayButton gender={chosen.gender} />
               <button
                 type="button"
-                className="whitespace-nowrap rounded-full border border-white/20 bg-white/[0.04] px-2 py-0.5 text-[10px] font-semibold tracking-wide text-snow/90 hover:border-violet/50 hover:bg-white/[0.07]"
+                className="inline-flex min-h-9 items-center justify-center whitespace-nowrap rounded-full border border-white/20 bg-white/[0.06] px-3 text-[11px] font-semibold tracking-wide text-snow hover:border-violet/50 hover:bg-white/[0.09]"
                 onClick={() => setPicking(true)}
               >
                 {m.guide.changeAvatar}
@@ -104,45 +109,60 @@ export function Guide() {
           </div>
           <nav
             aria-label={m.guide.offerShortcuts}
-            className="flex shrink-0 flex-wrap items-center justify-center gap-1.5 px-1"
+            className="grid shrink-0 grid-cols-2 gap-2"
           >
-            <Link
-              href="/mes-services"
-              className="tap inline-flex min-h-9 min-w-0 items-center rounded-full border border-gold/50 bg-gold/10 px-3 text-[11px] font-extrabold text-gold"
-            >
-              {m.nav.mesServices}
-            </Link>
-            <Link
-              href="/en-demande"
-              className="tap inline-flex min-h-9 min-w-0 items-center rounded-full border border-gold/50 bg-gold/10 px-3 text-[11px] font-extrabold text-gold"
-            >
-              {m.nav.enDemande}
-            </Link>
-            <Link
-              href="/gagner-maintenant"
-              className="tap inline-flex min-h-9 min-w-0 items-center rounded-full border border-gold/50 bg-gold/10 px-3 text-[11px] font-extrabold text-gold"
-            >
+            <Link href="/gagner-maintenant" className={shortcutClass}>
               {m.menu.gagnerMaintenant}
             </Link>
-            <Link
-              href="/vos-idees/#form"
-              className="tap inline-flex min-h-9 min-w-0 items-center rounded-full border border-gold/70 bg-gold/20 px-3 text-[11px] font-extrabold text-gold"
-            >
+            <Link href="/vos-idees/#form" className={shortcutClass}>
               {m.nav.vosIdees}
             </Link>
-            <Link
-              href="/mon-profil/inviter"
-              className="tap inline-flex min-h-9 min-w-0 items-center rounded-full border border-gold/50 bg-gold/10 px-3 text-[11px] font-extrabold text-gold"
-            >
-              {m.shareOpc.short}
-            </Link>
+            <ShareHomeButton />
           </nav>
           <InstallTip compact />
-          {needsPrompt && !waitingOnConsent ? <LocationPrompt /> : <AvatarChat avatar={chosen} />}
-          {!needsPrompt && !waitingOnConsent ? <FeedbackRow surface="accueil" /> : null}
-        </>
+          {needsPrompt && !waitingOnConsent ? (
+            <LocationPrompt />
+          ) : (
+            <AvatarChat avatar={chosen} />
+          )}
+          {!needsPrompt && !waitingOnConsent ? (
+            <FeedbackRow surface="accueil" />
+          ) : null}
+        </div>
       ) : null}
     </section>
+  );
+}
+
+function ShareHomeButton() {
+  const router = useRouter();
+  const { m } = useI18n();
+
+  async function shareApp() {
+    const payload = {
+      title: "Open Community",
+      text: m.guide.shareText,
+      url: PUBLIC_SITE_URL,
+    };
+    try {
+      if (typeof navigator !== "undefined" && navigator.share) {
+        await navigator.share(payload);
+        return;
+      }
+    } catch (caught) {
+      if (caught instanceof DOMException && caught.name === "AbortError") return;
+    }
+    router.push("/mon-profil/inviter");
+  }
+
+  return (
+    <button
+      type="button"
+      className={`${shortcutClass} col-span-2`}
+      onClick={() => void shareApp()}
+    >
+      {m.shareOpc.short}
+    </button>
   );
 }
 
@@ -154,7 +174,7 @@ function ReplayButton({ gender }: { gender: Avatar["gender"] }) {
     <button
       type="button"
       data-welcome-replay
-      className="inline-flex items-center gap-1 whitespace-nowrap rounded-full border border-cobalt/55 bg-cobalt px-2 py-0.5 text-[10px] font-semibold tracking-wide text-snow shadow-[0_4px_14px_rgba(37,99,235,0.32)]"
+      className="inline-flex min-h-9 items-center justify-center gap-1 whitespace-nowrap rounded-full border border-cobalt/55 bg-cobalt px-3 text-[11px] font-semibold tracking-wide text-snow shadow-[0_4px_14px_rgba(37,99,235,0.32)]"
       aria-label={m.guide.replay}
       onClick={() => replay(gender)}
     >

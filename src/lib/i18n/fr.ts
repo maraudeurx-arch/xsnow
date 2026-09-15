@@ -10,6 +10,8 @@ export const fr = {
     enDemande: "En demande",
     monProfil: "Mon profil",
     vosIdees: "Vos idées",
+    backHome: "Retour à l’accueil",
+    backHomeAria: "Retour à l’écran d’accueil avec l’avatar",
     main: "Navigation principale",
   },
   menu: {
@@ -41,7 +43,10 @@ export const fr = {
     pickAvatar: "Choisis ton avatar",
     changeAvatar: "Changer d’avatar",
     replay: "Réécouter",
-    offerShortcuts: "Raccourcis Mes services et En demande",
+    offerShortcuts: "Raccourcis Gagner maintenant, Vos idées et Partager",
+    vosIdees: "Vos idées",
+    partager: "Partager",
+    shareText: "Rejoins Open Community — proximité et entraide de quartier.",
     avatars: {
       "homme-blanc": "Homme, peau claire",
       "femme-blanche": "Femme, peau claire",
@@ -182,9 +187,9 @@ export const fr = {
     terms: "Conditions",
   },
   welcome:
-    "Bonjour, je suis ton avatar dans l’écosystème Open Community. La proximité et l’esprit d’entraide des gens de {city} font notre force. Fais connaître à tes voisins un service que tu peux leur rendre en échange d’une compensation : ça peut être aider à déménager, faire des courses, ou aider à des travaux dans la maison. De plus, cette application t’offre des services gratuits, comme t’aider à retrouver ton téléphone si tu le perds, et t’avertir si ton enfant, ton conjoint ou tes parents âgés s’éloignent de l’endroit où ils sont censés être : l’école, le travail, ou la maison de retraite. Va dans Accueil et choisis le service dont tu aimerais bénéficier, ou que tu voudrais offrir à tes voisins de {city}. Pour t’impliquer tout de suite : Accueil → Vos idées — une phrase, puis Tête, Cœur ou Mains. Avez-vous des suggestions de tâches et de services que vous aimeriez monétiser ? Faites-moi savoir, ou note-les dans Vos idées, et toute la communauté en profitera. De plus, les gens qui partagent cette application, et des idées qui sont monétisées, recevront au prorata de leurs efforts. N’hésitez pas à me questionner à tout moment, je suis à votre entière disposition.",
+    "Bonjour, je suis ton avatar dans l’écosystème Open Community. La proximité et l’esprit d’entraide des gens de {city} font notre force. Fais connaître à tes voisins un service que tu peux leur rendre en échange d’une compensation : ça peut être aider à déménager, faire des courses, ou aider à des travaux dans la maison. De plus, cette application t’offre des services gratuits, comme t’aider à retrouver ton téléphone si tu le perds, et t’avertir si ton enfant, ton conjoint ou tes parents âgés s’éloignent de l’endroit où ils sont censés être : l’école, le travail, ou la maison de retraite. Va dans Accueil et choisis le service dont tu aimerais bénéficier, ou que tu voudrais offrir à tes voisins de {city}. Pour t’impliquer tout de suite : Accueil → Vos idées — une phrase. Avez-vous des suggestions de tâches et de services que vous aimeriez monétiser ? Faites-moi savoir, ou note-les dans Vos idées, et toute la communauté en profitera. De plus, les gens qui partagent cette application, et des idées qui sont monétisées, recevront au prorata de leurs efforts. N’hésitez pas à me questionner à tout moment, je suis à votre entière disposition.",
   systemPrompt:
-    "Tu es le guide local Open Community à {city} — directeur honnête, utile d’abord (cash + communauté). Tu n’es pas un humain et tu n’es pas un agent avec des outils externes (pas de web, pas d’e-mail, pas de wallet). Tu parles uniquement en français, tu tutoies, tu restes concret et bref. Entraide de quartier : courses, déménagement, travaux, garde, prêt d’objets, prêt de voiture le matin (Interac, essence à l’emprunteur ; rappeler l’assurance — OPC n’est ni l’assureur ni un processeur de paiement), téléphone perdu, alertes proches. Pas de ferme de pubs, de clics, de faux comptes, ni de discours arnaque. Oriente tout de suite : une idée → Vos idées (texte + Tête réfléchir/voter, Cœur soutenir/partager, Mains faire/offrir du temps, 30 s) ; gagner → Gagner maintenant / Mes services / En demande. Invite à toucher Accueil, sous {placeName} à gauche, ou Mes services / En demande / Gagner maintenant / Vos idées. Si le visiteur a une idée, reformule-la et pousse-le vers Vos idées ; capture aussi les suggestions de monétisation. Urgence réelle : 911. Exemples : U: Je veux de l’argent vite. A: Pas de pubs en boucle. Trois chemins : Mes services (voisin, Interac), En demande, ou Gagner maintenant (tests UX / panels, hotspot). Une idée ? Ouvre Vos idées — Tête, Cœur, Mains. U: On pourrait déneiger les allées. A: Solide. Note-la dans Vos idées (Mains, Tête si tu votes le tarif). Paiement voisin = Interac. U: Tu peux chercher ça sur internet ? A: Non, je suis le guide dans l’app, pas un agent externe. Dis-moi l’idée ou ouvre Vos idées / Gagner maintenant / Mes services. Ton apparence : {avatar}.",
+    "Tu es le guide local Open Community à {city} — directeur honnête, utile d’abord (cash + communauté). Tu n’es pas un humain et tu n’es pas un agent avec des outils externes (pas de web, pas d’e-mail, pas de wallet). Tu parles uniquement en français, tu tutoies, tu restes concret et bref. Entraide de quartier : courses, déménagement, travaux, garde, prêt d’objets, prêt de voiture le matin (Interac, essence à l’emprunteur ; rappeler l’assurance — OPC n’est ni l’assureur ni un processeur de paiement), téléphone perdu, alertes proches. Pas de ferme de pubs, de clics, de faux comptes, ni de discours arnaque. Oriente tout de suite : une idée → Vos idées (une phrase, 30 s) ; gagner → Gagner maintenant / Mes services / En demande. Invite à toucher Accueil, sous {placeName} à gauche, ou Mes services / En demande / Gagner maintenant / Vos idées. Si le visiteur a une idée, reformule-la et pousse-le vers Vos idées ; capture aussi les suggestions de monétisation. Urgence réelle : 911. Exemples : U: Je veux de l’argent vite. A: Pas de pubs en boucle. Trois chemins : Mes services (voisin, Interac), En demande, ou Gagner maintenant (tests UX / panels, hotspot). Une idée ? Ouvre Vos idées. U: On pourrait déneiger les allées. A: Solide. Note-la dans Vos idées. Paiement voisin = Interac. U: Tu peux chercher ça sur internet ? A: Non, je suis le guide dans l’app, pas un agent externe. Dis-moi l’idée ou ouvre Vos idées / Gagner maintenant / Mes services. Ton apparence : {avatar}.",
   features: {
     business: {
       title: "Faites connaître votre business par des pubs",

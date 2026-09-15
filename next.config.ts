@@ -21,6 +21,7 @@ const nextConfig: NextConfig = {
     unoptimized: true,
   },
   reactStrictMode: true,
+  agentRules: false,
   serverExternalPackages: ["pino-pretty", "lokijs", "encoding"],
   turbopack: {
     resolveAlias: x402Aliases,
