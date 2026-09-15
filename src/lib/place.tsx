@@ -97,6 +97,15 @@ function geoErrorKind(error: GeolocationPositionError | null, unsupported: boole
   return "unavailable";
 }
 
+const SERVER_SNAPSHOT: Snapshot = {
+  consent: "unset",
+  place: fallbackPlace(0),
+};
+
+function getServerSnapshot(): Snapshot {
+  return SERVER_SNAPSHOT;
+}
+
 function PlaceProviderInner({ children }: { children: ReactNode }) {
   const searchParams = useSearchParams();
   const search = searchParams.toString();
@@ -110,10 +119,7 @@ function PlaceProviderInner({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  const stored = useSyncExternalStore(subscribe, readSnapshot, () => ({
-    consent: "unset" as const,
-    place: fallbackPlace(0),
-  }));
+  const stored = useSyncExternalStore(subscribe, readSnapshot, getServerSnapshot);
 
   const [locating, setLocating] = useState(false);
   const [error, setError] = useState<GeoErrorKind | null>(null);

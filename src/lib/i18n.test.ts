@@ -159,6 +159,21 @@ describe("install tip copy", () => {
   });
 });
 
+describe("home shortcut copy", () => {
+  it("keeps FR/EN/ES idea and share chips plus the full chat placeholder", () => {
+    assert.equal(fr.guide.vosIdees, "Vos idées");
+    assert.equal(en.guide.vosIdees, "Your ideas");
+    assert.equal(es.guide.vosIdees, "Tus ideas");
+    assert.equal(fr.guide.partager, "Partager");
+    assert.equal(en.guide.partager, "Share");
+    assert.equal(es.guide.partager, "Compartir");
+    assert.equal(fr.chat.placeholder, "Écris à ton avatar…");
+    assert.ok(!fr.chat.placeholder.includes("avate"));
+    assert.deepEqual(Object.keys(en.guide), Object.keys(fr.guide));
+    assert.deepEqual(Object.keys(es.guide), Object.keys(fr.guide));
+  });
+});
+
 describe("welcome and system prompt follow UI locale", () => {
   it("keeps French copy by default", () => {
     assert.match(interpolate(fr.welcome, { city: "New York" }), /voisins de New York/);

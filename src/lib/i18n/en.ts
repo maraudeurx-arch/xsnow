@@ -39,7 +39,10 @@ export const en: Messages = {
     pickAvatar: "Choose your avatar",
     changeAvatar: "Change avatar",
     replay: "Listen again",
-    offerShortcuts: "Shortcuts to My services and In demand",
+    offerShortcuts: "Shortcuts to Earn now, Your ideas, and Share",
+    vosIdees: "Your ideas",
+    partager: "Share",
+    shareText: "Join Open Community — neighbourhood proximity and mutual aid.",
     avatars: {
       "homme-blanc": "Man, light skin",
       "femme-blanche": "Woman, light skin",

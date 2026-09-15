@@ -29,7 +29,7 @@ export function HeaderNav() {
         </div>
       </div>
 
-      <div className="grid w-full grid-cols-3 items-center gap-1">
+      <div className="mt-1 grid w-full grid-cols-3 items-center gap-1.5">
         {HEADER_HREFS.map((item) => {
           const active =
             item.href === "/mon-profil"
@@ -41,7 +41,7 @@ export function HeaderNav() {
               key={item.href}
               href={item.href}
               aria-current={active ? "page" : undefined}
-              className={`${headerNavBtnClass(active, true)} tap w-full justify-self-stretch text-[12px] ${
+              className={`${headerNavBtnClass(active, true)} tap w-full justify-self-stretch text-[12px] leading-tight ${
                 offer && !active ? "border-gold/45" : ""
               }`}
             >

@@ -8,9 +8,9 @@ import { pathMatches } from "@/lib/paths";
 import { SERVICE_LIST } from "@/lib/services";
 
 export const headerNavBtnClass = (active = false, compact = false) =>
-  `inline-flex min-h-[22px] shrink-0 items-center justify-center gap-1 whitespace-nowrap rounded-xl border ${
-    compact ? "px-1.5" : "px-2"
-  } py-0.5 text-[11px] font-extrabold tracking-wide shadow-[0_4px_14px_rgba(37,99,235,0.28)] ${
+  `inline-flex min-h-11 shrink-0 items-center justify-center gap-1 whitespace-nowrap rounded-xl border ${
+    compact ? "px-1.5" : "px-3"
+  } py-0.5 text-[12px] font-extrabold tracking-wide shadow-[0_4px_14px_rgba(37,99,235,0.28)] ${
     active
       ? "border-gold/70 bg-gold/15 text-gold"
       : "border-cobalt/55 bg-cobalt text-snow"

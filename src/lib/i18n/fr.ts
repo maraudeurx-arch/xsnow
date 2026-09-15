@@ -37,7 +37,10 @@ export const fr = {
     pickAvatar: "Choisis ton avatar",
     changeAvatar: "Changer d’avatar",
     replay: "Réécouter",
-    offerShortcuts: "Raccourcis Mes services et En demande",
+    offerShortcuts: "Raccourcis Gagner maintenant, Vos idées et Partager",
+    vosIdees: "Vos idées",
+    partager: "Partager",
+    shareText: "Rejoins Open Community — proximité et entraide de quartier.",
     avatars: {
       "homme-blanc": "Homme, peau claire",
       "femme-blanche": "Femme, peau claire",
