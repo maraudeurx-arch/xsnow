@@ -20,36 +20,29 @@ export function HeaderNav() {
   return (
     <nav
       aria-label={m.nav.main}
-      className="relative mt-0 flex w-full flex-col gap-0.5 overflow-visible"
+      className="relative mt-0.5 grid w-full grid-cols-5 items-stretch gap-1 overflow-visible"
     >
-      <div className="flex w-full items-center justify-between gap-3">
-        <AccueilMenu key={pathname} />
-        <div className="shrink-0">
-          <ConnectWallet />
-        </div>
-      </div>
-
-      <div className="mt-1 grid w-full grid-cols-3 items-center gap-1.5">
-        {HEADER_HREFS.map((item) => {
-          const active =
-            item.href === "/mon-profil"
-              ? pathStartsWith(pathname, item.href)
-              : pathMatches(pathname, item.href);
-          const offer = item.href !== "/mon-profil";
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              aria-current={active ? "page" : undefined}
-              className={`${headerNavBtnClass(active, true)} tap w-full justify-self-stretch text-[12px] leading-tight ${
-                offer && !active ? "border-gold/45" : ""
-              }`}
-            >
-              {m.nav[item.key]}
-            </Link>
-          );
-        })}
-      </div>
+      <AccueilMenu key={pathname} compact />
+      {HEADER_HREFS.map((item) => {
+        const active =
+          item.href === "/mon-profil"
+            ? pathStartsWith(pathname, item.href)
+            : pathMatches(pathname, item.href);
+        const offer = item.href !== "/mon-profil";
+        return (
+          <Link
+            key={item.href}
+            href={item.href}
+            aria-current={active ? "page" : undefined}
+            className={`${headerNavBtnClass(active, true)} min-w-0 w-full justify-self-stretch ${
+              offer && !active ? "border-gold/45" : ""
+            }`}
+          >
+            {m.nav[item.key]}
+          </Link>
+        );
+      })}
+      <ConnectWallet compact />
     </nav>
   );
 }

@@ -9,9 +9,11 @@ import { pathMatches } from "@/lib/paths";
 import { SERVICE_LIST } from "@/lib/services";
 
 export const headerNavBtnClass = (active = false, compact = false) =>
-  `inline-flex min-h-11 shrink-0 items-center justify-center gap-1 whitespace-nowrap rounded-xl border ${
-    compact ? "px-1.5" : "px-3"
-  } py-0.5 text-[12px] font-extrabold tracking-wide shadow-[0_4px_14px_rgba(37,99,235,0.28)] ${
+  `inline-flex shrink-0 items-center justify-center gap-0.5 rounded-lg border font-extrabold tracking-wide shadow-[0_4px_14px_rgba(37,99,235,0.28)] ${
+    compact
+      ? "min-h-[var(--home-nav-h)] min-w-0 px-0.5 py-0 text-[10px] leading-[1.05] whitespace-normal"
+      : "min-h-11 px-3 py-0.5 text-[12px] whitespace-nowrap"
+  } ${
     active
       ? "border-gold/70 bg-gold/15 text-gold"
       : "border-cobalt/55 bg-cobalt text-snow"
@@ -46,7 +48,7 @@ const SOON = [
   { href: "/scenarios", key: "scenarios" as const },
 ];
 
-export function AccueilMenu() {
+export function AccueilMenu({ compact = false }: { compact?: boolean }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const { m } = useI18n();
@@ -54,15 +56,15 @@ export function AccueilMenu() {
   const close = () => setOpen(false);
 
   return (
-    <div className="relative z-40 shrink-0" data-accueil>
+    <div className="relative z-40 min-w-0 w-full shrink-0" data-accueil>
       <button
         type="button"
-        className={`${headerNavBtnClass(false)} tap min-h-11`}
+        className={`${headerNavBtnClass(false, compact)} ${compact ? "w-full" : "tap min-h-11"}`}
         aria-expanded={open}
         onClick={() => setOpen((next) => !next)}
       >
         <span>{m.nav.accueil}</span>
-        <span aria-hidden className="text-[10px] font-bold">
+        <span aria-hidden className="text-[9px] font-bold">
           {open ? "–" : "+"}
         </span>
       </button>

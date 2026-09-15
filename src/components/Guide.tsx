@@ -7,7 +7,6 @@ import { AvatarChat } from "@/components/AvatarChat";
 import { AvatarDisc } from "@/components/AvatarDisc";
 import { LocationPrompt } from "@/components/LocationPrompt";
 import { useNeedsConsentSheet } from "@/components/ConsentSheet";
-import { FeedbackRow } from "@/components/FeedbackRow";
 import { InstallTip } from "@/components/InstallTip";
 import { AVATARS, avatarById, type Avatar, type AvatarId } from "@/lib/avatars";
 import { welcomeSpeechFor } from "@/lib/content";
@@ -23,10 +22,10 @@ import { useStoredAvatar } from "@/lib/useStoredAvatar";
 
 const pickerSize =
   "size-[min(26vw,17dvh,6.6rem)] sm:size-[min(22vw,8.5rem)]";
-const chosenSize = "size-[min(16vw,10.5dvh,4rem)]";
+const chosenSize = "size-[var(--home-avatar)]";
 
 const shortcutClass =
-  "tap inline-flex min-h-11 w-full items-center justify-center rounded-xl border border-gold/65 bg-[rgba(8,8,12,0.92)] px-2.5 text-center text-[12px] font-extrabold leading-tight text-gold shadow-[0_6px_16px_rgba(0,0,0,0.35)]";
+  "inline-flex min-h-[var(--home-chip-h)] w-full items-center justify-center rounded-lg border border-gold/65 bg-[rgba(8,8,12,0.92)] px-2 text-center text-[11px] font-extrabold leading-tight text-gold shadow-[0_4px_12px_rgba(0,0,0,0.3)]";
 
 export function Guide() {
   const [avatarId, setAvatarId] = useStoredAvatar();
@@ -53,10 +52,10 @@ export function Guide() {
 
   return (
     <section
-      className={`flex h-full min-h-0 w-full flex-1 self-stretch flex-col ${
+      className={`flex min-h-0 w-full flex-col ${
         showPicker
-          ? "items-center justify-center gap-1.5"
-          : "items-stretch gap-0"
+          ? "h-full flex-1 items-center justify-center gap-1.5"
+          : "items-stretch justify-center gap-0 self-stretch"
       }`}
     >
       {showPicker ? (
@@ -93,14 +92,14 @@ export function Guide() {
           </div>
         </div>
       ) : chosen ? (
-        <div className="home-stage flex min-h-0 w-full flex-1 flex-col gap-2 rounded-2xl px-2.5 py-2">
-          <div className="flex shrink-0 items-center justify-center gap-2.5 pt-0.5">
+        <div className="home-stage flex w-full flex-col gap-[var(--home-gap)] rounded-2xl px-2 py-1.5">
+          <div className="flex shrink-0 items-center gap-2">
             <AvatarDisc avatar={chosen} className={chosenSize} priority />
-            <div className="flex shrink-0 flex-col items-stretch gap-1.5">
+            <div className="flex min-w-0 flex-1 items-center gap-1.5">
               <ReplayButton gender={chosen.gender} />
               <button
                 type="button"
-                className="inline-flex min-h-9 items-center justify-center whitespace-nowrap rounded-full border border-white/20 bg-white/[0.06] px-3 text-[11px] font-semibold tracking-wide text-snow hover:border-violet/50 hover:bg-white/[0.09]"
+                className="inline-flex min-h-[var(--home-chip-h)] min-w-0 flex-1 items-center justify-center rounded-full border border-white/20 bg-white/[0.06] px-2 text-[11px] font-semibold tracking-wide text-snow hover:border-violet/50 hover:bg-white/[0.09]"
                 onClick={() => setPicking(true)}
               >
                 {m.guide.changeAvatar}
@@ -109,7 +108,7 @@ export function Guide() {
           </div>
           <nav
             aria-label={m.guide.offerShortcuts}
-            className="grid shrink-0 grid-cols-2 gap-2"
+            className="grid shrink-0 grid-cols-2 gap-1.5"
           >
             <Link href="/gagner-maintenant" className={shortcutClass}>
               {m.menu.gagnerMaintenant}
@@ -125,9 +124,6 @@ export function Guide() {
           ) : (
             <AvatarChat avatar={chosen} />
           )}
-          {!needsPrompt && !waitingOnConsent ? (
-            <FeedbackRow surface="accueil" />
-          ) : null}
         </div>
       ) : null}
     </section>
@@ -174,7 +170,7 @@ function ReplayButton({ gender }: { gender: Avatar["gender"] }) {
     <button
       type="button"
       data-welcome-replay
-      className="inline-flex min-h-9 items-center justify-center gap-1 whitespace-nowrap rounded-full border border-cobalt/55 bg-cobalt px-3 text-[11px] font-semibold tracking-wide text-snow shadow-[0_4px_14px_rgba(37,99,235,0.32)]"
+      className="inline-flex min-h-[var(--home-chip-h)] min-w-0 flex-1 items-center justify-center gap-1 rounded-full border border-cobalt/55 bg-cobalt px-2 text-[11px] font-semibold tracking-wide text-snow shadow-[0_4px_14px_rgba(37,99,235,0.32)]"
       aria-label={m.guide.replay}
       onClick={() => replay(gender)}
     >

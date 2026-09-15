@@ -19,6 +19,7 @@ import {
 import { ChatFault, completeChat, type ChatMessage } from "@/lib/llm";
 import type { Avatar } from "@/lib/avatars";
 import { useSpeech } from "@/lib/speech";
+import { FeedbackRow } from "@/components/FeedbackRow";
 
 export function AvatarChat({ avatar }: { avatar: Avatar }) {
   const { speak, prime, stop } = useSpeech();
@@ -258,18 +259,32 @@ export function AvatarChat({ avatar }: { avatar: Avatar }) {
   return (
     <section
       id="avatar-chat"
-      className="flex min-h-0 w-full flex-1 flex-col rounded-2xl border border-gold/25 bg-[linear-gradient(180deg,rgba(18,20,26,0.78)_0%,rgba(8,8,10,0.86)_100%)] p-2 text-left shadow-[0_8px_24px_rgba(0,0,0,0.28)]"
+      className="flex w-full shrink-0 flex-col rounded-xl border border-gold/25 bg-[linear-gradient(180deg,rgba(18,20,26,0.78)_0%,rgba(8,8,10,0.86)_100%)] p-1.5 text-left shadow-[0_8px_24px_rgba(0,0,0,0.28)]"
       aria-label={chat.title}
     >
-      <div className="flex shrink-0 items-center px-1">
-        <h2 className="text-[13px] font-extrabold tracking-wide text-snow">
+      <div className="flex shrink-0 items-center gap-2 px-1">
+        <h2 className="text-[11px] font-extrabold tracking-wide text-snow">
           {chat.title}
         </h2>
+        {messages.length === 0 && !busy ? (
+          <Link
+            href="/vos-idees/#form"
+            className="ml-auto text-[10px] font-extrabold text-gold hover:underline"
+          >
+            {chat.ideaPrompt}
+          </Link>
+        ) : null}
       </div>
+
+      {messages.length > 0 ? <FeedbackRow surface="accueil" compact /> : null}
 
       <div
         ref={listRef}
-        className="mt-1 min-h-0 flex-1 space-y-1.5 overflow-y-auto px-1 py-1"
+        className={`min-h-0 space-y-1 overflow-y-auto px-1 ${
+          messages.length > 0 || busy || pendingIdea || error
+            ? "mt-1 max-h-[min(28dvh,11rem)] py-0.5"
+            : "h-0 overflow-hidden p-0"
+        }`}
       >
         {messages.map((message, index) => (
           <p
@@ -286,27 +301,24 @@ export function AvatarChat({ avatar }: { avatar: Avatar }) {
         {busy ? (
           <p className="mr-auto text-[11px] text-ice/70">…</p>
         ) : null}
-        {messages.length === 0 && !busy ? (
-          <Link
-            href="/vos-idees/#form"
-            className="tap mt-1 inline-flex min-h-11 w-full items-center justify-center rounded-2xl border border-gold/50 bg-gold/10 px-3 text-center text-[12px] font-extrabold text-gold"
-          >
-            {chat.ideaPrompt}
-          </Link>
-        ) : null}
         {pendingIdea ? (
           <Link
             href="/vos-idees/#form"
-            className="tap inline-flex min-h-11 w-full items-center justify-center rounded-2xl border border-gold/50 bg-gold/10 px-3 text-center text-[12px] font-extrabold text-gold"
+            className="inline-flex min-h-9 w-full items-center justify-center rounded-xl border border-gold/50 bg-gold/10 px-3 text-center text-[11px] font-extrabold text-gold"
             onClick={() => writeIdeaDraft(pendingIdea)}
           >
             {chat.ideaCapture}
           </Link>
         ) : null}
+        {error ? (
+          <p className="text-[11px] leading-snug text-gold" role="status">
+            {error}
+          </p>
+        ) : null}
       </div>
 
       <form
-        className="mt-1 flex shrink-0 flex-col gap-1.5"
+        className="mt-1 flex shrink-0 items-center gap-1"
         onSubmit={(event) => {
           event.preventDefault();
           forgetRecognition();
@@ -322,32 +334,30 @@ export function AvatarChat({ avatar }: { avatar: Avatar }) {
           onChange={(event) => setInput(event.target.value)}
           placeholder={chat.placeholder}
           aria-label={chat.placeholder}
-          className="min-h-11 w-full min-w-0 rounded-full border border-white/15 bg-night px-3.5 text-[16px] text-snow outline-none placeholder:text-snow/55 focus:border-gold/70"
+          className="min-h-[var(--home-nav-h)] min-w-0 flex-1 rounded-full border border-white/15 bg-night px-3 text-[16px] text-snow outline-none placeholder:text-snow/55 focus:border-gold/70"
         />
-        <div className="grid grid-cols-2 gap-1.5">
-          <button
-            type="button"
-            className={`tap inline-flex min-h-11 items-center justify-center gap-1 rounded-full border text-[12px] font-extrabold ${
-              listening
-                ? "mic-listen border-gold/70 bg-gold/15 text-gold"
-                : "border-white/20 bg-white/[0.06] text-snow"
-            } disabled:opacity-50`}
-            aria-label={listening ? chat.listening : chat.speak}
-            aria-pressed={listening}
-            disabled={busy && !listening}
-            onClick={onMicTap}
-          >
-            <MicIcon />
-            {listening ? chat.listening : chat.speak}
-          </button>
-          <button
-            type="submit"
-            className="tap inline-flex min-h-11 items-center justify-center rounded-full border border-cobalt/55 bg-cobalt px-3 text-[12px] font-extrabold text-snow disabled:opacity-50"
-            disabled={busy}
-          >
-            {chat.send}
-          </button>
-        </div>
+        <button
+          type="button"
+          className={`tap-sm inline-flex size-[var(--home-nav-h)] shrink-0 items-center justify-center rounded-full border ${
+            listening
+              ? "mic-listen border-gold/70 bg-gold/15 text-gold"
+              : "border-white/20 bg-white/[0.06] text-snow"
+          } disabled:opacity-50`}
+          aria-label={listening ? chat.listening : chat.speak}
+          aria-pressed={listening}
+          disabled={busy && !listening}
+          onClick={onMicTap}
+        >
+          <MicIcon />
+        </button>
+        <button
+          type="submit"
+          className="tap-sm inline-flex size-[var(--home-nav-h)] shrink-0 items-center justify-center rounded-full border border-cobalt/55 bg-cobalt text-snow disabled:opacity-50"
+          aria-label={chat.send}
+          disabled={busy}
+        >
+          <SendIcon />
+        </button>
       </form>
     </section>
   );
@@ -355,8 +365,16 @@ export function AvatarChat({ avatar }: { avatar: Avatar }) {
 
 function MicIcon() {
   return (
-    <svg aria-hidden viewBox="0 0 16 16" className="h-3.5 w-3.5 fill-current">
+    <svg aria-hidden viewBox="0 0 16 16" className="h-4 w-4 fill-current">
       <path d="M8 1.4A2.3 2.3 0 0 0 5.7 3.7v3.1a2.3 2.3 0 1 0 4.6 0V3.7A2.3 2.3 0 0 0 8 1.4Zm-4.4 5.4a.7.7 0 0 0-1.4 0 5.1 5.1 0 0 0 4.4 5v1.5H5.2a.7.7 0 0 0 0 1.4h5.6a.7.7 0 1 0 0-1.4H8.7v-1.5a5.1 5.1 0 0 0 4.4-5 .7.7 0 0 0-1.4 0 3.7 3.7 0 1 1-7.4 0Z" />
+    </svg>
+  );
+}
+
+function SendIcon() {
+  return (
+    <svg aria-hidden viewBox="0 0 16 16" className="h-4 w-4 fill-current">
+      <path d="M2.1 8.05 13.4 2.4c.55-.28 1.12.3.84.84L8.6 14.5a.7.7 0 0 1-1.3-.08L6.1 9.9 2.18 8.7a.7.7 0 0 1-.08-1.3Z" />
     </svg>
   );
 }

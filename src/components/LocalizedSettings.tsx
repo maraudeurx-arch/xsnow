@@ -77,7 +77,7 @@ export function LocalizedSettings() {
           onChange={(next) => setConsent(next ? "granted" : "denied")}
         />
       </div>
-      <LegalLinks className="mt-4 text-sm" />
+      <LegalLinks className="mt-4 block text-sm" />
       <p className="mt-4 text-sm leading-relaxed text-ice/85">{m.profile.comingSoon}</p>
     </LocalizedProfileStub>
   );

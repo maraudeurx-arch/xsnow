@@ -6,10 +6,14 @@ import { useEffect, useId, useState } from "react";
 import { useI18n } from "@/lib/i18n/locale";
 import { hasWalletConnectProjectId } from "@/lib/wallet";
 
-const btnClass =
-  "tap inline-flex min-h-11 shrink-0 items-center justify-center rounded-full border border-cobalt/60 bg-cobalt px-3 py-0.5 text-[12px] font-extrabold tracking-wide text-snow shadow-[0_4px_14px_rgba(37,99,235,0.38)] transition hover:brightness-110";
+const btnClass = (compact: boolean) =>
+  `inline-flex shrink-0 items-center justify-center border border-cobalt/60 bg-cobalt font-extrabold tracking-wide text-snow shadow-[0_4px_14px_rgba(37,99,235,0.38)] transition hover:brightness-110 ${
+    compact
+      ? "min-h-[var(--home-nav-h)] w-full min-w-0 rounded-lg px-0.5 py-0 text-[10px] leading-[1.05]"
+      : "tap min-h-11 rounded-full px-3 py-0.5 text-[12px]"
+  }`;
 
-function UnconfiguredConnect() {
+function UnconfiguredConnect({ compact }: { compact: boolean }) {
   const { m } = useI18n();
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
@@ -20,10 +24,10 @@ function UnconfiguredConnect() {
   }, [pathname]);
 
   return (
-    <div className="relative inline-flex flex-col items-end">
+    <div className={`relative inline-flex min-w-0 flex-col ${compact ? "w-full" : "items-end"}`}>
       <button
         type="button"
-        className={btnClass}
+        className={btnClass(compact)}
         aria-expanded={open}
         aria-controls={open ? hintId : undefined}
         aria-label={m.wallet.connectAria}
@@ -44,9 +48,10 @@ function UnconfiguredConnect() {
   );
 }
 
-function RainbowConnect() {
+function RainbowConnect({ compact }: { compact: boolean }) {
   const { m } = useI18n();
   return (
+    <div className={compact ? "min-w-0 w-full" : undefined}>
     <ConnectButton.Custom>
       {({ account, chain, openAccountModal, openChainModal, openConnectModal, mounted }) => {
         const ready = mounted;
@@ -66,7 +71,7 @@ function RainbowConnect() {
         return (
           <button
             type="button"
-            className={btnClass}
+            className={btnClass(compact)}
             disabled={!ready}
             aria-label={ariaLabel}
             onClick={
@@ -82,12 +87,13 @@ function RainbowConnect() {
         );
       }}
     </ConnectButton.Custom>
+    </div>
   );
 }
 
-export function ConnectWallet() {
+export function ConnectWallet({ compact = false }: { compact?: boolean }) {
   if (hasWalletConnectProjectId()) {
-    return <RainbowConnect />;
+    return <RainbowConnect compact={compact} />;
   }
-  return <UnconfiguredConnect />;
+  return <UnconfiguredConnect compact={compact} />;
 }
