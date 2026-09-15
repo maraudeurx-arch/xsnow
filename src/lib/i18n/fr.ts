@@ -411,7 +411,7 @@ export const fr = {
       "Tes offres, demandes, idées, textes de partage et coordonnées Interac/PayPal restent sur cet appareil. Rien de personnel n’apparaît chez un autre visiteur tant que GOV + propriétaire n’approuvent pas une publication dans une version numérotée (catalogue public).",
     releaseNotesTitle: "Notes de version",
     releaseNotesBody:
-      "0.3.0 — Lancement souple : catalogue public vide. Plus d’offre « prêt de voiture Gatineau » injectée pour tout le monde. Les appareils neufs commencent vide.",
+      "0.3.1 — Ambiance régionale après la position (Caraïbes, Afrique, Europe, Asie, Amérique du Sud). Le Canada et les USA gardent les quatre saisons. Avant la position, le fond d’automne reste. Le catalogue public est toujours vide.",
     language: "Langue",
     comingSoon: "Notifications et saison d’affichage arriveront ici.",
     locationConsent: "Position",

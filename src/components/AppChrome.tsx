@@ -6,15 +6,12 @@ import { PlaceWordmark, PlaceDocumentTitle } from "@/components/PlaceWordmark";
 import { SeasonalBackdrop, SeasonScene } from "@/components/SeasonalBackdrop";
 import { SiteFooter } from "@/components/SiteFooter";
 import { BrandCopy } from "@/components/BrandCopy";
-import { seasonFromDate } from "@/lib/season";
 
 export function AppChrome({ children }: { children: ReactNode }) {
-  const calendarSeason = seasonFromDate();
-
   return (
     <div className="safe-frame relative flex flex-col overflow-hidden bg-sky-400">
       <PlaceDocumentTitle />
-      <Suspense fallback={<SeasonScene season={calendarSeason} />}>
+      <Suspense fallback={<SeasonScene season="autumn" />}>
         <SeasonalBackdrop />
       </Suspense>
 

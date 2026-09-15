@@ -308,7 +308,7 @@ describe("legal copy is present in FR/EN/ES", () => {
     assert.match(en.legal.about.sections[4].body, /public catalog/i);
     assert.match(es.legal.about.sections[4].body, /catálogo público/);
     assert.match(fr.profile.deviceLocalNote, /cet appareil/);
-    assert.match(en.profile.releaseNotesBody, /0\.3\.0/);
+    assert.match(en.profile.releaseNotesBody, /0\.3\.1/);
     assert.deepEqual(Object.keys(en.profile), Object.keys(fr.profile));
     assert.deepEqual(Object.keys(es.profile), Object.keys(fr.profile));
   });

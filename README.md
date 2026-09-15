@@ -30,7 +30,7 @@ gh api --method POST /repos/maraudeurx-arch/xsnow/pages \
 
 ### Qu’est-ce que c’est ?
 
-Xsnow est la vitrine **Open-Community** : faire connaître un business, voir qui est à proximité, retrouver un téléphone perdu, et être alerté si un proche s’éloigne. Les premiers **services monétisables** : courses et livraison, aide au déménagement, garde d’enfants et d’animaux, prêt / emprunt d’objets avec caution. Un guide parlant invite à ouvrir **Accueil**. Le fond saisonnier (neige, pétales, lucioles, feuilles) suit le calendrier America/Toronto ; `?season=winter|spring|summer|autumn` force une saison pour les tests.
+Xsnow est la vitrine **Open-Community** : faire connaître un business, voir qui est à proximité, retrouver un téléphone perdu, et être alerté si un proche s’éloigne. Les premiers **services monétisables** : courses et livraison, aide au déménagement, garde d’enfants et d’animaux, prêt / emprunt d’objets avec caution. Un guide parlant invite à ouvrir **Accueil**. Avant la géolocalisation, le fond est l’automne nord-américain. Canada et USA gardent le calendrier à quatre saisons (`America/Toronto`) ; les autres régions passent à une ambiance statique (Caraïbes, Afrique, Europe, Asie, Amérique du Sud). `?season=winter|spring|summer|autumn` et `?region=caribbean|africa|europe|asia|southamerica` forcent un fond pour les tests.
 
 ### Interface
 
@@ -121,7 +121,7 @@ Après le choix d’avatar, un bandeau demandait la position. **Désormais, dès
 
 Le mot-drapeau en haut à gauche et le gentilé du pied de page suivent la ville (`Gatinois`, `New-Yorkais`, `habitants de …`). L’accueil parlé et le prompt système citent cette ville.
 
-QA : `?city=New%20York` force New York (mot-drapeau **NEW YORK**, gentilé **New-Yorkais**). `?geo=prompt` réaffiche la demande de position.
+QA : `?city=New%20York` force New York (mot-drapeau **NEW YORK**, gentilé **New-Yorkais**). `?geo=prompt` réaffiche la demande de position. `?city=Port-au-Prince` affiche l’ambiance Caraïbes.
 
 ---
 
@@ -175,4 +175,4 @@ Deployed Worker: `https://xsnow-chat.xsnowopc.workers.dev`. Override with `NEXT_
 
 After the avatar pick, the home screen used to ask for geolocation immediately. **First visit now shows a consent sheet**: optional location (city branding; otherwise Gatineau) and optional anonymous usage stats. The browser GPS prompt and `/stats` posts run only after a yes. Choices live in `localStorage` (`xsnow.geoConsent`, `xsnow.analyticsConsent`) and can be changed in **My profile → Settings**. **Privacy** (`/vie-privee`) and **Terms** (`/conditions`).
 
-QA: `?city=New%20York` mocks New York; `?geo=prompt` shows the permission card again.
+QA: `?city=New%20York` mocks New York; `?geo=prompt` shows the permission card again. `?city=Port-au-Prince` shows the Caribbean ambiance. `?region=` and `?season=` force a backdrop.
