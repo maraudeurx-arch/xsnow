@@ -13,6 +13,42 @@
   --safe-right: env(safe-area-inset-right, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --safe-left: env(safe-area-inset-left, 0px);
+  --home-logo: 2.75rem;
+  --home-nav-h: 2.5rem;
+  --home-chip-h: 2.5rem;
+  --home-avatar: min(13vw, 7dvh, 3.2rem);
+  --home-gap: 0.25rem;
+}
+
+@media (min-width: 640px) {
+  :root {
+    --home-logo: 4.5rem;
+    --home-nav-h: 2.75rem;
+    --home-chip-h: 2.75rem;
+    --home-avatar: min(16vw, 10dvh, 4.5rem);
+    --home-gap: 0.4rem;
+  }
+}
+
+/* Safari / Chrome toolbars shrink dvh well below 844. */
+@media (max-height: 700px) {
+  :root {
+    --home-logo: 2.35rem;
+    --home-nav-h: 2.25rem;
+    --home-chip-h: 2.25rem;
+    --home-avatar: min(12vw, 6.4dvh, 2.85rem);
+    --home-gap: 0.2rem;
+  }
+}
+
+@media (max-height: 620px) {
+  :root {
+    --home-logo: 2.15rem;
+    --home-nav-h: 2.15rem;
+    --home-chip-h: 2.15rem;
+    --home-avatar: min(11vw, 5.8dvh, 2.6rem);
+    --home-gap: 0.15rem;
+  }
 }
 
 @theme inline {
@@ -46,15 +82,21 @@ body {
   height: 100dvh;
   max-height: 100dvh;
   /* Safe-area only. Tiny floor when the inset is 0; no 54px extra under the status bar. */
-  padding-top: max(4px, var(--safe-top));
-  padding-right: max(12px, var(--safe-right));
-  padding-bottom: max(8px, calc(var(--safe-bottom) + 4px));
-  padding-left: max(12px, var(--safe-left));
+  padding-top: max(2px, var(--safe-top));
+  padding-right: max(10px, var(--safe-right));
+  padding-bottom: max(6px, calc(var(--safe-bottom) + 2px));
+  padding-left: max(10px, var(--safe-left));
 }
 
 .tap {
   min-height: 44px;
   min-width: 44px;
+}
+
+/* Home compact controls: 40px default, 36px on short Safari/Chrome dvh. */
+.tap-sm {
+  min-height: var(--home-nav-h);
+  min-width: var(--home-nav-h);
 }
 
 .idle-float {

@@ -19,7 +19,7 @@ export function LocalizedAbout() {
         })}
       </p>
       <p className="mt-3 text-sm leading-relaxed text-ice/85">{m.legal.about.extra}</p>
-      <LegalLinks className="mt-4 text-sm" />
+      <LegalLinks className="mt-4 block text-sm" />
     </LocalizedProfileStub>
   );
 }

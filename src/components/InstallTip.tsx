@@ -34,21 +34,21 @@ function InstallTipInner({ compact }: { compact: boolean }) {
 
   return (
     <aside
-      className={`rounded-2xl border border-white/15 bg-white/[0.05] text-left ${
-        compact ? "px-2.5 py-2" : "p-3"
+      className={`flex items-center gap-2 rounded-lg border border-white/15 bg-white/[0.05] text-left ${
+        compact ? "px-2 py-1" : "p-3"
       }`}
       role="note"
     >
       <p
-        className={`leading-relaxed text-snow/90 ${
-          compact ? "text-[11px]" : "text-sm"
+        className={`min-w-0 flex-1 text-snow/90 ${
+          compact ? "line-clamp-2 text-[10px] leading-snug" : "text-sm leading-relaxed"
         }`}
       >
         {isAndroidDevice() ? m.install.tipAndroid : m.install.tip}
       </p>
       <button
         type="button"
-        className={`mt-2 rounded-full border border-white/20 bg-white/5 px-3 text-[11px] font-bold text-snow ${
+        className={`shrink-0 rounded-full border border-white/20 bg-white/5 px-2.5 text-[11px] font-bold text-snow ${
           compact ? "min-h-8" : "tap"
         }`}
         onClick={() => {

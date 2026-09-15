@@ -8,7 +8,7 @@ import { PRIVACY_HREF, TERMS_HREF } from "@/lib/paths";
 export function LegalLinks({ className = "" }: { className?: string }) {
   const { m, locale, source } = useI18n();
   return (
-    <p className={className}>
+    <span className={className}>
       <Link
         href={hrefWithLang(PRIVACY_HREF, locale, source)}
         className="font-extrabold text-gold hover:underline"
@@ -22,6 +22,6 @@ export function LegalLinks({ className = "" }: { className?: string }) {
       >
         {m.footer.terms}
       </Link>
-    </p>
+    </span>
   );
 }

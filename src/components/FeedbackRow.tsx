@@ -25,7 +25,13 @@ function writeDone(surface: string) {
   }
 }
 
-export function FeedbackRow({ surface }: { surface: string }) {
+export function FeedbackRow({
+  surface,
+  compact = false,
+}: {
+  surface: string;
+  compact?: boolean;
+}) {
   const { m } = useI18n();
   const copy = m.feedback;
   const hydrated = useHasHydrated();
@@ -43,29 +49,43 @@ export function FeedbackRow({ surface }: { surface: string }) {
   if (!hydrated) return null;
 
   return (
-    <div className="flex flex-wrap items-center gap-1.5 rounded-2xl border border-white/10 bg-white/[0.04] px-2.5 py-2">
-      <p className="mr-auto text-[11px] font-semibold text-snow/80">{copy.prompt}</p>
+    <div
+      className={`flex flex-wrap items-center gap-1 ${
+        compact
+          ? "mt-0.5 rounded-lg border border-white/10 bg-white/[0.04] px-2 py-0.5"
+          : "rounded-2xl border border-white/10 bg-white/[0.04] px-2.5 py-2"
+      }`}
+    >
+      <p className={`mr-auto font-semibold text-snow/80 ${compact ? "text-[10px]" : "text-[11px]"}`}>
+        {copy.prompt}
+      </p>
       {done ? (
-        <p className="text-[11px] font-extrabold text-gold">{copy.thanks}</p>
+        <p className={`font-extrabold text-gold ${compact ? "text-[10px]" : "text-[11px]"}`}>
+          {copy.thanks}
+        </p>
       ) : (
         <>
           <button
             type="button"
-            className="tap min-h-11 min-w-11 rounded-full border border-gold/45 bg-gold/10 px-3 text-[12px] font-extrabold text-gold"
+            className={`rounded-full border border-gold/45 bg-gold/10 font-extrabold text-gold ${
+              compact ? "min-h-8 min-w-8 px-2 text-[10px]" : "tap min-h-11 min-w-11 px-3 text-[12px]"
+            }`}
             onClick={() => pick("pos")}
           >
             {copy.useful}
           </button>
           <button
             type="button"
-            className="tap min-h-11 min-w-11 rounded-full border border-white/20 bg-white/5 px-3 text-[12px] font-bold text-snow"
+            className={`rounded-full border border-white/20 bg-white/5 font-bold text-snow ${
+              compact ? "min-h-8 min-w-8 px-2 text-[10px]" : "tap min-h-11 min-w-11 px-3 text-[12px]"
+            }`}
             onClick={() => pick("neg")}
           >
             {copy.notUseful}
           </button>
         </>
       )}
-      {!granted ? (
+      {!granted && !compact ? (
         <p className="basis-full text-[10px] leading-snug text-snow/45">{copy.localOnly}</p>
       ) : null}
     </div>
