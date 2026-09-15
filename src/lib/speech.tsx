@@ -21,10 +21,15 @@ import { useI18n } from "@/lib/i18n/locale";
 import { usePlace } from "@/lib/place";
 import { pickSpokenVoice, pitchForGender, spokenVoiceLang } from "@/lib/voices";
 
+export type SpeakOptions = {
+  onEngineStart?: () => void;
+  onSettled?: () => void;
+};
+
 type SpeechContextValue = {
   isSpeaking: boolean;
   lastText: string;
-  speak: (text: string, gender?: VoiceGender) => void;
+  speak: (text: string, gender?: VoiceGender, options?: SpeakOptions) => void;
   replay: (gender?: VoiceGender) => void;
   prime: () => void;
   stop: () => void;
@@ -93,10 +98,15 @@ export function SpeechProvider({ children }: { children: ReactNode }) {
     }
   }, [voiceLang]);
 
-  const speak = useCallback((text: string, gender?: VoiceGender) => {
+  const settleRef = useRef<(() => void) | null>(null);
+
+  const speak = useCallback((text: string, gender?: VoiceGender, options?: SpeakOptions) => {
     if (typeof window === "undefined") return;
     const trimmed = text.trim();
-    if (!trimmed) return;
+    if (!trimmed) {
+      options?.onSettled?.();
+      return;
+    }
 
     const resolved = gender ?? genderRef.current ?? genderFromStoredAvatar() ?? "male";
     genderRef.current = resolved;
@@ -106,10 +116,17 @@ export function SpeechProvider({ children }: { children: ReactNode }) {
     lastRef.current = trimmed;
     setLastText(trimmed);
 
+    settleRef.current?.();
+    settleRef.current = () => {
+      options?.onSettled?.();
+      settleRef.current = null;
+    };
+
     const finish = () => {
       if (!alive()) return;
       setIsSpeaking(false);
       stopWatch();
+      settleRef.current?.();
     };
 
     const estimatedMs = Math.min(60000, Math.max(1800, trimmed.length * 70));
@@ -158,14 +175,20 @@ export function SpeechProvider({ children }: { children: ReactNode }) {
     utter.pitch = pitchForGender(resolved, voice);
 
     utter.onstart = () => {
-      if (alive() && animate) setIsSpeaking(true);
+      if (!alive()) return;
+      options?.onEngineStart?.();
+      if (animate) setIsSpeaking(true);
     };
     utter.onend = finish;
     // Chrome/Safari fire onerror after cancel(); ignore so the new line keeps talking.
 
     // Welcome / replay stay in the user-gesture stack for iOS Safari.
-    window.speechSynthesis.speak(utter);
-    window.speechSynthesis.resume();
+    try {
+      window.speechSynthesis.speak(utter);
+      window.speechSynthesis.resume();
+    } catch {
+      settleRef.current?.();
+    }
   }, [locale, localeHint, stopWatch, voiceLang]);
 
   const replay = useCallback((gender?: VoiceGender) => {

@@ -1,30 +1,31 @@
-import { normalizeCityKey } from "./demonym.ts";
-import type { GeoConsent } from "./place-logic.ts";
-
-/** First welcome waits for GPS reverse-geocode when the visitor granted location. */
-export function welcomeSpeechReady(opts: {
-  consent: GeoConsent;
-  locating: boolean;
-  hasOverride: boolean;
-  waitingOnConsent: boolean;
-}): boolean {
-  if (opts.waitingOnConsent) return false;
-  if (opts.hasOverride) return !opts.locating;
-  if (opts.consent === "unset") return false;
-  if (opts.consent === "granted" && opts.locating) return false;
-  return true;
+/** Welcome plays as soon as an avatar is chosen. Geo is asked after speech. */
+export function welcomeSpeechReady(opts: { hasAvatar: boolean }): boolean {
+  return opts.hasAvatar;
 }
 
+/** If the speech engine never starts, open geo shortly after the speak intent. */
+export const WELCOME_AUTOPLAY_GRACE_MS = 1200;
+
 /**
- * Re-speak only when a real city becomes available after a neutral/wrong first line.
- * Never re-speak just to say the neighbourhood placeholder.
+ * Prefer opening geolocation after welcome ends.
+ * If autoplay is blocked (no engine start), open after a short grace period.
+ * Never opens before the speak intent has been made.
  */
-export function shouldRespeakWelcome(opts: {
-  previousCity: string | null;
-  nextCity: string;
-  nextResolved: boolean;
+export function welcomeGateShouldOpen(opts: {
+  engineStarted: boolean;
+  engineEnded: boolean;
+  msSinceSpeakIntent: number;
+  autoplayGraceMs?: number;
 }): boolean {
-  if (!opts.previousCity || !opts.nextCity.trim()) return false;
-  if (normalizeCityKey(opts.previousCity) === normalizeCityKey(opts.nextCity)) return false;
-  return opts.nextResolved;
+  if (opts.engineEnded) return true;
+  const grace = opts.autoplayGraceMs ?? WELCOME_AUTOPLAY_GRACE_MS;
+  return !opts.engineStarted && opts.msSinceSpeakIntent >= grace;
+}
+
+/** First-visit geo/analytics sheet waits for avatar + welcome intent. */
+export function canShowConsentSheet(opts: {
+  hasAvatar: boolean;
+  welcomeGateOpen: boolean;
+}): boolean {
+  return opts.hasAvatar && opts.welcomeGateOpen;
 }

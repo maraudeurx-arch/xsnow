@@ -247,21 +247,29 @@ describe("spoken welcome omits head/heart/hands", () => {
 });
 
 describe("welcome and system prompt follow UI locale", () => {
-  it("keeps French copy by default", () => {
-    assert.match(interpolate(fr.welcome, { city: "New York" }), /voisins de New York/);
+  it("keeps French copy by default, without a city name", () => {
+    assert.match(fr.welcome, /gens d’ici/);
+    assert.match(fr.welcome, /Open Community/);
+    assert.match(fr.welcome, /Vos idées/);
+    assert.doesNotMatch(fr.welcome, /\{city\}/);
+    assert.doesNotMatch(fr.welcome, /Gatineau/);
     assert.match(
       interpolate(fr.systemPrompt, { city: "New York", placeName: "NEW YORK", avatar: "" }),
       /uniquement en français/,
     );
   });
 
-  it("switches English and Spanish", () => {
-    assert.match(interpolate(en.welcome, { city: "New York" }), /neighbours in New York/);
+  it("switches English and Spanish without a city slot", () => {
+    assert.match(en.welcome, /people here/);
+    assert.match(en.welcome, /Your ideas/);
+    assert.doesNotMatch(en.welcome, /\{city\}/);
     assert.match(
       interpolate(en.systemPrompt, { city: "New York", placeName: "NEW YORK", avatar: "" }),
       /only in English/,
     );
-    assert.match(interpolate(es.welcome, { city: "Gatineau" }), /vecinos de Gatineau/);
+    assert.match(es.welcome, /gente de aquí/);
+    assert.match(es.welcome, /Tus ideas/);
+    assert.doesNotMatch(es.welcome, /\{city\}/);
     assert.match(
       interpolate(es.systemPrompt, { city: "Gatineau", placeName: "GATINEAU", avatar: "" }),
       /únicamente en español/,

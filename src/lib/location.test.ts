@@ -24,7 +24,6 @@ import {
   placeToKeepOnSkip,
   sanitizeStoredPlace,
 } from "./place-logic.ts";
-import { shouldRespeakWelcome, welcomeSpeechReady } from "./welcome-place.ts";
 import { pickFrenchVoice, pickSpokenVoice } from "./voices.ts";
 
 describe("parseCityOverride", () => {
@@ -95,8 +94,10 @@ describe("geoResultFromPayload", () => {
 });
 
 describe("copy mentions the detected city", () => {
-  it("welcome and system prompt include New York", () => {
-    assert.match(interpolate(fr.welcome, { city: "New York" }), /voisins de New York/);
+  it("system prompt includes New York; welcome names people here instead", () => {
+    assert.match(fr.welcome, /gens d’ici/);
+    assert.doesNotMatch(fr.welcome, /\{city\}/);
+    assert.doesNotMatch(interpolate(fr.welcome, { city: "New York" }), /New York/);
     assert.match(
       interpolate(fr.systemPrompt, { city: "New York", placeName: "NEW YORK", avatar: "" }),
       /à New York/,
@@ -267,75 +268,11 @@ describe("live place vs Gatineau seed", () => {
     assert.equal(live.placeName, "PORT-AU-PRINCE");
   });
 
-  it("welcome speech uses the live city, not the seed", () => {
+  it("welcome speech does not name a city (geo comes after)", () => {
     const spoken = interpolate(fr.welcome, { city: "Port-au-Prince" });
-    assert.match(spoken, /Port-au-Prince/);
+    assert.match(spoken, /gens d’ici/);
+    assert.doesNotMatch(spoken, /Port-au-Prince/);
     assert.doesNotMatch(spoken, /Gatineau/);
-  });
-
-  it("waits for GPS reverse-geocode before the first welcome", () => {
-    assert.equal(
-      welcomeSpeechReady({
-        consent: "unset",
-        locating: false,
-        hasOverride: false,
-        waitingOnConsent: true,
-      }),
-      false,
-    );
-    assert.equal(
-      welcomeSpeechReady({
-        consent: "granted",
-        locating: true,
-        hasOverride: false,
-        waitingOnConsent: false,
-      }),
-      false,
-    );
-    assert.equal(
-      welcomeSpeechReady({
-        consent: "granted",
-        locating: false,
-        hasOverride: false,
-        waitingOnConsent: false,
-      }),
-      true,
-    );
-    assert.equal(
-      welcomeSpeechReady({
-        consent: "skipped",
-        locating: false,
-        hasOverride: false,
-        waitingOnConsent: false,
-      }),
-      true,
-    );
-  });
-
-  it("re-speaks when a real city replaces the placeholder", () => {
-    assert.equal(
-      shouldRespeakWelcome({
-        previousCity: "votre quartier",
-        nextCity: "Port-au-Prince",
-        nextResolved: true,
-      }),
-      true,
-    );
-    assert.equal(
-      shouldRespeakWelcome({
-        previousCity: "Gatineau",
-        nextCity: "Port-au-Prince",
-        nextResolved: true,
-      }),
-      true,
-    );
-    assert.equal(
-      shouldRespeakWelcome({
-        previousCity: "Port-au-Prince",
-        nextCity: "votre quartier",
-        nextResolved: false,
-      }),
-      false,
-    );
+    assert.doesNotMatch(spoken, /\{city\}/);
   });
 });
