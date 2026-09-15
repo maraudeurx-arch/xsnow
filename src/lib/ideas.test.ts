@@ -58,6 +58,24 @@ describe("idea form", () => {
     assert.equal(parseStoredIdea({ involvement: ["tete"] }), null);
   });
 
+  it("strips script tags and javascript: from stored ideas", () => {
+    const ok = parseStoredIdea({
+      id: "idea-xss",
+      text: "<script>alert(1)</script> Déneiger les allées javascript:alert(1)",
+      involvement: ["mains"],
+    });
+    assert.equal(ok?.text.includes("<script"), false);
+    assert.equal(ok?.text.includes("javascript:"), false);
+    assert.match(ok?.text ?? "", /Déneiger les allées/);
+    assert.equal(
+      parseStoredIdea({
+        text: "<script>alert(1)</script>",
+        involvement: ["mains"],
+      }),
+      null,
+    );
+  });
+
   it("builds a share text and an analytics snippet without emails", () => {
     const idea = ideaFromForm({
       text: "Partager une perceuse le samedi",

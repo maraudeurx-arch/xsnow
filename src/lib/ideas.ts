@@ -4,6 +4,11 @@
  */
 
 import { PUBLIC_SITE_URL } from "./paths.ts";
+import {
+  sanitizeRecordId,
+  sanitizeUntrustedText,
+  SHARE_TEXT_MAX,
+} from "./sanitize.ts";
 import { uid } from "./storage.ts";
 
 export const IDEAS_KEY = "xsnow.ideas";
@@ -78,15 +83,35 @@ export function parseInvolvement(raw: unknown): Involvement[] {
 }
 
 export function clipIdeaText(text: string) {
-  return text.replace(/\s+/g, " ").trim().slice(0, IDEA_TEXT_MAX);
+  return sanitizeUntrustedText(text, {
+    max: IDEA_TEXT_MAX,
+    redactEmails: true,
+    allowNewlines: false,
+  });
 }
 
 export function clipHours(value: string) {
-  return value.replace(/\s+/g, " ").trim().slice(0, IDEA_HOURS_MAX);
+  return sanitizeUntrustedText(value, {
+    max: IDEA_HOURS_MAX,
+    redactEmails: false,
+    allowNewlines: false,
+  });
 }
 
 export function clipNeighborhood(value: string) {
-  return value.replace(/\s+/g, " ").trim().slice(0, IDEA_NEIGHBORHOOD_MAX);
+  return sanitizeUntrustedText(value, {
+    max: IDEA_NEIGHBORHOOD_MAX,
+    redactEmails: true,
+    allowNewlines: false,
+  });
+}
+
+export function clipIdeaShareText(text: string) {
+  return sanitizeUntrustedText(text, {
+    max: SHARE_TEXT_MAX,
+    redactEmails: false,
+    allowNewlines: true,
+  });
 }
 
 export function toggleInvolvement(current: Involvement[], key: Involvement): Involvement[] {
@@ -131,7 +156,7 @@ export function parseStoredIdea(raw: unknown): CommunityIdea | null {
   if (text.length < IDEA_TEXT_MIN) return null;
   const involvement = parseInvolvement(record.involvement);
   if (!involvement.length) return null;
-  const id = typeof record.id === "string" && record.id.trim() ? record.id.trim().slice(0, 80) : uid();
+  const id = sanitizeRecordId(record.id) || uid();
   const createdAt =
     typeof record.createdAt === "string" && record.createdAt ? record.createdAt : new Date().toISOString();
   const updatedAt =
@@ -171,7 +196,7 @@ function shareTextKey(id: string) {
 export function readEditedIdeaShare(id: string) {
   if (typeof window === "undefined" || !id) return "";
   try {
-    return window.localStorage.getItem(shareTextKey(id)) || "";
+    return clipIdeaShareText(window.localStorage.getItem(shareTextKey(id)) || "");
   } catch {
     return "";
   }
@@ -180,7 +205,12 @@ export function readEditedIdeaShare(id: string) {
 export function writeEditedIdeaShare(id: string, text: string) {
   if (typeof window === "undefined" || !id) return;
   try {
-    window.localStorage.setItem(shareTextKey(id), text);
+    const clean = clipIdeaShareText(text);
+    if (!clean) {
+      window.localStorage.removeItem(shareTextKey(id));
+      return;
+    }
+    window.localStorage.setItem(shareTextKey(id), clean);
   } catch {
     // Private mode / quota
   }

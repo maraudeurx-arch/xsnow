@@ -3,6 +3,8 @@
  * After `npx wrangler deploy` in workers/xsnow-chat, set
  * NEXT_PUBLIC_CHAT_API_URL (or fill CHAT_API_FALLBACK_URL).
  */
+import { CHAT_TEXT_MAX, sanitizeUntrustedText } from "./sanitize.ts";
+
 export const CHAT_API_FALLBACK_URL =
   "https://xsnow-chat.xsnowopc.workers.dev";
 
@@ -31,18 +33,26 @@ export class ChatFault extends Error {
 }
 
 function flattenContent(content: unknown): string {
-  if (typeof content === "string") return content.trim();
+  if (typeof content === "string") {
+    return sanitizeUntrustedText(content, {
+      max: CHAT_TEXT_MAX,
+      redactEmails: false,
+      allowNewlines: true,
+    });
+  }
   if (!Array.isArray(content)) return "";
-  return content
-    .map((part) => {
-      if (typeof part === "string") return part;
-      if (part && typeof part === "object" && typeof (part as { text?: unknown }).text === "string") {
-        return (part as { text: string }).text;
-      }
-      return "";
-    })
-    .join("")
-    .trim();
+  return sanitizeUntrustedText(
+    content
+      .map((part) => {
+        if (typeof part === "string") return part;
+        if (part && typeof part === "object" && typeof (part as { text?: unknown }).text === "string") {
+          return (part as { text: string }).text;
+        }
+        return "";
+      })
+      .join(""),
+    { max: CHAT_TEXT_MAX, redactEmails: false, allowNewlines: true },
+  );
 }
 
 function replyFromPayload(payload: unknown): string {
@@ -94,7 +104,14 @@ export async function completeChat(options: {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         system: options.system,
-        messages: options.messages,
+        messages: options.messages.map((message) => ({
+          role: message.role,
+          content: sanitizeUntrustedText(message.content, {
+            max: CHAT_TEXT_MAX,
+            redactEmails: false,
+            allowNewlines: true,
+          }),
+        })),
       }),
       signal: options.signal,
     });
@@ -119,7 +136,11 @@ export async function completeChat(options: {
     throw new ChatFault("empty");
   }
 
-  const text = replyFromPayload(payload);
+  const text = sanitizeUntrustedText(replyFromPayload(payload), {
+    max: CHAT_TEXT_MAX,
+    redactEmails: false,
+    allowNewlines: true,
+  });
   if (!text) throw new ChatFault("empty");
   return text;
 }

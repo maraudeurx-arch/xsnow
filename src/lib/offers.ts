@@ -1,7 +1,18 @@
 /**
  * Peer-to-peer community offers (MVP = localStorage + optional share URL).
  * First real offer: morning car loan, Interac e-Transfer, borrower pays gas.
+ * Visitor-authored fields are plain text only (see sanitize.ts).
  */
+
+import {
+  CONTACT_TEXT_MAX,
+  NOTES_TEXT_MAX,
+  SHARE_TEXT_MAX,
+  TITLE_TEXT_MAX,
+  safeHttpUrl,
+  sanitizeRecordId,
+  sanitizeUntrustedText,
+} from "./sanitize.ts";
 
 export const PUBLIC_OFFER_SITE_URL = "https://maraudeurx-arch.github.io/xsnow/";
 
@@ -102,8 +113,9 @@ function nextId() {
   return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
 }
 
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const EMAIL_RE = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
 const PHONE_RE = /^\+?[0-9][0-9\s().-]{5,}$/;
+const PAYPAL_HANDLE_RE = /^[A-Za-z0-9._-]+$/;
 
 export function isOfferKind(value: unknown): value is OfferKind {
   return value === "car_morning" || value === "hotspot" || value === "ux_session";
@@ -136,7 +148,9 @@ export function draftTemplateId(kind: OfferKind) {
 }
 
 export function looksLikeEmail(value: string) {
-  return EMAIL_RE.test(value.trim());
+  const trimmed = value.trim();
+  if (!trimmed || /^(javascript|data|vbscript|file|blob):/i.test(trimmed)) return false;
+  return EMAIL_RE.test(trimmed);
 }
 
 export function looksLikePhone(value: string) {
@@ -153,24 +167,40 @@ export function normalizePaypalMe(value: string) {
     .replace(/^paypal\.me\//i, "")
     .replace(/^\//, "")
     .split(/[?#]/)[0]
-    .trim();
-  return stripped.slice(0, 80);
+    .trim()
+    .slice(0, 80);
+  if (!stripped || !PAYPAL_HANDLE_RE.test(stripped)) return "";
+  return stripped;
 }
 
 export function paypalMeUrl(value: string) {
   const handle = normalizePaypalMe(value);
   if (!handle) return "";
-  return `https://www.paypal.me/${encodeURIComponent(handle)}`;
+  return safeHttpUrl(`https://www.paypal.me/${encodeURIComponent(handle)}`);
 }
 
 export function mailtoHref(email: string, subject: string, body: string) {
-  return `mailto:${encodeURIComponent(email)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  const clean = String(email || "").trim();
+  if (!looksLikeEmail(clean)) return "";
+  const safeSubject = sanitizeUntrustedText(subject, { max: 200, redactEmails: false });
+  const safeBody = sanitizeUntrustedText(body, {
+    max: 1500,
+    redactEmails: false,
+    allowNewlines: true,
+  });
+  return `mailto:${encodeURIComponent(clean)}?subject=${encodeURIComponent(safeSubject)}&body=${encodeURIComponent(safeBody)}`;
 }
 
 export function smsHref(phone: string, body: string) {
+  if (!looksLikePhone(phone)) return "";
   const digits = phone.replace(/[^\d+]/g, "");
   if (!digits) return "";
-  return `sms:${digits}?&body=${encodeURIComponent(body)}`;
+  const safeBody = sanitizeUntrustedText(body, {
+    max: 1500,
+    redactEmails: false,
+    allowNewlines: true,
+  });
+  return `sms:${digits}?&body=${encodeURIComponent(safeBody)}`;
 }
 
 export function carMorningDefaults(): OfferFormInput {
@@ -307,19 +337,33 @@ export function offerFromForm(
   const defaults = defaultsForKind(kind);
   const price = parsePriceCad(input.priceCad) ?? defaults.priceCad;
   return {
-    id: existing?.id ?? nextId(),
+    id: sanitizeRecordId(existing?.id) || nextId(),
     kind,
-    title: String(input.title || "").trim() || fallbackTitle(kind),
+    title:
+      sanitizeUntrustedText(String(input.title || ""), {
+        max: TITLE_TEXT_MAX,
+        redactEmails: false,
+      }) || fallbackTitle(kind),
     windowFrom: String(input.windowFrom || defaults.windowFrom).slice(0, 5),
     windowTo: String(input.windowTo || defaults.windowTo).slice(0, 5),
     earlierOk: true,
     priceCad: typeof price === "number" ? price : DEFAULT_PRICE_CAD,
     gasBorrowerPays: kind === "car_morning" ? Boolean(input.gasBorrowerPays) : false,
-    neighborhood: String(input.neighborhood || "").trim(),
-    interacContact: String(input.interacContact || "").trim(),
+    neighborhood: sanitizeUntrustedText(String(input.neighborhood || ""), {
+      max: 80,
+      redactEmails: true,
+    }),
+    interacContact: sanitizeUntrustedText(String(input.interacContact || ""), {
+      max: CONTACT_TEXT_MAX,
+      redactEmails: false,
+    }),
     paypalMe: normalizePaypalMe(input.paypalMe || ""),
     insuranceOk: kind === "car_morning" ? Boolean(input.insuranceOk) : false,
-    notes: String(input.notes || "").trim().slice(0, 800),
+    notes: sanitizeUntrustedText(String(input.notes || ""), {
+      max: NOTES_TEXT_MAX,
+      redactEmails: false,
+      allowNewlines: true,
+    }),
     published: canPublish(input),
     createdAt: existing?.createdAt ?? now,
     updatedAt: now,
@@ -338,7 +382,7 @@ export function unpublishedTemplateOffer(
   const offer = offerFromForm(form, existing, now);
   return {
     ...offer,
-    id: existing?.id ?? draftTemplateId(kind),
+    id: sanitizeRecordId(existing?.id) || draftTemplateId(kind),
     published: false,
   };
 }
@@ -364,8 +408,7 @@ export function formatCad(amount: number, locale = "fr") {
 }
 
 function clipShare(value: string, max: number) {
-  const trimmed = value.replace(/\s+/g, " ").trim();
-  return trimmed.length > max ? trimmed.slice(0, max) : trimmed;
+  return sanitizeUntrustedText(value, { max, redactEmails: false, allowNewlines: false });
 }
 
 export function toSharePayload(offer: CommunityOffer): SharePayload {
@@ -410,11 +453,13 @@ export function encodeSharePayload(payload: SharePayload) {
 }
 
 export function decodeSharePayload(raw: string): SharePayload | null {
+  if (typeof raw !== "string" || raw.length > 4096) return null;
   try {
     const json =
       typeof atob === "function"
         ? new TextDecoder().decode(base64UrlToBytes(raw))
         : Buffer.from(raw, "base64url").toString("utf8");
+    if (json.length > 4096) return null;
     const parsed = JSON.parse(json) as SharePayload;
     if (!isOfferKind(parsed.k)) return null;
     if (typeof parsed.t !== "string" || typeof parsed.f !== "string" || typeof parsed.u !== "string") {
@@ -429,20 +474,36 @@ export function decodeSharePayload(raw: string): SharePayload | null {
 }
 
 export function offerFromSharePayload(payload: SharePayload, now = new Date().toISOString()): CommunityOffer {
+  const sharedId = sanitizeRecordId(payload.id);
   return {
-    id: payload.id && payload.id !== FEATURED_CAR_MORNING_ID ? payload.id : `shared-car-morning`,
+    id: sharedId && sharedId !== FEATURED_CAR_MORNING_ID ? sharedId : "shared-car-morning",
     kind: payload.k,
-    title: payload.t || DEFAULT_CAR_TITLE,
-    windowFrom: payload.f || DEFAULT_WINDOW_FROM,
-    windowTo: payload.u || DEFAULT_WINDOW_TO,
+    title:
+      sanitizeUntrustedText(payload.t || DEFAULT_CAR_TITLE, {
+        max: TITLE_TEXT_MAX,
+        redactEmails: false,
+      }) || DEFAULT_CAR_TITLE,
+    windowFrom: String(payload.f || DEFAULT_WINDOW_FROM).slice(0, 5),
+    windowTo: String(payload.u || DEFAULT_WINDOW_TO).slice(0, 5),
     earlierOk: true,
     priceCad: payload.p,
     gasBorrowerPays: true,
-    neighborhood: payload.n || DEFAULT_NEIGHBORHOOD,
-    interacContact: payload.i,
+    neighborhood:
+      sanitizeUntrustedText(payload.n || DEFAULT_NEIGHBORHOOD, {
+        max: 40,
+        redactEmails: true,
+      }) || DEFAULT_NEIGHBORHOOD,
+    interacContact: sanitizeUntrustedText(payload.i, {
+      max: CONTACT_TEXT_MAX,
+      redactEmails: false,
+    }),
     paypalMe: payload.y ? normalizePaypalMe(payload.y) : "",
     insuranceOk: true,
-    notes: payload.o || "",
+    notes: sanitizeUntrustedText(payload.o || "", {
+      max: 80,
+      redactEmails: false,
+      allowNewlines: false,
+    }),
     published: true,
     createdAt: now,
     updatedAt: now,
@@ -503,6 +564,99 @@ export function mergeBrowseOffers(
   return list.sort((a, b) => (a.updatedAt < b.updatedAt ? 1 : -1));
 }
 
+export function parseStoredOffer(raw: unknown): CommunityOffer | null {
+  if (!raw || typeof raw !== "object") return null;
+  const record = raw as Record<string, unknown>;
+  if (!isOfferKind(record.kind)) return null;
+  const title = sanitizeUntrustedText(typeof record.title === "string" ? record.title : "", {
+    max: TITLE_TEXT_MAX,
+    redactEmails: false,
+  });
+  if (!title) return null;
+  const id = sanitizeRecordId(record.id);
+  if (!id) return null;
+  const price =
+    typeof record.priceCad === "number" && Number.isFinite(record.priceCad)
+      ? record.priceCad
+      : parsePriceCad(String(record.priceCad ?? ""));
+  if (price == null) return null;
+  const createdAt =
+    typeof record.createdAt === "string" && record.createdAt ? record.createdAt : new Date().toISOString();
+  return {
+    id,
+    kind: record.kind,
+    title,
+    windowFrom: String(record.windowFrom || "").slice(0, 5),
+    windowTo: String(record.windowTo || "").slice(0, 5),
+    earlierOk: true,
+    priceCad: price,
+    gasBorrowerPays: Boolean(record.gasBorrowerPays),
+    neighborhood: sanitizeUntrustedText(typeof record.neighborhood === "string" ? record.neighborhood : "", {
+      max: 80,
+      redactEmails: true,
+    }),
+    interacContact: sanitizeUntrustedText(typeof record.interacContact === "string" ? record.interacContact : "", {
+      max: CONTACT_TEXT_MAX,
+      redactEmails: false,
+    }),
+    paypalMe: typeof record.paypalMe === "string" ? normalizePaypalMe(record.paypalMe) : "",
+    insuranceOk: Boolean(record.insuranceOk),
+    notes: sanitizeUntrustedText(typeof record.notes === "string" ? record.notes : "", {
+      max: NOTES_TEXT_MAX,
+      redactEmails: false,
+      allowNewlines: true,
+    }),
+    published: record.published === true,
+    createdAt,
+    updatedAt: typeof record.updatedAt === "string" && record.updatedAt ? record.updatedAt : createdAt,
+  };
+}
+
+export function parseStoredRequest(raw: unknown): OfferRequest | null {
+  if (!raw || typeof raw !== "object") return null;
+  const record = raw as Record<string, unknown>;
+  const name = sanitizeUntrustedText(typeof record.name === "string" ? record.name : "", {
+    max: 80,
+    redactEmails: false,
+  });
+  const contact = sanitizeUntrustedText(typeof record.contact === "string" ? record.contact : "", {
+    max: CONTACT_TEXT_MAX,
+    redactEmails: false,
+  });
+  if (!name || !contact) return null;
+  const id = sanitizeRecordId(record.id);
+  const offerId = sanitizeRecordId(record.offerId);
+  if (!id || !offerId) return null;
+  return {
+    id,
+    offerId,
+    offerTitle: sanitizeUntrustedText(typeof record.offerTitle === "string" ? record.offerTitle : "", {
+      max: TITLE_TEXT_MAX,
+      redactEmails: false,
+    }),
+    name,
+    contact,
+    date: sanitizeUntrustedText(typeof record.date === "string" ? record.date : "", {
+      max: 16,
+      redactEmails: false,
+    }),
+    message: sanitizeUntrustedText(typeof record.message === "string" ? record.message : "", {
+      max: 500,
+      redactEmails: false,
+      allowNewlines: true,
+    }),
+    createdAt: typeof record.createdAt === "string" && record.createdAt ? record.createdAt : new Date().toISOString(),
+  };
+}
+
+export function clipShareText(text: string) {
+  return sanitizeUntrustedText(text, {
+    max: SHARE_TEXT_MAX,
+    redactEmails: false,
+    allowNewlines: true,
+  });
+}
+
 export function shareTextKey(offerId: string) {
   return `${SHARE_TEXT_KEY_PREFIX}${offerId}`;
 }
@@ -510,7 +664,7 @@ export function shareTextKey(offerId: string) {
 export function readEditedShareText(offerId: string) {
   if (typeof window === "undefined" || !offerId) return "";
   try {
-    return window.localStorage.getItem(shareTextKey(offerId)) || "";
+    return clipShareText(window.localStorage.getItem(shareTextKey(offerId)) || "");
   } catch {
     return "";
   }
@@ -519,7 +673,12 @@ export function readEditedShareText(offerId: string) {
 export function writeEditedShareText(offerId: string, text: string) {
   if (typeof window === "undefined" || !offerId) return;
   try {
-    window.localStorage.setItem(shareTextKey(offerId), text);
+    const clean = clipShareText(text);
+    if (!clean) {
+      window.localStorage.removeItem(shareTextKey(offerId));
+      return;
+    }
+    window.localStorage.setItem(shareTextKey(offerId), clean);
   } catch {
     // Private mode / quota
   }

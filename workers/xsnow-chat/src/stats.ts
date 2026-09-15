@@ -3,8 +3,11 @@
  * POST /stats  { events: [...] }
  * GET  /stats/summary
  *
- * D1 table `events` (see migrations/). Never store lat/lon, email, or names.
+ * D1 table `events` (see migrations/). Never store lat/lon, email, names,
+ * HTML, or executable payloads. `suggestion` is plain text only.
  */
+
+import { sanitizeUntrustedText } from "../../../src/lib/sanitize.ts";
 
 export const STATS_EVENT_TYPES = [
   "session_start",
@@ -33,8 +36,6 @@ export type StoredStatsEvent = {
 
 const MAX_BATCH = 32;
 const SESSION_RE = /^[A-Za-z0-9_-]{8,80}$/;
-const EMAIL_RE = /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi;
-const COORDS_RE = /-?\d{1,3}\.\d+\s*,\s*-?\d{1,3}\.\d+/;
 const FORBIDDEN_KEYS = new Set([
   "lat",
   "lon",
@@ -64,9 +65,12 @@ function isType(value: unknown): value is StatsEventType {
 }
 
 function clip(text: string, max: number) {
-  const cleaned = text.replace(EMAIL_RE, "[redacted]").replace(/\s+/g, " ").trim();
-  if (!cleaned || COORDS_RE.test(cleaned)) return "";
-  return cleaned.length > max ? cleaned.slice(0, max) : cleaned;
+  return sanitizeUntrustedText(text, {
+    max,
+    redactEmails: true,
+    allowNewlines: false,
+    dropCoordinates: true,
+  });
 }
 
 function sessionId(value: unknown) {

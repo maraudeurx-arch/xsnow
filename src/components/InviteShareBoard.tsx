@@ -7,7 +7,8 @@ import {
   publicInviteUrl,
   readOrCreateShareCode,
 } from "@/lib/invite";
-import { copyText } from "@/lib/offers";
+import { copyText, clipShareText } from "@/lib/offers";
+import { SHARE_TEXT_MAX } from "@/lib/sanitize";
 import { useHasHydrated } from "@/lib/useAnalyticsConsent";
 
 const fieldClass =
@@ -26,7 +27,7 @@ export function InviteShareBoard({ compact = false }: { compact?: boolean }) {
   const value = text || seeded;
 
   async function copyShare() {
-    const ok = await copyText(value);
+    const ok = await copyText(clipShareText(value));
     setStatus(ok ? "ok" : "fail");
   }
 
@@ -40,8 +41,9 @@ export function InviteShareBoard({ compact = false }: { compact?: boolean }) {
       <textarea
         ref={area}
         value={value}
-        onChange={(event) => setText(event.target.value)}
+        onChange={(event) => setText(event.target.value.slice(0, SHARE_TEXT_MAX))}
         rows={compact ? 4 : 5}
+        maxLength={SHARE_TEXT_MAX}
         className={`${fieldClass} min-h-[96px] text-xs leading-relaxed`}
         aria-label={copy.title}
       />

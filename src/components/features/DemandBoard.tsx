@@ -21,6 +21,8 @@ import {
   mergeBrowseOffers,
   offerFromSharePayload,
   parseOfferKindQuery,
+  parseStoredOffer,
+  parseStoredRequest,
   paypalMeUrl,
   smsHref,
   type CommunityOffer,
@@ -55,8 +57,20 @@ function DemandBoardInner() {
   const copy = m.offers;
   const searchParams = useSearchParams();
   const [owned] = useStoredList<CommunityOffer>(OFFERS_KEY);
-  const [imported, setImported] = useStoredList<CommunityOffer>(IMPORTED_OFFERS_KEY);
-  const [requests, setRequests] = useStoredList<OfferRequest>(OFFER_REQUESTS_KEY);
+  const [importedRaw, setImported] = useStoredList<CommunityOffer>(IMPORTED_OFFERS_KEY);
+  const [requestsRaw, setRequests] = useStoredList<OfferRequest>(OFFER_REQUESTS_KEY);
+  const ownedClean = useMemo(
+    () => owned.map(parseStoredOffer).filter((item): item is CommunityOffer => Boolean(item)),
+    [owned],
+  );
+  const imported = useMemo(
+    () => importedRaw.map(parseStoredOffer).filter((item): item is CommunityOffer => Boolean(item)),
+    [importedRaw],
+  );
+  const requests = useMemo(
+    () => requestsRaw.map(parseStoredRequest).filter((item): item is OfferRequest => Boolean(item)),
+    [requestsRaw],
+  );
   const [pickedId, setPickedId] = useState<string | null | false>(null);
   const [paidId, setPaidId] = useState<string | null>(null);
   const [copied, setCopied] = useState("");
@@ -70,8 +84,8 @@ function DemandBoardInner() {
   }, [searchParams]);
 
   const offers = useMemo(
-    () => mergeBrowseOffers(owned, imported, fromUrl),
-    [fromUrl, imported, owned],
+    () => mergeBrowseOffers(ownedClean, imported, fromUrl),
+    [fromUrl, imported, ownedClean],
   );
 
   const today = useMemo(() => {
@@ -108,7 +122,7 @@ function DemandBoardInner() {
       setFormError(copy.dateRequired);
       return;
     }
-    const next: OfferRequest = {
+    const next = parseStoredRequest({
       id: uid(),
       offerId: offer.id,
       offerTitle: offer.title,
@@ -117,7 +131,11 @@ function DemandBoardInner() {
       date,
       message,
       createdAt: new Date().toISOString(),
-    };
+    });
+    if (!next) {
+      setFormError(copy.nameRequired);
+      return;
+    }
     setRequests([next, ...requests]);
     if (fromUrl && fromUrl.id === offer.id) {
       setImported([fromUrl, ...imported.filter((item) => item.id !== fromUrl.id)]);
@@ -200,7 +218,7 @@ function DemandBoardInner() {
                   <p className="text-sm font-bold">{copy.requesting}</p>
                   <label className="grid gap-1 text-sm font-semibold">
                     {copy.yourName}
-                    <input name="name" required autoComplete="name" className={fieldClass} />
+                    <input name="name" required autoComplete="name" maxLength={80} className={fieldClass} />
                   </label>
                   <label className="grid gap-1 text-sm font-semibold">
                     {copy.yourContact}
@@ -209,6 +227,7 @@ function DemandBoardInner() {
                       required
                       autoComplete="tel"
                       inputMode="email"
+                      maxLength={80}
                       className={fieldClass}
                     />
                   </label>
@@ -221,6 +240,7 @@ function DemandBoardInner() {
                     <textarea
                       name="message"
                       rows={3}
+                      maxLength={500}
                       placeholder={copy.messagePh}
                       className={`${fieldClass} min-h-[88px] py-2`}
                     />
@@ -321,11 +341,11 @@ function PaymentPanel({
             {copied === "interac" ? copy.copied : copy.copyInterac}
           </button>
         ) : null}
-        {offer.paypalMe ? (
+        {paypalMeUrl(offer.paypalMe) ? (
           <a
             href={paypalMeUrl(offer.paypalMe)}
             target="_blank"
-            rel="noreferrer"
+            rel="noopener noreferrer nofollow"
             className="tap flex items-center justify-center rounded-full border border-gold/40 bg-gold/10 text-sm font-extrabold text-gold"
           >
             {copy.paypalPay}

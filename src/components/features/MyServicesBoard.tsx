@@ -23,13 +23,16 @@ import {
   formKind,
   offerFromForm,
   parseOfferTemplateQuery,
+  parseStoredOffer,
   publishIssues,
   unpublishedTemplateOffer,
   writeEditedShareText,
+  clipShareText,
   type CommunityOffer,
   type OfferFormInput,
   type OfferKind,
 } from "@/lib/offers";
+import { NOTES_TEXT_MAX, SHARE_TEXT_MAX } from "@/lib/sanitize";
 import { useStoredList } from "@/lib/useStoredList";
 
 const fieldClass =
@@ -80,7 +83,11 @@ function MyServicesBoardInner() {
   const copy = m.offers;
   const searchParams = useSearchParams();
   const initialTemplate = parseOfferTemplateQuery(searchParams.get("template"));
-  const [items, setItems] = useStoredList<CommunityOffer>(OFFERS_KEY);
+  const [stored, setItems] = useStoredList<CommunityOffer>(OFFERS_KEY);
+  const items = useMemo(
+    () => stored.map(parseStoredOffer).filter((item): item is CommunityOffer => Boolean(item)),
+    [stored],
+  );
   const [form, setForm] = useState<OfferFormInput>(() =>
     initialTemplate && initialTemplate !== "car_morning"
       ? localizedTemplateForm(initialTemplate, copy)
@@ -165,13 +172,14 @@ function MyServicesBoardInner() {
   }
 
   function editShareText(next: string) {
-    setShareText(next);
+    const clipped = next.slice(0, SHARE_TEXT_MAX);
+    setShareText(clipped);
     setShareStatus("");
-    if (shareOfferId) writeEditedShareText(shareOfferId, next);
+    if (shareOfferId) writeEditedShareText(shareOfferId, clipped);
   }
 
   async function copyShare() {
-    const ok = await copyText(shareText);
+    const ok = await copyText(clipShareText(shareText));
     setShareStatus(ok ? "ok" : "fail");
     if (ok && shareOfferId) writeEditedShareText(shareOfferId, shareText);
   }
@@ -408,6 +416,7 @@ function MyServicesBoardInner() {
             value={form.notes}
             onChange={(event) => patch("notes", event.target.value)}
             rows={3}
+            maxLength={NOTES_TEXT_MAX}
             placeholder={copy.notesPh}
             className={`${fieldClass} min-h-[88px] py-2`}
           />
@@ -468,11 +477,9 @@ function MyServicesBoardInner() {
           <textarea
             ref={shareArea}
             value={shareText}
-            onChange={(event) => {
-              setShareText(event.target.value);
-              editShareText(event.target.value);
-            }}
+            onChange={(event) => editShareText(event.target.value)}
             rows={8}
+            maxLength={SHARE_TEXT_MAX}
             className={`${fieldClass} min-h-[140px] py-2 text-xs leading-relaxed`}
           />
           <div className="grid grid-cols-2 gap-2">

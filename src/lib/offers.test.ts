@@ -17,6 +17,7 @@ import {
   offerKindQuery,
   parseOfferKindQuery,
   parseOfferTemplateQuery,
+  parseStoredOffer,
   paypalMeUrl,
   publishIssues,
   sharePostFr,
@@ -27,6 +28,8 @@ import {
   unpublishedTemplateOffer,
   uxSessionDefaults,
   writeEditedShareText,
+  mailtoHref,
+  offerFromSharePayload,
 } from "./offers.ts";
 
 describe("publishIssues", () => {
@@ -120,6 +123,14 @@ describe("paypal.me", () => {
   it("normalizes handles and builds a url", () => {
     assert.equal(normalizePaypalMe("https://paypal.me/MonVoisin"), "MonVoisin");
     assert.equal(paypalMeUrl("MonVoisin"), "https://www.paypal.me/MonVoisin");
+  });
+
+  it("rejects javascript: and non-handle junk", () => {
+    assert.equal(normalizePaypalMe("javascript:alert(1)"), "");
+    assert.equal(paypalMeUrl("javascript:alert(1)"), "");
+    assert.equal(paypalMeUrl("<script>alert(1)</script>"), "");
+    assert.equal(mailtoHref("javascript:alert(1)@evil.com", "hi", "body"), "");
+    assert.match(mailtoHref("voisin@example.com", "Sujet", "Corps"), /^mailto:/);
   });
 });
 
@@ -228,5 +239,47 @@ describe("earn-now offer templates", () => {
     const decoded = decodeSharePayload(encodeSharePayload(toSharePayload(offer)));
     assert.equal(decoded?.k, "hotspot");
     assert.match(demandPath(decoded ?? undefined), /\?kind=hotspot&o=/);
+  });
+});
+
+describe("untrusted offer fields", () => {
+  it("strips script tags from notes and share payloads", () => {
+    const offer = offerFromForm({
+      ...carMorningDefaults(),
+      interacContact: "voisin@example.com",
+      insuranceOk: true,
+      notes: "<script>alert(1)</script> Non-fumeur javascript:alert(1)",
+    });
+    assert.doesNotMatch(offer.notes, /<script|javascript:/i);
+    assert.match(offer.notes, /Non-fumeur/);
+    assert.equal(offer.interacContact, "voisin@example.com");
+
+    const poisoned = offerFromSharePayload({
+      k: "car_morning",
+      t: "<img src=x onerror=alert(1)> Prêt",
+      f: "05:00",
+      u: "12:00",
+      p: 35,
+      n: "Hull",
+      i: "voisin@example.com",
+      o: "<script>alert(1)</script> essence",
+      y: "javascript:alert(1)",
+    });
+    assert.doesNotMatch(poisoned.title, /<img|onerror/i);
+    assert.doesNotMatch(poisoned.notes, /<script/i);
+    assert.equal(poisoned.paypalMe, "");
+    assert.equal(paypalMeUrl(poisoned.paypalMe), "");
+
+    assert.equal(
+      parseStoredOffer({
+        kind: "car_morning",
+        id: "abc",
+        title: "<script>x</script>",
+        priceCad: 35,
+        published: true,
+      }),
+      null,
+    );
+    assert.equal(decodeSharePayload("a".repeat(5000)), null);
   });
 });
