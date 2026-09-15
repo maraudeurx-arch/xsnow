@@ -24,6 +24,7 @@ export const en: Messages = {
       "Get an alert if your child, partner, or elderly parents leave the place they’re meant to be",
     business: "Promote your business with ads",
     monetise: "Monetize yourself: your image, your voice.",
+    gagnerMaintenant: "Earn now",
     sondages: "Answer surveys and earn money",
     reportage: "With AI, create reports about your neighbourhood",
     scenarios: "Create comedy / animated scenarios",
@@ -178,7 +179,7 @@ export const en: Messages = {
   welcome:
     "Hello, I’m your avatar in the Open Community ecosystem. The proximity and mutual-aid spirit of the people of {city} are our strength. Let your neighbours know about a service you can offer in exchange for compensation: helping someone move, running errands, or helping with work around the house. This app also gives you free services, like helping you find your phone if you lose it, and alerting you if your child, partner, or elderly parents leave the place they’re meant to be: school, work, or a retirement home. Go to Home and choose the service you’d like to receive, or that you’d like to offer your neighbours in {city}. Do you have suggestions for tasks and services you’d like to monetize? Let me know, and the whole community will benefit. People who share this app, and ideas that get monetized, will be rewarded in proportion to their efforts. Don’t hesitate to ask me anything at any time — I’m entirely at your disposal.",
   systemPrompt:
-    "You are the visitor’s avatar in Open Community, in {city}. You speak only in English, you stay warm, concrete and brief. You help with neighbourhood mutual aid: errands and delivery, moving help, work around the house, child or pet sitting, lending or borrowing items, morning car loans (Interac, borrower pays for gas), a lost phone, alerts if a child, partner, or elderly parents leave (school, work, retirement home). You invite them to tap Home, under {placeName} on the left, or My services / In demand, to choose a service to offer or receive. You do not pretend to be a human. In a real emergency, point them to 911. You are at the visitor’s disposal for any question about Open Community. Your appearance: {avatar}.",
+    "You are the visitor’s avatar in Open Community, in {city}. You speak only in English, you stay warm, concrete and brief. You help with neighbourhood mutual aid: errands and delivery, moving help, work around the house, child or pet sitting, lending or borrowing items, morning car loans (Interac, borrower pays for gas), a lost phone, alerts if a child, partner, or elderly parents leave (school, work, retirement home). You invite them to tap Home, under {placeName} on the left, or My services / In demand / Earn now, to choose a service to offer or receive. Earn now explains three honest paths (neighbour offers, UX tests / research panels, hotspot or presence). You discourage ad-watching farms, click farms, and fake accounts. You do not pretend to be a human. In a real emergency, point them to 911. You are at the visitor’s disposal for any question about Open Community. Your appearance: {avatar}.",
   features: {
     business: {
       title: "Promote your business with ads",
@@ -219,6 +220,10 @@ export const en: Messages = {
     monetise: {
       title: "Monetize yourself: your image, your voice.",
       lead: "Offer your image or your voice to the community. Soon wired to your services.",
+    },
+    gagnerMaintenant: {
+      title: "Earn now",
+      lead: "Three honest paths — not an ad farm. Neighbourhood first.",
     },
     sondages: {
       title: "Answer surveys and earn money",
@@ -539,6 +544,22 @@ export const en: Messages = {
   offers: {
     typeLabel: "Offer type",
     typeCarMorning: "Car loan — mornings",
+    typeHotspot: "Hotspot / shared connection",
+    typeUxSession: "User-testing session",
+    draft: "Draft",
+    saveDraft: "Save draft",
+    draftSaved: "Draft saved on this device — not published yet.",
+    templatesLabel: "Templates",
+    templateHotspot: "Hotspot / connection",
+    templateUx: "User test",
+    templateHotspotTitle: "Hotspot / shared connection",
+    templateUxTitle: "User-testing session",
+    templateHotspotNotes:
+      "Wi-Fi hotspot or connection help for a neighbour. Rate per session. Rules: reasonable bandwidth, no illegal use, check your plan / ISP. Private arrangement.",
+    templateUxNotes:
+      "User-testing session (app or site): 30 to 45 min, honest feedback. No fake accounts, no click farms. Rate per session.",
+    priceGeneric: "Rate (CAD)",
+    perSession: "/ session",
     formTitleNew: "Publish an offer",
     formTitleEdit: "Edit offer",
     title: "Title",
@@ -600,6 +621,7 @@ export const en: Messages = {
     dateRequired: "Pick a date.",
     paymentTitle: "Interac payment",
     paymentAmount: "Morning fee: {amount}.",
+    paymentAmountGeneric: "Amount: {amount}.",
     paymentGas: "Gas is extra, on you — it is not included in this fee.",
     paymentTo: "Send an Interac e-Transfer to: {contact}",
     paymentToUnknown:
@@ -621,5 +643,36 @@ export const en: Messages = {
     requestMailSubject: "Request: {title}",
     requestMailBody:
       "Hello,\n\nI’d like to book “{title}” on {date}.\n\n{name}\n{contact}\n\n{message}\n\n— Open Community",
+  },
+  gagner: {
+    antiPattern:
+      "Watching ads in a loop, click farms, and fake accounts are not supported.",
+    neighborsTitle: "Neighbour offers",
+    neighborsBody:
+      "The most real path: publish or book a neighbourhood service. The morning car loan (Interac, gas extra) is already live.",
+    neighborsCtaServices: "Publish in My services",
+    neighborsCtaDemand: "See In demand",
+    neighborsCtaCar: "Car loan (mornings)",
+    missionsTitle: "Paid missions",
+    missionsBody:
+      "UX tests and serious research panels pay better than watching ads. Amounts stay modest: think minutes, not a salary.",
+    missionsExamplesTitle: "Example missions",
+    missionsExample1: "App and website tests (honest feedback, often 10–20 min)",
+    missionsExample2: "Research panels like Prolific (paid studies, clear criteria)",
+    missionsExample3: "Open Community neighbourhood surveys — partners coming soon",
+    missionsSoon: "Partners coming soon in Open Community",
+    missionsProlific: "Prolific",
+    missionsUserTesting: "UserTesting",
+    missionsExternalHint: "Well-known external sites — you leave Open Community (new tab).",
+    missionsLocal: "OPC surveys (soon)",
+    timeTitle: "Time & connection",
+    timeBody:
+      "Publish a My services offer: hotspot / connection, a helping hand, or presence. Set a rate and your rules. The neighbour pays by Interac.",
+    timeCta: "Create a My services offer",
+    timeHotspot: "Template: Hotspot / shared connection",
+    timeUx: "Template: User-testing session",
+    timeWarn: "No click farms, no fake accounts.",
+    bandwidthNote:
+      "Bandwidth sharing (outside OPC): tiny amounts, check your ISP. Not a recommended path here.",
   },
 };

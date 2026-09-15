@@ -20,9 +20,11 @@ import {
   mailtoHref,
   mergeBrowseOffers,
   offerFromSharePayload,
+  parseOfferKindQuery,
   paypalMeUrl,
   smsHref,
   type CommunityOffer,
+  type OfferKind,
   type OfferRequest,
 } from "@/lib/offers";
 import { uid } from "@/lib/storage";
@@ -30,6 +32,15 @@ import { useStoredList } from "@/lib/useStoredList";
 
 const fieldClass =
   "tap rounded-2xl border border-white/15 bg-white/5 px-3 text-sm font-normal text-snow outline-none focus:border-gold";
+
+function kindLabel(
+  kind: OfferKind,
+  copy: { typeCarMorning: string; typeHotspot: string; typeUxSession: string },
+) {
+  if (kind === "hotspot") return copy.typeHotspot;
+  if (kind === "ux_session") return copy.typeUxSession;
+  return copy.typeCarMorning;
+}
 
 export function DemandBoard() {
   return (
@@ -69,10 +80,11 @@ function DemandBoardInner() {
     return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
   }, []);
 
+  const queryKind = parseOfferKindQuery(searchParams.get("kind"));
   const queryTarget =
     fromUrl?.id ??
-    (searchParams.get("kind") === "car-morning"
-      ? (offers.find((item) => item.kind === "car_morning")?.id ?? null)
+    (queryKind
+      ? (offers.find((item) => item.kind === queryKind)?.id ?? null)
       : null);
   const activeId = pickedId === false ? null : (pickedId ?? queryTarget);
   const paid = offers.find((item) => item.id === paidId) ?? null;
@@ -153,7 +165,7 @@ function DemandBoardInner() {
                   </span>
                 ) : (
                   <span className="rounded-full bg-gold/20 px-2 py-0.5 text-[11px] font-extrabold uppercase tracking-wide text-gold">
-                    {copy.typeCarMorning}
+                    {kindLabel(offer.kind, copy)}
                   </span>
                 )}
                 <p className="font-bold">{offer.title}</p>
@@ -163,9 +175,10 @@ function DemandBoardInner() {
                   from: formatHourFr(offer.windowFrom),
                   to: formatHourFr(offer.windowTo),
                 })}{" "}
-                · {formatCad(offer.priceCad, locale)} {copy.perMorning}
+                · {formatCad(offer.priceCad, locale)}{" "}
+                {offer.kind === "car_morning" ? copy.perMorning : copy.perSession}
                 {offer.neighborhood ? ` · ${offer.neighborhood}` : ""}
-                {offer.gasBorrowerPays ? ` · ${copy.gasBadge}` : ""}
+                {offer.kind === "car_morning" && offer.gasBorrowerPays ? ` · ${copy.gasBadge}` : ""}
               </p>
               {offer.notes ? (
                 <p className="mt-1 text-sm leading-relaxed text-snow/80">{offer.notes}</p>
@@ -277,9 +290,13 @@ function PaymentPanel({
     <div className="mt-3 space-y-3 rounded-2xl border border-gold/30 bg-gold/5 p-3">
       <p className="text-sm font-extrabold text-gold">{copy.paymentTitle}</p>
       <p className="text-sm leading-relaxed text-snow/90">
-        {interpolate(copy.paymentAmount, { amount })}
+        {interpolate(offer.kind === "car_morning" ? copy.paymentAmount : copy.paymentAmountGeneric, {
+          amount,
+        })}
       </p>
-      <p className="text-sm leading-relaxed text-snow/90">{copy.paymentGas}</p>
+      {offer.kind === "car_morning" ? (
+        <p className="text-sm leading-relaxed text-snow/90">{copy.paymentGas}</p>
+      ) : null}
       <p className="text-sm leading-relaxed text-snow/90">
         {offer.interacContact
           ? interpolate(copy.paymentTo, { contact: offer.interacContact })

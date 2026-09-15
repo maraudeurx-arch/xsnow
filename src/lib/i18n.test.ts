@@ -83,6 +83,34 @@ describe("wallet copy", () => {
   });
 });
 
+describe("gagner maintenant copy", () => {
+  it("keeps three honest paths and the anti-pattern in FR/EN/ES", () => {
+    assert.equal(fr.menu.gagnerMaintenant, "Gagner maintenant");
+    assert.equal(en.menu.gagnerMaintenant, "Earn now");
+    assert.equal(es.menu.gagnerMaintenant, "Ganar ahora");
+    assert.equal(fr.gagner.neighborsTitle, "Offres voisins");
+    assert.equal(fr.gagner.missionsTitle, "Missions payées");
+    assert.equal(fr.gagner.timeTitle, "Temps & connexion");
+    assert.match(fr.gagner.antiPattern, /pubs en boucle/);
+    assert.match(fr.gagner.antiPattern, /fermes de clics/);
+    assert.match(en.gagner.antiPattern, /ads in a loop/);
+    assert.match(en.gagner.antiPattern, /click farms/);
+    assert.match(es.gagner.antiPattern, /anuncios en bucle/);
+    assert.match(es.gagner.antiPattern, /granjas de clics/);
+    assert.match(fr.gagner.missionsBody, /tests UX/i);
+    assert.match(fr.gagner.bandwidthNote, /FAI/);
+    assert.match(en.gagner.bandwidthNote, /ISP/);
+    assert.deepEqual(Object.keys(en.gagner), Object.keys(fr.gagner));
+    assert.deepEqual(Object.keys(es.gagner), Object.keys(fr.gagner));
+    assert.deepEqual(Object.keys(en.features), Object.keys(fr.features));
+    assert.deepEqual(Object.keys(es.features), Object.keys(fr.features));
+    assert.ok(fr.features.gagnerMaintenant.title);
+    assert.match(fr.systemPrompt, /Gagner maintenant/);
+    assert.match(en.systemPrompt, /Earn now/);
+    assert.match(es.systemPrompt, /Ganar ahora/);
+  });
+});
+
 describe("install tip copy", () => {
   it("keeps iOS home-screen steps in FR/EN/ES", () => {
     assert.match(fr.install.tip, /Partager/);

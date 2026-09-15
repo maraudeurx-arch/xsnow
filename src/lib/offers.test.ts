@@ -5,12 +5,18 @@ import {
   carMorningDefaults,
   decodeSharePayload,
   demandPath,
+  DRAFT_HOTSPOT_ID,
+  DRAFT_UX_SESSION_ID,
   encodeSharePayload,
   featuredCarMorningOffer,
   formatHourFr,
+  hotspotDefaults,
   mergeBrowseOffers,
   normalizePaypalMe,
   offerFromForm,
+  offerKindQuery,
+  parseOfferKindQuery,
+  parseOfferTemplateQuery,
   paypalMeUrl,
   publishIssues,
   sharePostFr,
@@ -18,6 +24,8 @@ import {
   draftShareText,
   readEditedShareText,
   shareTextKey,
+  unpublishedTemplateOffer,
+  uxSessionDefaults,
   writeEditedShareText,
 } from "./offers.ts";
 
@@ -42,6 +50,23 @@ describe("publishIssues", () => {
       gasBorrowerPays: false,
     };
     assert.ok(publishIssues(draft).includes("gas"));
+  });
+
+  it("lets hotspot and UX drafts publish without insurance or gas", () => {
+    const hotspot = {
+      ...hotspotDefaults(),
+      interacContact: "voisin@opc.test",
+    };
+    assert.deepEqual(publishIssues(hotspot), []);
+    assert.equal(canPublish(hotspot), true);
+    assert.equal(offerFromForm(hotspot).kind, "hotspot");
+    assert.equal(offerFromForm(hotspot).published, true);
+    assert.equal(offerFromForm(hotspot).gasBorrowerPays, false);
+    assert.equal(offerFromForm(hotspot).insuranceOk, false);
+
+    const ux = { ...uxSessionDefaults(), interacContact: "8195550101" };
+    assert.deepEqual(publishIssues(ux), []);
+    assert.equal(offerFromForm(ux).kind, "ux_session");
   });
 });
 
@@ -160,5 +185,48 @@ describe("formatHourFr", () => {
   it("drops :00", () => {
     assert.equal(formatHourFr("05:00"), "5 h");
     assert.equal(formatHourFr("12:30"), "12 h 30");
+  });
+});
+
+describe("earn-now offer templates", () => {
+  it("parses kind and template query strings", () => {
+    assert.equal(parseOfferKindQuery("car-morning"), "car_morning");
+    assert.equal(parseOfferKindQuery("hotspot"), "hotspot");
+    assert.equal(parseOfferKindQuery("ux-session"), "ux_session");
+    assert.equal(parseOfferTemplateQuery("ux"), "ux_session");
+    assert.equal(parseOfferTemplateQuery("hotspot"), "hotspot");
+    assert.equal(offerKindQuery("ux_session"), "ux-session");
+  });
+
+  it("stores unpublished hotspot and UX helpers without listing them in En demande", () => {
+    const hotspot = unpublishedTemplateOffer("hotspot");
+    const ux = unpublishedTemplateOffer("ux_session");
+    assert.equal(hotspot.id, DRAFT_HOTSPOT_ID);
+    assert.equal(ux.id, DRAFT_UX_SESSION_ID);
+    assert.equal(hotspot.published, false);
+    assert.equal(ux.published, false);
+    assert.match(hotspot.title, /Hotspot/);
+    assert.match(ux.title, /test utilisateur/i);
+
+    const list = mergeBrowseOffers([hotspot, ux], [], null);
+    assert.equal(list.some((item) => item.id === DRAFT_HOTSPOT_ID), false);
+    assert.equal(list.some((item) => item.id === DRAFT_UX_SESSION_ID), false);
+    assert.equal(list.some((item) => item.id === featuredCarMorningOffer().id), true);
+  });
+
+  it("shares hotspot offers with kind=hotspot and no gas line", () => {
+    const offer = offerFromForm({
+      ...hotspotDefaults(),
+      neighborhood: "Hull",
+      interacContact: "opc@example.com",
+    });
+    const text = sharePostFr(offer);
+    assert.match(text, /Hotspot/);
+    assert.match(text, /Hull/);
+    assert.match(text, /kind=hotspot/);
+    assert.doesNotMatch(text, /essence/);
+    const decoded = decodeSharePayload(encodeSharePayload(toSharePayload(offer)));
+    assert.equal(decoded?.k, "hotspot");
+    assert.match(demandPath(decoded ?? undefined), /\?kind=hotspot&o=/);
   });
 });
