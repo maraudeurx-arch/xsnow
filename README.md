@@ -62,6 +62,8 @@ Voir [`.env.example`](.env.example). `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID` est 
 
 `NEXT_PUBLIC_CHAT_API_URL` : URL publique du Worker Cloudflare (`workers/xsnow-chat`). Inlinée au `npm run build` (export statique). Défaut si vide : `https://xsnow-chat.xsnowopc.workers.dev` (`CHAT_API_FALLBACK_URL` dans `src/lib/llm.ts`).
 
+`NEXT_PUBLIC_GEO_API_URL` : `GET|POST /geo` sur le même Worker (`{ lat, lon }` → `{ city, countryCode, localeHint }`). Si le Worker n’est pas encore redéployé, le navigateur utilise BigDataCloud (sans clé). Secours : Gatineau, `fr-CA`.
+
 ### Chat avatar (Cloudflare Workers AI, sans login)
 
 Le chat n’utilise **pas** Puter. Les visiteurs n’ont **aucun compte** à créer. Le navigateur envoie `POST` JSON `{ "system", "messages": [{ "role", "content" }] }` vers le Worker ; la réponse attendue est `{ "reply": "…" }` (le front accepte aussi un format type OpenAI `choices`).
@@ -76,7 +78,15 @@ npx wrangler login
 npx wrangler deploy
 ```
 
-Le Worker déployé est `https://xsnow-chat.xsnowopc.workers.dev`. Pour un autre compte, coller la nouvelle URL dans `NEXT_PUBLIC_CHAT_API_URL` (variable Actions du même nom) ou dans `CHAT_API_FALLBACK_URL`.
+Le Worker déployé est `https://xsnow-chat.xsnowopc.workers.dev`. Pour un autre compte, coller la nouvelle URL dans `NEXT_PUBLIC_CHAT_API_URL` (variable Actions du même nom) ou dans `CHAT_API_FALLBACK_URL`. Après un changement de Worker (`/geo` inclus), `npx wrangler deploy` depuis `workers/xsnow-chat`.
+
+### Ville du visiteur (géolocalisation)
+
+Après le choix d’avatar, un bandeau demande la position (iPhone Safari : le dialogue natif part du bouton **Autoriser ma position**). On peut passer et rester à **Gatineau**. Consentement + `{ lat, lon, city, updatedAt }` restent dans `localStorage` (`xsnow.geoConsent`, `xsnow.place`) — pas de suivi temps réel.
+
+Le mot-drapeau en haut à gauche et le gentilé du pied de page suivent la ville (`Gatinois`, `New-Yorkais`, `habitants de …`). L’accueil parlé et le prompt système citent cette ville. La voix `speechSynthesis` reste française (fr-CA / fr-FR selon le milieu), avec le genre de l’avatar.
+
+QA : `?city=New%20York` force New York (mot-drapeau **NEW YORK**, gentilé **New-Yorkais**). `?geo=prompt` réaffiche la demande de position.
 
 ---
 
@@ -109,4 +119,12 @@ npx wrangler login
 npx wrangler deploy
 ```
 
-Deployed Worker: `https://xsnow-chat.xsnowopc.workers.dev`. Override with `NEXT_PUBLIC_CHAT_API_URL` (GitHub Actions variable of the same name) or `CHAT_API_FALLBACK_URL` in `src/lib/llm.ts`.
+Deployed Worker: `https://xsnow-chat.xsnowopc.workers.dev`. Override with `NEXT_PUBLIC_CHAT_API_URL` (GitHub Actions variable of the same name) or `CHAT_API_FALLBACK_URL` in `src/lib/llm.ts`. Redeploy after adding `/geo`.
+
+### Visitor city
+
+After the avatar pick, the home screen asks for geolocation (Safari needs the **Autoriser ma position** tap). Skip falls back to Gatineau. Consent and `{ lat, lon, city, updatedAt }` stay in `localStorage` only — no live tracking yet.
+
+The header wordmark and footer demonym follow the city. Welcome speech and the chat system prompt name that city. TTS stays French (regional French → any French → avatar gender).
+
+QA: `?city=New%20York` mocks New York; `?geo=prompt` shows the permission card again.

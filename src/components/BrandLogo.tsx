@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { assetUrl } from "@/lib/paths";
 
-/** Official white network mark. ~72px on iPhone, opposite GATINEAU. */
+/** Official white network mark. ~72px on iPhone, opposite the place wordmark. */
 export function BrandLogo() {
   return (
     <Link

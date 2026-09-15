@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState, type ReactNode } from "react";
 import { WagmiProvider } from "wagmi";
 import { sepolia } from "wagmi/chains";
+import { PlaceProvider } from "@/lib/place";
 import { SpeechProvider } from "@/lib/speech";
 import { StubWalletProvider, hasWalletConnectProjectId } from "@/lib/wallet";
 import "@rainbow-me/rainbowkit/styles.css";
@@ -43,12 +44,14 @@ export function Providers({ children }: { children: ReactNode }) {
   const [useRainbow] = useState(hasWalletConnectProjectId);
 
   return (
-    <SpeechProvider>
-      {useRainbow ? (
-        <RainbowStack>{children}</RainbowStack>
-      ) : (
-        <StubWalletProvider>{children}</StubWalletProvider>
-      )}
-    </SpeechProvider>
+    <PlaceProvider>
+      <SpeechProvider>
+        {useRainbow ? (
+          <RainbowStack>{children}</RainbowStack>
+        ) : (
+          <StubWalletProvider>{children}</StubWalletProvider>
+        )}
+      </SpeechProvider>
+    </PlaceProvider>
   );
 }

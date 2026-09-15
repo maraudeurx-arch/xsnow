@@ -16,7 +16,8 @@ import {
   isAvatarId,
   type VoiceGender,
 } from "@/lib/avatars";
-import { WELCOME_SPEECH } from "@/lib/content";
+import { welcomeSpeechFor } from "@/lib/content";
+import { usePlace } from "@/lib/place";
 import { pickFrenchVoice, pitchForGender } from "@/lib/voices";
 
 type SpeechContextValue = {
@@ -48,9 +49,12 @@ function prefersReducedMotion() {
 }
 
 export function SpeechProvider({ children }: { children: ReactNode }) {
+  const { city, localeHint, frenchVoiceLang } = usePlace();
+  const welcome = welcomeSpeechFor(city);
+
   const [isSpeaking, setIsSpeaking] = useState(false);
-  const [lastText, setLastText] = useState(WELCOME_SPEECH);
-  const lastRef = useRef(WELCOME_SPEECH);
+  const [lastText, setLastText] = useState(welcome);
+  const lastRef = useRef(welcome);
   const genderRef = useRef<VoiceGender>(genderFromStoredAvatar() ?? "male");
   const watchRef = useRef<number | null>(null);
   const genRef = useRef(0);
@@ -79,12 +83,12 @@ export function SpeechProvider({ children }: { children: ReactNode }) {
       const unlock = new SpeechSynthesisUtterance(" ");
       unlock.volume = 0;
       unlock.rate = 10;
-      unlock.lang = "fr-CA";
+      unlock.lang = frenchVoiceLang || "fr-CA";
       window.speechSynthesis.speak(unlock);
     } catch {
       // Speech engine missing or blocked — typed chat still works.
     }
-  }, []);
+  }, [frenchVoiceLang]);
 
   const speak = useCallback((text: string, gender?: VoiceGender) => {
     if (typeof window === "undefined") return;
@@ -139,9 +143,13 @@ export function SpeechProvider({ children }: { children: ReactNode }) {
     }
 
     const utter = new SpeechSynthesisUtterance(trimmed);
-    const voice = pickFrenchVoice(window.speechSynthesis.getVoices(), resolved);
+    const voice = pickFrenchVoice(
+      window.speechSynthesis.getVoices(),
+      resolved,
+      localeHint,
+    );
     if (voice) utter.voice = voice;
-    utter.lang = voice?.lang || "fr-CA";
+    utter.lang = voice?.lang || frenchVoiceLang || "fr-CA";
     utter.rate = 1.0;
     utter.pitch = pitchForGender(resolved, voice);
 
@@ -154,11 +162,11 @@ export function SpeechProvider({ children }: { children: ReactNode }) {
     // Welcome / replay stay in the user-gesture stack for iOS Safari.
     window.speechSynthesis.speak(utter);
     window.speechSynthesis.resume();
-  }, [stopWatch]);
+  }, [frenchVoiceLang, localeHint, stopWatch]);
 
   const replay = useCallback((gender?: VoiceGender) => {
-    speak(WELCOME_SPEECH, gender ?? genderRef.current);
-  }, [speak]);
+    speak(welcomeSpeechFor(city), gender ?? genderRef.current);
+  }, [city, speak]);
 
   useEffect(() => {
     if (typeof window === "undefined" || !window.speechSynthesis) {

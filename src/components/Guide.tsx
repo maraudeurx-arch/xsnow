@@ -1,10 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AvatarChat } from "@/components/AvatarChat";
 import { AvatarDisc } from "@/components/AvatarDisc";
+import { LocationPrompt } from "@/components/LocationPrompt";
 import { AVATARS, avatarById, type Avatar, type AvatarId } from "@/lib/avatars";
-import { WELCOME_SPEECH } from "@/lib/content";
+import { welcomeSpeechFor } from "@/lib/content";
+import { usePlace } from "@/lib/place";
 import {
   hasPlayedWelcomeFor,
   markWelcomePlayed,
@@ -20,18 +22,22 @@ export function Guide() {
   const [avatarId, setAvatarId] = useStoredAvatar();
   const [picking, setPicking] = useState(false);
   const { speak } = useSpeech();
+  const { city, ready, needsPrompt } = usePlace();
 
   const showPicker = !avatarId || picking;
   const chosen = avatarId ? avatarById(avatarId) : null;
 
   function chooseAvatar(id: AvatarId) {
-    const avatar = avatarById(id);
     setAvatarId(id);
     setPicking(false);
-    if (hasPlayedWelcomeFor(id)) return;
-    markWelcomePlayed(id);
-    speak(WELCOME_SPEECH, avatar.gender);
   }
+
+  useEffect(() => {
+    if (!chosen || !ready) return;
+    if (hasPlayedWelcomeFor(chosen.id)) return;
+    markWelcomePlayed(chosen.id);
+    speak(welcomeSpeechFor(city), chosen.gender);
+  }, [chosen, city, ready, speak]);
 
   return (
     <section
@@ -88,7 +94,7 @@ export function Guide() {
               </button>
             </div>
           </div>
-          <AvatarChat avatar={chosen} />
+          {needsPrompt ? <LocationPrompt /> : <AvatarChat avatar={chosen} />}
         </>
       ) : null}
     </section>

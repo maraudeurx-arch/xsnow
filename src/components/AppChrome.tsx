@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Suspense, type ReactNode } from "react";
 import { BrandLogo } from "@/components/BrandLogo";
 import { HeaderNav } from "@/components/HeaderNav";
+import { PlaceWordmark } from "@/components/PlaceWordmark";
 import { SeasonalBackdrop, SeasonScene } from "@/components/SeasonalBackdrop";
 import { SiteFooter } from "@/components/SiteFooter";
 import { BRAND } from "@/lib/content";
@@ -22,7 +23,7 @@ export function AppChrome({ children }: { children: ReactNode }) {
             href="/"
             className="inline-flex items-center text-[1.2rem] leading-none font-black tracking-tight text-gold [text-shadow:0_2px_12px_rgba(0,0,0,0.55)] sm:text-[1.55rem]"
           >
-            {BRAND.name}
+            <PlaceWordmark />
           </Link>
           <BrandLogo />
         </div>

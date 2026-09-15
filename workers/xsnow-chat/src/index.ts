@@ -3,7 +3,10 @@
  * Deploy: npx wrangler login && npx wrangler deploy
  *
  * Visitors never log in. GitHub Pages origin is allowed via CORS.
+ * `POST /` = chat; `GET|POST /geo` = reverse geocode {lat,lon}.
  */
+
+import { parseLatLon, reverseGeocode } from "./geo";
 
 export interface Env {
   AI: {
@@ -37,7 +40,7 @@ type ChatTurn = {
 
 function corsHeaders(origin: string | null): Record<string, string> {
   const headers: Record<string, string> = {
-    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type",
     "Access-Control-Max-Age": "86400",
     Vary: "Origin",
@@ -155,12 +158,75 @@ function replyFromAi(payload: unknown): string {
   return "";
 }
 
+function isGeoPath(pathname: string) {
+  return pathname === "/geo" || pathname.endsWith("/geo");
+}
+
+async function handleGeo(request: Request, origin: string | null): Promise<Response> {
+  if (request.method !== "GET" && request.method !== "POST") {
+    return json({ error: "method_not_allowed" }, 405, origin);
+  }
+
+  if (tooMany(clientIp(request))) {
+    return json({ error: "rate_limited" }, 429, origin);
+  }
+
+  if (request.method === "GET") {
+    const url = new URL(request.url);
+    const parsed = parseLatLon({
+      lat: url.searchParams.get("lat"),
+      lon: url.searchParams.get("lon"),
+    });
+    if (!parsed) return json({ error: "bad_request" }, 400, origin);
+    const result = await reverseGeocode(parsed.lat, parsed.lon);
+    return json(result, 200, origin);
+  }
+
+  const declaredLength = Number(request.headers.get("Content-Length") || "0");
+  if (declaredLength > MAX_BODY_BYTES) {
+    return json({ error: "payload_too_large" }, 413, origin);
+  }
+
+  let rawText: string;
+  try {
+    rawText = await request.text();
+  } catch {
+    return json({ error: "bad_request" }, 400, origin);
+  }
+
+  if (rawText.length > MAX_BODY_BYTES) {
+    return json({ error: "payload_too_large" }, 413, origin);
+  }
+
+  let parsedJson: unknown;
+  try {
+    parsedJson = JSON.parse(rawText) as unknown;
+  } catch {
+    return json({ error: "bad_request" }, 400, origin);
+  }
+
+  const coords = parseLatLon(
+    parsedJson && typeof parsedJson === "object"
+      ? (parsedJson as { lat?: unknown; lon?: unknown; longitude?: unknown })
+      : {},
+  );
+  if (!coords) return json({ error: "bad_request" }, 400, origin);
+
+  const result = await reverseGeocode(coords.lat, coords.lon);
+  return json(result, 200, origin);
+}
+
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const origin = request.headers.get("Origin");
+    const pathname = new URL(request.url).pathname;
 
     if (request.method === "OPTIONS") {
       return new Response(null, { status: 204, headers: corsHeaders(origin) });
+    }
+
+    if (isGeoPath(pathname)) {
+      return handleGeo(request, origin);
     }
 
     if (request.method !== "POST") {

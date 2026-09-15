@@ -20,12 +20,33 @@ export function inferVoiceGender(voice: SpeechSynthesisVoice): VoiceGender | nul
   return null;
 }
 
-function langScore(lang: string) {
+/**
+ * Soft locale preference for French TTS.
+ * Regional French matching `localeHint` first, then any French.
+ * English-majority cities (en-US) still stay on French voices — the app is French.
+ */
+function langScore(lang: string, localeHint: string) {
   const value = lang.toLowerCase();
-  if (value === "fr-ca" || value.startsWith("fr-ca")) return 3;
-  if (value === "fr-fr" || value.startsWith("fr-fr")) return 2;
-  if (value.startsWith("fr")) return 1;
-  return 0;
+  if (!value.startsWith("fr")) return 0;
+
+  const hint = localeHint.toLowerCase();
+  const preferred = hint.startsWith("fr-") ? hint.slice(0, 5) : "";
+
+  if (preferred && value.startsWith(preferred)) return 4;
+  if (hint.startsWith("fr-ca") || hint === "fr-ca") {
+    if (value.startsWith("fr-ca")) return 4;
+    if (value.startsWith("fr-fr")) return 2;
+    return 1;
+  }
+  if (hint.startsWith("fr-fr") || hint.startsWith("fr-be") || hint.startsWith("fr-ch")) {
+    if (value.startsWith("fr-fr")) return 4;
+    if (value.startsWith("fr-ca")) return 2;
+    return 1;
+  }
+  // US / other: still French, slight fr-CA then fr-FR preference.
+  if (value.startsWith("fr-ca")) return 3;
+  if (value.startsWith("fr-fr")) return 2;
+  return 1;
 }
 
 function qualityScore(voice: SpeechSynthesisVoice) {
@@ -37,11 +58,11 @@ function qualityScore(voice: SpeechSynthesisVoice) {
   return 1;
 }
 
-function rankVoices(voices: SpeechSynthesisVoice[]) {
+function rankVoices(voices: SpeechSynthesisVoice[], localeHint: string) {
   return voices.slice().sort((left, right) => {
     const local = Number(right.localService) - Number(left.localService);
     if (local) return local;
-    const lang = langScore(right.lang) - langScore(left.lang);
+    const lang = langScore(right.lang, localeHint) - langScore(left.lang, localeHint);
     if (lang) return lang;
     return qualityScore(right) - qualityScore(left);
   });
@@ -50,21 +71,22 @@ function rankVoices(voices: SpeechSynthesisVoice[]) {
 export function pickFrenchVoice(
   voices: SpeechSynthesisVoice[],
   gender: VoiceGender,
+  localeHint = "fr-CA",
 ): SpeechSynthesisVoice | undefined {
   const french = voices.filter((voice) => voice.lang.toLowerCase().startsWith("fr"));
   if (!french.length) return undefined;
 
   const matching = french.filter((voice) => inferVoiceGender(voice) === gender);
   const localMatching = matching.filter((voice) => voice.localService);
-  if (localMatching.length) return rankVoices(localMatching)[0];
-  if (matching.length) return rankVoices(matching)[0];
+  if (localMatching.length) return rankVoices(localMatching, localeHint)[0];
+  if (matching.length) return rankVoices(matching, localeHint)[0];
 
   const notOpposite = french.filter((voice) => inferVoiceGender(voice) !== (gender === "male" ? "female" : "male"));
   const localNotOpposite = notOpposite.filter((voice) => voice.localService);
-  if (localNotOpposite.length) return rankVoices(localNotOpposite)[0];
-  if (notOpposite.length) return rankVoices(notOpposite)[0];
+  if (localNotOpposite.length) return rankVoices(localNotOpposite, localeHint)[0];
+  if (notOpposite.length) return rankVoices(notOpposite, localeHint)[0];
 
-  return rankVoices(french)[0];
+  return rankVoices(french, localeHint)[0];
 }
 
 export function pitchForGender(

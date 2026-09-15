@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { AVATAR_CHAT, AVATAR_SYSTEM_PROMPT } from "@/lib/content";
+import { AVATAR_CHAT, avatarSystemPromptFor } from "@/lib/content";
+import { usePlace } from "@/lib/place";
 import {
   classifyDictationError,
   dictationSupported,
@@ -31,6 +32,7 @@ function micCopy(kind: DictationErrorKind) {
 
 export function AvatarChat({ avatar }: { avatar: Avatar }) {
   const { speak, prime, stop } = useSpeech();
+  const { city, placeName } = usePlace();
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [busy, setBusy] = useState(false);
@@ -106,7 +108,7 @@ export function AvatarChat({ avatar }: { avatar: Avatar }) {
 
     try {
       const reply = await completeChat({
-        system: `${AVATAR_SYSTEM_PROMPT} Ton apparence : ${avatar.label}.`,
+        system: `${avatarSystemPromptFor(city, placeName)} Ton apparence : ${avatar.label}.`,
         messages: nextMessages,
         signal: controller.signal,
       });
