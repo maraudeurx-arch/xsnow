@@ -5,12 +5,22 @@ import { lookupKnownCity } from "./demonym.ts";
 import { fr } from "./i18n/fr.ts";
 import { interpolate } from "./i18n/locales.ts";
 import {
+  acceptGeoResult,
   frenchVoiceLangFor,
   geoResultFromPayload,
   inferLocaleHint,
+  isImplausibleSeedCity,
   parseCityOverride,
   parseGeoPromptOverride,
 } from "./geo-logic.ts";
+import {
+  brandingForPlace,
+  fallbackPlace,
+  placeFromCityName,
+  placeToKeepOnSkip,
+  sanitizeStoredPlace,
+} from "./place-logic.ts";
+import { shouldRespeakWelcome, welcomeSpeechReady } from "./welcome-place.ts";
 import { pickFrenchVoice, pickSpokenVoice } from "./voices.ts";
 
 describe("parseCityOverride", () => {
@@ -48,6 +58,7 @@ describe("inferLocaleHint", () => {
     assert.equal(inferLocaleHint("CA", "Ontario"), "fr-CA");
     assert.equal(inferLocaleHint("FR"), "fr-FR");
     assert.equal(inferLocaleHint("US", "New York"), "en-US");
+    assert.equal(inferLocaleHint("HT"), "fr-HT");
   });
 });
 
@@ -56,6 +67,7 @@ describe("frenchVoiceLangFor", () => {
     assert.equal(frenchVoiceLangFor("en-US"), "fr-CA");
     assert.equal(frenchVoiceLangFor("fr-FR"), "fr-FR");
     assert.equal(frenchVoiceLangFor("fr-CA"), "fr-CA");
+    assert.equal(frenchVoiceLangFor("fr-HT"), "fr-FR");
   });
 });
 
@@ -139,5 +151,161 @@ describe("pickFrenchVoice", () => {
       voice("Jorge", "es-MX", "male"),
     ];
     assert.equal(pickSpokenVoice(extra, "male", "es", "es-MX")?.name, "Jorge");
+  });
+});
+
+const HAITI = { lat: 18.5392, lon: -72.335 };
+
+describe("live place vs Gatineau seed", () => {
+  it("rejects a Gatineau geocode stamp on Haiti coordinates", () => {
+    assert.equal(isImplausibleSeedCity("Gatineau", HAITI.lat, HAITI.lon), true);
+    assert.equal(
+      acceptGeoResult(HAITI.lat, HAITI.lon, {
+        city: "Gatineau",
+        countryCode: "CA",
+        localeHint: "fr-CA",
+      }),
+      false,
+    );
+    assert.equal(
+      acceptGeoResult(HAITI.lat, HAITI.lon, {
+        city: "Port-au-Prince",
+        countryCode: "HT",
+        localeHint: "fr-HT",
+      }),
+      true,
+    );
+    assert.equal(acceptGeoResult(45.4765, -75.7013, { city: "Gatineau" }), true);
+  });
+
+  it("strips a poisoned stored Gatineau label when GPS is in Haiti", () => {
+    const cleaned = sanitizeStoredPlace(
+      {
+        lat: HAITI.lat,
+        lon: HAITI.lon,
+        city: "Gatineau",
+        countryCode: "CA",
+        localeHint: "fr-CA",
+        updatedAt: 1,
+      },
+      "granted",
+    );
+    assert.equal(cleaned.city, "");
+    assert.equal(cleaned.lat, HAITI.lat);
+  });
+
+  it("does not present the seed city after skip when that is all we have", () => {
+    const skipped = placeToKeepOnSkip(fallbackPlace(1));
+    assert.equal(skipped.city, "");
+    const kept = placeToKeepOnSkip({
+      lat: HAITI.lat,
+      lon: HAITI.lon,
+      city: "Port-au-Prince",
+      countryCode: "HT",
+      localeHint: "fr-HT",
+      updatedAt: 1,
+    });
+    assert.equal(kept.city, "Port-au-Prince");
+  });
+
+  it("keeps ?city= override including Gatineau", () => {
+    const gatineau = placeFromCityName("Gatineau");
+    assert.equal(gatineau.city, "Gatineau");
+    const pap = placeFromCityName("Port-au-Prince");
+    assert.equal(pap.city, "Port-au-Prince");
+    assert.equal(pap.countryCode, "HT");
+  });
+
+  it("uses neighbourhood branding until a city is known", () => {
+    const pending = brandingForPlace("", "fr", {
+      neighborhood: "votre quartier",
+      wordmark: "votre quartier",
+      demonym: "habitants du quartier",
+    });
+    assert.equal(pending.resolved, false);
+    assert.equal(pending.city, "votre quartier");
+    assert.equal(pending.placeName, "VOTRE QUARTIER");
+    assert.equal(pending.demonym, "habitants du quartier");
+
+    const live = brandingForPlace("Port-au-Prince", "fr", {
+      neighborhood: "votre quartier",
+      wordmark: "votre quartier",
+      demonym: "habitants du quartier",
+    });
+    assert.equal(live.resolved, true);
+    assert.equal(live.city, "Port-au-Prince");
+    assert.equal(live.placeName, "PORT-AU-PRINCE");
+  });
+
+  it("welcome speech uses the live city, not the seed", () => {
+    const spoken = interpolate(fr.welcome, { city: "Port-au-Prince" });
+    assert.match(spoken, /Port-au-Prince/);
+    assert.doesNotMatch(spoken, /Gatineau/);
+  });
+
+  it("waits for GPS reverse-geocode before the first welcome", () => {
+    assert.equal(
+      welcomeSpeechReady({
+        consent: "unset",
+        locating: false,
+        hasOverride: false,
+        waitingOnConsent: true,
+      }),
+      false,
+    );
+    assert.equal(
+      welcomeSpeechReady({
+        consent: "granted",
+        locating: true,
+        hasOverride: false,
+        waitingOnConsent: false,
+      }),
+      false,
+    );
+    assert.equal(
+      welcomeSpeechReady({
+        consent: "granted",
+        locating: false,
+        hasOverride: false,
+        waitingOnConsent: false,
+      }),
+      true,
+    );
+    assert.equal(
+      welcomeSpeechReady({
+        consent: "skipped",
+        locating: false,
+        hasOverride: false,
+        waitingOnConsent: false,
+      }),
+      true,
+    );
+  });
+
+  it("re-speaks when a real city replaces the placeholder", () => {
+    assert.equal(
+      shouldRespeakWelcome({
+        previousCity: "votre quartier",
+        nextCity: "Port-au-Prince",
+        nextResolved: true,
+      }),
+      true,
+    );
+    assert.equal(
+      shouldRespeakWelcome({
+        previousCity: "Gatineau",
+        nextCity: "Port-au-Prince",
+        nextResolved: true,
+      }),
+      true,
+    );
+    assert.equal(
+      shouldRespeakWelcome({
+        previousCity: "Port-au-Prince",
+        nextCity: "votre quartier",
+        nextResolved: false,
+      }),
+      false,
+    );
   });
 });

@@ -13,16 +13,20 @@ import {
   type ReactNode,
 } from "react";
 import { useSearchParams } from "next/navigation";
-import { demonymFor, placeName as toPlaceName } from "@/lib/demonym";
+import { useI18n } from "@/lib/i18n/locale";
 import {
-  fallbackPlace,
+  brandingForPlace,
+  coordsOnlyPlace,
   frenchVoiceLangFor,
   parseCityOverride,
   parseGeoPromptOverride,
   placeFromCityName,
+  placeToKeepOnSkip,
   readConsent,
   readStoredPlace,
   reverseGeocode,
+  sanitizeStoredPlace,
+  unresolvedPlace,
   writeConsent,
   writeStoredPlace,
   type GeoConsent,
@@ -48,7 +52,7 @@ function readSnapshot(): Snapshot {
   const consent = readConsent();
   cached = {
     consent,
-    place: readStoredPlace() ?? fallbackPlace(),
+    place: sanitizeStoredPlace(readStoredPlace(), consent),
   };
   return cached;
 }
@@ -80,6 +84,7 @@ export type PlaceValue = {
   consent: GeoConsent;
   source: PlaceSource;
   ready: boolean;
+  resolved: boolean;
   needsPrompt: boolean;
   locating: boolean;
   error: GeoErrorKind | null;
@@ -99,7 +104,7 @@ function geoErrorKind(error: GeolocationPositionError | null, unsupported: boole
 
 const SERVER_SNAPSHOT: Snapshot = {
   consent: "unset",
-  place: fallbackPlace(0),
+  place: unresolvedPlace(0),
 };
 
 function getServerSnapshot(): Snapshot {
@@ -111,6 +116,7 @@ function PlaceProviderInner({ children }: { children: ReactNode }) {
   const search = searchParams.toString();
   const cityOverride = parseCityOverride(search);
   const forcePrompt = parseGeoPromptOverride(search);
+  const { locale, m } = useI18n();
 
   const subscribe = useCallback((onStoreChange: () => void) => {
     listeners.add(onStoreChange);
@@ -132,15 +138,20 @@ function PlaceProviderInner({ children }: { children: ReactNode }) {
 
   const activePlace = overridePlace ?? stored.place;
   const consent = stored.consent;
+  const branding = brandingForPlace(activePlace.city, locale, {
+    neighborhood: m.place.neighborhood,
+    wordmark: m.place.wordmark,
+    demonym: m.place.demonym,
+  });
   const source: PlaceSource = overridePlace
     ? "override"
-    : consent === "granted" && stored.place.city
-      ? stored.place.lat != null
+    : !branding.resolved
+      ? "fallback"
+      : consent === "granted" && activePlace.lat != null
         ? "gps"
-        : "stored"
-      : consent === "unset"
-        ? "fallback"
-        : "stored";
+        : consent === "unset"
+          ? "fallback"
+          : "stored";
 
   const ready = Boolean(overridePlace) || consent !== "unset";
   const needsPrompt = !overridePlace && (forcePrompt || consent === "unset");
@@ -148,19 +159,24 @@ function PlaceProviderInner({ children }: { children: ReactNode }) {
   const skipLocation = useCallback(() => {
     setError(null);
     setLocating(false);
-    persist("skipped", fallbackPlace());
+    persist("skipped", placeToKeepOnSkip(readStoredPlace()));
   }, []);
 
   const applyCoords = useCallback(async (lat: number, lon: number, consentValue: GeoConsent) => {
     const geo = await reverseGeocode(lat, lon);
-    persist(consentValue, {
-      lat,
-      lon,
-      city: geo.city,
-      countryCode: geo.countryCode,
-      localeHint: geo.localeHint,
-      updatedAt: Date.now(),
-    });
+    persist(
+      consentValue,
+      geo
+        ? {
+            lat,
+            lon,
+            city: geo.city,
+            countryCode: geo.countryCode,
+            localeHint: geo.localeHint,
+            updatedAt: Date.now(),
+          }
+        : coordsOnlyPlace(lat, lon),
+    );
   }, []);
 
   const requestLocation = useCallback(() => {
@@ -176,12 +192,7 @@ function PlaceProviderInner({ children }: { children: ReactNode }) {
       (position) => {
         void applyCoords(position.coords.latitude, position.coords.longitude, "granted")
           .catch(() => {
-            persist("granted", {
-              ...fallbackPlace(),
-              lat: position.coords.latitude,
-              lon: position.coords.longitude,
-              updatedAt: Date.now(),
-            });
+            persist("granted", coordsOnlyPlace(position.coords.latitude, position.coords.longitude));
           })
           .finally(() => {
             setLocating(false);
@@ -204,11 +215,16 @@ function PlaceProviderInner({ children }: { children: ReactNode }) {
     if (consent !== "granted") return;
     if (typeof navigator === "undefined" || !navigator.geolocation) return;
     refreshedRef.current = true;
+    const needsCity = !stored.place.city.trim();
+    if (needsCity) setLocating(true);
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        void applyCoords(position.coords.latitude, position.coords.longitude, "granted");
+        void applyCoords(position.coords.latitude, position.coords.longitude, "granted").finally(() => {
+          if (needsCity) setLocating(false);
+        });
       },
       () => {
+        if (needsCity) setLocating(false);
         // Keep the last known city — never wipe a granted place on a quiet refresh miss.
       },
       {
@@ -217,13 +233,13 @@ function PlaceProviderInner({ children }: { children: ReactNode }) {
         maximumAge: 30 * 60 * 1000,
       },
     );
-  }, [applyCoords, consent, overridePlace]);
+  }, [applyCoords, consent, overridePlace, stored.place.city]);
 
   const value = useMemo<PlaceValue>(
     () => ({
-      city: activePlace.city,
-      placeName: toPlaceName(activePlace.city),
-      demonym: demonymFor(activePlace.city),
+      city: branding.city,
+      placeName: branding.placeName,
+      demonym: branding.demonym,
       countryCode: activePlace.countryCode,
       localeHint: activePlace.localeHint,
       frenchVoiceLang: frenchVoiceLangFor(activePlace.localeHint),
@@ -232,6 +248,7 @@ function PlaceProviderInner({ children }: { children: ReactNode }) {
       consent,
       source,
       ready,
+      resolved: branding.resolved,
       needsPrompt,
       locating,
       error,
@@ -239,11 +256,14 @@ function PlaceProviderInner({ children }: { children: ReactNode }) {
       skipLocation,
     }),
     [
-      activePlace.city,
       activePlace.countryCode,
       activePlace.lat,
       activePlace.localeHint,
       activePlace.lon,
+      branding.city,
+      branding.demonym,
+      branding.placeName,
+      branding.resolved,
       consent,
       error,
       locating,
@@ -258,34 +278,43 @@ function PlaceProviderInner({ children }: { children: ReactNode }) {
   return <PlaceContext.Provider value={value}>{children}</PlaceContext.Provider>;
 }
 
+function UnresolvedPlaceFallback({ children }: { children: ReactNode }) {
+  const { locale, m } = useI18n();
+  const branding = brandingForPlace("", locale, {
+    neighborhood: m.place.neighborhood,
+    wordmark: m.place.wordmark,
+    demonym: m.place.demonym,
+  });
+  return (
+    <PlaceContext.Provider
+      value={{
+        city: branding.city,
+        placeName: branding.placeName,
+        demonym: branding.demonym,
+        countryCode: "",
+        localeHint: "",
+        frenchVoiceLang: frenchVoiceLangFor(""),
+        lat: null,
+        lon: null,
+        consent: "unset",
+        source: "fallback",
+        ready: false,
+        resolved: false,
+        needsPrompt: true,
+        locating: false,
+        error: null,
+        requestLocation: () => {},
+        skipLocation: () => {},
+      }}
+    >
+      {children}
+    </PlaceContext.Provider>
+  );
+}
+
 export function PlaceProvider({ children }: { children: ReactNode }) {
   return (
-    <Suspense
-      fallback={
-        <PlaceContext.Provider
-          value={{
-            city: fallbackPlace(0).city,
-            placeName: toPlaceName(fallbackPlace(0).city),
-            demonym: demonymFor(fallbackPlace(0).city),
-            countryCode: fallbackPlace(0).countryCode,
-            localeHint: fallbackPlace(0).localeHint,
-            frenchVoiceLang: frenchVoiceLangFor(fallbackPlace(0).localeHint),
-            lat: fallbackPlace(0).lat,
-            lon: fallbackPlace(0).lon,
-            consent: "unset",
-            source: "fallback",
-            ready: false,
-            needsPrompt: true,
-            locating: false,
-            error: null,
-            requestLocation: () => {},
-            skipLocation: () => {},
-          }}
-        >
-          {children}
-        </PlaceContext.Provider>
-      }
-    >
+    <Suspense fallback={<UnresolvedPlaceFallback>{children}</UnresolvedPlaceFallback>}>
       <PlaceProviderInner>{children}</PlaceProviderInner>
     </Suspense>
   );

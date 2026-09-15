@@ -285,6 +285,7 @@ async function handleGeo(request: Request, origin: string | null): Promise<Respo
     });
     if (!parsed) return json({ error: "bad_request" }, 400, origin);
     const result = await reverseGeocode(parsed.lat, parsed.lon);
+    if (!result) return json({ error: "geocode_failed" }, 502, origin);
     return json(result, 200, origin);
   }
 
@@ -299,6 +300,7 @@ async function handleGeo(request: Request, origin: string | null): Promise<Respo
   if (!coords) return json({ error: "bad_request" }, 400, origin);
 
   const result = await reverseGeocode(coords.lat, coords.lon);
+  if (!result) return json({ error: "geocode_failed" }, 502, origin);
   return json(result, 200, origin);
 }
 

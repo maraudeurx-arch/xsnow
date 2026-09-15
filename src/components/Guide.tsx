@@ -16,8 +16,10 @@ import { usePlace } from "@/lib/place";
 import {
   hasPlayedWelcomeFor,
   markWelcomePlayed,
+  readWelcomeSpokenCity,
   useSpeech,
 } from "@/lib/speech";
+import { shouldRespeakWelcome, welcomeSpeechReady } from "@/lib/welcome-place";
 import { useStoredAvatar } from "@/lib/useStoredAvatar";
 
 const pickerSize =
@@ -31,7 +33,7 @@ export function Guide() {
   const [avatarId, setAvatarId] = useStoredAvatar();
   const [picking, setPicking] = useState(false);
   const { speak } = useSpeech();
-  const { city, ready, needsPrompt } = usePlace();
+  const { city, needsPrompt, locating, resolved, consent, source } = usePlace();
   const { locale, m } = useI18n();
   const waitingOnConsent = useNeedsConsentSheet();
 
@@ -44,11 +46,31 @@ export function Guide() {
   }
 
   useEffect(() => {
-    if (!chosen || !ready || waitingOnConsent) return;
-    if (hasPlayedWelcomeFor(chosen.id)) return;
-    markWelcomePlayed(chosen.id);
+    if (!chosen) return;
+    if (
+      !welcomeSpeechReady({
+        consent,
+        locating,
+        hasOverride: source === "override",
+        waitingOnConsent,
+      })
+    ) {
+      return;
+    }
+    const already = hasPlayedWelcomeFor(chosen.id);
+    if (
+      already &&
+      !shouldRespeakWelcome({
+        previousCity: readWelcomeSpokenCity(chosen.id),
+        nextCity: city,
+        nextResolved: resolved,
+      })
+    ) {
+      return;
+    }
+    markWelcomePlayed(chosen.id, city);
     speak(welcomeSpeechFor(city, locale), chosen.gender);
-  }, [chosen, city, locale, ready, speak, waitingOnConsent]);
+  }, [chosen, city, consent, locale, locating, resolved, source, speak, waitingOnConsent]);
 
   return (
     <section

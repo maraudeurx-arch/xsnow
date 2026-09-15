@@ -43,7 +43,7 @@ const walletChains = resolveWalletChains(enableTestnets());
 
 const walletConfig = projectId
   ? getDefaultConfig({
-      appName: "GATINEAU Open Community",
+      appName: "Open Community",
       appDescription: "Open Community — Monétisé Vous!",
       appUrl: "https://maraudeurx-arch.github.io/xsnow/",
       appIcon: "https://maraudeurx-arch.github.io/xsnow/brand/app-icon-192.png",

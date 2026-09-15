@@ -3,6 +3,11 @@ export const fr = {
     community: "Open Community",
     slogan: "Monétisé Vous!",
   },
+  place: {
+    neighborhood: "votre quartier",
+    wordmark: "votre quartier",
+    demonym: "habitants du quartier",
+  },
   nav: {
     accueil: "Accueil",
     accueilProposals: "Propositions Accueil",
@@ -84,15 +89,15 @@ export const fr = {
     body: "Autorise ta position pour afficher le nom de ta ville (et, plus tard, tes voisins à proximité). Rien n’est envoyé à un serveur de suivi — seulement ta ville, sur cet appareil.",
     allow: "Autoriser ma position",
     locating: "Recherche de ta ville…",
-    skip: "Plus tard — rester à Gatineau",
+    skip: "Plus tard — afficher votre quartier",
     errors: {
       unsupported:
-        "La géolocalisation n’est pas disponible sur cet appareil. Tu peux continuer avec Gatineau.",
-      generic: "Impossible d’obtenir ta position. Tu peux réessayer, ou continuer avec Gatineau.",
+        "La géolocalisation n’est pas disponible sur cet appareil. Tu peux continuer sans afficher de ville précise.",
+      generic: "Impossible d’obtenir ta position. Tu peux réessayer, ou continuer sans afficher de ville précise.",
       denied:
-        "Position refusée. iPhone : Réglages → Safari → Localisation. Android : Réglages → Applications → Chrome → Autorisations. Ou continue avec Gatineau.",
-      timeout: "La position a pris trop de temps. Réessaie, ou continue avec Gatineau.",
-      unavailable: "Position indisponible pour le moment. Réessaie, ou continue avec Gatineau.",
+        "Position refusée. iPhone : Réglages → Safari → Localisation. Android : Réglages → Applications → Chrome → Autorisations. Ou continue sans afficher de ville précise.",
+      timeout: "La position a pris trop de temps. Réessaie, ou continue sans afficher de ville précise.",
+      unavailable: "Position indisponible pour le moment. Réessaie, ou continue sans afficher de ville précise.",
     },
   },
   consent: {
@@ -131,7 +136,7 @@ export const fr = {
         },
         {
           heading: "Ce que nous ne faisons pas",
-          body: "Nous ne vendons pas de données personnelles. Pas de suivi GPS continu sans consentement. Pas de revente à des annonceurs. Tu peux tout refuser et quand même utiliser l’app (ville de secours : Gatineau).",
+          body: "Nous ne vendons pas de données personnelles. Pas de suivi GPS continu sans consentement. Pas de revente à des annonceurs. Tu peux tout refuser et quand même utiliser l’app (libellé générique : votre quartier, ou ta dernière ville connue).",
         },
         {
           heading: "Consentement (Canada / Québec)",
@@ -177,7 +182,7 @@ export const fr = {
     },
     about: {
       extra:
-        "Open Community (OPC) est un projet d’entraide de quartier : services entre voisins, visibilité locale, et plus tard des alertes de proximité. Le nom de ta ville s’affiche si tu acceptes la position ; sinon nous utilisons Gatineau. Nous demandons ton accord avant la géolocalisation et avant les stats anonymes. Tu peux tout refuser et utiliser l’app. Texte fourni à titre informatif, pas un avis juridique.",
+        "Open Community (OPC) est un projet d’entraide de quartier : services entre voisins, visibilité locale, et plus tard des alertes de proximité. Le nom de ta ville s’affiche si tu acceptes la position ; sinon nous affichons « votre quartier » (ou ta dernière ville connue). Nous demandons ton accord avant la géolocalisation et avant les stats anonymes. Tu peux tout refuser et utiliser l’app. Texte fourni à titre informatif, pas un avis juridique.",
     },
   },
   footer: {
@@ -291,7 +296,7 @@ export const fr = {
     comingSoon: "Notifications et saison d’affichage arriveront ici.",
     locationConsent: "Position",
     locationHint:
-      "Pour le nom de ta ville et, plus tard, la proximité. Désactiver : on revient à Gatineau.",
+      "Pour le nom de ta ville et, plus tard, la proximité. Désactiver : on garde ta dernière ville connue, ou « votre quartier ».",
     analyticsConsent: "Stats d’usage anonymes",
     analyticsHint: "Session, langue, ville/pays si la position est acceptée, idées (Vos idées / chat).",
     privacy: "Vie privée",

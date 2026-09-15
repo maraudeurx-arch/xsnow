@@ -4,7 +4,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { interpolate, hrefWithLang } from "@/lib/i18n";
 import { useI18n } from "@/lib/i18n/locale";
-import { FALLBACK_CITY } from "@/lib/location";
 import { pathStartsWith, PRIVACY_HREF, TERMS_HREF } from "@/lib/paths";
 import { usePlace } from "@/lib/place";
 import { useAnalyticsConsent, useHasHydrated } from "@/lib/useAnalyticsConsent";
@@ -28,7 +27,7 @@ export function ConsentSheet() {
   const needsLocation = consent === "unset";
   const needsAnalytics = analytics === "unset";
   const open = hydrated && !onLegal && (needsLocation || needsAnalytics);
-  const fallbackCity = city || FALLBACK_CITY;
+  const fallbackCity = city;
 
   if (!open) return null;
 

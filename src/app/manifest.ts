@@ -8,7 +8,7 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "Open Community",
     short_name: "OPC",
-    description: "GATINEAU / Open Community — Monétisé Vous! Entraide de quartier.",
+    description: "Open Community — Monétisé Vous! Entraide de quartier.",
     start_url: `${BASE_PATH}/`,
     scope: `${BASE_PATH}/`,
     display: "standalone",

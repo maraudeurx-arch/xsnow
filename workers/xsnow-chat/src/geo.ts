@@ -9,6 +9,37 @@ export type GeoResult = {
   localeHint: string;
 };
 
+const SEED_CITY = "gatineau";
+const SEED_LAT = 45.4765;
+const SEED_LON = -75.7013;
+const SEED_CITY_MAX_KM = 80;
+
+function distanceKm(lat1: number, lon1: number, lat2: number, lon2: number): number {
+  const toRad = (deg: number) => (deg * Math.PI) / 180;
+  const dLat = toRad(lat2 - lat1);
+  const dLon = toRad(lon2 - lon1);
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) ** 2;
+  return 6371 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+function isImplausibleSeedCity(city: string, lat: number, lon: number): boolean {
+  const key = city
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim();
+  if (key !== SEED_CITY) return false;
+  return distanceKm(lat, lon, SEED_LAT, SEED_LON) > SEED_CITY_MAX_KM;
+}
+
+function acceptResult(lat: number, lon: number, result: GeoResult | null): GeoResult | null {
+  if (!result?.city.trim()) return null;
+  if (isImplausibleSeedCity(result.city, lat, lon)) return null;
+  return result;
+}
+
 const NOMINATIM_UA =
   "XsnowOpenCommunity/1.0 (https://github.com/maraudeurx-arch/xsnow)";
 
@@ -44,6 +75,7 @@ export function inferLocaleHint(countryCode: string, region?: string | null): st
   if (country === "FR") return "fr-FR";
   if (country === "BE") return "fr-BE";
   if (country === "CH") return "fr-CH";
+  if (country === "HT") return "fr-HT";
   if (country === "US") return "en-US";
   if (country === "GB" || country === "UK") return "en-GB";
   return "fr-CA";
@@ -134,7 +166,7 @@ async function fetchJson(url: string, init: RequestInit): Promise<unknown> {
   return response.json();
 }
 
-export async function reverseGeocode(lat: number, lon: number): Promise<GeoResult> {
+export async function reverseGeocode(lat: number, lon: number): Promise<GeoResult | null> {
   const signal = AbortSignal.timeout ? AbortSignal.timeout(8_000) : undefined;
 
   try {
@@ -146,7 +178,7 @@ export async function reverseGeocode(lat: number, lon: number): Promise<GeoResul
       headers: { Accept: "application/json" },
       signal,
     });
-    const parsed = fromBigDataCloud(payload);
+    const parsed = acceptResult(lat, lon, fromBigDataCloud(payload));
     if (parsed) return parsed;
   } catch {
     // Try Nominatim.
@@ -165,11 +197,11 @@ export async function reverseGeocode(lat: number, lon: number): Promise<GeoResul
       },
       signal,
     });
-    const parsed = fromNominatim(payload);
+    const parsed = acceptResult(lat, lon, fromNominatim(payload));
     if (parsed) return parsed;
   } catch {
-    // Fallback city.
+    // Stay unresolved — never stamp Gatineau on a live fix elsewhere.
   }
 
-  return { city: "Gatineau", countryCode: "CA", localeHint: "fr-CA" };
+  return null;
 }

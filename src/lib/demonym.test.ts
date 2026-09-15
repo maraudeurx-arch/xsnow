@@ -43,6 +43,7 @@ describe("place display", () => {
     assert.equal(placeName("Gatineau"), "GATINEAU");
     assert.equal(placeName("New York"), "NEW YORK");
     assert.equal(placeName("Montréal"), "MONTRÉAL");
+    assert.equal(placeName("Port-au-Prince"), "PORT-AU-PRINCE");
   });
 
   it("restores known accents", () => {
