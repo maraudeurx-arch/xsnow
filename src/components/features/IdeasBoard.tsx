@@ -55,8 +55,8 @@ export function IdeasBoard() {
         coeur: copy.coeur,
         mains: copy.mains,
       } satisfies Record<Involvement, string>,
-      hours: copy.hoursLabel,
-      neighborhood: copy.neighborhoodLabel,
+      hours: copy.hoursShare,
+      neighborhood: copy.neighborhoodShare,
     }),
     [copy],
   );
@@ -108,6 +108,9 @@ export function IdeasBoard() {
     setForm(emptyIdeaForm());
     setEditingId(null);
     startShare(idea, true);
+    window.setTimeout(() => {
+      shareArea.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 50);
   }
 
   function editIdea(idea: CommunityIdea) {
@@ -145,10 +148,10 @@ export function IdeasBoard() {
             value={form.text}
             onChange={(event) => patch("text", event.target.value)}
             placeholder={copy.textPh}
-            rows={3}
+            rows={2}
             maxLength={500}
             required
-            className={`${fieldClass} min-h-[88px] py-2 leading-relaxed`}
+            className={`${fieldClass} min-h-[64px] py-2 leading-relaxed`}
           />
         </label>
         {error === "text" ? (
@@ -171,7 +174,7 @@ export function IdeasBoard() {
                   type="button"
                   aria-pressed={selected}
                   onClick={() => patch("involvement", toggleInvolvement(form.involvement, key))}
-                  className={`tap flex min-h-11 items-center justify-between gap-2 rounded-2xl border px-3 text-left ${
+                  className={`tap flex min-h-11 items-center justify-between gap-2 rounded-xl border px-3 py-1.5 text-left ${
                     selected
                       ? "border-gold/70 bg-gold/15 text-gold"
                       : "border-white/15 bg-white/[0.04] text-snow"
@@ -195,7 +198,7 @@ export function IdeasBoard() {
           </p>
         ) : null}
 
-        <div className="grid gap-2 sm:grid-cols-2">
+        <div className="grid grid-cols-2 gap-2">
           <label className="grid gap-1">
             <span className="text-[11px] font-extrabold text-snow/80">{copy.hoursLabel}</span>
             <input
@@ -221,7 +224,7 @@ export function IdeasBoard() {
 
         <button
           type="submit"
-          className="tap w-full rounded-full bg-cobalt text-sm font-extrabold text-snow"
+          className="tap sticky bottom-2 z-10 w-full rounded-full bg-cobalt text-sm font-extrabold text-snow shadow-[0_10px_28px_rgba(0,0,0,0.55)]"
         >
           {copy.submit}
         </button>

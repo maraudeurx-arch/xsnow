@@ -5,7 +5,7 @@ export const metadata = { title: "Vos idées" };
 
 export default function VosIdeesPage() {
   return (
-    <LocalizedFeature feature="vosIdees">
+    <LocalizedFeature feature="vosIdees" compact>
       <IdeasBoard />
     </LocalizedFeature>
   );

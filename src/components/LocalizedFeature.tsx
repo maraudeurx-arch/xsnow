@@ -9,14 +9,16 @@ import type { Messages } from "@/lib/i18n";
 export function LocalizedFeature({
   feature,
   children,
+  compact = false,
 }: {
   feature: keyof Messages["features"];
   children: ReactNode;
+  compact?: boolean;
 }) {
   const { m } = useI18n();
   const copy = m.features[feature];
   return (
-    <FeaturePanel title={copy.title} lead={copy.lead}>
+    <FeaturePanel title={copy.title} lead={copy.lead} compact={compact}>
       {children}
     </FeaturePanel>
   );
