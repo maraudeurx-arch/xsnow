@@ -10,15 +10,29 @@ export const IMPORTED_OFFERS_KEY = "xsnow.importedOffers";
 export const OFFER_REQUESTS_KEY = "xsnow.offerRequests";
 export const SHARE_TEXT_KEY_PREFIX = "opc-share-text:";
 
-export const OFFER_KINDS = ["car_morning"] as const;
+export const OFFER_KINDS = ["car_morning", "hotspot", "ux_session"] as const;
 export type OfferKind = (typeof OFFER_KINDS)[number];
 
 export const FEATURED_CAR_MORNING_ID = "featured-car-morning";
+export const DRAFT_HOTSPOT_ID = "draft-hotspot";
+export const DRAFT_UX_SESSION_ID = "draft-ux-session";
 export const DEFAULT_CAR_TITLE = "Prêt de voiture le matin";
+export const DEFAULT_HOTSPOT_TITLE = "Hotspot / connexion partagée";
+export const DEFAULT_UX_TITLE = "Session test utilisateur";
 export const DEFAULT_WINDOW_FROM = "05:00";
 export const DEFAULT_WINDOW_TO = "12:00";
+export const DEFAULT_HOTSPOT_FROM = "08:00";
+export const DEFAULT_HOTSPOT_TO = "20:00";
+export const DEFAULT_UX_FROM = "09:00";
+export const DEFAULT_UX_TO = "18:00";
 export const DEFAULT_PRICE_CAD = 35;
+export const DEFAULT_HOTSPOT_PRICE_CAD = 8;
+export const DEFAULT_UX_PRICE_CAD = 25;
 export const DEFAULT_NEIGHBORHOOD = "Gatineau";
+export const DEFAULT_HOTSPOT_NOTES =
+  "Hotspot Wi-Fi ou aide de connexion pour un voisin. Tarif à la session. Règles : débit raisonnable, pas d’usage illégal, vérifier ton forfait / FAI. Entente privée.";
+export const DEFAULT_UX_NOTES =
+  "Session de test utilisateur (app ou site) : 30 à 45 min, retours honnêtes. Pas de faux comptes, pas de ferme de clics. Tarif à la session.";
 
 export type CommunityOffer = {
   id: string;
@@ -40,6 +54,7 @@ export type CommunityOffer = {
 };
 
 export type OfferFormInput = {
+  kind: OfferKind;
   title: string;
   windowFrom: string;
   windowTo: string;
@@ -91,7 +106,33 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PHONE_RE = /^\+?[0-9][0-9\s().-]{5,}$/;
 
 export function isOfferKind(value: unknown): value is OfferKind {
-  return value === "car_morning";
+  return value === "car_morning" || value === "hotspot" || value === "ux_session";
+}
+
+export function parseOfferKindQuery(value: string | null | undefined): OfferKind | null {
+  if (value === "car-morning" || value === "car_morning") return "car_morning";
+  if (value === "hotspot") return "hotspot";
+  if (value === "ux-session" || value === "ux_session") return "ux_session";
+  return null;
+}
+
+export function offerKindQuery(kind: OfferKind) {
+  if (kind === "hotspot") return "hotspot";
+  if (kind === "ux_session") return "ux-session";
+  return "car-morning";
+}
+
+export function parseOfferTemplateQuery(value: string | null | undefined): OfferKind | null {
+  if (value === "hotspot") return "hotspot";
+  if (value === "ux" || value === "ux-session" || value === "ux_session") return "ux_session";
+  if (value === "car-morning" || value === "car_morning") return "car_morning";
+  return null;
+}
+
+export function draftTemplateId(kind: OfferKind) {
+  if (kind === "hotspot") return DRAFT_HOTSPOT_ID;
+  if (kind === "ux_session") return DRAFT_UX_SESSION_ID;
+  return "";
 }
 
 export function looksLikeEmail(value: string) {
@@ -134,6 +175,7 @@ export function smsHref(phone: string, body: string) {
 
 export function carMorningDefaults(): OfferFormInput {
   return {
+    kind: "car_morning",
     title: DEFAULT_CAR_TITLE,
     windowFrom: DEFAULT_WINDOW_FROM,
     windowTo: DEFAULT_WINDOW_TO,
@@ -145,6 +187,44 @@ export function carMorningDefaults(): OfferFormInput {
     insuranceOk: false,
     notes: "",
   };
+}
+
+export function hotspotDefaults(): OfferFormInput {
+  return {
+    kind: "hotspot",
+    title: DEFAULT_HOTSPOT_TITLE,
+    windowFrom: DEFAULT_HOTSPOT_FROM,
+    windowTo: DEFAULT_HOTSPOT_TO,
+    priceCad: DEFAULT_HOTSPOT_PRICE_CAD,
+    gasBorrowerPays: false,
+    neighborhood: "",
+    interacContact: "",
+    paypalMe: "",
+    insuranceOk: false,
+    notes: DEFAULT_HOTSPOT_NOTES,
+  };
+}
+
+export function uxSessionDefaults(): OfferFormInput {
+  return {
+    kind: "ux_session",
+    title: DEFAULT_UX_TITLE,
+    windowFrom: DEFAULT_UX_FROM,
+    windowTo: DEFAULT_UX_TO,
+    priceCad: DEFAULT_UX_PRICE_CAD,
+    gasBorrowerPays: false,
+    neighborhood: "",
+    interacContact: "",
+    paypalMe: "",
+    insuranceOk: false,
+    notes: DEFAULT_UX_NOTES,
+  };
+}
+
+export function defaultsForKind(kind: OfferKind): OfferFormInput {
+  if (kind === "hotspot") return hotspotDefaults();
+  if (kind === "ux_session") return uxSessionDefaults();
+  return carMorningDefaults();
 }
 
 export function featuredCarMorningOffer(now = new Date().toISOString()): CommunityOffer {
@@ -170,6 +250,7 @@ export function featuredCarMorningOffer(now = new Date().toISOString()): Communi
 
 export function formFromOffer(offer: CommunityOffer): OfferFormInput {
   return {
+    kind: offer.kind,
     title: offer.title,
     windowFrom: offer.windowFrom,
     windowTo: offer.windowTo,
@@ -189,13 +270,21 @@ export function parsePriceCad(value: number | string) {
   return Math.round(amount * 100) / 100;
 }
 
+export function formKind(input: Pick<OfferFormInput, "kind"> | OfferKind): OfferKind {
+  if (typeof input === "string") return isOfferKind(input) ? input : "car_morning";
+  return isOfferKind(input.kind) ? input.kind : "car_morning";
+}
+
 export function publishIssues(input: OfferFormInput): PublishIssue[] {
+  const kind = formKind(input);
   const issues: PublishIssue[] = [];
   if (!String(input.title || "").trim()) issues.push("title");
   if (!String(input.interacContact || "").trim()) issues.push("interac");
-  if (!input.insuranceOk) issues.push("insurance");
-  if (!input.gasBorrowerPays) issues.push("gas");
   if (parsePriceCad(input.priceCad) == null) issues.push("price");
+  if (kind === "car_morning") {
+    if (!input.insuranceOk) issues.push("insurance");
+    if (!input.gasBorrowerPays) issues.push("gas");
+  }
   return issues;
 }
 
@@ -203,29 +292,54 @@ export function canPublish(input: OfferFormInput) {
   return publishIssues(input).length === 0;
 }
 
+export function fallbackTitle(kind: OfferKind) {
+  if (kind === "hotspot") return DEFAULT_HOTSPOT_TITLE;
+  if (kind === "ux_session") return DEFAULT_UX_TITLE;
+  return DEFAULT_CAR_TITLE;
+}
+
 export function offerFromForm(
   input: OfferFormInput,
   existing?: CommunityOffer,
   now = new Date().toISOString(),
 ): CommunityOffer {
-  const price = parsePriceCad(input.priceCad) ?? DEFAULT_PRICE_CAD;
+  const kind = formKind(input);
+  const defaults = defaultsForKind(kind);
+  const price = parsePriceCad(input.priceCad) ?? defaults.priceCad;
   return {
     id: existing?.id ?? nextId(),
-    kind: "car_morning",
-    title: String(input.title || "").trim() || DEFAULT_CAR_TITLE,
-    windowFrom: String(input.windowFrom || DEFAULT_WINDOW_FROM).slice(0, 5),
-    windowTo: String(input.windowTo || DEFAULT_WINDOW_TO).slice(0, 5),
+    kind,
+    title: String(input.title || "").trim() || fallbackTitle(kind),
+    windowFrom: String(input.windowFrom || defaults.windowFrom).slice(0, 5),
+    windowTo: String(input.windowTo || defaults.windowTo).slice(0, 5),
     earlierOk: true,
-    priceCad: price,
-    gasBorrowerPays: Boolean(input.gasBorrowerPays),
+    priceCad: typeof price === "number" ? price : DEFAULT_PRICE_CAD,
+    gasBorrowerPays: kind === "car_morning" ? Boolean(input.gasBorrowerPays) : false,
     neighborhood: String(input.neighborhood || "").trim(),
     interacContact: String(input.interacContact || "").trim(),
     paypalMe: normalizePaypalMe(input.paypalMe || ""),
-    insuranceOk: Boolean(input.insuranceOk),
+    insuranceOk: kind === "car_morning" ? Boolean(input.insuranceOk) : false,
     notes: String(input.notes || "").trim().slice(0, 800),
     published: canPublish(input),
     createdAt: existing?.createdAt ?? now,
     updatedAt: now,
+  };
+}
+
+/** Unpublished helper kept in the same localStorage list — never shown in En demande. */
+export function unpublishedTemplateOffer(
+  kind: "hotspot" | "ux_session",
+  input?: Partial<OfferFormInput>,
+  existing?: CommunityOffer,
+  now = new Date().toISOString(),
+): CommunityOffer {
+  const base = defaultsForKind(kind);
+  const form: OfferFormInput = { ...base, ...input, kind };
+  const offer = offerFromForm(form, existing, now);
+  return {
+    ...offer,
+    id: existing?.id ?? draftTemplateId(kind),
+    published: false,
   };
 }
 
@@ -337,27 +451,31 @@ export function offerFromSharePayload(payload: SharePayload, now = new Date().to
 
 export function demandPath(payload?: SharePayload) {
   const base = `${PUBLIC_OFFER_SITE_URL.replace(/\/+$/, "")}/en-demande/`;
-  if (!payload) return `${base}?kind=car-morning`;
-  return `${base}?kind=car-morning&o=${encodeSharePayload(payload)}`;
+  const kind = payload?.k && isOfferKind(payload.k) ? payload.k : "car_morning";
+  const query = offerKindQuery(kind);
+  if (!payload) return `${base}?kind=${query}`;
+  return `${base}?kind=${query}&o=${encodeSharePayload(payload)}`;
 }
 
 /** Always French — Marketplace / group posts for the Gatineau launch. */
 export function sharePostFr(offer: CommunityOffer) {
   const area = offer.neighborhood.trim() || DEFAULT_NEIGHBORHOOD;
   const price = formatCad(offer.priceCad, "fr");
-  const lines = [
-    `${offer.title} — ${area}`,
-    "",
-    `Disponible de ${formatHourFr(offer.windowFrom)} à ${formatHourFr(offer.windowTo)} (ou plus tôt).`,
-    `${price} par matin. L’essence est à la charge de l’emprunteur.`,
-  ];
+  const windowLine = `Disponible de ${formatHourFr(offer.windowFrom)} à ${formatHourFr(offer.windowTo)} (ou plus tôt).`;
+  const priceLine =
+    offer.kind === "car_morning"
+      ? `${price} par matin. L’essence est à la charge de l’emprunteur.`
+      : `${price} par session.`;
+  const payLine = offer.interacContact
+    ? offer.kind === "car_morning"
+      ? `Paiement : Interac e-Transfer à ${offer.interacContact} (l’essence en plus).`
+      : `Paiement : Interac e-Transfer à ${offer.interacContact}.`
+    : offer.kind === "car_morning"
+      ? "Paiement : Interac e-Transfer (l’essence en plus). Le prestataire confirme le contact."
+      : "Paiement : Interac e-Transfer. Le prestataire confirme le contact.";
+  const lines = [`${offer.title} — ${area}`, "", windowLine, priceLine];
   if (offer.notes) lines.push(offer.notes);
-  lines.push("", `Réserver ici :`, demandPath(toSharePayload(offer)), "");
-  if (offer.interacContact) {
-    lines.push(`Paiement : Interac e-Transfer à ${offer.interacContact} (l’essence en plus).`);
-  } else {
-    lines.push("Paiement : Interac e-Transfer (l’essence en plus). Le prestataire confirme le contact.");
-  }
+  lines.push("", `Réserver ici :`, demandPath(toSharePayload(offer)), "", payLine);
   if (offer.paypalMe) lines.push(`PayPal : ${paypalMeUrl(offer.paypalMe)}`);
   lines.push(
     "",

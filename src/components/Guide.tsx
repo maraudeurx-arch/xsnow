@@ -117,6 +117,12 @@ export function Guide() {
             >
               {m.nav.enDemande}
             </Link>
+            <Link
+              href="/gagner-maintenant"
+              className="tap inline-flex min-h-9 min-w-0 items-center rounded-full border border-gold/50 bg-gold/10 px-3 text-[11px] font-extrabold text-gold"
+            >
+              {m.menu.gagnerMaintenant}
+            </Link>
           </nav>
           <InstallTip compact />
           {needsPrompt && !waitingOnConsent ? <LocationPrompt /> : <AvatarChat avatar={chosen} />}

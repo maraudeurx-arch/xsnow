@@ -1,0 +1,12 @@
+import { LocalizedFeature } from "@/components/LocalizedFeature";
+import { EarnNowBoard } from "@/components/features/EarnNowBoard";
+
+export const metadata = { title: "Gagner maintenant" };
+
+export default function GagnerMaintenantPage() {
+  return (
+    <LocalizedFeature feature="gagnerMaintenant">
+      <EarnNowBoard />
+    </LocalizedFeature>
+  );
+}
