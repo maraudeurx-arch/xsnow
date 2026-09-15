@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { noteMonetizeSuggestion } from "@/lib/analytics";
 import { avatarSystemPromptFor } from "@/lib/content";
 import { useI18n } from "@/lib/i18n/locale";
 import { usePlace } from "@/lib/place";
@@ -95,6 +96,7 @@ export function AvatarChat({ avatar }: { avatar: Avatar }) {
   async function sendText(raw: string) {
     const text = raw.trim();
     if (!text || busyRef.current) return;
+    noteMonetizeSuggestion(text);
 
     busyRef.current = true;
     const nextMessages: ChatMessage[] = [

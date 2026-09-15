@@ -1,0 +1,312 @@
+/**
+ * Anonymous OPC usage analytics (privacy-first). No names, emails, or GPS.
+ *
+ * POST https://xsnow-chat.xsnowopc.workers.dev/stats
+ * GET  https://xsnow-chat.xsnowopc.workers.dev/stats/summary
+ *
+ * JSON body (batch OK): `{ events: AnalyticsEvent[] }`
+ *
+ * Events (every row includes `session`, an anonymous uuid in localStorage):
+ * - `session_start` — once per browser tab session
+ * - `lang` — active UI language: `fr` | `en` | `es`
+ * - `place` — `{ city, countryCode }` after geolocation succeeds (city-level only)
+ * - `monetize_suggestion` — short free text (trim/cap 280) when chat looks like
+ *   a monetization idea (keywords: monétiser, monetize, suggestion, service,
+ *   activité / activity)
+ */
+
+export const ANON_ID_KEY = "xsnow.anonId";
+export const SESSION_START_KEY = "xsnow.sessionStartSent";
+export const PLACE_SENT_KEY = "xsnow.placeSent";
+export const SUGGESTION_MAX = 280;
+
+export const STATS_FALLBACK_URL = "https://xsnow-chat.xsnowopc.workers.dev/stats";
+
+const EMAIL_RE = /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi;
+const COORDS_RE = /-?\d{1,3}\.\d+\s*,\s*-?\d{1,3}\.\d+/;
+const FORBIDDEN_KEYS = new Set([
+  "lat",
+  "lon",
+  "latitude",
+  "longitude",
+  "gps",
+  "email",
+  "name",
+  "street",
+  "address",
+  "phone",
+]);
+
+const SUGGESTION_NEEDLES = [
+  "monetiser",
+  "monetize",
+  "monetise",
+  "monetizar",
+  "suggestion",
+  "sugerencia",
+  "service",
+  "activite",
+  "activity",
+  "actividad",
+];
+
+export type AnalyticsLang = "fr" | "en" | "es";
+
+export type AnalyticsEvent =
+  | { type: "session_start"; session: string; t: number }
+  | { type: "lang"; session: string; t: number; lang: AnalyticsLang }
+  | { type: "place"; session: string; t: number; city: string; countryCode: string }
+  | { type: "monetize_suggestion"; session: string; t: number; text: string };
+
+type QueueSink = (events: AnalyticsEvent[]) => void;
+
+let queue: AnalyticsEvent[] = [];
+let flushTimer: ReturnType<typeof setTimeout> | null = null;
+let sink: QueueSink | null = null;
+
+export function statsEndpoint(base?: string) {
+  const raw =
+    base ||
+    (typeof process !== "undefined" &&
+      (process.env.NEXT_PUBLIC_CHAT_API_URL || process.env.NEXT_PUBLIC_CHAT_API)) ||
+    "https://xsnow-chat.xsnowopc.workers.dev";
+  return `${String(raw).replace(/\/+$/, "")}/stats`;
+}
+
+export function foldAscii(value: string) {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
+}
+
+export function looksLikeMonetizeSuggestion(text: string) {
+  const folded = foldAscii(text);
+  if (!folded.trim()) return false;
+  return SUGGESTION_NEEDLES.some((needle) => folded.includes(needle));
+}
+
+export function looksLikeCoordinates(text: string) {
+  return COORDS_RE.test(text);
+}
+
+export function sanitizeSuggestion(text: string) {
+  const cleaned = text.replace(EMAIL_RE, "[redacted]").replace(/\s+/g, " ").trim();
+  if (!cleaned || looksLikeCoordinates(cleaned)) return "";
+  return cleaned.length > SUGGESTION_MAX ? cleaned.slice(0, SUGGESTION_MAX) : cleaned;
+}
+
+export function sanitizeCity(city: string) {
+  const trimmed = city.replace(/\s+/g, " ").trim();
+  if (!trimmed || looksLikeCoordinates(trimmed)) return "";
+  return trimmed.slice(0, 80);
+}
+
+export function sanitizeCountryCode(code: string) {
+  const value = code.trim().toUpperCase();
+  if (!/^[A-Z]{2}$/.test(value)) return "";
+  return value;
+}
+
+function isAnalyticsLang(value: unknown): value is AnalyticsLang {
+  return value === "fr" || value === "en" || value === "es";
+}
+
+function stripForbidden(record: Record<string, unknown>) {
+  for (const key of Object.keys(record)) {
+    if (FORBIDDEN_KEYS.has(key.toLowerCase())) {
+      delete record[key];
+    }
+  }
+}
+
+export function toAnalyticsEvent(raw: unknown, session: string, now = Date.now()): AnalyticsEvent | null {
+  if (!raw || typeof raw !== "object") return null;
+  const record = { ...(raw as Record<string, unknown>) };
+  stripForbidden(record);
+  const type = record.type;
+  if (type === "session_start") {
+    return { type: "session_start", session, t: now };
+  }
+  if (type === "lang" && isAnalyticsLang(record.lang)) {
+    return { type: "lang", session, t: now, lang: record.lang };
+  }
+  if (type === "place") {
+    const city = typeof record.city === "string" ? sanitizeCity(record.city) : "";
+    const countryCode =
+      typeof record.countryCode === "string" ? sanitizeCountryCode(record.countryCode) : "";
+    if (!city || !countryCode) return null;
+    return { type: "place", session, t: now, city, countryCode };
+  }
+  if (type === "monetize_suggestion") {
+    const text = typeof record.text === "string" ? sanitizeSuggestion(record.text) : "";
+    if (!text) return null;
+    return { type: "monetize_suggestion", session, t: now, text };
+  }
+  return null;
+}
+
+function storageGet(store: Storage | undefined, key: string): string | null {
+  if (!store) return null;
+  try {
+    const raw = store.getItem(key);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as unknown;
+    return typeof parsed === "string" && parsed ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
+function storageSet(store: Storage | undefined, key: string, value: string) {
+  if (!store) return;
+  try {
+    store.setItem(key, JSON.stringify(value));
+  } catch {
+    // Private mode / quota — analytics stays best-effort.
+  }
+}
+
+export function readOrCreateAnonId(
+  store: Storage | undefined = typeof window === "undefined" ? undefined : window.localStorage,
+  randomId: () => string = () => crypto.randomUUID(),
+) {
+  const existing = storageGet(store, ANON_ID_KEY);
+  if (existing) return existing;
+  const created = randomId();
+  storageSet(store, ANON_ID_KEY, created);
+  return created;
+}
+
+function browserSession() {
+  if (typeof window === "undefined") return undefined;
+  try {
+    return window.sessionStorage;
+  } catch {
+    return undefined;
+  }
+}
+
+function browserLocal() {
+  if (typeof window === "undefined") return undefined;
+  try {
+    return window.localStorage;
+  } catch {
+    return undefined;
+  }
+}
+
+export function enqueue(event: AnalyticsEvent) {
+  queue.push(event);
+  if (queue.length >= 6) {
+    flush();
+    return;
+  }
+  if (flushTimer != null) return;
+  flushTimer = setTimeout(() => {
+    flushTimer = null;
+    flush();
+  }, 700);
+}
+
+export function pendingEvents() {
+  return queue.slice();
+}
+
+export function resetAnalyticsQueue() {
+  queue = [];
+  if (flushTimer != null) {
+    clearTimeout(flushTimer);
+    flushTimer = null;
+  }
+}
+
+export function setAnalyticsSink(next: QueueSink | null) {
+  sink = next;
+}
+
+async function postEvents(events: AnalyticsEvent[]) {
+  if (sink) {
+    sink(events);
+    return;
+  }
+  if (typeof fetch === "undefined") return;
+  try {
+    await fetch(statsEndpoint(), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ events }),
+      keepalive: true,
+      credentials: "omit",
+    });
+  } catch {
+    // Offline / blocked — never surface to the visitor.
+  }
+}
+
+export function flush() {
+  if (flushTimer != null) {
+    clearTimeout(flushTimer);
+    flushTimer = null;
+  }
+  if (!queue.length) return;
+  const batch = queue;
+  queue = [];
+  void postEvents(batch);
+}
+
+let pageHideBound = false;
+
+function bindPageHide() {
+  if (typeof window === "undefined" || pageHideBound) return;
+  pageHideBound = true;
+  window.addEventListener("pagehide", () => flush());
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "hidden") flush();
+  });
+}
+
+export function noteSessionStart() {
+  if (typeof window === "undefined") return;
+  bindPageHide();
+  const session = readOrCreateAnonId(browserLocal());
+  const tab = browserSession();
+  if (storageGet(tab, SESSION_START_KEY)) return;
+  storageSet(tab, SESSION_START_KEY, "1");
+  enqueue({ type: "session_start", session, t: Date.now() });
+}
+
+export function noteLang(lang: AnalyticsLang) {
+  if (typeof window === "undefined") return;
+  bindPageHide();
+  const session = readOrCreateAnonId(browserLocal());
+  enqueue({ type: "lang", session, t: Date.now(), lang });
+}
+
+export function notePlace(city: string, countryCode: string) {
+  if (typeof window === "undefined") return;
+  const cleanCity = sanitizeCity(city);
+  const cleanCountry = sanitizeCountryCode(countryCode);
+  if (!cleanCity || !cleanCountry) return;
+  const session = readOrCreateAnonId(browserLocal());
+  const fingerprint = `${cleanCity}|${cleanCountry}`;
+  const tab = browserSession();
+  if (storageGet(tab, PLACE_SENT_KEY) === fingerprint) return;
+  storageSet(tab, PLACE_SENT_KEY, fingerprint);
+  enqueue({
+    type: "place",
+    session,
+    t: Date.now(),
+    city: cleanCity,
+    countryCode: cleanCountry,
+  });
+}
+
+export function noteMonetizeSuggestion(text: string) {
+  if (typeof window === "undefined") return;
+  if (!looksLikeMonetizeSuggestion(text)) return;
+  const clean = sanitizeSuggestion(text);
+  if (!clean) return;
+  const session = readOrCreateAnonId(browserLocal());
+  enqueue({ type: "monetize_suggestion", session, t: Date.now(), text: clean });
+}

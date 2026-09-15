@@ -10,6 +10,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState, type ReactNode } from "react";
 import { WagmiProvider } from "wagmi";
 import { sepolia } from "wagmi/chains";
+import { AnalyticsRoot } from "@/components/AnalyticsRoot";
 import type { Locale } from "@/lib/i18n";
 import { LocaleProvider, useI18n } from "@/lib/i18n/locale";
 import { PlaceProvider } from "@/lib/place";
@@ -61,6 +62,7 @@ export function Providers({ children }: { children: ReactNode }) {
   return (
     <LocaleProvider>
       <PlaceProvider>
+        <AnalyticsRoot />
         <SpeechProvider>
           {useRainbow ? (
             <RainbowStack>{children}</RainbowStack>
