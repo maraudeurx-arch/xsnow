@@ -1,11 +1,9 @@
 "use client";
 
+import type { CSSProperties } from "react";
 import { useI18n } from "@/lib/i18n/locale";
 import { assetUrl } from "@/lib/paths";
-import type { Avatar } from "@/lib/avatars";
-
-const frameClass =
-  "block rounded-full border-[3px] border-gold shadow-[0_0_14px_rgba(61,255,138,0.35)] ring-[2.5px] ring-gold ring-offset-[3px] ring-offset-[#050506]";
+import { AVATAR_RINGS, type Avatar } from "@/lib/avatars";
 
 export function AvatarDisc({
   avatar,
@@ -19,11 +17,11 @@ export function AvatarDisc({
   priority?: boolean;
 }) {
   const { m } = useI18n();
+  const ring = AVATAR_RINGS[avatar.ring];
   return (
     <span
-      className={`${frameClass} ${className} ${
-        selected ? "shadow-[0_0_22px_rgba(61,255,138,0.7)] ring-[3.5px]" : ""
-      }`}
+      className={`avatar-disc ${className} ${selected ? "is-selected" : ""}`}
+      style={{ "--avatar-ring": ring } as CSSProperties}
     >
       <span className="block h-full w-full overflow-hidden rounded-full">
         {/* Plain img: next/image omitted basePath and 404'd on GitHub Pages. */}
