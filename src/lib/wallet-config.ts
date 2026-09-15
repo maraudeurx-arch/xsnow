@@ -18,7 +18,10 @@ export function hasWalletConnectProjectId(): boolean {
   return Boolean(walletConnectProjectId());
 }
 
-/** Sepolia is the dApp chain. Unset / empty still means testnet (default). */
+/**
+ * When true (default if unset), Sepolia is advertised as an extra optional chain.
+ * Ethereum mainnet remains the primary connect target either way.
+ */
 export function parseEnableTestnets(value: string | undefined | null): boolean {
   const v = value?.trim().toLowerCase();
   if (!v) return true;

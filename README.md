@@ -33,7 +33,7 @@ Xsnow est la vitrine **Open-Community** : faire connaître un business, voir qui
 ### Interface
 
 - En haut à gauche : **Xsnow**, puis **Accueil** (toutes les propositions à l’intérieur)
-- En haut à droite : **Connect** (RainbowKit / WalletConnect, réseau Sepolia)
+- En haut à droite : **Connect** (RainbowKit / WalletConnect, Ethereum principal + Base ; Sepolia en option)
 - Titre centré : **Open-Community** / **Monétisé Vous!**
 - Centre : avatar + bulle + **Réécouter** (`speechSynthesis`, iOS = tap)
 - Safari iPhone : `viewport-fit=cover`, safe areas, cibles ~44 px
@@ -71,10 +71,10 @@ Pour la prod GitHub Pages, créer un projet **gratuit** puis passer l’id au wo
    - Nom : `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID`  
    - Valeur : le Project ID  
    Un *secret* du même nom fonctionne aussi. L’id se retrouve dans le JS public ; une variable suffit.
-6. Optionnel : variable `NEXT_PUBLIC_ENABLE_TESTNETS` = `true` (Sepolia, déjà le défaut).
+6. Optionnel : variable `NEXT_PUBLIC_ENABLE_TESTNETS` = `true` (défaut) pour garder **Sepolia** en chaîne extra, sans l’exiger à la connexion. `false` retire Sepolia ; Ethereum principal et Base restent.
 7. Redéployer : **Actions → Deploy GitHub Pages → Run workflow**, ou un push sur `main`.
 
-Vérifier sur **iPhone Safari** : ouvrir https://maraudeurx-arch.github.io/xsnow/ → **Connect** → modal RainbowKit → WalletConnect (ou MetaMask / Rainbow / Trust) → approuver dans l’app → le bouton affiche l’adresse. Réseau attendu : **Sepolia**.
+Vérifier sur **iPhone Safari** : ouvrir https://maraudeurx-arch.github.io/xsnow/ → **Connect** → modal RainbowKit → WalletConnect (ou MetaMask / Rainbow / Trust) → approuver dans l’app (réseau **Ethereum** / Base, pas Sepolia-only) → le bouton affiche l’adresse tronquée. Si le portefeuille est sur un autre réseau, **Changer de réseau** ouvre le sélecteur RainbowKit.
 
 En local : coller l’id dans `.env.local` (voir [`.env.example`](.env.example)) puis `npm run dev`.
 
@@ -124,7 +124,7 @@ If Pages 404s, set **Settings → Pages → Source = GitHub Actions**, or run th
 
 **Connect** needs a Reown / WalletConnect Cloud project id inlined at build time. Set the GitHub Actions variable `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID` (steps in French above), then redeploy. Without it, Connect explains that WalletConnect is not configured instead of faking a guest session.
 
-On iPhone Safari: open the public URL → **Connect** → RainbowKit modal → WalletConnect or MetaMask / Rainbow / Trust → approve in the wallet app → the button shows the address (Sepolia).
+On iPhone Safari: open the public URL → **Connect** → RainbowKit modal → WalletConnect or MetaMask / Rainbow / Trust → approve in the wallet app (Ethereum mainnet / Base; Sepolia is optional) → the button shows the truncated address. If the wallet is on an unsupported chain, **Switch network** opens RainbowKit’s chain picker.
 
 ### Local
 

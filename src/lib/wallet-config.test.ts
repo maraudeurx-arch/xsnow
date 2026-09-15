@@ -24,10 +24,11 @@ describe("isWalletConnectProjectId", () => {
 });
 
 describe("parseEnableTestnets", () => {
-  it("defaults to true so Sepolia stays the dApp network", () => {
+  it("defaults to true so Sepolia stays available as an extra chain", () => {
     assert.equal(parseEnableTestnets(undefined), true);
     assert.equal(parseEnableTestnets(""), true);
     assert.equal(parseEnableTestnets("true"), true);
     assert.equal(parseEnableTestnets("false"), false);
+    assert.equal(parseEnableTestnets("0"), false);
   });
 });

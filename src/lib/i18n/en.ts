@@ -152,7 +152,7 @@ export const en: Messages = {
         },
         {
           heading: "Wallet",
-          body: "Connecting a wallet is optional (Sepolia test network).",
+          body: "Connecting a wallet is optional. Ethereum mainnet is supported; you can switch networks after connecting.",
         },
         {
           heading: "Use",
@@ -306,7 +306,7 @@ export const en: Messages = {
     connect: "Connect",
     disconnect: "Disconnect wallet",
     connectAria: "Connect wallet",
-    wrongNetwork: "Wrong network",
+    wrongNetwork: "Switch network",
     needsConfig:
       "WalletConnect is not configured: missing project id in the deploy.",
   },
