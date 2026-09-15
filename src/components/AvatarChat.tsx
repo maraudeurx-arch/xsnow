@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { looksLikeMonetizeSuggestion, noteMonetizeSuggestion } from "@/lib/analytics";
 import { avatarSystemPromptFor } from "@/lib/content";
 import { looksLikeCommunityIdea, writeIdeaDraft } from "@/lib/ideas";
+import { CHAT_TEXT_MAX, sanitizeUntrustedText } from "@/lib/sanitize";
 import { useI18n } from "@/lib/i18n/locale";
 import { usePlace } from "@/lib/place";
 import { dictationLang } from "@/lib/voices";
@@ -98,7 +99,11 @@ export function AvatarChat({ avatar }: { avatar: Avatar }) {
   }
 
   async function sendText(raw: string) {
-    const text = raw.trim();
+    const text = sanitizeUntrustedText(raw, {
+      max: CHAT_TEXT_MAX,
+      redactEmails: false,
+      allowNewlines: false,
+    });
     if (!text || busyRef.current) return;
     noteMonetizeSuggestion(text);
     if (looksLikeCommunityIdea(text) || looksLikeMonetizeSuggestion(text)) {
@@ -334,6 +339,7 @@ export function AvatarChat({ avatar }: { avatar: Avatar }) {
           onChange={(event) => setInput(event.target.value)}
           placeholder={chat.placeholder}
           aria-label={chat.placeholder}
+          maxLength={CHAT_TEXT_MAX}
           className="min-h-[var(--home-nav-h)] min-w-0 flex-1 rounded-full border border-white/15 bg-night px-3 text-[16px] text-snow outline-none placeholder:text-snow/55 focus:border-gold/70"
         />
         <button

@@ -9,6 +9,7 @@ import {
   INVOLVEMENT,
   analyticsSnippet,
   clearIdeaDraft,
+  clipIdeaShareText,
   defaultIdeaShareText,
   draftIdeaShareText,
   emptyIdeaForm,
@@ -23,6 +24,7 @@ import {
   type IdeaFormInput,
   type Involvement,
 } from "@/lib/ideas";
+import { SHARE_TEXT_MAX } from "@/lib/sanitize";
 import { FeedbackRow } from "@/components/FeedbackRow";
 import { copyText } from "@/lib/offers";
 import { useStoredList } from "@/lib/useStoredList";
@@ -125,7 +127,7 @@ export function IdeasBoard() {
   }
 
   async function copyShare() {
-    const ok = await copyText(shareText);
+    const ok = await copyText(clipIdeaShareText(shareText));
     setShareStatus(ok ? "ok" : "fail");
     if (ok && thanksIdea) writeEditedIdeaShare(thanksIdea.id, shareText);
   }
@@ -241,10 +243,12 @@ export function IdeasBoard() {
             ref={shareArea}
             value={shareText}
             onChange={(event) => {
-              setShareText(event.target.value);
-              writeEditedIdeaShare(thanksIdea.id, event.target.value);
+              const next = event.target.value.slice(0, SHARE_TEXT_MAX);
+              setShareText(next);
+              writeEditedIdeaShare(thanksIdea.id, next);
             }}
             rows={6}
+            maxLength={SHARE_TEXT_MAX}
             className={`${fieldClass} min-h-[120px] py-2 text-xs leading-relaxed`}
             aria-label={copy.share}
           />

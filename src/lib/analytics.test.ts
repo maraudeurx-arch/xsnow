@@ -34,6 +34,17 @@ describe("sanitizeSuggestion", () => {
     assert.match(sanitizeSuggestion("Idée: write me at ada@example.com please"), /\[redacted\]/);
     assert.equal(sanitizeSuggestion("Meet at 45.4765, -75.7013"), "");
   });
+
+  it("strips script tags before analytics POST", () => {
+    assert.doesNotMatch(
+      sanitizeSuggestion("<script>alert(1)</script> Monétiser la livraison javascript:alert(1)"),
+      /<script|javascript:/i,
+    );
+    assert.match(
+      sanitizeSuggestion("<script>alert(1)</script> Monétiser la livraison"),
+      /Monétiser la livraison/,
+    );
+  });
 });
 
 describe("place payload", () => {
@@ -164,6 +175,31 @@ describe("worker parseStatsEvents", () => {
     assert.equal(parsed[7]?.type, "invite_open");
     assert.equal(parsed[7]?.text, "ami|critique");
     assert.equal(parsed[8]?.type, "feedback_pos");
+  });
+
+  it("stores idea_submit / monetize_suggestion as plain text without scripts", () => {
+    const parsed = parseStatsEvents({
+      events: [
+        {
+          type: "monetize_suggestion",
+          session: "aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee",
+          text: "<script>alert(1)</script> data:text/html,x javascript:alert(1) Une idée de quartier",
+          t: 1,
+        },
+        {
+          type: "idea_submit",
+          session: "aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee",
+          text: "tete+<img src=x onerror=alert(1)>mains",
+          t: 2,
+        },
+      ],
+    });
+    assert.equal(parsed.length, 2);
+    assert.doesNotMatch(parsed[0]?.text ?? "", /<script|javascript:|data:/i);
+    assert.match(parsed[0]?.text ?? "", /idée/i);
+    assert.equal(parsed[1]?.text.includes("<"), false);
+    assert.match(parsed[1]?.text ?? "", /tete/);
+    assert.match(parsed[1]?.text ?? "", /mains/);
   });
 
   it("accepts feedback_neg", () => {

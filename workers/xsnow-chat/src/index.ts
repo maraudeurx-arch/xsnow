@@ -13,6 +13,7 @@
  */
 
 import { parseLatLon, reverseGeocode } from "./geo";
+import { CHAT_TEXT_MAX, isJsonContentType, sanitizeUntrustedText } from "../../../src/lib/sanitize.ts";
 import {
   EMPTY_SUMMARY,
   insertStatsEvents,
@@ -31,7 +32,7 @@ export interface Env {
 const MODEL = "@cf/meta/llama-3.2-3b-instruct";
 const MAX_BODY_BYTES = 16_384;
 const MAX_MESSAGES = 24;
-const MAX_TEXT_CHARS = 4_000;
+const MAX_TEXT_CHARS = CHAT_TEXT_MAX;
 const MAX_TOKENS = 400;
 const RATE_WINDOW_MS = 60_000;
 const RATE_MAX = 16;
@@ -119,8 +120,16 @@ function flattenContent(content: unknown): string {
     .trim();
 }
 
-function clip(text: string): string {
+function clipLength(text: string): string {
   return text.length > MAX_TEXT_CHARS ? text.slice(0, MAX_TEXT_CHARS) : text;
+}
+
+function clipUserText(text: string): string {
+  return sanitizeUntrustedText(text, {
+    max: MAX_TEXT_CHARS,
+    redactEmails: false,
+    allowNewlines: true,
+  });
 }
 
 function parseBody(raw: unknown): { system: string; messages: ChatTurn[] } | null {
@@ -135,12 +144,12 @@ function parseBody(raw: unknown): { system: string; messages: ChatTurn[] } | nul
     if (!item || typeof item !== "object") return null;
     const turn = item as { role?: unknown; content?: unknown };
     if (turn.role !== "user" && turn.role !== "assistant") return null;
-    const content = flattenContent(turn.content);
+    const content = clipUserText(flattenContent(turn.content));
     if (!content) return null;
-    messages.push({ role: turn.role, content: clip(content) });
+    messages.push({ role: turn.role, content });
   }
 
-  const system = clip(record.system.trim());
+  const system = clipLength(record.system.trim());
   if (!system) return null;
   if (messages[messages.length - 1]?.role !== "user") return null;
 
@@ -187,6 +196,10 @@ function isStatsPath(pathname: string) {
 }
 
 async function readJsonBody(request: Request, origin: string | null): Promise<{ ok: true; value: unknown } | { ok: false; response: Response }> {
+  if (!isJsonContentType(request.headers.get("Content-Type"))) {
+    return { ok: false, response: json({ error: "unsupported_media_type" }, 415, origin) };
+  }
+
   const declaredLength = Number(request.headers.get("Content-Length") || "0");
   if (declaredLength > MAX_BODY_BYTES) {
     return { ok: false, response: json({ error: "payload_too_large" }, 413, origin) };
@@ -275,32 +288,12 @@ async function handleGeo(request: Request, origin: string | null): Promise<Respo
     return json(result, 200, origin);
   }
 
-  const declaredLength = Number(request.headers.get("Content-Length") || "0");
-  if (declaredLength > MAX_BODY_BYTES) {
-    return json({ error: "payload_too_large" }, 413, origin);
-  }
-
-  let rawText: string;
-  try {
-    rawText = await request.text();
-  } catch {
-    return json({ error: "bad_request" }, 400, origin);
-  }
-
-  if (rawText.length > MAX_BODY_BYTES) {
-    return json({ error: "payload_too_large" }, 413, origin);
-  }
-
-  let parsedJson: unknown;
-  try {
-    parsedJson = JSON.parse(rawText) as unknown;
-  } catch {
-    return json({ error: "bad_request" }, 400, origin);
-  }
+  const body = await readJsonBody(request, origin);
+  if (!body.ok) return body.response;
 
   const coords = parseLatLon(
-    parsedJson && typeof parsedJson === "object"
-      ? (parsedJson as { lat?: unknown; lon?: unknown; longitude?: unknown })
+    body.value && typeof body.value === "object"
+      ? (body.value as { lat?: unknown; lon?: unknown; longitude?: unknown })
       : {},
   );
   if (!coords) return json({ error: "bad_request" }, 400, origin);
@@ -338,30 +331,10 @@ export default {
       return json({ error: "rate_limited" }, 429, origin);
     }
 
-    const declaredLength = Number(request.headers.get("Content-Length") || "0");
-    if (declaredLength > MAX_BODY_BYTES) {
-      return json({ error: "payload_too_large" }, 413, origin);
-    }
+    const parsed = await readJsonBody(request, origin);
+    if (!parsed.ok) return parsed.response;
 
-    let rawText: string;
-    try {
-      rawText = await request.text();
-    } catch {
-      return json({ error: "bad_request" }, 400, origin);
-    }
-
-    if (rawText.length > MAX_BODY_BYTES) {
-      return json({ error: "payload_too_large" }, 413, origin);
-    }
-
-    let parsedJson: unknown;
-    try {
-      parsedJson = JSON.parse(rawText) as unknown;
-    } catch {
-      return json({ error: "bad_request" }, 400, origin);
-    }
-
-    const body = parseBody(parsedJson);
+    const body = parseBody(parsed.value);
     if (!body) {
       return json({ error: "bad_request" }, 400, origin);
     }
@@ -372,7 +345,7 @@ export default {
         max_tokens: MAX_TOKENS,
         temperature: 0.6,
       });
-      const reply = replyFromAi(result);
+      const reply = clipUserText(replyFromAi(result));
       if (!reply) {
         return json({ error: "empty" }, 502, origin);
       }

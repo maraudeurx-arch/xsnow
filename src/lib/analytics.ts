@@ -25,16 +25,21 @@
 
 import { analyticsAllowed } from "./consent.ts";
 import { INVITE_OPEN_SENT_KEY } from "./invite.ts";
+import {
+  looksLikeCoordinates,
+  sanitizeUntrustedText,
+  SUGGESTION_TEXT_MAX,
+} from "./sanitize.ts";
+
+export { looksLikeCoordinates };
 
 export const ANON_ID_KEY = "xsnow.anonId";
 export const SESSION_START_KEY = "xsnow.sessionStartSent";
 export const PLACE_SENT_KEY = "xsnow.placeSent";
-export const SUGGESTION_MAX = 280;
+export const SUGGESTION_MAX = SUGGESTION_TEXT_MAX;
 
 export const STATS_FALLBACK_URL = "https://xsnow-chat.xsnowopc.workers.dev/stats";
 
-const EMAIL_RE = /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi;
-const COORDS_RE = /-?\d{1,3}\.\d+\s*,\s*-?\d{1,3}\.\d+/;
 const FORBIDDEN_KEYS = new Set([
   "lat",
   "lon",
@@ -120,20 +125,22 @@ export function looksLikeMonetizeSuggestion(text: string) {
   return SUGGESTION_NEEDLES.some((needle) => folded.includes(needle));
 }
 
-export function looksLikeCoordinates(text: string) {
-  return COORDS_RE.test(text);
-}
-
 export function sanitizeSuggestion(text: string) {
-  const cleaned = text.replace(EMAIL_RE, "[redacted]").replace(/\s+/g, " ").trim();
-  if (!cleaned || looksLikeCoordinates(cleaned)) return "";
-  return cleaned.length > SUGGESTION_MAX ? cleaned.slice(0, SUGGESTION_MAX) : cleaned;
+  return sanitizeUntrustedText(text, {
+    max: SUGGESTION_MAX,
+    redactEmails: true,
+    allowNewlines: false,
+    dropCoordinates: true,
+  });
 }
 
 export function sanitizeCity(city: string) {
-  const trimmed = city.replace(/\s+/g, " ").trim();
-  if (!trimmed || looksLikeCoordinates(trimmed)) return "";
-  return trimmed.slice(0, 80);
+  return sanitizeUntrustedText(city, {
+    max: 80,
+    redactEmails: true,
+    allowNewlines: false,
+    dropCoordinates: true,
+  });
 }
 
 export function sanitizeCountryCode(code: string) {

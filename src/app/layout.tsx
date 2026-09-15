@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Fraunces, Outfit } from "next/font/google";
 import { AppChrome } from "@/components/AppChrome";
 import { Providers } from "@/app/providers";
+import { CONTENT_SECURITY_POLICY } from "@/lib/csp";
 import { assetUrl } from "@/lib/paths";
 import "./globals.css";
 
@@ -58,6 +59,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="fr"
       className={`${outfit.variable} ${fraunces.variable} h-full antialiased`}
     >
+      <head>
+        <meta httpEquiv="Content-Security-Policy" content={CONTENT_SECURITY_POLICY} />
+      </head>
       <body className="min-h-full min-h-dvh">
         <Providers>
           <AppChrome>{children}</AppChrome>
