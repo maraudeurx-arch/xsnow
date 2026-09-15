@@ -11,6 +11,8 @@ export const STATS_EVENT_TYPES = [
   "lang",
   "place",
   "monetize_suggestion",
+  "offer_created",
+  "request_created",
 ] as const;
 
 export type StatsEventType = (typeof STATS_EVENT_TYPES)[number];
@@ -47,7 +49,9 @@ function isType(value: unknown): value is StatsEventType {
     value === "session_start" ||
     value === "lang" ||
     value === "place" ||
-    value === "monetize_suggestion"
+    value === "monetize_suggestion" ||
+    value === "offer_created" ||
+    value === "request_created"
   );
 }
 
@@ -103,6 +107,17 @@ export function parseStatsEvents(raw: unknown): StoredStatsEvent[] {
       const text = typeof event.text === "string" ? clip(event.text, 280) : "";
       if (!text) continue;
       row.text = text;
+    }
+    if (event.type === "offer_created" || event.type === "request_created") {
+      const kindRaw = typeof event.kind === "string" ? event.kind : "";
+      const kind = kindRaw
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase()
+        .replace(/[^a-z0-9_-]/g, "")
+        .slice(0, 40);
+      if (!kind) continue;
+      row.text = kind;
     }
     out.push(row);
   }

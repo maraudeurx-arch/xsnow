@@ -41,6 +41,16 @@ describe("interpolate", () => {
   });
 });
 
+describe("car morning offer copy", () => {
+  it("keeps FR/EN/ES labels in sync", () => {
+    assert.equal(fr.menu.carMorning, "Prêt de voiture (matins)");
+    assert.ok(en.offers.insuranceLabel);
+    assert.ok(es.offers.paymentTitle);
+    assert.match(fr.offers.insuranceHint, /assureur/);
+    assert.match(en.offers.terms, /not the insurer/);
+  });
+});
+
 describe("welcome and system prompt follow UI locale", () => {
   it("keeps French copy by default", () => {
     assert.match(interpolate(fr.welcome, { city: "New York" }), /voisins de New York/);

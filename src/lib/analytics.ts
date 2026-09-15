@@ -13,6 +13,8 @@
  * - `monetize_suggestion` — short free text (trim/cap 280) when chat looks like
  *   a monetization idea (keywords: monétiser, monetize, suggestion, service,
  *   activité / activity)
+ * - `offer_created` / `request_created` — anonymized `{ kind }` only (e.g.
+ *   `car_morning`). No names, emails, phones, or Interac contacts.
  *
  * Nothing is queued or POSTed until analytics consent is granted
  * (`xsnow.analyticsConsent` = granted).
@@ -61,7 +63,9 @@ export type AnalyticsEvent =
   | { type: "session_start"; session: string; t: number }
   | { type: "lang"; session: string; t: number; lang: AnalyticsLang }
   | { type: "place"; session: string; t: number; city: string; countryCode: string }
-  | { type: "monetize_suggestion"; session: string; t: number; text: string };
+  | { type: "monetize_suggestion"; session: string; t: number; text: string }
+  | { type: "offer_created"; session: string; t: number; kind: string }
+  | { type: "request_created"; session: string; t: number; kind: string };
 
 type QueueSink = (events: AnalyticsEvent[]) => void;
 
@@ -124,6 +128,15 @@ export function sanitizeCountryCode(code: string) {
   return value;
 }
 
+export function sanitizeOfferKind(kind: string) {
+  return foldAscii(kind)
+    .replace(/\s+/g, "_")
+    .replace(/[^a-z0-9_-]/g, "")
+    .replace(/_+/g, "_")
+    .replace(/^_|_$/g, "")
+    .slice(0, 40);
+}
+
 function isAnalyticsLang(value: unknown): value is AnalyticsLang {
   return value === "fr" || value === "en" || value === "es";
 }
@@ -158,6 +171,11 @@ export function toAnalyticsEvent(raw: unknown, session: string, now = Date.now()
     const text = typeof record.text === "string" ? sanitizeSuggestion(record.text) : "";
     if (!text) return null;
     return { type: "monetize_suggestion", session, t: now, text };
+  }
+  if (type === "offer_created" || type === "request_created") {
+    const kind = typeof record.kind === "string" ? sanitizeOfferKind(record.kind) : "";
+    if (!kind) return null;
+    return { type, session, t: now, kind };
   }
   return null;
 }
@@ -334,4 +352,22 @@ export function noteMonetizeSuggestion(text: string) {
   if (!clean) return;
   const session = readOrCreateAnonId(browserLocal());
   enqueue({ type: "monetize_suggestion", session, t: Date.now(), text: clean });
+}
+
+export function noteOfferCreated(kind: string) {
+  if (typeof window === "undefined") return;
+  if (!canSendAnalytics()) return;
+  const clean = sanitizeOfferKind(kind);
+  if (!clean) return;
+  const session = readOrCreateAnonId(browserLocal());
+  enqueue({ type: "offer_created", session, t: Date.now(), kind: clean });
+}
+
+export function noteRequestCreated(kind: string) {
+  if (typeof window === "undefined") return;
+  if (!canSendAnalytics()) return;
+  const clean = sanitizeOfferKind(kind);
+  if (!clean) return;
+  const session = readOrCreateAnonId(browserLocal());
+  enqueue({ type: "request_created", session, t: Date.now(), kind: clean });
 }
