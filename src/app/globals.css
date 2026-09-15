@@ -98,8 +98,22 @@ body {
 }
 
 /*
- * Header + main share leftover height above the sticky footer.
- * On home (#home-guide), the compact stack is vertically centered so it is
+ * Open Community + slogan sit at the physical top of the page (above the
+ * wordmark/nav card). Home still vertically centers the remaining stack in
+ * the leftover space, so this uses the former dead band instead of adding height.
+ */
+.brand-banner {
+  position: relative;
+  z-index: 30;
+  flex-shrink: 0;
+  padding: 0 0.25rem 0.125rem;
+  text-align: center;
+}
+
+/*
+ * Wordmark/nav + main share leftover height below the page-top brand banner
+ * and above the sticky footer.
+ * On home (#home-guide), that remaining stack is vertically centered so it is
  * not stuck under the status bar with a dead band above the footer.
  * `center` is declared first: iOS Safari drops `safe center` as a whole when
  * it is the only value, which is why justify-[safe_center] pinned content top.
