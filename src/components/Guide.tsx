@@ -34,7 +34,7 @@ import {
   welcomeSpeechReady,
 } from "@/lib/welcome-place";
 import { useStoredAvatar } from "@/lib/useStoredAvatar";
-import { useDurableHydrated } from "@/lib/useDurableHydrated";
+import { useDeviceMemoryReady } from "@/lib/useDeviceMemoryReady";
 
 const pickerSize =
   "size-[min(26vw,17dvh,6.6rem)] sm:size-[min(22vw,8.5rem)]";
@@ -45,7 +45,7 @@ const shortcutClass =
 
 export function Guide() {
   const [avatarId, setAvatarId] = useStoredAvatar();
-  const memoryReady = useDurableHydrated();
+  const memoryReady = useDeviceMemoryReady();
   const [picking, setPicking] = useState(false);
   const [newsHeadlines, setNewsHeadlines] = useState("");
   const onNewsChange = useCallback((state: NeighborhoodNewsState) => {

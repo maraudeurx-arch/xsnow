@@ -16,7 +16,9 @@ import { ANALYTICS_CONSENT_KEY } from "./consent.ts";
 import {
   durableGet,
   durableSet,
+  ensureDurableHydration,
   hydrateDurableFromBackup,
+  rerunDurableHydration,
 } from "./durable-storage.ts";
 import { IDEAS_KEY, parseStoredIdea, type CommunityIdea } from "./ideas.ts";
 import { LANG_STORAGE_KEY } from "./i18n/locales.ts";
@@ -218,6 +220,18 @@ export function migrateDeviceMemory(local?: Storage, session?: Storage) {
 /** Restore any `xsnow.*` key that IndexedDB still has after a standalone cold start. */
 export async function restoreDeviceMemoryFromBackup(local?: Storage) {
   return hydrateDurableFromBackup(deviceMemoryKeys(), local);
+}
+
+/** First paint: migrate, then restore from IndexedDB before UI treats empty as a new visitor. */
+export function bootDeviceMemory(local?: Storage, session?: Storage) {
+  migrateDeviceMemory(local, session);
+  return ensureDurableHydration(deviceMemoryKeys(), local);
+}
+
+/** pageshow / visible / focus — copy backup → local again. */
+export function resumeDeviceMemory(local?: Storage, session?: Storage) {
+  migrateDeviceMemory(local, session);
+  return rerunDurableHydration(deviceMemoryKeys(), local);
 }
 
 export function emptyDeviceMemory(): DeviceMemorySnapshot {

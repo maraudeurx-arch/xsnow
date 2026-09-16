@@ -248,6 +248,11 @@ test.describe("iOS empty-localStorage cold start", () => {
     await expect(page.getByText("Choisis ton avatar")).toHaveCount(0);
     await expect(page.locator("[data-header-profile]")).toHaveText("M.T.");
     await expect(page.getByRole("button", { name: "Réécouter" })).toBeVisible();
+
+    await page.goto("./mon-profil/");
+    await expect(page.locator("[data-member-id]")).toHaveText(/Numéro OPC/);
+    await expect(page.getByText("Marie Tremblay")).toBeVisible();
+    await expect(page.getByRole("button", { name: "S’inscrire" })).toHaveCount(0);
   });
 
   test("saving a profile then wiping localStorage still restores after reload", async ({ page }) => {
