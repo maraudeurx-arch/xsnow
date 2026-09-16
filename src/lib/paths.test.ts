@@ -49,6 +49,8 @@ describe("public trust paths", () => {
     assert.equal(isPublicInfoPath("/vie-privee"), true);
     assert.equal(isPublicInfoPath("/conditions"), true);
     assert.equal(isPublicInfoPath("/mon-profil/a-propos"), true);
+    assert.equal(isPublicInfoPath("/proprietaire/idees"), true);
+    assert.equal(isPublicInfoPath("/proprietaire/idees/"), true);
     assert.equal(isPublicInfoPath("/"), false);
     assert.equal(isPublicInfoPath("/mon-profil"), false);
   });

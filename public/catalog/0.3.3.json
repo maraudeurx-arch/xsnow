@@ -1,0 +1,14 @@
+{
+  "version": "0.3.3",
+  "updated": "2026-09-16",
+  "offers": [],
+  "ideas": [],
+  "services": [],
+  "notes": [
+    {
+      "version": "0.3.3",
+      "date": "2026-09-16",
+      "text": "Visitor ideas stay on-device. A sanitized copy (text, city, timestamp — no name, email, or OPC number) can go to the owner Worker inbox. Public catalog stays empty."
+    }
+  ]
+}

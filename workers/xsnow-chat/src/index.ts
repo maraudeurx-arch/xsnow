@@ -8,12 +8,15 @@
  * `GET /news` = local headlines via Google News RSS (no invented stories)
  * `POST /stats` = anonymous usage events (no PII)
  * `GET /stats/summary` = aggregate counts
+ * `POST /ideas` = sanitized visitor ideas (text + city + timestamp, no HTML/PII)
+ * `GET /ideas` = owner inbox (JSON or HTML) behind `IDEAS_OWNER_SECRET`
  *
  * D1: `npx wrangler d1 create xsnow-stats` then set database_id in wrangler.toml
  * and `npx wrangler d1 migrations apply xsnow-stats --remote`.
  */
 
 import { parseLatLon, reverseGeocode } from "./geo";
+import { handleIdeasGet, handleIdeasPost, isIdeasPath } from "./ideas";
 import { fetchCityNews, parseCityParam, parseLangParam } from "./news";
 import { CHAT_TEXT_MAX, isJsonContentType, sanitizeUntrustedText } from "../../../src/lib/sanitize.ts";
 import {
@@ -29,6 +32,8 @@ export interface Env {
     run: (model: string, inputs: Record<string, unknown>) => Promise<unknown>;
   };
   DB?: D1Like;
+  /** Owner inbox. Set with `npx wrangler secret put IDEAS_OWNER_SECRET`. Never commit. */
+  IDEAS_OWNER_SECRET?: string;
 }
 
 const MODEL = "@cf/meta/llama-3.2-3b-instruct";
@@ -58,7 +63,7 @@ type ChatTurn = {
 function corsHeaders(origin: string | null): Record<string, string> {
   const headers: Record<string, string> = {
     "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization",
     "Access-Control-Max-Age": "86400",
     Vary: "Origin",
   };
@@ -73,6 +78,18 @@ function json(data: unknown, status: number, origin: string | null): Response {
     status,
     headers: {
       "Content-Type": "application/json; charset=utf-8",
+      ...corsHeaders(origin),
+    },
+  });
+}
+
+function html(body: string, status: number, origin: string | null): Response {
+  return new Response(body, {
+    status,
+    headers: {
+      "Content-Type": "text/html; charset=utf-8",
+      "Cache-Control": "no-store",
+      "X-Robots-Tag": "noindex, nofollow",
       ...corsHeaders(origin),
     },
   });
@@ -276,6 +293,30 @@ function isNewsPath(pathname: string) {
   return value === "/news" || value.endsWith("/news");
 }
 
+async function handleIdeas(request: Request, env: Env, origin: string | null): Promise<Response> {
+  if (request.method === "POST") {
+    if (tooMany(clientIp(request))) {
+      return json({ error: "rate_limited" }, 429, origin);
+    }
+    const body = await readJsonBody(request, origin);
+    if (!body.ok) return body.response;
+    const result = await handleIdeasPost(body.value, env);
+    return json(result.data, result.status, origin);
+  }
+
+  if (request.method !== "GET") {
+    return json({ error: "method_not_allowed" }, 405, origin);
+  }
+
+  if (tooMany(clientIp(request))) {
+    return json({ error: "rate_limited" }, 429, origin);
+  }
+
+  const result = await handleIdeasGet(request, env);
+  if (result.html) return html(result.html, result.status, origin);
+  return json(result.json ?? { error: "unauthorized" }, result.status, origin);
+}
+
 async function handleNews(request: Request, origin: string | null): Promise<Response> {
   if (request.method !== "GET") {
     return json({ error: "method_not_allowed" }, 405, origin);
@@ -361,6 +402,10 @@ export default {
 
     if (isStatsPath(pathname)) {
       return handleStats(request, env, origin);
+    }
+
+    if (isIdeasPath(pathname)) {
+      return handleIdeas(request, env, origin);
     }
 
     if (request.method !== "POST") {

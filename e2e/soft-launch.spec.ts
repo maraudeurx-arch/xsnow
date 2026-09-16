@@ -90,6 +90,9 @@ test.describe("Open Community soft-launch smoke", () => {
     const stored = await page.evaluate(() => window.localStorage.getItem("xsnow.ideas"));
     expect(stored).toContain(idea);
     await expect(page.getByLabel("Ton idée")).toHaveValue("");
+    await expect(page.getByText("Merci — tu fais partie d’ici.")).toBeVisible();
+    await expect(page.locator("[data-idea-wall]")).toContainText(idea);
+    await expect(page.getByText(/copie \(phrase, ville, date/)).toBeVisible();
 
     await page.reload();
     const storedAfterReload = await page.evaluate(() => window.localStorage.getItem("xsnow.ideas"));

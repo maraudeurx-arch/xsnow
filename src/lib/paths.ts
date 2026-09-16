@@ -52,8 +52,12 @@ export function pathStartsWith(pathname: string, href: string) {
   return current === base || current.startsWith(`${base}/`);
 }
 
-/** Privacy, terms, and public-trust pages — readable without the consent sheet. */
+/** Unlisted owner inbox (secret in query / bearer). Not in the public nav. */
+export const OWNER_IDEAS_HREF = "/proprietaire/idees";
+
+/** Privacy, terms, owner inbox, and public-trust pages — readable without the consent sheet. */
 export function isPublicInfoPath(pathname: string) {
   if (TRUST_NAV.some((item) => pathStartsWith(pathname, item.href))) return true;
-  return pathStartsWith(pathname, "/mon-profil/a-propos");
+  if (pathStartsWith(pathname, "/mon-profil/a-propos")) return true;
+  return pathStartsWith(pathname, "/proprietaire");
 }

@@ -58,9 +58,11 @@ describe("idea form", () => {
       id: "idea-text",
       text: "Une idée sans tag",
       involvement: [],
+      inbox: "sent",
     });
     assert.equal(textOnly?.text, "Une idée sans tag");
     assert.deepEqual(textOnly?.involvement, []);
+    assert.equal(textOnly?.inbox, "sent");
     assert.equal(parseStoredIdea({ involvement: ["tete"] }), null);
   });
 

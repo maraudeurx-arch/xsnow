@@ -23,6 +23,9 @@ export const IDEA_NEIGHBORHOOD_MAX = 80;
 export const INVOLVEMENT = ["tete", "coeur", "mains"] as const;
 export type Involvement = (typeof INVOLVEMENT)[number];
 
+export const IDEA_INBOX_STATES = ["local", "sent", "failed"] as const;
+export type IdeaInboxState = (typeof IDEA_INBOX_STATES)[number];
+
 export type CommunityIdea = {
   id: string;
   text: string;
@@ -31,6 +34,8 @@ export type CommunityIdea = {
   neighborhood: string;
   createdAt: string;
   updatedAt: string;
+  /** Optional copy to the owner Worker inbox. Never name / email / OPC number. */
+  inbox?: IdeaInboxState;
 };
 
 export type IdeaFormInput = {
@@ -72,6 +77,10 @@ export function emptyIdeaForm(): IdeaFormInput {
 
 export function isInvolvement(value: unknown): value is Involvement {
   return value === "tete" || value === "coeur" || value === "mains";
+}
+
+export function isIdeaInboxState(value: unknown): value is IdeaInboxState {
+  return value === "local" || value === "sent" || value === "failed";
 }
 
 export function parseInvolvement(raw: unknown): Involvement[] {
@@ -160,7 +169,7 @@ export function parseStoredIdea(raw: unknown): CommunityIdea | null {
     typeof record.createdAt === "string" && record.createdAt ? record.createdAt : new Date().toISOString();
   const updatedAt =
     typeof record.updatedAt === "string" && record.updatedAt ? record.updatedAt : createdAt;
-  return {
+  const idea: CommunityIdea = {
     id,
     text,
     involvement,
@@ -169,6 +178,8 @@ export function parseStoredIdea(raw: unknown): CommunityIdea | null {
     createdAt,
     updatedAt,
   };
+  if (isIdeaInboxState(record.inbox)) idea.inbox = record.inbox;
+  return idea;
 }
 
 export function looksLikeCommunityIdea(text: string) {
