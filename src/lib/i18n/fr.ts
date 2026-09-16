@@ -171,7 +171,7 @@ export const fr = {
         },
         {
           heading: "Ce que nous collectons",
-          body: "Sur cet appareil (localStorage) : langue, avatar, tes annonces, tes consentements, et si tu t’inscris : prénom, nom, e-mail, téléphone et un numéro local OPC-XXXX — rien n’est envoyé à un serveur de profils. Si tu acceptes la position : ville + coordonnées pour le nom de ville — pas de suivi continu. Si tu acceptes les stats : événements anonymes vers un Worker Cloudflare (D1) : session, langue, ville/pays si la position est aussi acceptée, extraits d’idées de monétisation (texte court ; e-mails et GPS retirés). Si tu envoies une idée dans Vos idées : une copie assainie (phrase, ville, date — pas de nom, e-mail, téléphone ni numéro OPC) va dans la boîte du propriétaire (même Worker / D1), pour décider quoi construire ; ça ne dépend pas du consentement stats. Le chat de l’avatar envoie tes messages au Worker pour une réponse. Pas de pub tierce.",
+          body: "Sur cet appareil (localStorage) : langue, avatar, tes annonces, tes consentements, et si tu t’inscris : prénom, nom, e-mail, téléphone et un numéro local OPC-XXXX — pas de serveur de profils. Si tu t’inscris, un avis (prénom, numéro OPC, e-mail) part vers opencommunity.opc@gmail.com. Si tu acceptes la position : ville + coordonnées pour le nom de ville — pas de suivi continu. Si tu acceptes les stats : événements anonymes vers un Worker Cloudflare (D1) : session, langue, ville/pays si la position est aussi acceptée, extraits d’idées de monétisation (texte court ; e-mails et GPS retirés). Si tu envoies une idée dans Vos idées : un e-mail assaini (phrase, ville, date, numéro OPC si inscrit — pas de téléphone) va à opencommunity.opc@gmail.com, pour décider quoi construire ; ça ne dépend pas du consentement stats. Le chat de l’avatar envoie tes messages au Worker pour une réponse. Pas de pub tierce.",
         },
         {
           heading: "Pourquoi",
@@ -191,7 +191,7 @@ export const fr = {
         },
         {
           heading: "Annonces personnelles",
-          body: "Tes offres (Mes services), demandes (En demande), idées (Vos idées) et textes de partage restent sur cet appareil. Ce n’est pas un fil social global. Une copie assainie d’une idée envoyée va dans la boîte du propriétaire ; les autres visiteurs ne la voient pas. Un lien que tu copies toi-même peut montrer une offre à la personne qui l’ouvre. Pour que quelque chose apparaisse chez tout le monde, il faut une approbation GOV + propriétaire, puis une version numérotée (catalogue public).",
+          body: "Tes offres (Mes services), demandes (En demande), idées (Vos idées) et textes de partage restent sur cet appareil. Ce n’est pas un fil social global. Une copie assainie d’une idée envoyée part par e-mail vers opencommunity.opc@gmail.com ; les autres visiteurs ne la voient pas. Un lien que tu copies toi-même peut montrer une offre à la personne qui l’ouvre. Pour que quelque chose apparaisse chez tout le monde, il faut une approbation GOV + propriétaire, puis une version numérotée (catalogue public).",
         },
       ],
     },
@@ -291,7 +291,7 @@ export const fr = {
       sections: [
         {
           heading: "Données des visiteurs",
-          body: "Les idées, le chat, les textes de partage et les notes d’offres sont traités comme du texte brut non fiable. Ils ne deviennent jamais du HTML exécuté, jamais du Git, jamais un fichier téléversé. Le MVP n’a pas d’upload de fichiers, d’images ou de pièces jointes. Les offres personnelles restent sur l’appareil. Les idées restent aussi sur l’appareil ; une copie assainie (phrase, ville, date) peut aller dans la boîte propriétaire du Worker, jamais un compte visiteur.",
+          body: "Les idées, le chat, les textes de partage et les notes d’offres sont traités comme du texte brut non fiable. Ils ne deviennent jamais du HTML exécuté, jamais du Git, jamais un fichier téléversé. Le MVP n’a pas d’upload de fichiers, d’images ou de pièces jointes. Les offres personnelles restent sur l’appareil. Les idées restent aussi sur l’appareil ; une copie assainie (phrase, ville, date) part par e-mail vers opencommunity.opc@gmail.com, jamais un compte visiteur.",
         },
         {
           heading: "Assainissement",
@@ -453,10 +453,10 @@ export const fr = {
       "{placeName} / {community} — {slogan} Notre proximité et notre esprit d’entraide est le gage de notre succès.",
     versionLabel: "Version",
     deviceLocalNote:
-      "Tes offres, demandes, idées, textes de partage, inscription (prénom, nom, e-mail, téléphone, numéro OPC-XXXX) et coordonnées Interac/PayPal restent sur cet appareil. Une copie assainie d’une idée (phrase, ville, date — pas tes coordonnées) peut aller dans la boîte du propriétaire. Rien de personnel n’apparaît chez un autre visiteur tant que GOV + propriétaire n’approuvent pas une publication dans une version numérotée (catalogue public).",
+      "Tes offres, demandes, idées, textes de partage, inscription (prénom, nom, e-mail, téléphone, numéro OPC-XXXX) et coordonnées Interac/PayPal restent sur cet appareil. Une copie assainie d’une idée (phrase, ville, date, numéro OPC si inscrit — pas tes coordonnées) peut partir par e-mail vers opencommunity.opc@gmail.com. Rien de personnel n’apparaît chez un autre visiteur tant que GOV + propriétaire n’approuvent pas une publication dans une version numérotée (catalogue public).",
     releaseNotesTitle: "Notes de version",
     releaseNotesBody:
-      "0.3.3 — Vos idées : mur local plus clair, et copie assainie vers la boîte propriétaire du Worker (POST /ideas). Politzer compile via GET /ideas?secret= ou /proprietaire/idees. Inscription OPC-XXXX toujours locale. Le catalogue public est toujours vide.",
+      "0.3.3 — Vos idées : confirmation locale, puis e-mail assaini vers opencommunity.opc@gmail.com (Worker POST /ideas, Resend). Inscription : avis optionnel POST /register. OPC-XXXX reste local. Catalogue public toujours vide.",
     language: "Langue",
     comingSoon: "Notifications et saison d’affichage arriveront ici.",
     locationConsent: "Position",
@@ -852,7 +852,7 @@ export const fr = {
     cta: "S’inscrire",
     ctaAria: "Ouvrir le formulaire d’inscription",
     title: "S’inscrire sur cet appareil",
-    hint: "Prénom, nom, e-mail et téléphone restent sur cet appareil. Pas de mot de passe. Rien n’est envoyé à un serveur de profils.",
+    hint: "Prénom, nom, e-mail et téléphone restent sur cet appareil. Pas de mot de passe. Pas de serveur de profils. Un avis (prénom, numéro OPC, e-mail) part vers opencommunity.opc@gmail.com.",
     firstName: "Prénom",
     lastName: "Nom",
     email: "E-mail",

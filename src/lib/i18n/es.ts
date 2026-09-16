@@ -173,7 +173,7 @@ export const es: Messages = {
         },
         {
           heading: "Qué recogemos",
-          body: "En este aparato (localStorage): idioma, avatar, tus anuncios, tus consentimientos, y si te inscribes: nombre, apellidos, correo, teléfono y un número local OPC-XXXX — nada se envía a un servidor de perfiles. Si aceptas la ubicación: ciudad + coordenadas para el nombre de la ciudad — sin seguimiento continuo. Si aceptas las estadísticas: eventos anónimos a un Worker de Cloudflare (D1): sesión, idioma, ciudad/país si también aceptaste la ubicación, extractos cortos de ideas de monetización (correos y GPS eliminados). Si envías una idea en Tus ideas: una copia saneada (frase, ciudad, fecha — sin nombre, correo, teléfono ni número OPC) va a la bandeja del propietario (el mismo Worker / D1) para decidir qué construir; no depende del consentimiento de estadísticas. El chat del avatar envía tus mensajes al Worker para una respuesta. Sin publicidad de terceros.",
+          body: "En este aparato (localStorage): idioma, avatar, tus anuncios, tus consentimientos, y si te inscribes: nombre, apellidos, correo, teléfono y un número local OPC-XXXX — no hay servidor de perfiles. Si te inscribes, un aviso (nombre, número OPC, correo) va a opencommunity.opc@gmail.com. Si aceptas la ubicación: ciudad + coordenadas para el nombre de la ciudad — sin seguimiento continuo. Si aceptas las estadísticas: eventos anónimos a un Worker de Cloudflare (D1): sesión, idioma, ciudad/país si también aceptaste la ubicación, extractos cortos de ideas de monetización (correos y GPS eliminados). Si envías una idea en Tus ideas: un correo saneado (frase, ciudad, fecha, número OPC si estás inscrito — sin teléfono) va a opencommunity.opc@gmail.com para decidir qué construir; no depende del consentimiento de estadísticas. El chat del avatar envía tus mensajes al Worker para una respuesta. Sin publicidad de terceros.",
         },
         {
           heading: "Por qué",
@@ -193,7 +193,7 @@ export const es: Messages = {
         },
         {
           heading: "Anuncios personales",
-          body: "Tus ofertas (Mis servicios), solicitudes (En demanda), ideas (Tus ideas) y textos para compartir se quedan en este aparato. No es un feed social global. Una copia saneada de una idea enviada va a la bandeja del propietario; los demás visitantes no la ven. Un enlace que copias tú puede mostrar una oferta a quien lo abra. Para que algo aparezca en todos los teléfonos, hace falta la aprobación de GOV + el propietario y una versión numerada (catálogo público).",
+          body: "Tus ofertas (Mis servicios), solicitudes (En demanda), ideas (Tus ideas) y textos para compartir se quedan en este aparato. No es un feed social global. Una copia saneada de una idea enviada se envía por correo a opencommunity.opc@gmail.com; los demás visitantes no la ven. Un enlace que copias tú puede mostrar una oferta a quien lo abra. Para que algo aparezca en todos los teléfonos, hace falta la aprobación de GOV + el propietario y una versión numerada (catálogo público).",
         },
       ],
     },
@@ -292,7 +292,7 @@ export const es: Messages = {
       sections: [
         {
           heading: "Datos de los visitantes",
-          body: "Las ideas, el chat, los textos para compartir y las notas de ofertas se tratan como texto plano no fiable. Nunca se convierten en HTML ejecutado, nunca en Git, nunca en un archivo subido. Este MVP no tiene carga de archivos, imágenes ni adjuntos. Las ofertas personales se quedan en el aparato. Las ideas también; una copia saneada (frase, ciudad, fecha) puede ir a la bandeja del propietario en el Worker, nunca a una cuenta de visitante.",
+          body: "Las ideas, el chat, los textos para compartir y las notas de ofertas se tratan como texto plano no fiable. Nunca se convierten en HTML ejecutado, nunca en Git, nunca en un archivo subido. Este MVP no tiene carga de archivos, imágenes ni adjuntos. Las ofertas personales se quedan en el aparato. Las ideas también; una copia saneada (frase, ciudad, fecha) se envía por correo a opencommunity.opc@gmail.com, nunca a una cuenta de visitante.",
         },
         {
           heading: "Saneamiento",
@@ -454,10 +454,10 @@ export const es: Messages = {
       "{placeName} / {community} — {slogan} Nuestra proximidad y nuestro espíritu de ayuda mutua son la garantía de nuestro éxito.",
     versionLabel: "Versión",
     deviceLocalNote:
-      "Tus ofertas, solicitudes, ideas, textos para compartir, inscripción (nombre, apellidos, correo, teléfono, número OPC-XXXX) y datos Interac/PayPal se quedan en este aparato. Una copia saneada de una idea (frase, ciudad, fecha — no tus datos de contacto) puede ir a la bandeja del propietario. Nada personal aparece en el de otro visitante hasta que GOV + el propietario aprueben una publicación en una versión numerada (catálogo público).",
+      "Tus ofertas, solicitudes, ideas, textos para compartir, inscripción (nombre, apellidos, correo, teléfono, número OPC-XXXX) y datos Interac/PayPal se quedan en este aparato. Una copia saneada de una idea (frase, ciudad, fecha, número OPC si estás inscrito — no tus datos de contacto) puede ir por correo a opencommunity.opc@gmail.com. Nada personal aparece en el de otro visitante hasta que GOV + el propietario aprueben una publicación en una versión numerada (catálogo público).",
     releaseNotesTitle: "Notas de la versión",
     releaseNotesBody:
-      "0.3.3 — Tus ideas: muro local más claro, y copia saneada hacia la bandeja del propietario en el Worker (POST /ideas). Politzer compila con GET /ideas?secret= o /proprietaire/idees. La inscripción OPC-XXXX sigue local. El catálogo público sigue vacío.",
+      "0.3.3 — Tus ideas: confirmación local, luego correo saneado a opencommunity.opc@gmail.com (Worker POST /ideas, Resend). Inscripción: aviso opcional POST /register. OPC-XXXX sigue local. El catálogo público sigue vacío.",
     language: "Idioma",
     comingSoon: "Las notificaciones y la estación de pantalla llegarán aquí.",
     locationConsent: "Ubicación",
@@ -863,7 +863,7 @@ export const es: Messages = {
     cta: "Inscribirse",
     ctaAria: "Abrir el formulario de inscripción",
     title: "Inscribirse en este aparato",
-    hint: "Nombre, apellidos, correo y teléfono se quedan en este aparato. Sin contraseña. Nada se envía a un servidor de perfiles.",
+    hint: "Nombre, apellidos, correo y teléfono se quedan en este aparato. Sin contraseña. No hay servidor de perfiles. Un aviso (nombre, número OPC, correo) va a opencommunity.opc@gmail.com.",
     firstName: "Nombre",
     lastName: "Apellidos",
     email: "Correo",

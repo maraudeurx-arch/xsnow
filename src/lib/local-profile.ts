@@ -2,9 +2,9 @@
  * Device-local registration profile (soft-launch privacy).
  *
  * First name, last name, email, and phone stay in localStorage on this
- * device. There is no remote profile API in this MVP — do not POST these
- * fields. No password. The member number is a stable on-device ID, not an
- * account on a server.
+ * device. Last name and phone are never POSTed. A short notice (first name,
+ * OPC id, visitor email, city) may be emailed to the owner inbox. No password.
+ * The member number is a stable on-device ID, not an account on a server.
  *
  * Member number format: `OPC-` + 4 characters from
  * `ABCDEFGHJKLMNPQRSTUVWXYZ23456789` (Crockford-like: no I, O, 0, 1).

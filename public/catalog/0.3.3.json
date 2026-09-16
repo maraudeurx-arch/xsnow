@@ -8,7 +8,7 @@
     {
       "version": "0.3.3",
       "date": "2026-09-16",
-      "text": "Visitor ideas stay on-device. A sanitized copy (text, city, timestamp — no name, email, or OPC number) can go to the owner Worker inbox. Public catalog stays empty."
+      "text": "Visitor ideas stay on-device. A sanitized email (text, city, timestamp, optional OPC id) goes to opencommunity.opc@gmail.com. Public catalog stays empty."
     }
   ]
 }

@@ -12,27 +12,32 @@ export async function skipConsent(page: Page) {
   });
 }
 
-/** Never POST e2e ideas to the production Worker inbox. */
+/** Never POST e2e ideas/registrations to the production Worker (no live email). */
 export async function stubIdeaInbox(page: Page, inbox: "sent" | "failed" = "sent") {
-  await page.route(/\/ideas(\?|$)/, async (route) => {
+  const cors = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization",
+    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+  };
+
+  await page.route(/\/(ideas|register)(\?|$)/, async (route) => {
     const method = route.request().method();
+    const path = new URL(route.request().url()).pathname;
     if (method === "OPTIONS") {
-      await route.fulfill({
-        status: 204,
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Access-Control-Allow-Headers": "Content-Type, Authorization",
-          "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-        },
-      });
+      await route.fulfill({ status: 204, headers: cors });
       return;
     }
     if (method === "POST") {
+      const emailed = inbox === "sent";
       await route.fulfill({
-        status: inbox === "sent" ? 200 : 503,
+        status: emailed ? 200 : 503,
         contentType: "application/json",
-        headers: { "Access-Control-Allow-Origin": "*" },
-        body: JSON.stringify(inbox === "sent" ? { ok: true, persisted: true } : { error: "store_failed" }),
+        headers: cors,
+        body: JSON.stringify(
+          emailed
+            ? { ok: true, persisted: path.endsWith("/ideas"), emailed: true }
+            : { error: "mail_failed" },
+        ),
       });
       return;
     }

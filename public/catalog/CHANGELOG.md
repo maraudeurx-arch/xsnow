@@ -2,12 +2,12 @@
 
 Community-wide offers and ideas appear here **only after GOV + owner approval**, then ship in a numbered app release (`public/catalog/<version>.json`).
 
-Personal Mes services offers, En demande requests, Interac/PayPal, chat, Vos idées, and the local registration profile stay on the visitor’s device until that happens. A sanitized copy of a submitted idea (text, city, timestamp — no name/email/OPC number) may also go to the owner Worker inbox. That inbox is not a public catalog.
+Personal Mes services offers, En demande requests, Interac/PayPal, chat, Vos idées, and the local registration profile stay on the visitor’s device until that happens. A sanitized copy of a submitted idea (text, city, timestamp, optional OPC id — no last name or phone) is emailed to opencommunity.opc@gmail.com. That inbox is not a public catalog.
 
 ## 0.3.3 — 2026-09-16
 
-- Vos idées: stronger on-device wall + thank-you. Submitting sends a sanitized copy to `POST /ideas` on the Cloudflare Worker (plain text, city, timestamp).
-- Owner (Politzer) compiles received ideas via `GET /ideas?secret=` (HTML or `&format=json`) or the unlisted page `/proprietaire/idees`. No invented sample ideas.
+- Vos idées: on-device confirmation, then a sanitized email to `opencommunity.opc@gmail.com` via Worker `POST /ideas` (Resend). Optional registration notice: `POST /register`.
+- Owner (Politzer) also compiles received ideas via `GET /ideas?secret=` or `/proprietaire/idees` if `IDEAS_OWNER_SECRET` is set. No invented sample ideas.
 - Public catalog remains empty.
 
 ## 0.3.2 — 2026-09-16

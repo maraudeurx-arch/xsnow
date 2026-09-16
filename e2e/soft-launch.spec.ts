@@ -2,7 +2,7 @@ import { APP_VERSION } from "../src/lib/app-version";
 import { PAID_MISSION_LINKS } from "../src/lib/paid-missions";
 import { OPC_PUBLIC_EMAIL } from "../src/lib/paths";
 import { SERVICE_KINDS, SERVICE_SEEDS, SERVICES } from "../src/lib/services";
-import { expect, test } from "./helpers";
+import { expect, stubIdeaInbox, test } from "./helpers";
 
 test.describe("Open Community soft-launch smoke", () => {
   test("home loads with the Open Community banner and avatar rings", async ({ page }) => {
@@ -91,6 +91,7 @@ test.describe("Open Community soft-launch smoke", () => {
     expect(stored).toContain(idea);
     await expect(page.getByRole("status")).toContainText("Idée bien reçue");
     await expect(page.getByRole("status")).toContainText("enregistrée sur cet appareil");
+    await expect(page.locator("[data-idea-inbox=sent]")).toContainText("opencommunity.opc@gmail.com");
     await expect(page.getByRole("button", { name: "Ajouter une autre idée" })).toBeVisible();
     await expect(page.getByLabel("Ton idée")).toHaveCount(0);
 
@@ -115,6 +116,20 @@ test.describe("Open Community soft-launch smoke", () => {
     const cleared = await page.evaluate(() => window.localStorage.getItem("xsnow.ideas"));
     expect(cleared).toBeNull();
     await expect(page.getByLabel("Ton idée")).toBeVisible();
+  });
+
+  test("a Vos idées submit stays on-device when the owner email cannot be sent", async ({ page }) => {
+    await stubIdeaInbox(page, "failed");
+    const idea = `Hors ligne OPC-e2e ${Date.now()}`;
+    await page.goto("./vos-idees/");
+    await page.getByLabel("Ton idée").fill(idea);
+    await page.getByRole("button", { name: "Envoyer l’idée" }).click();
+    const stored = await page.evaluate(() => window.localStorage.getItem("xsnow.ideas"));
+    expect(stored).toContain(idea);
+    await expect(page.getByRole("status")).toContainText("Idée bien reçue");
+    await expect(page.locator("[data-idea-inbox=failed]")).toBeVisible();
+    await expect(page.getByRole("button", { name: "Renvoyer au propriétaire" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Ajouter une autre idée" })).toBeVisible();
   });
 
   test("transparency pages are reachable from the footer", async ({ page }) => {

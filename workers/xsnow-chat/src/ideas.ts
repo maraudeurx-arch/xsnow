@@ -16,13 +16,23 @@ import {
   parseIdeaInboxInput,
   type StoredInboxIdea,
 } from "../../../src/lib/idea-inbox.ts";
+import {
+  buildIdeaOwnerMail,
+  buildRegisterOwnerMail,
+  parseRegisterNotice,
+  sendOwnerMail,
+  type MailEnv,
+  type OwnerMail,
+} from "../../../src/lib/owner-mail.ts";
 import { sanitizeRecordId } from "../../../src/lib/sanitize.ts";
 import type { D1Like } from "./stats";
 
-export type IdeasEnv = {
+export type IdeasEnv = MailEnv & {
   DB?: D1Like;
   IDEAS_OWNER_SECRET?: string;
 };
+
+export type OwnerMailer = (env: IdeasEnv, mail: OwnerMail) => Promise<{ sent: boolean; reason?: string }>;
 
 const INSERT = `INSERT INTO events (session_id, type, ts, lang, city, country_code, suggestion)
 VALUES (?, ?, ?, ?, ?, ?, ?)`;
@@ -38,6 +48,11 @@ LIMIT ?`;
 export function isIdeasPath(pathname: string) {
   const value = pathname.replace(/\/+$/, "") || "/";
   return value === "/ideas" || value.endsWith("/ideas");
+}
+
+export function isRegisterPath(pathname: string) {
+  const value = pathname.replace(/\/+$/, "") || "/";
+  return value === "/register" || value.endsWith("/register");
 }
 
 export function escapeHtml(value: string) {
@@ -197,16 +212,48 @@ export async function handleIdeasPost(
   rawBody: unknown,
   env: IdeasEnv,
   now = Date.now(),
+  mailer: OwnerMailer = sendOwnerMail,
 ): Promise<{ status: number; data: Record<string, unknown> }> {
   const parsed = parseIdeaInboxInput(rawBody);
   if (!parsed) return { status: 400, data: { error: "bad_request" } };
-  if (!env.DB) return { status: 200, data: { ok: true, persisted: false } };
-  try {
-    const stored = await insertInboxIdea(env.DB, parsed, now);
-    return { status: 200, data: { ok: true, persisted: true, id: stored.id } };
-  } catch {
-    return { status: 503, data: { error: "store_failed" } };
+
+  let persisted = false;
+  if (env.DB) {
+    try {
+      await insertInboxIdea(env.DB, parsed, now);
+      persisted = true;
+    } catch {
+      persisted = false;
+    }
   }
+
+  let emailed = false;
+  try {
+    const mail = await mailer(env, buildIdeaOwnerMail(parsed, now));
+    emailed = Boolean(mail.sent);
+  } catch {
+    emailed = false;
+  }
+
+  return { status: 200, data: { ok: true, persisted, emailed } };
+}
+
+export async function handleRegisterPost(
+  rawBody: unknown,
+  env: IdeasEnv,
+  now = Date.now(),
+  mailer: OwnerMailer = sendOwnerMail,
+): Promise<{ status: number; data: Record<string, unknown> }> {
+  const parsed = parseRegisterNotice(rawBody);
+  if (!parsed) return { status: 400, data: { error: "bad_request" } };
+  let emailed = false;
+  try {
+    const mail = await mailer(env, buildRegisterOwnerMail(parsed, now));
+    emailed = Boolean(mail.sent);
+  } catch {
+    emailed = false;
+  }
+  return { status: 200, data: { ok: true, emailed } };
 }
 
 export async function handleIdeasGet(

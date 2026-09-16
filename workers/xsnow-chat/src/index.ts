@@ -8,15 +8,16 @@
  * `GET /news` = local headlines via Google News RSS (no invented stories)
  * `POST /stats` = anonymous usage events (no PII)
  * `GET /stats/summary` = aggregate counts
- * `POST /ideas` = sanitized visitor ideas (text + city + timestamp, no HTML/PII)
- * `GET /ideas` = owner inbox (JSON or HTML) behind `IDEAS_OWNER_SECRET`
+ * `POST /ideas` = sanitized visitor ideas; emails opencommunity.opc@gmail.com
+ * `POST /register` = optional registration notice to the same inbox
+ * `GET /ideas` = owner list (JSON or HTML) behind `IDEAS_OWNER_SECRET`
  *
  * D1: `npx wrangler d1 create xsnow-stats` then set database_id in wrangler.toml
  * and `npx wrangler d1 migrations apply xsnow-stats --remote`.
  */
 
 import { parseLatLon, reverseGeocode } from "./geo";
-import { handleIdeasGet, handleIdeasPost, isIdeasPath } from "./ideas";
+import { handleIdeasGet, handleIdeasPost, handleRegisterPost, isIdeasPath, isRegisterPath } from "./ideas";
 import { fetchCityNews, parseCityParam, parseLangParam } from "./news";
 import { CHAT_TEXT_MAX, isJsonContentType, sanitizeUntrustedText } from "../../../src/lib/sanitize.ts";
 import {
@@ -34,6 +35,10 @@ export interface Env {
   DB?: D1Like;
   /** Owner inbox. Set with `npx wrangler secret put IDEAS_OWNER_SECRET`. Never commit. */
   IDEAS_OWNER_SECRET?: string;
+  /** Resend API key. `npx wrangler secret put RESEND_API_KEY`. Required to email ideas. */
+  RESEND_API_KEY?: string;
+  /** Optional From: header, verified Resend domain. Default: beth.t@example.com */
+  IDEAS_FROM_EMAIL?: string;
 }
 
 const MODEL = "@cf/meta/llama-3.2-3b-instruct";
@@ -317,6 +322,19 @@ async function handleIdeas(request: Request, env: Env, origin: string | null): P
   return json(result.json ?? { error: "unauthorized" }, result.status, origin);
 }
 
+async function handleRegister(request: Request, env: Env, origin: string | null): Promise<Response> {
+  if (request.method !== "POST") {
+    return json({ error: "method_not_allowed" }, 405, origin);
+  }
+  if (tooMany(clientIp(request))) {
+    return json({ error: "rate_limited" }, 429, origin);
+  }
+  const body = await readJsonBody(request, origin);
+  if (!body.ok) return body.response;
+  const result = await handleRegisterPost(body.value, env);
+  return json(result.data, result.status, origin);
+}
+
 async function handleNews(request: Request, origin: string | null): Promise<Response> {
   if (request.method !== "GET") {
     return json({ error: "method_not_allowed" }, 405, origin);
@@ -406,6 +424,10 @@ export default {
 
     if (isIdeasPath(pathname)) {
       return handleIdeas(request, env, origin);
+    }
+
+    if (isRegisterPath(pathname)) {
+      return handleRegister(request, env, origin);
     }
 
     if (request.method !== "POST") {
