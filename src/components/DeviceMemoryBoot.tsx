@@ -15,24 +15,33 @@ import {
 const RETRY_MS = [50, 250, 1000];
 const READY_FALLBACK_MS = 1200;
 
+function hydrateFromBackup() {
+  requestPersistentStorage();
+  migrateDeviceMemory();
+  emitDurableStorage();
+  return restoreDeviceMemoryFromBackup()
+    .catch(() => 0)
+    .then(() => {
+      emitDurableStorage();
+      markDurableHydrated();
+    });
+}
+
+// Start IndexedDB restore as soon as the client bundle loads — before first paint —
+// so Accueil / Mes infos do not treat an empty localStorage tick as a new visitor.
+if (typeof window !== "undefined") {
+  void hydrateFromBackup();
+}
+
 /** Boot + resume: migrate keys, restore from IndexedDB, re-read on iOS/Android PWA wake. */
 export function DeviceMemoryBoot() {
   useEffect(() => {
     let cancelled = false;
     const timers: number[] = [];
-    requestPersistentStorage();
 
     const hydrate = () => {
       if (cancelled) return;
-      migrateDeviceMemory();
-      emitDurableStorage();
-      void restoreDeviceMemoryFromBackup()
-        .catch(() => 0)
-        .then(() => {
-          if (cancelled) return;
-          emitDurableStorage();
-          markDurableHydrated();
-        });
+      void hydrateFromBackup();
     };
 
     hydrate();
