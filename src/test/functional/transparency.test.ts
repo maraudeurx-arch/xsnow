@@ -115,3 +115,29 @@ describe("PWA manifest start URL", () => {
     assert.doesNotMatch(source, /src: `\$\{BASE_PATH\}/);
   });
 });
+
+describe("Mon profil hub dedupes Accueil actions", () => {
+  it("drops Mes infos / Partager / body Connect and keeps privacy on À propos only", () => {
+    const profilMenu = readFileSync(join(srcDir, "components/ProfilMenu.tsx"), "utf8");
+    assert.doesNotMatch(profilMenu, /mon-profil\/infos/);
+    assert.match(profilMenu, /mon-profil\/reglages/);
+    assert.match(profilMenu, /mon-profil\/a-propos/);
+
+    const board = readFileSync(join(srcDir, "components/LocalProfileBoard.tsx"), "utf8");
+    assert.doesNotMatch(board, /data-share-cta/);
+    assert.doesNotMatch(board, /data-share-panel/);
+    assert.doesNotMatch(board, /infosPrivacy/);
+    assert.doesNotMatch(board, /data-infos-privacy/);
+
+    const infosPage = readFileSync(pageFile("/mon-profil/infos"), "utf8");
+    assert.doesNotMatch(infosPage, /ConnectWallet/);
+    assert.doesNotMatch(infosPage, /InfosPrivacyNote/);
+    assert.doesNotMatch(infosPage, /LocalProfileBoard/);
+    assert.match(infosPage, /router\.replace\("\/mon-profil\/"\)/);
+
+    const profileAbout = readFileSync(join(srcDir, "components/LocalizedAbout.tsx"), "utf8");
+    assert.match(profileAbout, /InfosPrivacyNote/);
+    const aboutUi = readFileSync(join(srcDir, "components/LocalizedLegal.tsx"), "utf8");
+    assert.match(aboutUi, /InfosPrivacyNote/);
+  });
+});

@@ -139,9 +139,12 @@ describe("vos idees copy", () => {
     assert.equal(fr.register.share, "Partager");
     assert.equal(en.register.share, "Share");
     assert.equal(es.register.share, "Compartir");
-    assert.equal(fr.profile.infos, "Mes infos");
     assert.equal(fr.profile.reglages, "Réglages");
     assert.equal(fr.profile.aPropos, "À propos de Open Community (OPC)");
+    assert.equal(en.profile.reglages, "Settings");
+    assert.equal(es.profile.reglages, "Ajustes");
+    // Mes infos hub entry removed — edit path is Modifier le profil; legacy infos strings may remain.
+    assert.equal(fr.profile.infos, "Mes infos");
     assert.equal(en.profile.infos, "My info");
     assert.equal(es.profile.infos, "Mis datos");
     assert.equal(fr.register.shareEdit, "Modifier");
