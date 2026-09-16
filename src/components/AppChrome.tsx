@@ -20,7 +20,7 @@ export function AppChrome({ children }: { children: ReactNode }) {
 
       <div className="app-stage">
         <header className="brand-banner">
-          <h1 className="mx-auto font-[family-name:var(--font-fraunces)] leading-[0.9] font-extrabold text-balance text-snow [text-shadow:0_2px_18px_rgba(0,0,0,0.72)]">
+          <h1 className="mx-auto font-[family-name:var(--font-fraunces)] leading-[0.86] font-extrabold text-balance text-snow [text-shadow:0_2px_18px_rgba(0,0,0,0.72)]">
             <BrandCopy field="community" />
           </h1>
           <p className="mt-0 leading-none font-semibold tracking-wide text-gold [text-shadow:0_2px_10px_rgba(0,0,0,0.55)]">

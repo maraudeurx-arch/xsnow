@@ -64,6 +64,12 @@ test.describe("Accueil neighbourhood news + partner slots", () => {
     await expect(page.getByText("S’inscrire / Mes infos").first()).toBeVisible();
     await expect(page.getByText("Partager / inviter").first()).toBeVisible();
 
+    const title = page.getByRole("heading", { level: 1, name: "Open Community" });
+    await expect(title).toBeVisible();
+    const titleBox = await title.boundingBox();
+    expect(titleBox).toBeTruthy();
+    expect(titleBox!.y).toBeLessThan(10);
+
     const card = page.locator("#home-guide .home-stage");
     const footer = page.locator("footer");
     const cardBox = await card.boundingBox();
@@ -74,6 +80,11 @@ test.describe("Accueil neighbourhood news + partner slots", () => {
     expect(footerBox).toBeTruthy();
     expect(newsBox).toBeTruthy();
     expect(chatBox).toBeTruthy();
+
+    const chrome = page.locator(".chrome-panel");
+    const chromeBox = await chrome.boundingBox();
+    expect(chromeBox).toBeTruthy();
+    expect(chromeBox!.y).toBeLessThan(64);
 
     const gap = footerBox!.y - (cardBox!.y + cardBox!.height);
     expect(gap).toBeGreaterThanOrEqual(0);
@@ -118,7 +129,11 @@ test.describe("Accueil neighbourhood news + partner slots", () => {
     const privacyBox = await privacy.boundingBox();
     expect(privacyBox).toBeTruthy();
     expect(privacyBox!.y).toBeGreaterThan(cardBox!.y + cardBox!.height - 1);
-    expect(footerBox!.height).toBeLessThan(64);
+    expect(footerBox!.height).toBeLessThan(48);
+
+    const bottomHeight = bottomBox!.height;
+    expect(bottomHeight).toBeGreaterThan(110);
+    await expect(page.getByRole("heading", { name: "Nouvelles du Quartier" })).toBeVisible();
   });
 
   test("Worker 405 still shows real headlines via the JSON RSS fallback", async ({ page }) => {
