@@ -108,13 +108,22 @@ test.describe("Open Community soft-launch smoke", () => {
     await expect(page.getByLabel("Ton idée")).toBeVisible();
     await expect(page.getByRole("button", { name: "Envoyer l’idée" })).toBeVisible();
 
-    await page.evaluate(() => {
+    // Wipe local + IndexedDB so we prove the empty public catalog does not refill ideas.
+    // Clearing only localStorage is no longer enough: durable memory restores from IDB.
+    await page.evaluate(async () => {
       window.localStorage.removeItem("xsnow.ideas");
+      await new Promise<void>((resolve, reject) => {
+        const req = indexedDB.deleteDatabase("xsnow-device-memory");
+        req.onsuccess = () => resolve();
+        req.onerror = () => reject(req.error ?? new Error("idb delete"));
+        req.onblocked = () => resolve();
+      });
     });
     await page.reload();
     const cleared = await page.evaluate(() => window.localStorage.getItem("xsnow.ideas"));
     expect(cleared).toBeNull();
     await expect(page.getByLabel("Ton idée")).toBeVisible();
+    await expect(page.locator("[data-idea-wall]")).not.toContainText(idea);
   });
 
   test("transparency pages are reachable from the footer", async ({ page }) => {
