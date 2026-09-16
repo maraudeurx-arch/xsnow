@@ -913,9 +913,9 @@ export const en: Messages = {
     neighborhoodShare: "Neighbourhood",
     neighborhoodPh: "Hull, Aylmer, Plateau…",
     submit: "Send the idea",
-    thankYou: "Thank you — you belong here.",
+    thankYou: "Idea received",
     thankYouBody:
-      "Your idea is on this device’s wall. Other phones do not see it until GOV + owner approve it in a numbered release. Head, Heart, Hands: that’s how Open Community moves. Share it if you want, or add another.",
+      "Thank you. Your idea is saved on this device. Other phones do not see it until GOV + owner approve it in a numbered release.",
     wallTitle: "Idea wall (this device)",
     wallHint:
       "Your ideas stay here. They do not appear on another phone until they are in an approved public release.",
@@ -928,7 +928,7 @@ export const en: Messages = {
     shareCopied: "Copied.",
     shareFailed: "Couldn’t copy. The text is below — select it.",
     hoursLine: "{hours} h / week",
-    newIdea: "Another idea",
+    newIdea: "Add another idea",
     shareHeading: "Open Community idea",
     catalogBadge: "Catalog",
   },

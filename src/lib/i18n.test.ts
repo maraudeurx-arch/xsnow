@@ -168,6 +168,18 @@ describe("vos idees copy", () => {
     assert.equal(fr.ideas.submit, "Envoyer l’idée");
     assert.equal(en.ideas.submit, "Send the idea");
     assert.equal(es.ideas.submit, "Enviar la idea");
+    assert.equal(fr.ideas.thankYou, "Idée bien reçue");
+    assert.equal(en.ideas.thankYou, "Idea received");
+    assert.equal(es.ideas.thankYou, "Idea bien recibida");
+    assert.equal(fr.ideas.newIdea, "Ajouter une autre idée");
+    assert.equal(en.ideas.newIdea, "Add another idea");
+    assert.equal(es.ideas.newIdea, "Añadir otra idea");
+    assert.match(fr.ideas.thankYouBody, /cet appareil/);
+    assert.match(en.ideas.thankYouBody, /this device/);
+    assert.match(es.ideas.thankYouBody, /este aparato/);
+    assert.doesNotMatch(fr.ideas.thankYouBody, /serveur|GitHub|catalogue public/i);
+    assert.doesNotMatch(en.ideas.thankYouBody, /server|GitHub|public catalog/i);
+    assert.doesNotMatch(es.ideas.thankYouBody, /servidor|GitHub|catálogo público/i);
     assert.equal("openCta" in fr.ideas, false);
     assert.match(fr.systemPrompt, /Vos idées/);
     assert.match(en.systemPrompt, /Your ideas/);

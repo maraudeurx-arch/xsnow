@@ -7,6 +7,7 @@ import { fr } from "../../lib/i18n/fr.ts";
 import { interpolate } from "../../lib/i18n/locales.ts";
 import {
   IDEAS_KEY,
+  ideaFormIssues,
   ideaFromForm,
   parseStoredIdea,
   type CommunityIdea,
@@ -195,6 +196,36 @@ describe("Vos idées stay on-device", () => {
       assert.match(fr.ideas.wallEmpty, /Pas encore d’idée ici/);
       assert.match(en.ideas.wallEmpty, /No idea here yet/);
       assert.match(es.ideas.wallEmpty, /Aún no hay ninguna idea/);
+    } finally {
+      mock.restore();
+    }
+  });
+
+  it("confirms a local receipt after a successful submit, then invites another idea", () => {
+    const mock = memoryWindow();
+    try {
+      const form = {
+        text: "Prêter une perceuse le samedi",
+        involvement: [] as const,
+        hoursPerWeek: "",
+        neighborhood: "",
+      };
+      assert.deepEqual(ideaFormIssues(form), []);
+      const idea = ideaFromForm(form);
+      writeList(IDEAS_KEY, [idea, ...readList(IDEAS_KEY)]);
+      const stored = readList(IDEAS_KEY);
+      assert.equal(stored[0]?.text, "Prêter une perceuse le samedi");
+      assert.equal(EMPTY_PUBLIC_CATALOG.ideas.length, 0);
+
+      assert.equal(fr.ideas.thankYou, "Idée bien reçue");
+      assert.equal(fr.ideas.newIdea, "Ajouter une autre idée");
+      assert.match(fr.ideas.thankYouBody, /enregistrée sur cet appareil/);
+      assert.match(en.ideas.thankYouBody, /saved on this device/);
+      assert.match(es.ideas.thankYouBody, /guardada en este aparato/);
+      assert.doesNotMatch(fr.ideas.thankYou, /serveur/i);
+      assert.doesNotMatch(fr.ideas.thankYouBody, /pipeline|serveur|GitHub/i);
+      assert.equal(en.ideas.newIdea, "Add another idea");
+      assert.equal(es.ideas.newIdea, "Añadir otra idea");
     } finally {
       mock.restore();
     }

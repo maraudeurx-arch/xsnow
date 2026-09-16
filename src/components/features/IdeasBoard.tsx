@@ -29,8 +29,10 @@ export function IdeasBoard() {
   const [, setStored] = useStoredList<CommunityIdea>(IDEAS_KEY);
   const [form, setForm] = useState<IdeaFormInput>(emptyIdeaForm);
   const [error, setError] = useState(false);
+  const [received, setReceived] = useState(false);
   const formRef = useRef<HTMLFormElement | null>(null);
   const textArea = useRef<HTMLTextAreaElement | null>(null);
+  const focusAfterReset = useRef(false);
 
   useEffect(() => {
     const draft = readIdeaDraft();
@@ -49,6 +51,12 @@ export function IdeasBoard() {
       }, 50);
     }
   }, []);
+
+  useEffect(() => {
+    if (received || !focusAfterReset.current) return;
+    focusAfterReset.current = false;
+    textArea.current?.focus();
+  }, [received]);
 
   function patchText(value: string) {
     setForm((prev) => ({ ...prev, text: value }));
@@ -69,6 +77,30 @@ export function IdeasBoard() {
     noteIdeaSubmit(idea.involvement.join("+") || "text");
     setForm(emptyIdeaForm());
     setError(false);
+    setReceived(true);
+  }
+
+  function addAnother() {
+    focusAfterReset.current = true;
+    setReceived(false);
+    setForm(emptyIdeaForm());
+    setError(false);
+  }
+
+  if (received) {
+    return (
+      <div className="space-y-3" data-idea-receipt>
+        <div role="status" aria-live="polite" className="space-y-3">
+          <h3 className="font-[family-name:var(--font-fraunces)] text-xl font-extrabold text-balance text-snow">
+            {copy.thankYou}
+          </h3>
+          <p className="text-sm leading-relaxed text-pretty text-ice/85">{copy.thankYouBody}</p>
+        </div>
+        <button type="button" className={ctaClass} onClick={addAnother}>
+          {copy.newIdea}
+        </button>
+      </div>
+    );
   }
 
   return (
