@@ -13,6 +13,7 @@
  * email or phone in the chrome.
  */
 
+import { durableGet, durableSet } from "./durable-storage.ts";
 import { CONTACT_TEXT_MAX, sanitizeUntrustedText } from "./sanitize.ts";
 
 export const LOCAL_PROFILE_KEY = "xsnow.localProfile";
@@ -239,10 +240,8 @@ function storageOf(store?: Storage): Storage | undefined {
 }
 
 export function readLocalProfile(store?: Storage): LocalProfile | null {
-  const storage = storageOf(store);
-  if (!storage) return null;
   try {
-    const raw = storage.getItem(LOCAL_PROFILE_KEY);
+    const raw = durableGet(LOCAL_PROFILE_KEY, storageOf(store));
     if (!raw) return null;
     return parseStoredProfile(JSON.parse(raw) as unknown);
   } catch {
@@ -251,14 +250,8 @@ export function readLocalProfile(store?: Storage): LocalProfile | null {
 }
 
 export function writeLocalProfile(profile: LocalProfile, store?: Storage) {
-  const storage = storageOf(store);
-  if (!storage) return;
-  try {
-    storage.setItem(LOCAL_PROFILE_KEY, JSON.stringify(profile));
-    emitLocalProfile();
-  } catch {
-    // Private mode / quota
-  }
+  durableSet(LOCAL_PROFILE_KEY, JSON.stringify(profile), storageOf(store));
+  emitLocalProfile();
 }
 
 const listeners = new Set<() => void>();

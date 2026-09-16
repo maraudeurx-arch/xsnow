@@ -1,8 +1,9 @@
 "use client";
 
-import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import { noteCommunityIdea, noteIdeaSubmit } from "@/lib/analytics";
 import { useI18n } from "@/lib/i18n/locale";
+import { readStoredIdeas } from "@/lib/device-memory";
 import {
   IDEAS_KEY,
   analyticsSnippet,
@@ -10,7 +11,6 @@ import {
   emptyIdeaForm,
   ideaFormIssues,
   ideaFromForm,
-  parseStoredIdea,
   readIdeaDraft,
   type CommunityIdea,
   type IdeaFormInput,
@@ -26,11 +26,7 @@ const ctaClass =
 export function IdeasBoard() {
   const { m } = useI18n();
   const copy = m.ideas;
-  const [stored, setStored] = useStoredList<CommunityIdea>(IDEAS_KEY);
-  const items = useMemo(
-    () => stored.map(parseStoredIdea).filter((item): item is CommunityIdea => Boolean(item)),
-    [stored],
-  );
+  const [, setStored] = useStoredList<CommunityIdea>(IDEAS_KEY);
   const [form, setForm] = useState<IdeaFormInput>(emptyIdeaForm);
   const [error, setError] = useState(false);
   const formRef = useRef<HTMLFormElement | null>(null);
@@ -67,7 +63,8 @@ export function IdeasBoard() {
       return;
     }
     const idea = ideaFromForm(form);
-    setStored([idea, ...items]);
+    const latest = readStoredIdeas();
+    setStored([idea, ...latest.filter((item) => item.id !== idea.id)]);
     noteCommunityIdea(analyticsSnippet(idea));
     noteIdeaSubmit(idea.involvement.join("+") || "text");
     setForm(emptyIdeaForm());

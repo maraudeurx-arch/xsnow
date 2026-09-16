@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useSyncExternalStore } from "react";
+import { subscribeDurableStorage } from "@/lib/durable-storage";
 import {
   readLocalProfile,
   subscribeLocalProfile,
@@ -19,10 +20,18 @@ function snapshot() {
 
 export function useLocalProfile() {
   const subscribe = useCallback((onStoreChange: () => void) => {
-    return subscribeLocalProfile(() => {
+    const stopLocal = subscribeLocalProfile(() => {
       cached = undefined;
       onStoreChange();
     });
+    const stopDurable = subscribeDurableStorage(() => {
+      cached = undefined;
+      onStoreChange();
+    });
+    return () => {
+      stopLocal();
+      stopDurable();
+    };
   }, []);
 
   const getSnapshot = useCallback(() => snapshot(), []);

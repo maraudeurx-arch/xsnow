@@ -103,3 +103,13 @@ describe("transparency version and contact markers", () => {
     assert.match(securityMeta, email);
   });
 });
+
+describe("PWA manifest start URL", () => {
+  it("uses root-relative start_url/scope so Next basePath is applied once", () => {
+    const source = readFileSync(join(appDir, "manifest.ts"), "utf8");
+    assert.match(source, /start_url: "\/"/);
+    assert.match(source, /scope: "\/"/);
+    assert.doesNotMatch(source, /start_url: `\$\{BASE_PATH\}/);
+    assert.doesNotMatch(source, /src: `\$\{BASE_PATH\}/);
+  });
+});
