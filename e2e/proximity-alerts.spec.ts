@@ -11,8 +11,9 @@ test.describe("Alertes de proximité", () => {
   }) => {
     await page.goto("./alertes/");
     await expect(page.getByRole("heading", { name: "Alertes de proximité" })).toBeVisible();
-    await expect(page.getByText(/Apple Localiser/)).toBeVisible();
-    await expect(page.getByText(/iCloud/)).toBeVisible();
+    await expect(page.getByText(/Chaque proche doit ouvrir Open Community/)).toBeVisible();
+    await expect(page.locator("[data-alert-board]").getByText(/Apple Localiser/)).toBeVisible();
+    await expect(page.locator("[data-alert-board]").getByText(/iCloud/)).toBeVisible();
     await expect(page.getByText(/écran d’accueil/)).toBeVisible();
     await expect(page.getByText("Horaire de la semaine")).toBeVisible();
     await expect(page.getByText("Lundi")).toBeVisible();
@@ -35,7 +36,7 @@ test.describe("Alertes de proximité", () => {
 
     await page.goto(`./alertes/?alerte=${token}`);
     await expect(page.locator("[data-alert-consent]")).toBeVisible();
-    await expect(page.getByText(/Pas Apple Localiser/i)).toBeVisible();
+    await expect(page.locator("[data-alert-consent]").getByText(/Pas Apple Localiser/i)).toBeVisible();
     await page.getByRole("button", { name: "J’accepte de partager ma position" }).click();
     await expect(page.getByText(/Cet appareil partage la position pour Léo/)).toBeVisible();
     await expect(page.getByText("Partage accepté par le proche")).toBeVisible();

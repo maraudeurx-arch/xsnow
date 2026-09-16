@@ -144,9 +144,11 @@ export function AlertBoard() {
       const updatedShare =
         share.placeLat == null ? withPlaceCoords(share, coords.lat, coords.lon) : share;
       const evaluated = evaluateGeofence(updatedShare, coords.lat, coords.lon);
-      setRawShares(
-        sharesRef.current.map((item) => (item.token === share.token ? { ...item, ...updatedShare } : item)),
-      );
+      const nextShares = sharesRef.current.some((item) => item.token === share.token)
+        ? sharesRef.current.map((item) => (item.token === share.token ? { ...item, ...updatedShare } : item))
+        : [{ ...share, ...updatedShare }, ...sharesRef.current];
+      sharesRef.current = nextShares;
+      setRawShares(nextShares);
       saveAlerts(
         itemsRef.current.map((item) =>
           item.token === share.token
@@ -288,7 +290,6 @@ export function AlertBoard() {
           acceptedAt,
         )
       : null;
-    if (granted) saveAlerts(items.map((item) => (item.token === granted.token ? granted : item)));
     const share = shareFromAlert(
       granted ?? {
         id: preview.token,
@@ -312,7 +313,14 @@ export function AlertBoard() {
       acceptedAt,
     );
     const withOrigin = withPlaceCoords(share, origin.lat, origin.lon);
-    setRawShares([withOrigin, ...shares.filter((item) => item.token !== share.token)]);
+    const nextShares = [withOrigin, ...sharesRef.current.filter((item) => item.token !== share.token)];
+    sharesRef.current = nextShares;
+    setRawShares(nextShares);
+    if (granted) {
+      const nextAlerts = itemsRef.current.map((item) => (item.token === granted.token ? granted : item));
+      itemsRef.current = nextAlerts;
+      saveAlerts(nextAlerts);
+    }
     void postAlertConsent({
       token: preview.token,
       granted: true,
