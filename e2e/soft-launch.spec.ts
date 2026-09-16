@@ -1,4 +1,5 @@
 import { APP_VERSION } from "../src/lib/app-version";
+import { PAID_MISSION_LINKS } from "../src/lib/paid-missions";
 import { OPC_PUBLIC_EMAIL } from "../src/lib/paths";
 import { SERVICE_KINDS, SERVICE_SEEDS, SERVICES } from "../src/lib/services";
 import { expect, test } from "./helpers";
@@ -45,6 +46,23 @@ test.describe("Open Community soft-launch smoke", () => {
     await expect(page.getByText(/Sur cet appareil seulement/)).toHaveCount(0);
   });
 
+  test("Gagner maintenant hides the heading, explains unaffiliated platforms, and keeps four apply links", async ({
+    page,
+  }) => {
+    await page.goto("./gagner-maintenant/");
+    await expect(page.getByRole("heading", { name: "Gagner maintenant", level: 2 })).toHaveCount(0);
+    await expect(page.locator("[data-home-back]")).toBeVisible();
+    await expect(page.getByText(/pas affiliées à OPC \/ Open Community/)).toBeVisible();
+    await expect(page.getByText(/travailler depuis son téléphone/)).toBeVisible();
+
+    for (const link of PAID_MISSION_LINKS) {
+      const cta = page.getByRole("link", { name: link.label, exact: true });
+      await expect(cta).toBeVisible();
+      await expect(cta).toHaveAttribute("href", link.url);
+      await expect(cta).toHaveAttribute("target", "_blank");
+    }
+  });
+
   test("fresh storage: neighbourhood service boards stay empty", async ({ page }) => {
     for (const kind of SERVICE_KINDS) {
       await page.goto(`./services/${kind}/`);
@@ -64,7 +82,7 @@ test.describe("Open Community soft-launch smoke", () => {
     await expect(page.getByRole("button", { name: "Vos idées" })).toHaveCount(0);
     await expect(page.getByText("S’impliquer : Tête, Cœur, Mains")).toHaveCount(0);
     await expect(page.getByRole("heading", { name: "Vos idées", level: 2 })).toHaveCount(0);
-    await expect(page.getByRole("link", { name: /Retour à l’accueil/ })).toBeVisible();
+    await expect(page.locator("[data-home-back]")).toBeVisible();
 
     await page.getByLabel("Ton idée").fill(idea);
     await page.getByRole("button", { name: "Envoyer l’idée" }).click();

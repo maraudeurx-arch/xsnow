@@ -139,6 +139,11 @@ describe("vos idees copy", () => {
     assert.equal(fr.register.share, "Partager");
     assert.equal(en.register.share, "Share");
     assert.equal(es.register.share, "Compartir");
+    assert.equal(fr.profile.infos, "Mes infos");
+    assert.equal(fr.profile.reglages, "Réglages");
+    assert.equal(fr.profile.aPropos, "À propos de Open Community (OPC)");
+    assert.equal(en.profile.infos, "My info");
+    assert.equal(es.profile.infos, "Mis datos");
     assert.equal(fr.register.shareEdit, "Modifier");
     assert.equal(fr.register.shareCopy, "Copier");
     assert.match(fr.legal.privacy.sections[1].body, /OPC-XXXX/);
@@ -169,14 +174,30 @@ describe("vos idees copy", () => {
 });
 
 describe("gagner maintenant copy", () => {
-  it("keeps the page title without board lead or old multi-card copy", () => {
+  it("drops the board heading and explains unaffiliated phone work in FR/EN/ES", () => {
     assert.equal(fr.menu.gagnerMaintenant, "Gagner maintenant");
     assert.equal(en.menu.gagnerMaintenant, "Earn now");
     assert.equal(es.menu.gagnerMaintenant, "Ganar ahora");
-    assert.equal(fr.features.gagnerMaintenant.title, "Gagner maintenant");
-    assert.equal(fr.features.gagnerMaintenant.lead, "");
-    assert.equal(en.features.gagnerMaintenant.lead, "");
-    assert.equal(es.features.gagnerMaintenant.lead, "");
+    assert.equal(fr.features.gagnerMaintenant.title, "");
+    assert.equal(en.features.gagnerMaintenant.title, "");
+    assert.equal(es.features.gagnerMaintenant.title, "");
+    assert.match(fr.features.gagnerMaintenant.lead, /pas affiliées à OPC \/ Open Community/);
+    assert.match(fr.features.gagnerMaintenant.lead, /téléphone/);
+    assert.match(fr.features.gagnerMaintenant.lead, /gagner de l’argent/);
+    assert.match(en.features.gagnerMaintenant.lead, /not affiliated with OPC \/ Open Community/);
+    assert.match(en.features.gagnerMaintenant.lead, /phone/);
+    assert.match(en.features.gagnerMaintenant.lead, /earn money/);
+    assert.match(es.features.gagnerMaintenant.lead, /no están afiliadas a OPC \/ Open Community/);
+    assert.match(es.features.gagnerMaintenant.lead, /teléfono/);
+    assert.match(es.features.gagnerMaintenant.lead, /ganar dinero/);
+    for (const lead of [
+      fr.features.gagnerMaintenant.lead,
+      en.features.gagnerMaintenant.lead,
+      es.features.gagnerMaintenant.lead,
+    ]) {
+      const sentences = lead.split(/(?<=\.)\s+/).filter(Boolean);
+      assert.ok(sentences.length >= 2 && sentences.length <= 3, lead);
+    }
     assert.equal("gagner" in fr, false);
     assert.equal("gagner" in en, false);
     assert.equal("gagner" in es, false);

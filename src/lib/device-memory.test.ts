@@ -13,9 +13,14 @@ import {
   readDeviceMemory,
   readStoredAvatar,
   readStoredIdeas,
+  restoreDeviceMemoryFromBackup,
   writeStoredAvatar,
   writeStoredIdeas,
 } from "./device-memory.ts";
+import {
+  setDurableBackupForTests,
+  shouldRestoreFromBackup,
+} from "./durable-storage.ts";
 import { profileFromForm, readLocalProfile, writeLocalProfile } from "./local-profile.ts";
 
 function memoryStore(initial: Record<string, string> = {}) {
@@ -134,5 +139,101 @@ describe("welcome-played migration", () => {
     assert.equal(store.getItem(DEVICE_KEYS.lang), JSON.stringify("en"));
     assert.equal(store.getItem(DEVICE_KEYS.geoConsent), JSON.stringify("granted"));
     assert.match(store.getItem(DEVICE_KEYS.place) ?? "", /Hull/);
+  });
+});
+
+describe("standalone cold-start restore", () => {
+  it("does not delete existing xsnow.* keys when migrating", () => {
+    const store = memoryStore();
+    writeStoredAvatar("femme-blanche", store);
+    writeStoredIdeas(
+      [
+        ideaFromForm({
+          text: "Déneiger les allées",
+          involvement: ["mains"],
+          hoursPerWeek: "1",
+          neighborhood: "Hull",
+        }),
+      ],
+      store,
+    );
+    const before = { ...store.data };
+    migrateDeviceMemory(store, memoryStore());
+    for (const key of Object.keys(before)) {
+      assert.equal(store.getItem(key), before[key], key);
+    }
+    assert.equal(readStoredAvatar(store), "femme-blanche");
+    assert.equal(readStoredIdeas(store).length, 1);
+  });
+
+  it("restores avatar, profile, and ideas from backup when localStorage is empty", async () => {
+    const local = memoryStore();
+    const backup = new Map<string, string>();
+    setDurableBackupForTests(backup);
+    try {
+      writeStoredAvatar("homme-blanc", local);
+      const profile = profileFromForm(
+        {
+          firstName: "Marie",
+          lastName: "Tremblay",
+          email: "marie@voisin.test",
+          phone: "819-555-0100",
+        },
+        null,
+        () => "2026-09-16T00:00:00.000Z",
+        () => "OPC-7K3M",
+      );
+      assert.ok(profile);
+      writeLocalProfile(profile, local);
+      const idea = ideaFromForm({
+        text: "Prêter une perceuse",
+        involvement: ["mains"],
+        hoursPerWeek: "1",
+        neighborhood: "Hull",
+      });
+      writeStoredIdeas([idea], local);
+      assert.equal(backup.get(DEVICE_KEYS.avatar), JSON.stringify("homme-blanc"));
+
+      local.clear();
+      assert.deepEqual(readDeviceMemory(local), emptyDeviceMemory());
+
+      const restored = await restoreDeviceMemoryFromBackup(local);
+      assert.ok(restored >= 3);
+      const memory = readDeviceMemory(local);
+      assert.equal(memory.avatar, "homme-blanc");
+      assert.equal(memory.profile?.id, "OPC-7K3M");
+      assert.equal(memory.profile?.email, "marie@voisin.test");
+      assert.equal(memory.ideas[0]?.text, "Prêter une perceuse");
+    } finally {
+      setDurableBackupForTests(null);
+    }
+  });
+
+  it("restores a wiped ideas list from backup but keeps a newer avatar", async () => {
+    const local = memoryStore();
+    const backup = new Map<string, string>();
+    setDurableBackupForTests(backup);
+    try {
+      writeStoredAvatar("homme-blanc", local);
+      writeStoredIdeas(
+        [
+          ideaFromForm({
+            text: "Ancienne idée",
+            involvement: ["tete"],
+            hoursPerWeek: "1",
+            neighborhood: "",
+          }),
+        ],
+        local,
+      );
+      writeStoredAvatar("femme-noire", local);
+      local.setItem(DEVICE_KEYS.ideas, "[]");
+      assert.equal(shouldRestoreFromBackup("[]", backup.get(DEVICE_KEYS.ideas) ?? null), true);
+      await restoreDeviceMemoryFromBackup(local);
+      assert.equal(readStoredAvatar(local), "femme-noire");
+      assert.equal(readStoredIdeas(local)[0]?.text, "Ancienne idée");
+    } finally {
+      setDurableBackupForTests(null);
+    }
   });
 });

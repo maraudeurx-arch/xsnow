@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useRef, useSyncExternalStore } from "react";
+import { sameJson, subscribeDurableStorage } from "@/lib/durable-storage";
 import { readList, writeList } from "@/lib/storage";
 
 const listeners = new Map<string, Set<() => void>>();
@@ -8,6 +9,14 @@ const snapshots = new Map<string, unknown>();
 
 function emit(key: string) {
   listeners.get(key)?.forEach((listener) => listener());
+}
+
+function readFresh<T>(key: string): T[] {
+  const next = readList<T>(key);
+  const prev = snapshots.get(key) as T[] | undefined;
+  if (prev && sameJson(prev, next)) return prev;
+  snapshots.set(key, next);
+  return next;
 }
 
 export function useStoredList<T>(key: string) {
@@ -20,17 +29,14 @@ export function useStoredList<T>(key: string) {
       listeners.set(key, set);
     }
     set.add(onStoreChange);
+    const stopDurable = subscribeDurableStorage(onStoreChange);
     return () => {
       set.delete(onStoreChange);
+      stopDurable();
     };
   }, [key]);
 
-  const getSnapshot = useCallback(() => {
-    if (!snapshots.has(key)) {
-      snapshots.set(key, readList<T>(key));
-    }
-    return snapshots.get(key) as T[];
-  }, [key]);
+  const getSnapshot = useCallback(() => readFresh<T>(key), [key]);
 
   const getServerSnapshot = useCallback(() => empty.current, []);
 
@@ -61,8 +67,10 @@ export function useSeededList<T>(key: string, seed: T[]) {
       listeners.set(key, set);
     }
     set.add(onStoreChange);
+    const stopDurable = subscribeDurableStorage(onStoreChange);
     return () => {
       set.delete(onStoreChange);
+      stopDurable();
     };
   }, [key]);
 

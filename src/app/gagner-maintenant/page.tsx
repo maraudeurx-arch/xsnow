@@ -5,7 +5,7 @@ export const metadata = { title: "Gagner maintenant" };
 
 export default function GagnerMaintenantPage() {
   return (
-    <LocalizedFeature feature="gagnerMaintenant">
+    <LocalizedFeature feature="gagnerMaintenant" compact>
       <EarnNowBoard />
     </LocalizedFeature>
   );

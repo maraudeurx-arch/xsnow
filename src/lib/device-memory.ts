@@ -12,6 +12,11 @@
 
 import { AVATAR_STORAGE_KEY, isAvatarId, type AvatarId } from "./avatars.ts";
 import { ANALYTICS_CONSENT_KEY } from "./consent.ts";
+import {
+  durableGet,
+  durableSet,
+  hydrateDurableFromBackup,
+} from "./durable-storage.ts";
 import { IDEAS_KEY, parseStoredIdea, type CommunityIdea } from "./ideas.ts";
 import { LANG_STORAGE_KEY } from "./i18n/locales.ts";
 import { LOCAL_PROFILE_KEY, parseStoredProfile, type LocalProfile } from "./local-profile.ts";
@@ -68,21 +73,11 @@ function sessionOf(store?: Storage): Storage | undefined {
 }
 
 function getItem(store: Storage | undefined, key: string): string | null {
-  if (!store) return null;
-  try {
-    return store.getItem(key);
-  } catch {
-    return null;
-  }
+  return durableGet(key, store);
 }
 
 function setItem(store: Storage | undefined, key: string, value: string) {
-  if (!store) return;
-  try {
-    store.setItem(key, value);
-  } catch {
-    // Private mode / quota
-  }
+  durableSet(key, value, store);
 }
 
 function parseJson(raw: string | null): unknown {
@@ -209,10 +204,19 @@ export function migrateWelcomePlayed(
   return fromSession;
 }
 
-/** Run once at boot. Safe to call repeatedly. Does not seed demo listings. */
+export function deviceMemoryKeys(): string[] {
+  return Object.values(DEVICE_KEYS);
+}
+
+/** Run once at boot. Safe to call repeatedly. Does not seed demo listings or delete keys. */
 export function migrateDeviceMemory(local?: Storage, session?: Storage) {
   stampVersion(local);
   migrateWelcomePlayed(local, session);
+}
+
+/** Restore any `xsnow.*` key that IndexedDB still has after a standalone cold start. */
+export async function restoreDeviceMemoryFromBackup(local?: Storage) {
+  return hydrateDurableFromBackup(deviceMemoryKeys(), local);
 }
 
 export function emptyDeviceMemory(): DeviceMemorySnapshot {

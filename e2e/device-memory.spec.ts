@@ -1,3 +1,4 @@
+import { devices } from "@playwright/test";
 import { expect, test } from "./helpers";
 
 function stubSpeech() {
@@ -132,5 +133,78 @@ test.describe("durable on-device memory", () => {
     expect(stored.profile).toContain("marie@voisin.test");
     expect(stored.welcome).toContain("femme-noire");
     expect(stored.geo).toContain("skipped");
+  });
+
+  test("pageshow resume does not wipe xsnow keys or show the avatar picker", async ({ page }) => {
+    await page.addInitScript(() => {
+      window.localStorage.setItem("xsnow.avatar", JSON.stringify("homme-blanc"));
+      window.localStorage.setItem("xsnow.welcomePlayed", JSON.stringify(["homme-blanc"]));
+      window.localStorage.setItem(
+        "xsnow.localProfile",
+        JSON.stringify({
+          id: "OPC-7K3M",
+          firstName: "Marie",
+          lastName: "Tremblay",
+          email: "marie@voisin.test",
+          phone: "819-555-0100",
+          createdAt: "2026-09-16T00:00:00.000Z",
+          updatedAt: "2026-09-16T00:00:00.000Z",
+        }),
+      );
+      window.localStorage.setItem(
+        "xsnow.ideas",
+        JSON.stringify([{ id: "idea-1", text: "Déneiger", involvement: ["mains"], hoursPerWeek: "1", neighborhood: "Hull", createdAt: "2026-09-16T00:00:00.000Z", updatedAt: "2026-09-16T00:00:00.000Z" }]),
+      );
+    });
+    await page.goto("./");
+    await expect(page.getByText("Choisis ton avatar")).toHaveCount(0);
+    await page.evaluate(() => window.dispatchEvent(new Event("pageshow")));
+    await page.evaluate(() => document.dispatchEvent(new Event("visibilitychange")));
+    await expect(page.getByText("Choisis ton avatar")).toHaveCount(0);
+    await expect(page.locator("[data-header-profile]")).toHaveText("M.T.");
+    const keys = await page.evaluate(() =>
+      Object.keys(window.localStorage).filter((key) => key.startsWith("xsnow.")).sort(),
+    );
+    expect(keys).toEqual(expect.arrayContaining(["xsnow.avatar", "xsnow.localProfile", "xsnow.ideas"]));
+    expect(await page.evaluate(() => window.localStorage.getItem("xsnow.ideas"))).toContain("Déneiger");
+  });
+});
+
+test.describe("Android Chrome installed-app memory", () => {
+  test.use({
+    userAgent: devices["Pixel 5"].userAgent,
+    viewport: devices["Pixel 5"].viewport,
+    isMobile: true,
+    hasTouch: true,
+    deviceScaleFactor: 2.625,
+  });
+
+  test("reload keeps avatar, profile, and ideas", async ({ page }) => {
+    await page.addInitScript(() => {
+      window.localStorage.setItem("xsnow.avatar", JSON.stringify("femme-noire"));
+      window.localStorage.setItem("xsnow.welcomePlayed", JSON.stringify(["femme-noire"]));
+      window.localStorage.setItem(
+        "xsnow.localProfile",
+        JSON.stringify({
+          id: "OPC-7K3M",
+          firstName: "Marie",
+          lastName: "Tremblay",
+          email: "marie@voisin.test",
+          phone: "819-555-0100",
+          createdAt: "2026-09-16T00:00:00.000Z",
+          updatedAt: "2026-09-16T00:00:00.000Z",
+        }),
+      );
+    });
+    await page.goto("./");
+    await expect(page.getByText("Choisis ton avatar")).toHaveCount(0);
+    await page.goto("./vos-idees/");
+    await page.getByLabel("Ton idée").fill("Co-voiturage du matin");
+    await page.getByRole("button", { name: "Envoyer l’idée" }).click();
+    await page.reload();
+    expect(await page.evaluate(() => window.localStorage.getItem("xsnow.ideas"))).toContain("Co-voiturage du matin");
+    await page.goto("./");
+    await expect(page.getByText("Choisis ton avatar")).toHaveCount(0);
+    await expect(page.locator("[data-header-profile]")).toHaveText("M.T.");
   });
 });
