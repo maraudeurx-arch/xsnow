@@ -13,10 +13,10 @@
   --safe-right: env(safe-area-inset-right, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --safe-left: env(safe-area-inset-left, 0px);
-  --home-logo: 2.35rem;
-  --home-nav-h: 2.15rem;
-  --home-chip-h: 2.05rem;
-  --home-avatar: min(11.5vw, 5.8dvh, 2.65rem);
+  --home-logo: 2.2rem;
+  --home-nav-h: 2.1rem;
+  --home-chip-h: 2rem;
+  --home-avatar: min(11vw, 5.6dvh, 2.55rem);
   --home-gap: 0.14rem;
   /* Accueil: no header→card air — leftover height feeds Nouvelles. */
   --home-block-gap: 0;
@@ -28,9 +28,9 @@
   --home-chip-gap: 0.26rem;
   --home-card-pad-x: 0.4rem;
   --home-card-pad-y: 0.14rem;
-  --home-avatar-ring: 0.28rem;
-  --brand-title: clamp(1.5rem, 7.4vw, 3rem);
-  --brand-slogan: clamp(0.9rem, 3.8vw, 1.2rem);
+  --home-avatar-ring: 0.26rem;
+  --brand-title: clamp(1.35rem, 6.6vw, 2.6rem);
+  --brand-slogan: clamp(0.78rem, 3.2vw, 1.05rem);
 }
 
 @media (min-width: 640px) {
@@ -124,23 +124,24 @@ body {
   max-height: 100vh;
   max-height: 100svh;
   max-height: 100dvh;
-  /* Safe-area only. No extra floor — Accueil card keeps leftover height. */
+  /* Safe-area only. No extra floor — branding sits on the inset, leftover
+     height stays in the Accueil card. */
   padding-top: var(--safe-top);
-  padding-right: max(10px, var(--safe-right));
+  padding-right: max(8px, var(--safe-right));
   padding-bottom: max(0px, var(--safe-bottom));
-  padding-left: max(10px, var(--safe-left));
+  padding-left: max(8px, var(--safe-left));
 }
 
 /*
- * Open Community + slogan sit above the wordmark/nav card.
+ * Open Community + slogan sit flush under the status-bar inset.
  * On home, the banner stays content-sized so leftover height can drop into
- * the Accueil card (Nouvelles du Quartier), not an empty photo band.
+ * the Accueil card (Nouvelles du Quartier / ads), not an empty photo band.
  */
 .brand-banner {
   position: relative;
   z-index: 30;
   flex-shrink: 0;
-  padding: 0.05rem 0.25rem 0.12rem;
+  padding: 0 0.2rem 0.08rem;
   text-align: center;
 }
 
@@ -190,8 +191,7 @@ body {
   align-items: center;
   justify-content: flex-start;
   min-height: 0;
-  padding-top: 0;
-  padding-bottom: 0;
+  padding: 0;
 }
 
 .app-stage-main {
@@ -510,9 +510,10 @@ body {
 }
 
 /*
- * Mobile Accueil: middle card is a 3-row grid (chrome / Nouvelles / chat) that
- * fills down to the footer. Leftover height pours into Nouvelles (headlines +
- * partner slots). Compact top chrome; chat stays row 3; footer stays usable.
+ * Mobile Accueil: pin branding to the top, grow the middle card toward the
+ * footer, and pour leftover height into Nouvelles du Quartier. Headlines keep
+ * the #77 flex-grow floors; the bottom partner slot also grows so ads fit
+ * toward the chat. Chat stays row 3; footer stays usable.
  */
 @media (max-width: 639px) {
   .app-stage:has(#home-guide) {
@@ -525,7 +526,7 @@ body {
 
   .app-stage:has(#home-guide) > .brand-banner h1 {
     font-size: clamp(1.05rem, 5.3vw, 2.05rem);
-    line-height: 0.9;
+    line-height: 0.86;
   }
 
   .app-stage:has(#home-guide) > .brand-banner p {
@@ -570,6 +571,12 @@ body {
     min-height: max(16rem, 32dvh);
   }
 
+  /* Leftover after headlines feeds the bottom partner unit toward the chat. */
+  .app-stage:has(#home-guide) [data-partner-slot="news-bottom"] {
+    flex: 0.55 1 0%;
+    min-height: max(7.2rem, 14dvh);
+  }
+
   /* Same specificity as the grid child rule so floors beat base height fill. */
   .app-stage:has(#home-guide) > .app-stage-main > #home-guide > .home-stage:has([data-neighborhood-news]) > [data-neighborhood-news] {
     min-height: max(24rem, 52dvh);
@@ -598,6 +605,10 @@ body {
     min-height: max(18rem, 36dvh);
   }
 
+  .app-stage:has(#home-guide) [data-partner-slot="news-bottom"] {
+    min-height: max(8rem, 16dvh);
+  }
+
   .app-stage:has(#home-guide) > .app-stage-main > #home-guide > .home-stage:has([data-neighborhood-news]) > [data-neighborhood-news] {
     min-height: max(28rem, 60dvh);
   }
@@ -616,6 +627,10 @@ body {
   .app-stage:has(#home-guide) [data-neighborhood-news] [data-news-list],
   .app-stage:has(#home-guide) [data-neighborhood-news] [data-news-spacer] {
     min-height: max(6rem, 12dvh);
+  }
+
+  .app-stage:has(#home-guide) [data-partner-slot="news-bottom"] {
+    min-height: max(5.2rem, 12dvh);
   }
 
   .app-stage:has(#home-guide) > .app-stage-main > #home-guide > .home-stage:has([data-neighborhood-news]) > [data-neighborhood-news] {

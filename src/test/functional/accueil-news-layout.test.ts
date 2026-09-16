@@ -51,6 +51,11 @@ describe("Accueil Nouvelles layout fills toward the footer", () => {
     );
     assert.doesNotMatch(news, /lorem ipsum/i);
     assert.doesNotMatch(news, /fake headline/i);
+    // PR #71: both partner units sit under the full headline list (no mid-ad hang).
+    assert.match(news, /showMid \? <PartnerAdSlot slot="news-mid"/);
+    assert.doesNotMatch(news, /index === 0 && showMid/);
+    assert.match(css, /\[data-partner-slot="news-bottom"\][\s\S]*flex:\s*0\.55 1 0%/);
+    assert.match(css, /\[data-partner-slot="news-bottom"\][\s\S]*min-height:\s*max\(7\.2rem,\s*14dvh\)/);
   });
 
   it("keeps chat and footer outside the news flex-grow so they are not crushed", () => {
@@ -64,6 +69,7 @@ describe("Accueil Nouvelles layout fills toward the footer", () => {
     assert.match(chat, /shrink-0/);
     assert.match(footer, /<footer/);
     assert.match(footer, /LegalLinks/);
+    assert.match(footer, /text-\[8px\]/);
     assert.match(
       css,
       /max-height:\s*660px[\s\S]*\[data-neighborhood-news\][\s\S]*min-height:\s*max\(14rem,\s*36dvh\)/,

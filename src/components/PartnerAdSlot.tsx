@@ -22,7 +22,7 @@ import {
 
 const SLOT_MIN_H: Record<PartnerSlotId, string> = {
   "news-mid": "min-h-[4.6rem]",
-  "news-bottom": "min-h-[5.4rem]",
+  "news-bottom": "min-h-[7.2rem]",
 };
 
 function isExternalHref(href: string): boolean {
@@ -71,7 +71,9 @@ export function PartnerAdSlot({ slot }: { slot: PartnerSlotId }) {
       data-partner-kind={creative.kind}
       data-partner-rotation={rotation}
       aria-label={`${copy.partnerSponsored} — ${copy.partnerSlot} — ${display.name}`}
-      className="shrink-0 rounded-lg border border-dashed border-gold/35 bg-white/[0.03] px-2 py-1.5 text-left"
+      className={`${
+        slot === "news-bottom" ? "flex min-h-[7.2rem] flex-1 flex-col" : "shrink-0"
+      } rounded-lg border border-dashed border-gold/35 bg-white/[0.03] px-2 py-1.5 text-left`}
     >
       <p className="text-[8px] font-extrabold uppercase tracking-wide text-ice/70">
         {copy.partnerSponsored}
@@ -88,7 +90,11 @@ export function PartnerAdSlot({ slot }: { slot: PartnerSlotId }) {
           data-full-width-responsive="true"
         />
       ) : (
-        <div className={`mt-1 ${SLOT_MIN_H[slot]}`}>
+        <div
+          className={`mt-1 flex flex-col ${SLOT_MIN_H[slot]} ${
+            slot === "news-bottom" ? "min-h-0 flex-1" : ""
+          }`}
+        >
           {external ? (
             <a
               href={href}
@@ -96,7 +102,7 @@ export function PartnerAdSlot({ slot }: { slot: PartnerSlotId }) {
               rel="noopener noreferrer sponsored"
               data-partner-link
               data-partner-cta={display.ctaKind}
-              className="flex h-full min-h-[inherit] flex-col overflow-hidden rounded-md border border-white/10 bg-night/40 hover:border-cobalt/45"
+              className="flex h-full min-h-[inherit] flex-1 flex-col overflow-hidden rounded-md border border-white/10 bg-night/40 hover:border-cobalt/45"
             >
               <CreativeBody
                 name={display.name}
@@ -104,6 +110,7 @@ export function PartnerAdSlot({ slot }: { slot: PartnerSlotId }) {
                 cta={display.cta}
                 imageUrl={imageUrl}
                 funding={copy.partnerFunding}
+                grow={slot === "news-bottom"}
               />
             </a>
           ) : (
@@ -111,7 +118,7 @@ export function PartnerAdSlot({ slot }: { slot: PartnerSlotId }) {
               href={href}
               data-partner-link
               data-partner-cta={display.ctaKind}
-              className="flex h-full min-h-[inherit] flex-col overflow-hidden rounded-md border border-white/10 bg-night/40 hover:border-cobalt/45"
+              className="flex h-full min-h-[inherit] flex-1 flex-col overflow-hidden rounded-md border border-white/10 bg-night/40 hover:border-cobalt/45"
             >
               <CreativeBody
                 name={display.name}
@@ -119,6 +126,7 @@ export function PartnerAdSlot({ slot }: { slot: PartnerSlotId }) {
                 cta={display.cta}
                 imageUrl={imageUrl}
                 funding={copy.partnerFunding}
+                grow={slot === "news-bottom"}
               />
             </Link>
           )}
@@ -134,12 +142,14 @@ function CreativeBody({
   cta,
   imageUrl,
   funding,
+  grow,
 }: {
   name: string;
   tagline: string;
   cta: string;
   imageUrl: string | null;
   funding: string;
+  grow: boolean;
 }) {
   return (
     <>
@@ -148,12 +158,14 @@ function CreativeBody({
         <img
           src={imageUrl}
           alt=""
-          className="h-[2.4rem] w-full object-cover object-left"
+          className={`w-full object-cover object-left ${
+            grow ? "min-h-[2.4rem] flex-1" : "h-[2.4rem]"
+          }`}
           loading="lazy"
           decoding="async"
         />
       ) : null}
-      <div className="flex flex-1 flex-col justify-center gap-0.5 px-2 py-1.5 text-left">
+      <div className="flex shrink-0 flex-col justify-center gap-0.5 px-2 py-1.5 text-left">
         <p className="text-[10px] font-extrabold leading-snug text-snow">{name}</p>
         <p className="text-[8px] leading-snug text-snow/75">{tagline}</p>
         <span className="mt-0.5 inline-flex w-fit max-w-full items-center rounded-full bg-cobalt px-1.5 py-0.5 text-[8px] font-extrabold leading-none text-snow">
