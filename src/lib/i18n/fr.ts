@@ -826,6 +826,7 @@ export const fr = {
     invalidEmail: "Indique un e-mail valide.",
     invalidPhone: "Indique un téléphone valide.",
     localOnly: "Ces données restent sur cet appareil. Elles ne sont pas publiées, ni e-mail ni téléphone dans l’en-tête.",
+    share: "Partager",
     shareTitle: "Inviter quelqu’un",
     shareHint: "Modifiez le texte, puis copiez-le. Le lien n’inclut pas ton e-mail ni ton téléphone.",
     shareEdit: "Modifier",

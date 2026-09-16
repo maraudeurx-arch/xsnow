@@ -34,6 +34,15 @@ test.describe("local registration on Mon profil", () => {
     expect(stored).toContain("819-555-0100");
     expect(stored).toMatch(/OPC-[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{4}/);
 
+    await expect(page.getByRole("button", { name: "Modifier le profil" })).toBeVisible();
+    const shareCta = page.getByRole("button", { name: "Partager", exact: true });
+    await expect(shareCta).toBeVisible();
+    await expect(shareCta).toHaveCSS("background-color", "rgb(29, 78, 216)");
+    await expect(page.getByText("Inviter quelqu’un")).toHaveCount(0);
+    await expect(page.getByRole("button", { name: "Copier", exact: true })).toHaveCount(0);
+
+    await shareCta.click();
+    await expect(page.locator("[data-share-panel]")).toBeVisible();
     await expect(page.getByText(/Marie t’invite sur Open Community/)).toBeVisible();
     await expect(page.getByText(/invite=opc-/)).toBeVisible();
     await expect(page.getByText(/Numéro membre : OPC-/)).toBeVisible();

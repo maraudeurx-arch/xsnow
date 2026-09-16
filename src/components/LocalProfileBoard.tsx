@@ -39,6 +39,7 @@ export function LocalProfileBoard() {
   const [error, setError] = useState<"" | "firstName" | "lastName" | "email" | "phone">("");
   const [shareText, setShareText] = useState("");
   const [shareStatus, setShareStatus] = useState<"ok" | "fail" | "">("");
+  const [shareOpen, setShareOpen] = useState(false);
   const area = useRef<HTMLTextAreaElement | null>(null);
 
   const code = hydrated ? resolveShareCode(profile?.id) : "opc";
@@ -52,6 +53,7 @@ export function LocalProfileBoard() {
   function openForm() {
     setError("");
     setForm(profile ? inputFromProfile(profile) : emptyProfileInput());
+    setShareOpen(false);
     setOpen(true);
   }
 
@@ -108,6 +110,17 @@ export function LocalProfileBoard() {
           <button type="button" className={blueCtaClass} data-register-cta onClick={openForm}>
             {copy.edit}
           </button>
+          {!open ? (
+            <button
+              type="button"
+              className={blueCtaClass}
+              data-share-cta
+              onClick={() => setShareOpen((prev) => !prev)}
+              aria-expanded={shareOpen}
+            >
+              {copy.share}
+            </button>
+          ) : null}
         </div>
       )}
 
@@ -187,8 +200,8 @@ export function LocalProfileBoard() {
         </form>
       ) : null}
 
-      {profile && !open ? (
-        <div className="space-y-2 border-t border-white/10 pt-2">
+      {profile && !open && shareOpen ? (
+        <div className="space-y-2 border-t border-white/10 pt-2" data-share-panel>
           <p className="text-sm font-extrabold text-gold">{copy.shareTitle}</p>
           <p className="text-[11px] leading-snug text-snow/80">{copy.shareHint}</p>
           <textarea
