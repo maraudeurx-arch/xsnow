@@ -85,7 +85,7 @@ export function PartnerAdSlot({ slot }: { slot: PartnerSlotId }) {
           data-full-width-responsive="true"
         />
       ) : (
-        <div className={`mt-1 flex min-h-0 flex-1 flex-col ${SLOT_MIN_H[slot]}`}>
+        <div className={`mt-1 flex flex-col ${SLOT_MIN_H[slot]} ${slot === "news-bottom" ? "min-h-0 flex-1" : ""}`}>
           {external ? (
             <a
               href={creative.href}
@@ -98,6 +98,7 @@ export function PartnerAdSlot({ slot }: { slot: PartnerSlotId }) {
                 creative={creative}
                 imageUrl={imageUrl}
                 funding={copy.partnerFunding}
+                grow={slot === "news-bottom"}
               />
             </a>
           ) : (
@@ -110,6 +111,7 @@ export function PartnerAdSlot({ slot }: { slot: PartnerSlotId }) {
                 creative={creative}
                 imageUrl={imageUrl}
                 funding={copy.partnerFunding}
+                grow={slot === "news-bottom"}
               />
             </Link>
           )}
@@ -123,10 +125,12 @@ function CreativeBody({
   creative,
   imageUrl,
   funding,
+  grow,
 }: {
   creative: PartnerCreative;
   imageUrl: string | null;
   funding: string;
+  grow: boolean;
 }) {
   return (
     <>
@@ -135,7 +139,9 @@ function CreativeBody({
         <img
           src={imageUrl}
           alt=""
-          className="min-h-[3.8rem] w-full flex-1 object-cover object-left"
+          className={`w-full object-cover object-left ${
+            grow ? "min-h-[3.8rem] flex-1" : "h-[3.8rem]"
+          }`}
           loading="lazy"
           decoding="async"
         />

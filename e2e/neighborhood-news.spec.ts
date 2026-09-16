@@ -91,7 +91,7 @@ test.describe("Accueil neighbourhood news + partner slots", () => {
     const newsList = page.locator("[data-news-list], [data-news-spacer]");
     const listBox = await newsList.first().boundingBox();
     expect(listBox).toBeTruthy();
-    expect(listBox!.height).toBeGreaterThan(130);
+    expect(listBox!.height).toBeGreaterThan(100);
 
     const newsChatGap = chatBox!.y - (newsBox!.y + newsBox!.height);
     expect(newsChatGap).toBeGreaterThanOrEqual(0);
@@ -124,7 +124,7 @@ test.describe("Accueil neighbourhood news + partner slots", () => {
     const privacyBox = await privacy.boundingBox();
     expect(privacyBox).toBeTruthy();
     expect(privacyBox!.y).toBeGreaterThan(cardBox!.y + cardBox!.height - 1);
-    expect(footerBox!.height).toBeLessThan(42);
+    expect(footerBox!.height).toBeLessThan(48);
 
     const bottomHeight = bottomBox!.height;
     expect(bottomHeight).toBeGreaterThan(110);

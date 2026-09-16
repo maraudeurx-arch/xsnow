@@ -518,15 +518,22 @@ body {
     min-height: max(13rem, 26dvh);
   }
 
-  /* Headlines stay readable above ads; leftover body height feeds the bottom slot. */
+  /* Headlines stay readable in a clipped scroller above both partner slots. */
+  .app-stage:has(#home-guide) [data-neighborhood-news] [data-news-scroll] {
+    flex: 0 1 auto;
+    min-height: max(6.75rem, 12dvh);
+    max-height: min(12rem, 26dvh);
+    overflow-y: auto;
+  }
+
   .app-stage:has(#home-guide) [data-neighborhood-news] [data-news-list],
   .app-stage:has(#home-guide) [data-neighborhood-news] [data-news-spacer] {
-    flex: 0 1 auto;
-    min-height: max(8.5rem, 14dvh);
+    flex: 0 0 auto;
+    min-height: max(6.75rem, 12dvh);
   }
 
   .app-stage:has(#home-guide) [data-partner-slot="news-bottom"] {
-    flex: 1 1 0%;
+    flex: 1.35 1 0%;
     min-height: max(7.2rem, 16dvh);
   }
 }
@@ -541,9 +548,13 @@ body {
     min-height: max(15rem, 32dvh);
   }
 
+  .app-stage:has(#home-guide) [data-neighborhood-news] [data-news-scroll] {
+    max-height: min(16rem, 34dvh);
+  }
+
   .app-stage:has(#home-guide) [data-neighborhood-news] [data-news-list],
   .app-stage:has(#home-guide) [data-neighborhood-news] [data-news-spacer] {
-    min-height: max(9rem, 16dvh);
+    min-height: max(6.75rem, 12dvh);
   }
 
   .app-stage:has(#home-guide) [data-partner-slot="news-bottom"] {

@@ -174,11 +174,11 @@ export function NeighborhoodNews({ onNewsChange }: Props) {
       <div data-news-body className="flex min-h-0 flex-1 flex-col gap-1.5 overflow-hidden">
         <div
           data-news-scroll
-          className="flex min-h-0 max-h-[58%] shrink-0 flex-col gap-1.5 overflow-y-auto"
+          className="flex min-h-0 shrink-0 flex-col gap-1 overflow-y-auto"
         >
           {status === "ready" && items.length > 0 ? (
-            <ul data-news-list className="flex min-h-[8.5rem] flex-col gap-1">
-              {items.map((item, index) => (
+            <ul data-news-list className="flex min-h-[6.75rem] flex-col gap-1">
+              {items.map((item) => (
                 <li key={item.id}>
                   <a
                     href={item.link}
@@ -199,22 +199,15 @@ export function NeighborhoodNews({ onNewsChange }: Props) {
                       <span>{item.source}</span>
                     </span>
                   </a>
-                  {index === 0 && showMid ? (
-                    <div className="mt-1.5">
-                      <PartnerAdSlot slot="news-mid" />
-                    </div>
-                  ) : null}
                 </li>
               ))}
             </ul>
           ) : (
-            <>
-              <div data-news-spacer className="min-h-[8.5rem]" aria-hidden />
-              {showMid ? <PartnerAdSlot slot="news-mid" /> : null}
-            </>
+            <div data-news-spacer className="min-h-[6.75rem] flex-1" aria-hidden />
           )}
         </div>
 
+        {showMid ? <PartnerAdSlot slot="news-mid" /> : null}
         {showBottom ? <PartnerAdSlot slot="news-bottom" /> : null}
       </div>
     </section>
