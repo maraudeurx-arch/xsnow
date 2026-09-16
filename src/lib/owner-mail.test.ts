@@ -3,6 +3,7 @@ import { describe, it } from "node:test";
 import {
   OPC_INBOX_TO,
   RESEND_API_URL,
+  DEFAULT_IDEAS_FROM,
   buildIdeaOwnerMail,
   buildRegisterOwnerMail,
   clipOpcId,
@@ -58,7 +59,7 @@ describe("buildIdeaOwnerMail / buildRegisterOwnerMail", () => {
     assert.match(register.subject, /OPC-7K3M/);
     assert.match(register.text, /Marie/);
     assert.match(register.text, /marie@voisin.test/);
-    assert.doesNotMatch(register.text, /téléphone|phone/i);
+    assert.doesNotMatch(register.text, /819-555|Tremblay/);
   });
 });
 
@@ -114,7 +115,7 @@ describe("sendOwnerMail", () => {
   });
 
   it("falls back to the default From when the env value is junk", () => {
-    assert.match(resolveFromAddress("not-an-email"), /opc@opencommunity\.app/);
-    assert.match(resolveFromAddress(""), /opc@opencommunity\.app/);
+    assert.equal(resolveFromAddress("not-an-email"), DEFAULT_IDEAS_FROM);
+    assert.equal(resolveFromAddress(""), DEFAULT_IDEAS_FROM);
   });
 });
