@@ -12,6 +12,29 @@ export async function skipConsent(page: Page) {
   });
 }
 
+/** Drop one `xsnow.*` key from local, session, and IndexedDB backup. */
+export async function wipeDurableKey(page: Page, key: string) {
+  await page.evaluate(async (storageKey) => {
+    await new Promise<void>((resolve, reject) => {
+      const req = indexedDB.open("xsnow-device-memory", 1);
+      req.onerror = () => reject(req.error ?? new Error("idb"));
+      req.onsuccess = () => {
+        const db = req.result;
+        if (!db.objectStoreNames.contains("kv")) {
+          resolve();
+          return;
+        }
+        const tx = db.transaction("kv", "readwrite");
+        tx.objectStore("kv").delete(storageKey);
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => reject(tx.error ?? new Error("idb tx"));
+      };
+    });
+    window.localStorage.removeItem(storageKey);
+    window.sessionStorage.removeItem(storageKey);
+  }, key);
+}
+
 /** Never POST e2e ideas to the production Worker inbox. */
 export async function stubIdeaInbox(page: Page, inbox: "sent" | "failed" = "sent") {
   await page.route(/\/ideas(\?|$)/, async (route) => {

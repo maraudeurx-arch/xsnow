@@ -2,7 +2,7 @@ import { APP_VERSION } from "../src/lib/app-version";
 import { PAID_MISSION_LINKS } from "../src/lib/paid-missions";
 import { OPC_PUBLIC_EMAIL } from "../src/lib/paths";
 import { SERVICE_KINDS, SERVICE_SEEDS, SERVICES } from "../src/lib/services";
-import { expect, test } from "./helpers";
+import { expect, test, wipeDurableKey } from "./helpers";
 
 test.describe("Open Community soft-launch smoke", () => {
   test("home loads with the Open Community banner and avatar rings", async ({ page }) => {
@@ -108,13 +108,19 @@ test.describe("Open Community soft-launch smoke", () => {
     await expect(page.getByLabel("Ton idée")).toBeVisible();
     await expect(page.getByRole("button", { name: "Envoyer l’idée" })).toBeVisible();
 
-    await page.evaluate(() => {
-      window.localStorage.removeItem("xsnow.ideas");
-    });
+    // Wipe every on-device layer (local + session + IndexedDB). Device memory
+    // would restore from IDB if we only cleared localStorage — that's #76, not
+    // the catalog. After a full wipe, the empty catalog must not invent ideas.
+    await wipeDurableKey(page, "xsnow.ideas");
     await page.reload();
-    const cleared = await page.evaluate(() => window.localStorage.getItem("xsnow.ideas"));
-    expect(cleared).toBeNull();
     await expect(page.getByLabel("Ton idée")).toBeVisible();
+    await expect
+      .poll(async () => page.evaluate(() => window.localStorage.getItem("xsnow.ideas")), {
+        timeout: 2_000,
+      })
+      .toBeNull();
+    await expect(page.getByText(idea)).toHaveCount(0);
+    await expect(page.locator("[data-idea-wall]")).toContainText(/Pas encore d’idée ici/);
   });
 
   test("transparency pages are reachable from the footer", async ({ page }) => {
