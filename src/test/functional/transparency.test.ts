@@ -43,6 +43,8 @@ describe("transparency pages exist", () => {
       assert.equal(existsSync(pageFile(item.href)), true, item.href);
     }
     assert.equal(existsSync(pageFile("/mon-profil/a-propos")), true);
+    assert.equal(existsSync(pageFile("/proprietaire/idees")), true);
+    assert.match(readFileSync(pageFile("/proprietaire/idees"), "utf8"), /OwnerIdeasBoard/);
     assert.match(readFileSync(pageFile(ABOUT_HREF), "utf8"), /kind="about"/);
     assert.match(readFileSync(pageFile(HOW_IT_WORKS_HREF), "utf8"), /kind="how"/);
     assert.match(readFileSync(pageFile(SECURITY_HREF), "utf8"), /kind="security"/);
@@ -107,13 +109,23 @@ describe("transparency version and contact markers", () => {
 });
 
 describe("PWA manifest start URL", () => {
-  it("embeds /xsnow/ so Home Screen does not open github.io root", () => {
+  it("embeds the absolute /xsnow/ URL so Home Screen does not open github.io root", () => {
     const source = readFileSync(join(appDir, "manifest.ts"), "utf8");
-    assert.match(source, /start_url: PWA_SCOPE/);
-    assert.match(source, /scope: PWA_SCOPE/);
-    assert.match(source, /id: PWA_SCOPE/);
+    assert.match(source, /pwaManifestLaunch/);
+    assert.match(source, /start_url: launch\.start_url/);
+    assert.match(source, /scope: launch\.scope/);
+    assert.match(source, /id: launch\.id/);
+    assert.match(source, /absoluteAssetUrl/);
     assert.doesNotMatch(source, /start_url: "\/"/);
-    assert.match(readFileSync(join(srcDir, "lib/paths.ts"), "utf8"), /PWA_SCOPE = `\$\{BASE_PATH\}\/`/);
+    assert.doesNotMatch(source, /start_url: PWA_SCOPE/);
+    const paths = readFileSync(join(srcDir, "lib/paths.ts"), "utf8");
+    assert.match(paths, /PWA_START_URL = PUBLIC_SITE_URL/);
+    assert.match(paths, /PUBLIC_SITE_ORIGIN = "https:\/\/maraudeurx-arch\.github\.io"/);
+    const chrome = readFileSync(join(srcDir, "components/AppChrome.tsx"), "utf8");
+    assert.match(chrome, /PagesScopeRedirect/);
+    const notFound = readFileSync(join(appDir, "not-found.tsx"), "utf8");
+    assert.match(notFound, /githubPagesHint/);
+    assert.match(notFound, /PUBLIC_SITE_URL/);
   });
 });
 
@@ -130,6 +142,10 @@ describe("Mon profil hub dedupes Accueil actions", () => {
     assert.match(installGuide, /profileTitle/);
     assert.match(installGuide, /iphoneSteps/);
     assert.match(installGuide, /tipAndroid/);
+    assert.match(installGuide, /data-install-url/);
+    assert.match(installGuide, /PUBLIC_SITE_URL/);
+    assert.match(installGuide, /wrongShortcut/);
+    assert.match(installGuide, /data-install-wrong-shortcut/);
     assert.doesNotMatch(installGuide, /shouldShowInstallTip/);
     assert.doesNotMatch(installGuide, /writeInstallTipDismissed/);
 

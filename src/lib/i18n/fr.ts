@@ -39,19 +39,22 @@ export const fr = {
     offres: "Offres",
   },
   install: {
-    tip: "Sur iPhone (Safari) : Partager → Sur l’écran d’accueil. L’app s’ouvre ensuite comme une icône.",
+    tip: "Sur iPhone (Safari) : ouvre https://maraudeurx-arch.github.io/xsnow/ puis Partager → Sur l’écran d’accueil.",
     tipAndroid:
-      "Sur Android (Chrome) : menu ⋮ → Installer l’app, ou Ajouter à l’écran d’accueil. L’app s’ouvre ensuite comme une icône.",
+      "Sur Android (Chrome) : ouvre https://maraudeurx-arch.github.io/xsnow/ puis menu ⋮ → Installer l’app, ou Ajouter à l’écran d’accueil.",
     dismiss: "Compris",
     profileTitle: "Mettre OPC sur l’écran d’accueil",
     profileLead:
-      "Open Community est une app web, pas une app de l’App Store. Sur iPhone, ouvre le lien dans Safari et ajoute-la à l’écran d’accueil pour l’ouvrir comme une icône.",
+      "Open Community est une app web, pas une app de l’App Store. Sur iPhone, ouvre d’abord https://maraudeurx-arch.github.io/xsnow/ dans Safari, puis ajoute-la à l’écran d’accueil.",
+    siteUrlLabel: "Adresse exacte à ouvrir dans Safari",
     iphoneHeading: "iPhone (Safari)",
     iphoneSteps: [
-      "Ouvre Open Community dans Safari (le navigateur d’Apple — pas Chrome).",
+      "Ouvre exactement https://maraudeurx-arch.github.io/xsnow/ dans Safari (le navigateur d’Apple — pas Chrome).",
       "Touche Partager — le carré avec la flèche vers le haut, en bas de l’écran.",
       "Fais défiler et choisis Sur l’écran d’accueil, puis Ajouter.",
     ],
+    wrongShortcut:
+      "Si l’icône ouvre « There isn’t a GitHub Pages site here », ce n’est pas OPC : le raccourci pointe vers maraudeurx-arch.github.io sans /xsnow/. Supprime l’icône, ouvre l’adresse ci-dessus dans Safari, puis ajoute-la de nouveau.",
   },
   guide: {
     pickAvatar: "Choisis ton avatar",
@@ -168,7 +171,7 @@ export const fr = {
         },
         {
           heading: "Ce que nous collectons",
-          body: "Sur cet appareil (localStorage) : langue, avatar, tes annonces, tes consentements, et si tu t’inscris : prénom, nom, e-mail, téléphone et un numéro local OPC-XXXX — rien n’est envoyé à un serveur de profils. Si tu acceptes la position : ville + coordonnées pour le nom de ville — pas de suivi continu. Si tu acceptes les stats : événements anonymes vers un Worker Cloudflare (D1) : session, langue, ville/pays si la position est aussi acceptée, extraits d’idées de monétisation (texte court ; e-mails et GPS retirés). Le chat de l’avatar envoie tes messages au Worker pour une réponse. Pas de pub tierce.",
+          body: "Sur cet appareil (localStorage) : langue, avatar, tes annonces, tes consentements, et si tu t’inscris : prénom, nom, e-mail, téléphone et un numéro local OPC-XXXX — rien n’est envoyé à un serveur de profils. Si tu acceptes la position : ville + coordonnées pour le nom de ville — pas de suivi continu. Si tu acceptes les stats : événements anonymes vers un Worker Cloudflare (D1) : session, langue, ville/pays si la position est aussi acceptée, extraits d’idées de monétisation (texte court ; e-mails et GPS retirés). Si tu envoies une idée dans Vos idées : une copie assainie (phrase, ville, date — pas de nom, e-mail, téléphone ni numéro OPC) va dans la boîte du propriétaire (même Worker / D1), pour décider quoi construire ; ça ne dépend pas du consentement stats. Le chat de l’avatar envoie tes messages au Worker pour une réponse. Pas de pub tierce.",
         },
         {
           heading: "Pourquoi",
@@ -188,7 +191,7 @@ export const fr = {
         },
         {
           heading: "Annonces personnelles",
-          body: "Tes offres (Mes services), demandes (En demande), idées (Vos idées) et textes de partage restent sur cet appareil. Ce n’est pas un fil social global. Un lien que tu copies toi-même peut montrer une offre à la personne qui l’ouvre. Pour que quelque chose apparaisse chez tout le monde, il faut une approbation GOV + propriétaire, puis une version numérotée (catalogue public).",
+          body: "Tes offres (Mes services), demandes (En demande), idées (Vos idées) et textes de partage restent sur cet appareil. Ce n’est pas un fil social global. Une copie assainie d’une idée envoyée va dans la boîte du propriétaire ; les autres visiteurs ne la voient pas. Un lien que tu copies toi-même peut montrer une offre à la personne qui l’ouvre. Pour que quelque chose apparaisse chez tout le monde, il faut une approbation GOV + propriétaire, puis une version numérotée (catalogue public).",
         },
       ],
     },
@@ -288,7 +291,7 @@ export const fr = {
       sections: [
         {
           heading: "Données des visiteurs",
-          body: "Les idées, le chat, les textes de partage et les notes d’offres sont traités comme du texte brut non fiable. Ils ne deviennent jamais du HTML exécuté, jamais du Git, jamais un fichier téléversé. Le MVP n’a pas d’upload de fichiers, d’images ou de pièces jointes. Les offres et idées personnelles restent sur l’appareil jusqu’à une publication approuvée dans une version numérotée.",
+          body: "Les idées, le chat, les textes de partage et les notes d’offres sont traités comme du texte brut non fiable. Ils ne deviennent jamais du HTML exécuté, jamais du Git, jamais un fichier téléversé. Le MVP n’a pas d’upload de fichiers, d’images ou de pièces jointes. Les offres personnelles restent sur l’appareil. Les idées restent aussi sur l’appareil ; une copie assainie (phrase, ville, date) peut aller dans la boîte propriétaire du Worker, jamais un compte visiteur.",
         },
         {
           heading: "Assainissement",
@@ -450,10 +453,10 @@ export const fr = {
       "{placeName} / {community} — {slogan} Notre proximité et notre esprit d’entraide est le gage de notre succès.",
     versionLabel: "Version",
     deviceLocalNote:
-      "Tes offres, demandes, idées, textes de partage, inscription (prénom, nom, e-mail, téléphone, numéro OPC-XXXX) et coordonnées Interac/PayPal restent sur cet appareil. Rien de personnel n’apparaît chez un autre visiteur tant que GOV + propriétaire n’approuvent pas une publication dans une version numérotée (catalogue public).",
+      "Tes offres, demandes, idées, textes de partage, inscription (prénom, nom, e-mail, téléphone, numéro OPC-XXXX) et coordonnées Interac/PayPal restent sur cet appareil. Une copie assainie d’une idée (phrase, ville, date — pas tes coordonnées) peut aller dans la boîte du propriétaire. Rien de personnel n’apparaît chez un autre visiteur tant que GOV + propriétaire n’approuvent pas une publication dans une version numérotée (catalogue public).",
     releaseNotesTitle: "Notes de version",
     releaseNotesBody:
-      "0.3.2 — Inscription locale sur Mon profil (prénom, nom, e-mail, téléphone, numéro OPC-XXXX). Avatar, profil et idées restent sur cet appareil au rechargement (accueil sans rejouer le message d’accueil). Le catalogue public est toujours vide.",
+      "0.3.3 — Vos idées : mur local plus clair, et copie assainie vers la boîte propriétaire du Worker (POST /ideas). Politzer compile via GET /ideas?secret= ou /proprietaire/idees. Inscription OPC-XXXX toujours locale. Le catalogue public est toujours vide.",
     language: "Langue",
     comingSoon: "Notifications et saison d’affichage arriveront ici.",
     locationConsent: "Position",
@@ -499,6 +502,8 @@ export const fr = {
   },
   notFound: {
     title: "Page introuvable",
+    githubPagesHint:
+      "Si tu vois « There isn’t a GitHub Pages site here », ouvre https://maraudeurx-arch.github.io/xsnow/ — OPC n’est pas à la racine github.io.",
     back: "Retour à Accueil",
   },
   logoAria: "Open Community",
@@ -904,13 +909,21 @@ export const fr = {
     neighborhoodShare: "Quartier",
     neighborhoodPh: "Hull, Aylmer, Plateau…",
     submit: "Envoyer l’idée",
-    thankYou: "Merci — tu fais partie d’ici.",
+    submitHint:
+      "Ton idée reste sur cet appareil. Une copie (phrase, ville, date — pas ton nom, pas ton e-mail, pas ton numéro OPC) part vers la boîte du propriétaire pour décider quoi construire ensuite. Ce n’est pas un compte sur un serveur.",
+    registerHint: "L’inscription locale (numéro OPC) reste sur cet appareil :",
+    registerLink: "S’inscrire",
+    registeredHint: "Numéro local de cet appareil :",
+    thankYou: "Idée bien reçue",
     thankYouBody:
-      "Ton idée est sur le mur de cet appareil. Les autres téléphones ne la voient pas tant que GOV + propriétaire ne l’approuvent pas dans une version numérotée. Tête, Cœur, Mains : c’est comme ça qu’Open Community avance. Partage-la si tu veux, ou ajoute-en une autre.",
+      "Merci. Ton idée est enregistrée sur cet appareil. Les autres téléphones ne la voient pas tant que GOV + propriétaire ne l’approuvent pas dans une version numérotée. Une copie assainie (phrase, ville, date) va dans la boîte du propriétaire.",
     wallTitle: "Mur d’idées (cet appareil)",
     wallHint:
-      "Tes idées restent ici. Elles n’apparaissent pas sur un autre téléphone tant qu’elles ne sont pas dans une version publique approuvée.",
+      "Tes idées restent ici. Elles n’apparaissent pas sur un autre téléphone. Le propriétaire compile les copies reçues à part, pour décider quoi construire.",
     wallEmpty: "Pas encore d’idée ici. La première est souvent la plus utile.",
+    inboxSent: "Copie envoyée à la boîte du propriétaire.",
+    inboxFailed: "Idée enregistrée ici. La copie propriétaire n’a pas pu partir (réseau).",
+    retryInbox: "Renvoyer au propriétaire",
     editIdea: "Modifier",
     share: "Texte à partager",
     shareHint: "Modifiez le texte, puis copiez-le pour un voisin ou un groupe.",
@@ -919,8 +932,24 @@ export const fr = {
     shareCopied: "Texte copié.",
     shareFailed: "Copie impossible. Le texte est affiché : sélectionnez-le.",
     hoursLine: "{hours} h / semaine",
-    newIdea: "Autre idée",
+    newIdea: "Ajouter une autre idée",
     shareHeading: "Idée Open Community",
     catalogBadge: "Catalogue",
+  },
+  ownerIdeas: {
+    title: "Boîte d’idées",
+    lead: "Compilation pour Politzer. Secret requis. Aucune idée n’est inventée.",
+    how: "Les visiteurs envoient depuis Vos idées. Ici tu lis le texte, la ville et la date. Pas de nom, pas d’e-mail, pas de numéro OPC. Tu peux aussi ouvrir le Worker : GET /ideas?secret=… (HTML) ou &format=json. Configure le secret avec wrangler secret put IDEAS_OWNER_SECRET, puis redéploie le Worker. Ne partage pas l’URL.",
+    secretLabel: "Secret propriétaire",
+    secretPh: "Coller IDEAS_OWNER_SECRET",
+    open: "Ouvrir la boîte",
+    loading: "Chargement…",
+    unauthorized: "Secret refusé ou pas encore configuré sur le Worker.",
+    network: "Impossible de joindre la boîte pour le moment.",
+    empty: "Aucune idée reçue pour l’instant. Les visiteurs envoient depuis Vos idées. Rien n’est inventé ici.",
+    count: "{n} idée(s)",
+    compiledTitle: "Par ville",
+    cityUnknown: "Ville non indiquée",
+    exportJson: "Exporter JSON",
   },
 };

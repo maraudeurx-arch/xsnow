@@ -41,19 +41,22 @@ export const en: Messages = {
     offres: "Offers",
   },
   install: {
-    tip: "On iPhone (Safari): Share → Add to Home Screen. The app then opens like an icon.",
+    tip: "On iPhone (Safari): open https://maraudeurx-arch.github.io/xsnow/ then Share → Add to Home Screen.",
     tipAndroid:
-      "On Android (Chrome): menu ⋮ → Install app, or Add to Home screen. The app then opens like an icon.",
+      "On Android (Chrome): open https://maraudeurx-arch.github.io/xsnow/ then menu ⋮ → Install app, or Add to Home screen.",
     dismiss: "Got it",
     profileTitle: "Put OPC on the Home Screen",
     profileLead:
-      "Open Community is a web app, not an App Store app. On iPhone, open the link in Safari and add it to the Home Screen so it opens like an icon.",
+      "Open Community is a web app, not an App Store app. On iPhone, first open https://maraudeurx-arch.github.io/xsnow/ in Safari, then add it to the Home Screen.",
+    siteUrlLabel: "Exact address to open in Safari",
     iphoneHeading: "iPhone (Safari)",
     iphoneSteps: [
-      "Open Open Community in Safari (Apple’s browser — not Chrome).",
+      "Open exactly https://maraudeurx-arch.github.io/xsnow/ in Safari (Apple’s browser — not Chrome).",
       "Tap Share — the square with the arrow pointing up, at the bottom of the screen.",
       "Scroll and choose Add to Home Screen, then Add.",
     ],
+    wrongShortcut:
+      "If the icon opens “There isn’t a GitHub Pages site here”, that is not OPC: the shortcut points to maraudeurx-arch.github.io without /xsnow/. Delete the icon, open the address above in Safari, then add it again.",
   },
   guide: {
     pickAvatar: "Choose your avatar",
@@ -170,7 +173,7 @@ export const en: Messages = {
         },
         {
           heading: "What we collect",
-          body: "On this device (localStorage): language, avatar, listings you write, your consents, and if you register: first name, last name, email, phone and a local OPC-XXXX number — nothing is sent to a profile server. If you allow location: city + coordinates for the city label — no continuous tracking. If you allow stats: anonymous events to a Cloudflare Worker (D1): session, language, city/country if location is also allowed, short monetization-idea snippets (emails and GPS stripped). Avatar chat sends your messages to the Worker for a reply. No third-party ads.",
+          body: "On this device (localStorage): language, avatar, listings you write, your consents, and if you register: first name, last name, email, phone and a local OPC-XXXX number — nothing is sent to a profile server. If you allow location: city + coordinates for the city label — no continuous tracking. If you allow stats: anonymous events to a Cloudflare Worker (D1): session, language, city/country if location is also allowed, short monetization-idea snippets (emails and GPS stripped). If you send an idea in Your ideas: a sanitized copy (sentence, city, date — no name, email, phone, or OPC number) goes to the owner inbox (same Worker / D1) so they can decide what to build; this does not depend on stats consent. Avatar chat sends your messages to the Worker for a reply. No third-party ads.",
         },
         {
           heading: "Why",
@@ -190,7 +193,7 @@ export const en: Messages = {
         },
         {
           heading: "Personal listings",
-          body: "Your offers (My services), requests (In demand), ideas (Your ideas) and share texts stay on this device. This is not a global social feed. A link you copy yourself can show an offer to the person who opens it. For something to appear for everyone, GOV + owner must approve it, then it ships in a numbered release (public catalog).",
+          body: "Your offers (My services), requests (In demand), ideas (Your ideas) and share texts stay on this device. This is not a global social feed. A sanitized copy of a submitted idea goes to the owner inbox; other visitors do not see it. A link you copy yourself can show an offer to the person who opens it. For something to appear for everyone, GOV + owner must approve it, then it ships in a numbered release (public catalog).",
         },
       ],
     },
@@ -289,7 +292,7 @@ export const en: Messages = {
       sections: [
         {
           heading: "Visitor data",
-          body: "Ideas, chat, share text, and offer notes are treated as untrusted plain text. They never become executed HTML, never become Git, and never become an uploaded file. This MVP has no file, image, or attachment uploads. Personal offers and ideas stay on the device until an approved numbered release.",
+          body: "Ideas, chat, share text, and offer notes are treated as untrusted plain text. They never become executed HTML, never become Git, and never become an uploaded file. This MVP has no file, image, or attachment uploads. Personal offers stay on the device. Ideas stay on the device too; a sanitized copy (sentence, city, date) may go to the Worker owner inbox, never a visitor account.",
         },
         {
           heading: "Sanitization",
@@ -451,10 +454,10 @@ export const en: Messages = {
       "{placeName} / {community} — {slogan} Our proximity and spirit of mutual aid is the guarantee of our success.",
     versionLabel: "Version",
     deviceLocalNote:
-      "Your offers, requests, ideas, share texts, registration (first name, last name, email, phone, OPC-XXXX number), and Interac/PayPal details stay on this device. Nothing personal appears for another visitor until GOV + owner approve a numbered public release (public catalog).",
+      "Your offers, requests, ideas, share texts, registration (first name, last name, email, phone, OPC-XXXX number), and Interac/PayPal details stay on this device. A sanitized copy of an idea (sentence, city, date — not your contact details) may go to the owner inbox. Nothing personal appears for another visitor until GOV + owner approve a numbered public release (public catalog).",
     releaseNotesTitle: "Release notes",
     releaseNotesBody:
-      "0.3.2 — Local registration on My profile (first name, last name, email, phone, OPC-XXXX number). Avatar, profile, and ideas stay on this device across reloads (home does not replay the welcome speech). Public catalog is still empty.",
+      "0.3.3 — Your ideas: clearer local wall, and a sanitized copy to the owner Worker inbox (POST /ideas). Politzer compiles via GET /ideas?secret= or /proprietaire/idees. OPC-XXXX registration stays local. Public catalog is still empty.",
     language: "Language",
     comingSoon: "Notifications and display season will land here.",
     locationConsent: "Location",
@@ -500,6 +503,8 @@ export const en: Messages = {
   },
   notFound: {
     title: "Page not found",
+    githubPagesHint:
+      "If you see “There isn’t a GitHub Pages site here”, open https://maraudeurx-arch.github.io/xsnow/ — OPC is not at the github.io root.",
     back: "Back to Home",
   },
   logoAria: "Open Community",
@@ -913,13 +918,21 @@ export const en: Messages = {
     neighborhoodShare: "Neighbourhood",
     neighborhoodPh: "Hull, Aylmer, Plateau…",
     submit: "Send the idea",
-    thankYou: "Thank you — you belong here.",
+    submitHint:
+      "Your idea stays on this device. A copy (sentence, city, date — not your name, email, or OPC number) goes to the owner inbox so they can decide what to build next. This is not a server account.",
+    registerHint: "Local sign-up (OPC number) stays on this device:",
+    registerLink: "Sign up",
+    registeredHint: "Local number on this device:",
+    thankYou: "Idea received",
     thankYouBody:
-      "Your idea is on this device’s wall. Other phones do not see it until GOV + owner approve it in a numbered release. Head, Heart, Hands: that’s how Open Community moves. Share it if you want, or add another.",
+      "Thank you. Your idea is saved on this device. Other phones do not see it until GOV + owner approve it in a numbered release. A sanitized copy (sentence, city, date) goes to the owner inbox.",
     wallTitle: "Idea wall (this device)",
     wallHint:
-      "Your ideas stay here. They do not appear on another phone until they are in an approved public release.",
+      "Your ideas stay here. They do not appear on another phone. The owner compiles received copies separately, to decide what to build.",
     wallEmpty: "No idea here yet. The first one is often the most useful.",
+    inboxSent: "Copy sent to the owner inbox.",
+    inboxFailed: "Saved here. The owner copy could not be sent (network).",
+    retryInbox: "Resend to the owner",
     editIdea: "Edit",
     share: "Text to share",
     shareHint: "Edit the text, then copy it for a neighbour or a group.",
@@ -928,8 +941,24 @@ export const en: Messages = {
     shareCopied: "Copied.",
     shareFailed: "Couldn’t copy. The text is below — select it.",
     hoursLine: "{hours} h / week",
-    newIdea: "Another idea",
+    newIdea: "Add another idea",
     shareHeading: "Open Community idea",
     catalogBadge: "Catalog",
+  },
+  ownerIdeas: {
+    title: "Idea inbox",
+    lead: "Compilation for Politzer. Secret required. No idea is invented.",
+    how: "Visitors send from Your ideas. Here you read the text, city, and date. No name, email, or OPC number. You can also open the Worker: GET /ideas?secret=… (HTML) or &format=json. Set the secret with wrangler secret put IDEAS_OWNER_SECRET, then redeploy the Worker. Do not share the URL.",
+    secretLabel: "Owner secret",
+    secretPh: "Paste IDEAS_OWNER_SECRET",
+    open: "Open the inbox",
+    loading: "Loading…",
+    unauthorized: "Secret rejected or not yet set on the Worker.",
+    network: "Could not reach the inbox right now.",
+    empty: "No idea received yet. Visitors send from Your ideas. Nothing is invented here.",
+    count: "{n} idea(s)",
+    compiledTitle: "By city",
+    cityUnknown: "City not given",
+    exportJson: "Export JSON",
   },
 };

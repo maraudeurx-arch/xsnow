@@ -131,6 +131,7 @@ describe("first-visit onboarding order", () => {
       assert.equal(isPublicInfoPath(item.href), true, item.href);
     }
     assert.equal(isPublicInfoPath("/mon-profil/a-propos"), true);
+    assert.equal(isPublicInfoPath("/proprietaire/idees"), true);
     assert.equal(isPublicInfoPath("/"), false);
     assert.equal(
       canShowConsentSheet({ hasAvatar: true, welcomeGateOpen: true }),

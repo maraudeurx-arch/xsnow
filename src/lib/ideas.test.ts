@@ -36,6 +36,23 @@ describe("idea form", () => {
     );
   });
 
+  it("treats a valid local submit as the success path (receipt, then another idea)", () => {
+    const form = {
+      text: "Co-voiturage du matin",
+      involvement: [] as [],
+      hoursPerWeek: "",
+      neighborhood: "",
+    };
+    assert.equal(ideaFormIssues(form).length, 0);
+    const idea = ideaFromForm(form);
+    assert.equal(idea.text, "Co-voiturage du matin");
+    assert.equal(fr.ideas.thankYou, "Idée bien reçue");
+    assert.equal(fr.ideas.newIdea, "Ajouter une autre idée");
+    assert.match(fr.ideas.thankYouBody, /cet appareil/);
+    assert.match(en.ideas.thankYouBody, /this device/);
+    assert.match(es.ideas.thankYouBody, /este aparato/);
+  });
+
   it("keeps involvement order tete → coeur → mains", () => {
     assert.deepEqual(parseInvolvement(["mains", "tete", "mains", "nope"]), ["tete", "mains"]);
     assert.deepEqual(toggleInvolvement(["tete"], "coeur"), ["tete", "coeur"]);
@@ -58,9 +75,11 @@ describe("idea form", () => {
       id: "idea-text",
       text: "Une idée sans tag",
       involvement: [],
+      inbox: "sent",
     });
     assert.equal(textOnly?.text, "Une idée sans tag");
     assert.deepEqual(textOnly?.involvement, []);
+    assert.equal(textOnly?.inbox, "sent");
     assert.equal(parseStoredIdea({ involvement: ["tete"] }), null);
   });
 

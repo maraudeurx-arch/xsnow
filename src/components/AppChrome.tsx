@@ -7,10 +7,12 @@ import { PlaceWordmark, PlaceDocumentTitle } from "@/components/PlaceWordmark";
 import { SeasonalBackdrop, SeasonScene } from "@/components/SeasonalBackdrop";
 import { SiteFooter } from "@/components/SiteFooter";
 import { BrandCopy } from "@/components/BrandCopy";
+import { PagesScopeRedirect } from "@/components/PagesScopeRedirect";
 
 export function AppChrome({ children }: { children: ReactNode }) {
   return (
     <div className="safe-frame relative flex flex-col overflow-hidden bg-sky-400">
+      <PagesScopeRedirect />
       <PlaceDocumentTitle />
       <Suspense fallback={<SeasonScene season="autumn" />}>
         <SeasonalBackdrop />

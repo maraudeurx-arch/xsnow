@@ -14,6 +14,7 @@ Covers pure lib helpers:
 - Invite query parsing
 - Versioned public catalog / publish gate
 - Client-side stats event shaping
+- Owner idea inbox payload sanitization (`src/lib/idea-inbox.ts`, `workers/xsnow-chat/src/ideas.ts`)
 - Neighbourhood news fetch timeouts (Worker + JSON RSS fallback) and Accueil partner-slot config (`src/lib/neighborhood-news.ts`, `src/lib/partner-ads.ts`)
 
 ```bash
@@ -62,7 +63,8 @@ Critical paths:
 - Fresh storage: Mes services / En demande empty (no bundled Gatineau car offer)
 - Fresh storage: `/services/{kind}` boards empty (no demo seed titles)
 - Regional ambiance: autumn before geo; Caribbean for `?city=Port-au-Prince`; CA stays seasonal
-- Vos idées: submit stays in `localStorage`; clearing it is not filled back from the empty catalog
+- Vos idées: submit stays in `localStorage` (device wall); a sanitized copy is POSTed to `/ideas` (e2e stubs the Worker so CI does not pollute production)
+- Owner inbox page: empty state has no invented ideas; secret required
 - Onboarding: avatar picker before geo; About readable without the consent sheet
 - Transparency: footer trust pages, shipped `APP_VERSION`, public OPC email / GitHub
 - Connect is visible; the suite does **not** open WalletConnect (no project id required)
