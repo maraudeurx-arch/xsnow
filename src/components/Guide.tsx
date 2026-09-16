@@ -142,7 +142,7 @@ export function Guide() {
           </div>
         </div>
       ) : chosen ? (
-        <div className="home-stage flex min-h-0 w-full flex-1 flex-col justify-start overflow-hidden rounded-2xl px-[var(--home-card-pad-x)] py-[var(--home-card-pad-y)]">
+        <div className="home-stage flex h-full min-h-0 w-full flex-1 grow flex-col justify-start overflow-hidden rounded-2xl px-[var(--home-card-pad-x)] py-[var(--home-card-pad-y)]">
           <div className="flex shrink-0 flex-col gap-[var(--home-stack-gap)]">
             <div className="flex items-center gap-2">
               <AvatarDisc avatar={chosen} className={chosenSize} priority />

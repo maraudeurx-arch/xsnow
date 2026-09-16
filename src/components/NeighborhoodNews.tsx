@@ -128,7 +128,7 @@ export function NeighborhoodNews({ onNewsChange }: Props) {
       data-neighborhood-news
       data-news-status={status}
       aria-label={copy.title}
-      className="mt-[var(--home-stack-gap)] flex min-h-[17.5rem] flex-1 flex-col gap-1 overflow-hidden rounded-xl border border-gold/30 bg-[rgba(8,8,12,0.88)] px-2 py-1 sm:min-h-[20rem]"
+      className="mt-[var(--home-stack-gap)] flex min-h-[20rem] flex-1 grow flex-col gap-1 overflow-hidden rounded-xl border border-gold/30 bg-[rgba(8,8,12,0.88)] px-2 py-1 sm:min-h-[22rem]"
     >
       <div className="flex shrink-0 items-baseline justify-between gap-2 px-0.5">
         <h2 className="text-[10px] font-extrabold tracking-wide text-gold">{copy.title}</h2>
@@ -171,49 +171,47 @@ export function NeighborhoodNews({ onNewsChange }: Props) {
         </div>
       ) : null}
 
-      <div data-news-body className="flex min-h-0 flex-1 flex-col gap-1.5 overflow-hidden">
-        <div
-          data-news-scroll
-          className="flex min-h-0 flex-1 flex-col gap-1.5 overflow-y-auto"
-        >
-          {status === "ready" && items.length > 0 ? (
-            <ul data-news-list className="flex min-h-[9rem] flex-1 flex-col gap-1">
-              {items.map((item, index) => (
-                <li key={item.id}>
-                  <a
-                    href={item.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="block rounded-lg border border-white/10 bg-white/[0.04] px-2 py-1.5 hover:border-gold/40 hover:bg-white/[0.07]"
-                  >
-                    <span className="block text-[11px] font-semibold leading-snug text-snow">
-                      {item.title}
+      <div data-news-body className="flex min-h-0 flex-1 grow flex-col gap-1.5 overflow-hidden">
+        {status === "ready" && items.length > 0 ? (
+          <ul
+            data-news-list
+            className="flex min-h-[12rem] flex-1 grow flex-col gap-1 overflow-y-auto"
+          >
+            {items.map((item, index) => (
+              <li key={item.id}>
+                <a
+                  href={item.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block rounded-lg border border-white/10 bg-white/[0.04] px-2 py-1.5 hover:border-gold/40 hover:bg-white/[0.07]"
+                >
+                  <span className="block text-[11px] font-semibold leading-snug text-snow">
+                    {item.title}
+                  </span>
+                  <span className="mt-0.5 flex flex-wrap items-center gap-x-1.5 text-[8px] font-bold uppercase tracking-wide text-ice/65">
+                    <span>
+                      {item.category === "digital_economy"
+                        ? copy.badgeDigital
+                        : copy.badgeLocal}
                     </span>
-                    <span className="mt-0.5 flex flex-wrap items-center gap-x-1.5 text-[8px] font-bold uppercase tracking-wide text-ice/65">
-                      <span>
-                        {item.category === "digital_economy"
-                          ? copy.badgeDigital
-                          : copy.badgeLocal}
-                      </span>
-                      <span aria-hidden>·</span>
-                      <span>{item.source}</span>
-                    </span>
-                  </a>
-                  {index === 0 && showMid ? (
-                    <div className="mt-1.5">
-                      <PartnerAdSlot slot="news-mid" />
-                    </div>
-                  ) : null}
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <>
-              <div data-news-spacer className="min-h-[9rem] flex-1" aria-hidden />
-              {showMid ? <PartnerAdSlot slot="news-mid" /> : null}
-            </>
-          )}
-        </div>
+                    <span aria-hidden>·</span>
+                    <span>{item.source}</span>
+                  </span>
+                </a>
+                {index === 0 && showMid ? (
+                  <div className="mt-1.5">
+                    <PartnerAdSlot slot="news-mid" />
+                  </div>
+                ) : null}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <>
+            <div data-news-spacer className="min-h-[12rem] flex-1 grow" aria-hidden />
+            {showMid ? <PartnerAdSlot slot="news-mid" /> : null}
+          </>
+        )}
 
         {showBottom ? <PartnerAdSlot slot="news-bottom" /> : null}
       </div>
