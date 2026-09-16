@@ -75,7 +75,38 @@ test.describe("Accueil neighbourhood news + partner slots", () => {
     expect(gap).toBeGreaterThanOrEqual(0);
     expect(gap).toBeLessThan(4);
     expect(newsBox!.height).toBeGreaterThan(chatBox!.height);
-    expect(newsBox!.height).toBeGreaterThan(300);
+    expect(newsBox!.height).toBeGreaterThan(380);
+
+    const newsList = page.locator("[data-news-list], [data-news-spacer]");
+    const listBox = await newsList.first().boundingBox();
+    expect(listBox).toBeTruthy();
+    expect(listBox!.height).toBeGreaterThan(170);
+
+    const newsChatGap = chatBox!.y - (newsBox!.y + newsBox!.height);
+    expect(newsChatGap).toBeGreaterThanOrEqual(0);
+    expect(newsChatGap).toBeLessThan(12);
+
+    const bottomSlot = page.locator('[data-partner-slot="news-bottom"]');
+    const bottomBox = await bottomSlot.boundingBox();
+    expect(bottomBox).toBeTruthy();
+    expect(bottomBox!.y + bottomBox!.height).toBeLessThanOrEqual(newsBox!.y + newsBox!.height + 1);
+
+    const headlineLinks = page.locator("[data-neighborhood-news] [data-news-list] a[href^='http']");
+    const headlineCount = await headlineLinks.count();
+    expect(headlineCount).toBeGreaterThan(0);
+    for (let i = 0; i < headlineCount; i += 1) {
+      const hb = await headlineLinks.nth(i).boundingBox();
+      if (!hb || !bottomBox) continue;
+      const overlaps =
+        hb.y < bottomBox.y + bottomBox.height && hb.y + hb.height > bottomBox.y;
+      expect(overlaps, `headline ${i} overlaps bottom partner slot`).toBeFalsy();
+    }
+
+    await expect(page.getByRole("link", { name: "Gagner maintenant" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Vos idées" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Partager" })).toBeVisible();
+    await expect(page.locator("#avatar-chat")).toBeVisible();
+    expect(chatBox!.y + chatBox!.height).toBeLessThanOrEqual(footerBox!.y + 1);
 
     const privacy = page.getByRole("contentinfo").getByRole("link", { name: "Vie privée" });
     await expect(privacy).toBeVisible();
