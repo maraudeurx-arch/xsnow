@@ -54,9 +54,11 @@ test.describe("Accueil neighbourhood news + partner slots", () => {
     expect(fibreBox?.height ?? 0).toBeGreaterThan(12);
     await expect(page.locator("[data-partner-slot]")).toHaveCount(2);
     await expect(page.getByText("Espace partenaire").first()).toBeVisible();
-    await expect(page.getByText("Commandité").first()).toBeVisible();
-    await expect(page.getByText(/ferme à clics/).first()).toBeVisible();
+    await expect(page.getByText("Publicité").first()).toBeVisible();
+    await expect(page.getByText(/ferme à clics|exemple|soft-launch|pas une publicité vendue|pas de revenus pubs/i).first()).toBeVisible();
     await expect(page.getByText(/Grok et Cursor/).first()).toBeVisible();
+    await expect(page.locator("[data-partner-creative]").first()).toBeVisible();
+    await expect(page.locator("[data-partner-link]").first()).toBeVisible();
 
     const card = page.locator("#home-guide .home-stage");
     const footer = page.locator("footer");
@@ -71,8 +73,14 @@ test.describe("Accueil neighbourhood news + partner slots", () => {
 
     const gap = footerBox!.y - (cardBox!.y + cardBox!.height);
     expect(gap).toBeGreaterThanOrEqual(0);
-    expect(gap).toBeLessThan(56);
+    expect(gap).toBeLessThan(20);
     expect(newsBox!.height).toBeGreaterThan(chatBox!.height);
+
+    const privacy = page.getByRole("contentinfo").getByRole("link", { name: "Vie privée" });
+    await expect(privacy).toBeVisible();
+    const privacyBox = await privacy.boundingBox();
+    expect(privacyBox).toBeTruthy();
+    expect(privacyBox!.y).toBeGreaterThan(cardBox!.y + cardBox!.height - 1);
   });
 
   test("Worker 405 still shows real headlines via the JSON RSS fallback", async ({ page }) => {

@@ -94,10 +94,10 @@ export const fr = {
     badgeLocal: "Local",
     retry: "Réessayer",
     partnerSlot: "Espace partenaire",
-    partnerSponsored: "Commandité",
+    partnerSponsored: "Publicité",
     partnerPlaceholder:
       "Partenaire local à venir. Entraide réelle — pas de fausse manchette, pas de ferme à clics.",
-    partnerFunding: "Ces espaces aident à financer Grok et Cursor pour OPC.",
+    partnerFunding: "Ces espaces pourront aider à financer Grok et Cursor pour OPC — pas de revenus pubs en direct pour l’instant.",
     promptNoHeadlines:
       "Rôle nouvelles : quand la ville du visiteur est connue, la section « Nouvelles du Quartier » (sous Partager, au-dessus de ce chat) affiche de vraies manchettes locales. Tu n’as pas de manchette vérifiée listée maintenant — ne fabrique jamais de titre. Si on te demande les news, dis-le honnêtement et oriente vers cette section ou Vos idées / Gagner maintenant.",
     promptWithHeadlines:

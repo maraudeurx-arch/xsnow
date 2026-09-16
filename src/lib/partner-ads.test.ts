@@ -5,8 +5,14 @@ import {
   adsEnabled,
   adProvider,
   adsenseSlotId,
+  creativeForSlot,
+  listPartnerCreatives,
+  nextRotationIndex,
   parseAdProvider,
   parseAdsEnabled,
+  parseRotationIndex,
+  partnerCreativeImageUrl,
+  PLACEHOLDER_PARTNERS,
   usesAdsense,
   visiblePartnerSlots,
 } from "./partner-ads.ts";
@@ -49,10 +55,36 @@ describe("partner ad config", () => {
     assert.equal(adsenseSlotId("news-mid", { mid: "aaa", bottom: "bbb" }), "aaa");
   });
 
-  it("placeholder copy is sponsored inventory, not a fake headline", () => {
+  it("placeholder copy is Publicité inventory, not a fake headline", () => {
     assert.match(fr.neighborhoodNews.partnerSlot, /Espace partenaire/);
-    assert.match(fr.neighborhoodNews.partnerSponsored, /Commandité/);
+    assert.match(fr.neighborhoodNews.partnerSponsored, /Publicité/);
     assert.doesNotMatch(fr.neighborhoodNews.partnerPlaceholder, /Chargement des nouvelles/);
     assert.match(fr.neighborhoodNews.partnerPlaceholder, /fausse manchette/);
+    assert.match(fr.neighborhoodNews.partnerFunding, /pas de revenus pubs en direct/);
+  });
+
+  it("exposes rotating soft-launch creatives with name + image + url", () => {
+    const list = listPartnerCreatives();
+    assert.equal(list.length, PLACEHOLDER_PARTNERS.length);
+    assert.ok(list.length >= 2);
+    for (const creative of list) {
+      assert.ok(creative.id);
+      assert.ok(creative.name.includes("exemple") || /exemple/i.test(creative.name));
+      assert.ok(creative.href);
+      assert.ok(creative.tagline);
+      assert.ok(partnerCreativeImageUrl(creative)?.includes("/partners/"));
+      assert.doesNotMatch(creative.name, /Chargement des nouvelles/);
+    }
+  });
+
+  it("rotates creatives per slot from a shared cursor", () => {
+    assert.equal(parseRotationIndex("2", 3), 2);
+    assert.equal(parseRotationIndex("9", 3), 0);
+    assert.equal(parseRotationIndex("nope", 3), 0);
+    assert.equal(nextRotationIndex(2, 3), 0);
+    const mid0 = creativeForSlot("news-mid", 0);
+    const bottom0 = creativeForSlot("news-bottom", 0);
+    assert.notEqual(mid0.id, bottom0.id);
+    assert.equal(creativeForSlot("news-mid", 1).id, bottom0.id);
   });
 });

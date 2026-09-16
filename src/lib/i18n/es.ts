@@ -96,10 +96,10 @@ export const es: Messages = {
     badgeLocal: "Local",
     retry: "Reintentar",
     partnerSlot: "Espacio para socios",
-    partnerSponsored: "Patrocinado",
+    partnerSponsored: "Publicidad",
     partnerPlaceholder:
       "Socio local pronto. Ayuda mutua real — sin titulares falsos ni granjas de clics.",
-    partnerFunding: "Estos espacios ayudan a financiar Grok y Cursor para OPC.",
+    partnerFunding: "Estos espacios podrán ayudar a financiar Grok y Cursor para OPC — sin ingresos publicitarios en directo por ahora.",
     promptNoHeadlines:
       "Rol noticias: cuando se conoce la ciudad del visitante, la sección « Noticias del Barrio » (bajo Compartir, encima de este chat) muestra titulares locales reales. Ahora no tienes ningún titular verificado listado — nunca inventes un título. Si te piden noticias, dilo con honestidad y orienta a esa sección o a Tus ideas / Ganar ahora.",
     promptWithHeadlines:

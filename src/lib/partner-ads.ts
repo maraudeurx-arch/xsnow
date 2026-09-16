@@ -1,15 +1,70 @@
 /**
  * Accueil partner inventory — labeled sponsored slots, never fake news.
  *
- * Placeholders by default. A real network (AdSense, Mediavine, Canadian
- * direct-sold, local sponsors) plugs in via env without mixing ads into
- * headline titles. No click-farm chrome, no invented stories.
+ * Soft-launch: rotating placeholder creatives (partner name + image + url).
+ * A real network (AdSense, Mediavine, Canadian direct-sold, local sponsors)
+ * plugs in via env without mixing ads into headline titles. No click-farm
+ * chrome, no invented stories, no claim of live ad revenue.
  */
+
+import { durableGet, durableSet } from "./durable-storage.ts";
+import { assetUrl } from "./paths.ts";
 
 export type AdProvider = "placeholder" | "adsense" | "none";
 export type PartnerSlotId = "news-mid" | "news-bottom";
 
+export type PartnerCreative = {
+  id: string;
+  /** Display name shown next to the Publicité label. */
+  name: string;
+  /** Destination when the creative is tapped (in-app path or https). */
+  href: string;
+  /** Optional creative art (served under basePath via assetUrl). */
+  imagePath?: string;
+  /** Short soft-launch blurb — not a news headline. */
+  tagline: string;
+};
+
 export const NEWS_PARTNER_SLOTS: readonly PartnerSlotId[] = ["news-mid", "news-bottom"];
+
+/** How often placeholder creatives advance (ms). */
+export const PARTNER_ROTATION_MS = 9_000;
+
+/** localStorage key for the shared rotation cursor (safe / durable). */
+export const PARTNER_ROTATION_KEY = "xsnow.partnerAdRotation";
+
+/**
+ * Soft-launch partner creatives. Replace name / imagePath / href when real
+ * deals land — keep ids stable so rotation indexes stay sensible.
+ */
+export const PLACEHOLDER_PARTNERS: readonly PartnerCreative[] = [
+  {
+    id: "placeholder-coop",
+    name: "Coop du quartier (exemple)",
+    href: "/monetise",
+    imagePath: "/partners/coop.svg",
+    tagline: "Emplacement réservé — partenaire réel à venir.",
+  },
+  {
+    id: "placeholder-atelier",
+    name: "Atelier voisin (exemple)",
+    href: "/monetise",
+    imagePath: "/partners/atelier.svg",
+    tagline: "Exemple soft-launch — pas une publicité vendue.",
+  },
+  {
+    id: "placeholder-marche",
+    name: "Marché local (exemple)",
+    href: "/monetise",
+    imagePath: "/partners/marche.svg",
+    tagline: "Inventaire démonstration — revenus pubs pas encore en direct.",
+  },
+];
+
+const SLOT_OFFSET: Record<PartnerSlotId, number> = {
+  "news-mid": 0,
+  "news-bottom": 1,
+};
 
 export function parseAdsEnabled(raw: string | undefined): boolean {
   const value = (raw || "").trim().toLowerCase();
@@ -91,4 +146,54 @@ export function visiblePartnerSlots(
 ): PartnerSlotId[] {
   if (!adsEnabled(env)) return [];
   return [...NEWS_PARTNER_SLOTS];
+}
+
+export function listPartnerCreatives(
+  creatives: readonly PartnerCreative[] = PLACEHOLDER_PARTNERS,
+): readonly PartnerCreative[] {
+  return creatives.length ? creatives : PLACEHOLDER_PARTNERS;
+}
+
+export function partnerCreativeImageUrl(creative: PartnerCreative): string | null {
+  if (!creative.imagePath) return null;
+  return assetUrl(creative.imagePath);
+}
+
+/** Normalize a stored rotation cursor. */
+export function parseRotationIndex(raw: string | null | undefined, length: number): number {
+  if (!length) return 0;
+  if (raw == null || raw === "") return 0;
+  const parsed = Number.parseInt(raw, 10);
+  if (!Number.isFinite(parsed) || parsed < 0) return 0;
+  return parsed % length;
+}
+
+export function readRotationIndex(
+  length: number = PLACEHOLDER_PARTNERS.length,
+  store?: Storage,
+): number {
+  return parseRotationIndex(durableGet(PARTNER_ROTATION_KEY, store), length);
+}
+
+export function writeRotationIndex(index: number, length: number = PLACEHOLDER_PARTNERS.length) {
+  if (!length) return;
+  const normalized = ((index % length) + length) % length;
+  durableSet(PARTNER_ROTATION_KEY, String(normalized));
+}
+
+export function nextRotationIndex(current: number, length: number): number {
+  if (!length) return 0;
+  return (current + 1) % length;
+}
+
+/** Pick the creative for a slot given a shared rotation cursor. */
+export function creativeForSlot(
+  slot: PartnerSlotId,
+  rotationIndex: number,
+  creatives: readonly PartnerCreative[] = PLACEHOLDER_PARTNERS,
+): PartnerCreative {
+  const list = listPartnerCreatives(creatives);
+  const offset = SLOT_OFFSET[slot] ?? 0;
+  const index = ((rotationIndex + offset) % list.length + list.length) % list.length;
+  return list[index]!;
 }
