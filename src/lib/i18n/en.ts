@@ -919,19 +919,19 @@ export const en: Messages = {
     neighborhoodPh: "Hull, Aylmer, Plateau…",
     submit: "Send the idea",
     submitHint:
-      "Your idea stays on this device. A copy (sentence, city, date — not your name, email, or OPC number) goes to the owner inbox so they can decide what to build next. This is not a server account.",
+      "Your idea stays on this device. Send also tries an email (sentence, city, date, OPC number if you signed up — not your phone) to opencommunity.opc@gmail.com, so Politzer can decide what to build. Offline: the idea stays here.",
     registerHint: "Local sign-up (OPC number) stays on this device:",
     registerLink: "Sign up",
     registeredHint: "Local number on this device:",
     thankYou: "Idea received",
     thankYouBody:
-      "Thank you. Your idea is saved on this device. Other phones do not see it until GOV + owner approve it in a numbered release. A sanitized copy (sentence, city, date) goes to the owner inbox.",
+      "Thank you. Your idea is saved on this device. A sanitized email goes to opencommunity.opc@gmail.com. Other phones do not see it until GOV + owner approve it in a numbered release.",
     wallTitle: "Idea wall (this device)",
     wallHint:
-      "Your ideas stay here. They do not appear on another phone. The owner compiles received copies separately, to decide what to build.",
+      "Your ideas stay here. They do not appear on another phone. Politzer receives them by email to decide what to build.",
     wallEmpty: "No idea here yet. The first one is often the most useful.",
-    inboxSent: "Copy sent to the owner inbox.",
-    inboxFailed: "Saved here. The owner copy could not be sent (network).",
+    inboxSent: "Email sent to opencommunity.opc@gmail.com.",
+    inboxFailed: "Saved here. The owner email could not be sent (network).",
     retryInbox: "Resend to the owner",
     editIdea: "Edit",
     share: "Text to share",
@@ -948,7 +948,7 @@ export const en: Messages = {
   ownerIdeas: {
     title: "Idea inbox",
     lead: "Compilation for Politzer. Secret required. No idea is invented.",
-    how: "Visitors send from Your ideas. Here you read the text, city, and date. No name, email, or OPC number. You can also open the Worker: GET /ideas?secret=… (HTML) or &format=json. Set the secret with wrangler secret put IDEAS_OWNER_SECRET, then redeploy the Worker. Do not share the URL.",
+    how: "The real inbox is email to opencommunity.opc@gmail.com (Resend, secret RESEND_API_KEY). This page also compiles GET /ideas?secret=… if IDEAS_OWNER_SECRET is set. No idea is invented.",
     secretLabel: "Owner secret",
     secretPh: "Paste IDEAS_OWNER_SECRET",
     open: "Open the inbox",

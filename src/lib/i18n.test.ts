@@ -172,7 +172,8 @@ describe("vos idees copy", () => {
     assert.equal(fr.ideas.submit, "Envoyer l’idée");
     assert.equal(en.ideas.submit, "Send the idea");
     assert.equal(es.ideas.submit, "Enviar la idea");
-    assert.match(fr.ideas.submitHint, /boîte du propriétaire/);
+    assert.match(fr.ideas.submitHint, /opencommunity\.opc@gmail\.com/);
+    assert.match(fr.ideas.thankYouBody, /opencommunity\.opc@gmail\.com/);
     assert.equal(fr.ownerIdeas.empty.includes("invent"), true);
     assert.equal(fr.ideas.thankYou, "Idée bien reçue");
     assert.equal(en.ideas.thankYou, "Idea received");

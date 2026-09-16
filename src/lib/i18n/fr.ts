@@ -910,19 +910,19 @@ export const fr = {
     neighborhoodPh: "Hull, Aylmer, Plateau…",
     submit: "Envoyer l’idée",
     submitHint:
-      "Ton idée reste sur cet appareil. Une copie (phrase, ville, date — pas ton nom, pas ton e-mail, pas ton numéro OPC) part vers la boîte du propriétaire pour décider quoi construire ensuite. Ce n’est pas un compte sur un serveur.",
+      "Ton idée reste sur cet appareil. Envoyer tente aussi un e-mail (phrase, ville, date, numéro OPC si tu es inscrit — pas ton téléphone) vers opencommunity.opc@gmail.com, pour que Politzer décide quoi construire. Hors ligne : l’idée reste ici.",
     registerHint: "L’inscription locale (numéro OPC) reste sur cet appareil :",
     registerLink: "S’inscrire",
     registeredHint: "Numéro local de cet appareil :",
     thankYou: "Idée bien reçue",
     thankYouBody:
-      "Merci. Ton idée est enregistrée sur cet appareil. Les autres téléphones ne la voient pas tant que GOV + propriétaire ne l’approuvent pas dans une version numérotée. Une copie assainie (phrase, ville, date) va dans la boîte du propriétaire.",
+      "Merci. Ton idée est enregistrée sur cet appareil. Un e-mail assaini part vers opencommunity.opc@gmail.com. Les autres téléphones ne la voient pas tant que GOV + propriétaire ne l’approuvent pas dans une version numérotée.",
     wallTitle: "Mur d’idées (cet appareil)",
     wallHint:
-      "Tes idées restent ici. Elles n’apparaissent pas sur un autre téléphone. Le propriétaire compile les copies reçues à part, pour décider quoi construire.",
+      "Tes idées restent ici. Elles n’apparaissent pas sur un autre téléphone. Politzer les reçoit par e-mail pour décider quoi construire.",
     wallEmpty: "Pas encore d’idée ici. La première est souvent la plus utile.",
-    inboxSent: "Copie envoyée à la boîte du propriétaire.",
-    inboxFailed: "Idée enregistrée ici. La copie propriétaire n’a pas pu partir (réseau).",
+    inboxSent: "E-mail envoyé à opencommunity.opc@gmail.com.",
+    inboxFailed: "Idée enregistrée ici. L’e-mail au propriétaire n’a pas pu partir (réseau).",
     retryInbox: "Renvoyer au propriétaire",
     editIdea: "Modifier",
     share: "Texte à partager",
@@ -939,7 +939,7 @@ export const fr = {
   ownerIdeas: {
     title: "Boîte d’idées",
     lead: "Compilation pour Politzer. Secret requis. Aucune idée n’est inventée.",
-    how: "Les visiteurs envoient depuis Vos idées. Ici tu lis le texte, la ville et la date. Pas de nom, pas d’e-mail, pas de numéro OPC. Tu peux aussi ouvrir le Worker : GET /ideas?secret=… (HTML) ou &format=json. Configure le secret avec wrangler secret put IDEAS_OWNER_SECRET, puis redéploie le Worker. Ne partage pas l’URL.",
+    how: "La vraie boîte, c’est l’e-mail opencommunity.opc@gmail.com (Resend, secret RESEND_API_KEY). Cette page compile aussi GET /ideas?secret=… si IDEAS_OWNER_SECRET est configuré. Aucune idée n’est inventée.",
     secretLabel: "Secret propriétaire",
     secretPh: "Coller IDEAS_OWNER_SECRET",
     open: "Ouvrir la boîte",

@@ -921,19 +921,19 @@ export const es: Messages = {
     neighborhoodPh: "Hull, Aylmer, Plateau…",
     submit: "Enviar la idea",
     submitHint:
-      "Tu idea se queda en este aparato. Una copia (frase, ciudad, fecha — no tu nombre, correo ni número OPC) va a la bandeja del propietario para decidir qué construir. No es una cuenta en un servidor.",
+      "Tu idea se queda en este aparato. Enviar también intenta un correo (frase, ciudad, fecha, número OPC si te inscribiste — no tu teléfono) a opencommunity.opc@gmail.com, para que Politzer decida qué construir. Sin red: la idea se queda aquí.",
     registerHint: "La inscripción local (número OPC) se queda en este aparato:",
     registerLink: "Inscribirse",
     registeredHint: "Número local de este aparato:",
     thankYou: "Idea bien recibida",
     thankYouBody:
-      "Gracias. Tu idea está guardada en este aparato. Otros teléfonos no la ven hasta que GOV + el propietario la aprueben en una versión numerada. Una copia saneada (frase, ciudad, fecha) va a la bandeja del propietario.",
+      "Gracias. Tu idea está guardada en este aparato. Un correo saneado va a opencommunity.opc@gmail.com. Otros teléfonos no la ven hasta que GOV + el propietario la aprueben en una versión numerada.",
     wallTitle: "Muro de ideas (este aparato)",
     wallHint:
-      "Tus ideas se quedan aquí. No aparecen en otro teléfono. El propietario compila las copias recibidas aparte, para decidir qué construir.",
+      "Tus ideas se quedan aquí. No aparecen en otro teléfono. Politzer las recibe por correo para decidir qué construir.",
     wallEmpty: "Aún no hay ninguna idea aquí. La primera suele ser la más útil.",
-    inboxSent: "Copia enviada a la bandeja del propietario.",
-    inboxFailed: "Guardada aquí. La copia del propietario no pudo salir (red).",
+    inboxSent: "Correo enviado a opencommunity.opc@gmail.com.",
+    inboxFailed: "Guardada aquí. El correo al propietario no pudo salir (red).",
     retryInbox: "Reenviar al propietario",
     editIdea: "Editar",
     share: "Texto para compartir",
@@ -950,7 +950,7 @@ export const es: Messages = {
   ownerIdeas: {
     title: "Bandeja de ideas",
     lead: "Compilación para Politzer. Hace falta el secreto. Ninguna idea se inventa.",
-    how: "Los visitantes envían desde Tus ideas. Aquí lees el texto, la ciudad y la fecha. Sin nombre, correo ni número OPC. También puedes abrir el Worker: GET /ideas?secret=… (HTML) o &format=json. Configura el secreto con wrangler secret put IDEAS_OWNER_SECRET y vuelve a desplegar el Worker. No compartas la URL.",
+    how: "La bandeja real es el correo opencommunity.opc@gmail.com (Resend, secreto RESEND_API_KEY). Esta página también compila GET /ideas?secret=… si IDEAS_OWNER_SECRET está configurado. Ninguna idea se inventa.",
     secretLabel: "Secreto del propietario",
     secretPh: "Pegar IDEAS_OWNER_SECRET",
     open: "Abrir la bandeja",
