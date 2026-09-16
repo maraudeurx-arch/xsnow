@@ -6,17 +6,17 @@ test.describe("local registration on Mon profil", () => {
   }) => {
     await page.goto("./mon-profil/");
     await expect(page.getByRole("heading", { name: "Mon profil", level: 2 })).toBeVisible();
-    await expect(page.getByRole("link", { name: /Retour à l’accueil/ })).toBeVisible();
+    await expect(page.locator("[data-home-back]")).toBeVisible();
 
     const cta = page.getByRole("button", { name: "Inviter à s’inscrire" });
     await expect(cta).toBeVisible();
     await expect(cta).toHaveCSS("background-color", "rgb(29, 78, 216)");
     await cta.click();
 
-    await page.getByPlaceholder("Marie").fill("Marie");
-    await page.getByPlaceholder("Tremblay").fill("Tremblay");
-    await page.getByPlaceholder("marie@exemple.ca").fill("marie@voisin.test");
-    await page.getByPlaceholder("819-…").fill("819-555-0100");
+    await page.locator('input[name="firstName"]').fill("Marie");
+    await page.locator('input[name="lastName"]').fill("Tremblay");
+    await page.locator('input[name="email"]').fill("marie@voisin.test");
+    await page.locator('input[name="phone"]').fill("819-555-0100");
     await page.getByRole("button", { name: "Enregistrer" }).click();
 
     await expect(page.getByText("Profil enregistré sur cet appareil.")).toBeVisible();
@@ -35,10 +35,10 @@ test.describe("local registration on Mon profil", () => {
     expect(stored).toMatch(/OPC-[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{4}/);
 
     await expect(page.getByText(/Marie t’invite sur Open Community/)).toBeVisible();
-    await expect(page.getByRole("button", { name: "Modifier" })).toBeVisible();
-    await expect(page.getByRole("button", { name: "Copier" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Modifier", exact: true })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Copier", exact: true })).toBeVisible();
 
-    await page.getByRole("link", { name: /Retour à l’accueil/ }).click();
+    await page.locator("[data-home-back]").click();
     await expect(page).toHaveURL(/\/xsnow\/?$/);
     await expect(page.locator("[data-header-profile]")).toHaveText("Marie");
     await expect(page.getByRole("button", { name: /Connect/ })).toBeVisible();
@@ -47,10 +47,10 @@ test.describe("local registration on Mon profil", () => {
   test("strips HTML from the name and never shows email in the header", async ({ page }) => {
     await page.goto("./mon-profil/");
     await page.getByRole("button", { name: "Inviter à s’inscrire" }).click();
-    await page.getByPlaceholder("Marie").fill("<script>alert(1)</script>Paul");
-    await page.getByPlaceholder("Tremblay").fill("Émile");
-    await page.getByPlaceholder("marie@exemple.ca").fill("paul@voisin.test");
-    await page.getByPlaceholder("819-…").fill("8195550199");
+    await page.locator('input[name="firstName"]').fill("<script>alert(1)</script>Paul");
+    await page.locator('input[name="lastName"]').fill("Émile");
+    await page.locator('input[name="email"]').fill("paul@voisin.test");
+    await page.locator('input[name="phone"]').fill("8195550199");
     await page.getByRole("button", { name: "Enregistrer" }).click();
 
     await expect(page.locator("[data-header-profile]")).toHaveText("Paul");
