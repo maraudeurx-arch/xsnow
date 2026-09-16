@@ -37,7 +37,7 @@ Outbound links built from visitor fields:
 
 - PayPal: handle `[A-Za-z0-9._-]+` only → `https://www.paypal.me/…` with `rel="noopener noreferrer nofollow"`.
 - `mailto:` / `sms:` only after email/phone validation (never `javascript:`).
-- First-party mission links (Prolific, UserTesting, micro1) are hardcoded HTTPS, not user content.
+- First-party mission links (Micro1, TELUS Digital, OneForma, Mindrift) are hardcoded HTTPS, not user content.
 
 ## Content-Security-Policy
 

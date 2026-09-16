@@ -149,49 +149,20 @@ describe("vos idees copy", () => {
 });
 
 describe("gagner maintenant copy", () => {
-  it("keeps three honest paths and the anti-pattern in FR/EN/ES", () => {
+  it("keeps the page title without board lead or old multi-card copy", () => {
     assert.equal(fr.menu.gagnerMaintenant, "Gagner maintenant");
     assert.equal(en.menu.gagnerMaintenant, "Earn now");
     assert.equal(es.menu.gagnerMaintenant, "Ganar ahora");
-    assert.equal(fr.gagner.neighborsTitle, "Offres voisins");
-    assert.equal(fr.gagner.missionsTitle, "Missions payées");
-    assert.equal(fr.gagner.timeTitle, "Temps & connexion");
-    assert.match(fr.gagner.antiPattern, /pubs en boucle/);
-    assert.match(fr.gagner.antiPattern, /fermes de clics/);
-    assert.match(en.gagner.antiPattern, /ads in a loop/);
-    assert.match(en.gagner.antiPattern, /click farms/);
-    assert.match(es.gagner.antiPattern, /anuncios en bucle/);
-    assert.match(es.gagner.antiPattern, /granjas de clics/);
-    assert.match(fr.gagner.missionsBody, /tests UX/i);
-    assert.equal(fr.gagner.missionsMicro1Title, "Annotation IA / robots (micro1)");
-    assert.equal(en.gagner.missionsMicro1Title, "AI / robot annotation (micro1)");
-    assert.equal(es.gagner.missionsMicro1Title, "Anotación IA / robots (micro1)");
-    assert.match(fr.gagner.missionsMicro1Body, /50–90 USD/);
-    assert.match(fr.gagner.missionsMicro1Body, /Candidature uniquement chez micro1/);
-    assert.match(en.gagner.missionsMicro1Body, /US\$50–90/);
-    assert.match(en.gagner.missionsMicro1Body, /Apply only on micro1/);
-    assert.match(es.gagner.missionsMicro1Body, /50–90 USD/);
-    assert.match(es.gagner.missionsMicro1Body, /sitio de micro1/);
-    assert.match(fr.gagner.missionsMicro1Disclaimer, /Tarif non garanti/);
-    assert.match(fr.gagner.missionsMicro1Disclaimer, /n’est pas l’employeur/);
-    assert.match(fr.gagner.missionsMicro1Disclaimer, /aucun paiement à OPC/);
-    assert.match(en.gagner.missionsMicro1Disclaimer, /Rate not guaranteed/);
-    assert.match(en.gagner.missionsMicro1Disclaimer, /not the employer/);
-    assert.match(en.gagner.missionsMicro1Disclaimer, /no payment to OPC/);
-    assert.match(es.gagner.missionsMicro1Disclaimer, /Tarifa no garantizada/);
-    assert.match(es.gagner.missionsMicro1Disclaimer, /no es el empleador/);
-    assert.match(es.gagner.missionsMicro1Disclaimer, /no pagues a OPC/);
-    assert.doesNotMatch(fr.gagner.missionsMicro1Body, /10\s*k|10\s*000|7 jours/i);
-    assert.doesNotMatch(en.gagner.missionsMicro1Body, /10k|7 days/i);
-    assert.doesNotMatch(fr.gagner.missionsMicro1Body, /OPC paie/);
-    assert.doesNotMatch(en.gagner.missionsMicro1Body, /OPC pays/i);
-    assert.match(fr.gagner.bandwidthNote, /FAI/);
-    assert.match(en.gagner.bandwidthNote, /ISP/);
-    assert.deepEqual(Object.keys(en.gagner), Object.keys(fr.gagner));
-    assert.deepEqual(Object.keys(es.gagner), Object.keys(fr.gagner));
+    assert.equal(fr.features.gagnerMaintenant.title, "Gagner maintenant");
+    assert.equal(fr.features.gagnerMaintenant.lead, "");
+    assert.equal(en.features.gagnerMaintenant.lead, "");
+    assert.equal(es.features.gagnerMaintenant.lead, "");
+    assert.equal("gagner" in fr, false);
+    assert.equal("gagner" in en, false);
+    assert.equal("gagner" in es, false);
+    assert.doesNotMatch(fr.features.gagnerMaintenant.lead, /Trois chemins/);
     assert.deepEqual(Object.keys(en.features), Object.keys(fr.features));
     assert.deepEqual(Object.keys(es.features), Object.keys(fr.features));
-    assert.ok(fr.features.gagnerMaintenant.title);
     assert.match(fr.systemPrompt, /Gagner maintenant/);
     assert.match(en.systemPrompt, /Earn now/);
     assert.match(es.systemPrompt, /Ganar ahora/);

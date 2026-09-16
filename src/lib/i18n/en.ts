@@ -353,7 +353,7 @@ export const en: Messages = {
     },
     gagnerMaintenant: {
       title: "Earn now",
-      lead: "Three honest paths — not an ad farm. Neighbourhood first.",
+      lead: "",
     },
     sondages: {
       title: "Answer surveys and earn money",
@@ -787,43 +787,6 @@ export const en: Messages = {
     requestMailSubject: "Request: {title}",
     requestMailBody:
       "Hello,\n\nI’d like to book “{title}” on {date}.\n\n{name}\n{contact}\n\n{message}\n\n— Open Community",
-  },
-  gagner: {
-    antiPattern:
-      "Watching ads in a loop, click farms, and fake accounts are not supported.",
-    neighborsTitle: "Neighbour offers",
-    neighborsBody:
-      "The most real path: publish or book a neighbourhood service on this device. The morning car loan (Interac, gas extra) is a template — not a listing already live for everyone.",
-    neighborsCtaServices: "Publish in My services",
-    neighborsCtaDemand: "See In demand",
-    neighborsCtaCar: "Car loan (mornings)",
-    missionsTitle: "Paid missions",
-    missionsBody:
-      "UX tests and serious research panels pay better than watching ads. Amounts stay modest: think minutes, not a salary.",
-    missionsExamplesTitle: "Example missions",
-    missionsExample1: "App and website tests (honest feedback, often 10–20 min)",
-    missionsExample2: "Research panels like Prolific (paid studies, clear criteria)",
-    missionsExample3: "Open Community neighbourhood surveys — partners coming soon",
-    missionsSoon: "Partners coming soon in Open Community",
-    missionsProlific: "Prolific",
-    missionsUserTesting: "UserTesting",
-    missionsExternalHint: "Well-known external sites — you leave Open Community (new tab).",
-    missionsLocal: "OPC surveys (soon)",
-    missionsMicro1Title: "AI / robot annotation (micro1)",
-    missionsMicro1Body:
-      "Remote labeling and evaluation of AI / robotics model outputs. Range shown on their listing: about US$50–90/hour. Canada is among eligible countries. Apply only on micro1’s site — not through OPC.",
-    missionsMicro1Disclaimer:
-      "Rate not guaranteed · selection · intermittent hours · OPC is not the employer · no payment to OPC to apply.",
-    missionsMicro1Cta: "Apply on micro1",
-    timeTitle: "Time & connection",
-    timeBody:
-      "Publish a My services offer: hotspot / connection, a helping hand, or presence. Set a rate and your rules. The neighbour pays by Interac.",
-    timeCta: "Create a My services offer",
-    timeHotspot: "Template: Hotspot / shared connection",
-    timeUx: "Template: User-testing session",
-    timeWarn: "No click farms, no fake accounts.",
-    bandwidthNote:
-      "Bandwidth sharing (outside OPC): tiny amounts, check your ISP. Not a recommended path here.",
   },
   shareOpc: {
     title: "Share OPC",
