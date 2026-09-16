@@ -58,7 +58,7 @@ describe("Accueil Nouvelles layout fills toward the footer", () => {
     // PR #71: both partner units sit under the full headline list (no mid-ad hang).
     assert.match(news, /showMid \? <PartnerAdSlot slot="news-mid"/);
     assert.doesNotMatch(news, /index === 0 && showMid/);
-    assert.match(css, /\[data-partner-slot="news-bottom"\][\s\S]*flex:\s*0\.55 1 0%/);
+    assert.match(css, /\[data-partner-slot="news-bottom"\][\s\S]*flex:\s*0\.48 1 0%/);
     // Bottom slot must shrink (min-height:0) so it stays inside the news card.
     assert.match(
       css,

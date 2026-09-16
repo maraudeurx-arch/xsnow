@@ -95,7 +95,10 @@ test.describe("Accueil neighbourhood news + partner slots", () => {
     const newsList = page.locator("[data-news-list], [data-news-spacer]");
     const listBox = await newsList.first().boundingBox();
     expect(listBox).toBeTruthy();
-    expect(listBox!.height).toBeGreaterThan(250);
+    // Both partner units sit under the full list (no mid-ad hang), so the
+    // scroller is the leftover above the ads — still a tall fill, not 250px of
+    // headlines-only from when the mid unit lived inside the list.
+    expect(listBox!.height).toBeGreaterThan(220);
 
     const newsChatGap = chatBox!.y - (newsBox!.y + newsBox!.height);
     expect(newsChatGap).toBeGreaterThanOrEqual(-1);
