@@ -85,6 +85,20 @@ export const es: Messages = {
     ideaPrompt: "¿Una idea para la comunidad?",
     ideaCapture: "Anotar en Tus ideas",
   },
+  neighborhoodNews: {
+    title: "Noticias del Barrio",
+    loading: "Cargando noticias locales…",
+    empty: "No hay una noticia verificada por ahora. No inventamos titulares — inténtalo más tarde.",
+    error: "No se pudieron cargar las noticias. Inténtalo más tarde, o conserva la última lista en caché si la tienes.",
+    needCity: "Cuando se conozca tu ciudad, las noticias del barrio aparecen aquí.",
+    cached: "Caché local",
+    badgeDigital: "Digital / economía",
+    badgeLocal: "Local",
+    promptNoHeadlines:
+      "Rol noticias: cuando se conoce la ciudad del visitante, la sección « Noticias del Barrio » (bajo Compartir, encima de este chat) muestra titulares locales reales. Ahora no tienes ningún titular verificado listado — nunca inventes un título. Si te piden noticias, dilo con honestidad y orienta a esa sección o a Tus ideas / Ganar ahora.",
+    promptWithHeadlines:
+      "Rol noticias: la sección « Noticias del Barrio » (bajo Compartir) muestra estos titulares reales — cítalos solo, sin inventar: {headlines}. Si encaja, puedes mencionar uno brevemente en el chat. Sin web libre: solo esta lista.",
+  },
   geo: {
     section: "Permitir la ubicación",
     title: "¿Dónde estás ahora?",
@@ -309,7 +323,7 @@ export const es: Messages = {
   welcome:
     "Hola, y te damos la bienvenida a la aplicación Open Community: soy tu avatar. La proximidad y el espíritu de ayuda mutua de la gente de aquí son nuestra fuerza. A través de Open Community, haz saber a tus vecinos un servicio que puedes prestarles a cambio de una compensación: puede ser ayudar a mudarse, hacer recados, o ayudar en trabajos de la casa. Además, esta aplicación te ofrece servicios gratuitos, como ayudarte a encontrar tu teléfono si lo pierdes, y avisarte si tu hijo, tu pareja o tus padres mayores se alejan del lugar donde se supone que deben estar. También, ¿tienes sugerencias de tareas y servicios que te gustaría monetizar? Dímelo, o anótalas en Tus ideas, y toda la comunidad se beneficiará. Ten en cuenta que las personas que comparten esta aplicación, y que producen ideas que se monetizan, recibirán a prorrata de sus esfuerzos. Así que no dudes en preguntarme en cualquier momento: estoy a tu entera disposición.",
   systemPrompt:
-    "Eres la guía local de Open Community en {city} — director honesto, útil primero (dinero + comunidad). No eres un humano y no eres un agente con herramientas externas (ni web, ni correo, ni cartera). Hablas únicamente en español, tuteas, te mantienes concreto y breve. Ayuda de barrio: recados, mudanza, casa, cuidado, préstamo de objetos, préstamo de coche por la mañana (Interac, la gasolina la paga quien toma el coche; recuerda el seguro — OPC no es el asegurador ni un procesador de pagos), teléfono perdido, alertas cercanas. Sin granjas de anuncios, de clics, cuentas falsas ni discurso de estafa. Orienta ya: una idea → Tus ideas (una frase, 30 s); ganar → Ganar ahora / Mis servicios / En demanda. Invitas a tocar Inicio, bajo {placeName} a la izquierda, o Mis servicios / En demanda / Ganar ahora / Tus ideas. Si hay una idea, reformúlala y empuja a Tus ideas; captura también sugerencias de monetización. Emergencia real: 911. Ejemplos: U: Quiero dinero rápido. A: Nada de anuncios en bucle. Tres caminos: Mis servicios (vecino, Interac), En demanda, o Ganar ahora (tests UX / paneles, hotspot). ¿Una idea? Abre Tus ideas. U: Podríamos palear las entradas. A: Sólido. Anótala en Tus ideas. Pago vecino = Interac. U: ¿Puedes buscarlo en internet? A: No, soy la guía de la app, no un agente externo. Dime la idea o abre Tus ideas / Ganar ahora / Mis servicios. Tu apariencia: {avatar}.",
+    "Eres la guía local de Open Community en {city} — director honesto, útil primero (dinero + comunidad). No eres un humano y no eres un agente con herramientas externas (ni web, ni correo, ni cartera). Hablas únicamente en español, tuteas, te mantienes concreto y breve. Ayuda de barrio: recados, mudanza, casa, cuidado, préstamo de objetos, préstamo de coche por la mañana (Interac, la gasolina la paga quien toma el coche; recuerda el seguro — OPC no es el asegurador ni un procesador de pagos), teléfono perdido, alertas cercanas. Sin granjas de anuncios, de clics, cuentas falsas ni discurso de estafa. Orienta ya: una idea → Tus ideas (una frase, 30 s); ganar → Ganar ahora / Mis servicios / En demanda. Invitas a tocar Inicio, bajo {placeName} a la izquierda, o Mis servicios / En demanda / Ganar ahora / Tus ideas. Si hay una idea, reformúlala y empuja a Tus ideas; captura también sugerencias de monetización. Emergencia real: 911. Ejemplos: U: Quiero dinero rápido. A: Nada de anuncios en bucle. Tres caminos: Mis servicios (vecino, Interac), En demanda, o Ganar ahora (tests UX / paneles, hotspot). ¿Una idea? Abre Tus ideas. U: Podríamos palear las entradas. A: Sólido. Anótala en Tus ideas. Pago vecino = Interac. U: ¿Puedes buscarlo en internet? A: No, soy la guía de la app, no un agente externo. Dime la idea o abre Tus ideas / Ganar ahora / Mis servicios. U: ¿Qué hay de nuevo en el barrio? A: Mira « Noticias del Barrio » bajo Compartir — te oriento ahí y nunca invento un titular. Tu apariencia: {avatar}.",
   features: {
     business: {
       title: "Da a conocer tu negocio con anuncios",
@@ -403,6 +417,8 @@ export const es: Messages = {
     aPropos: "Acerca de Open Community (OPC)",
     vosIdees: "Tus ideas · Implicarte",
     infosBody: "Tus datos y tu cartera se quedan en este aparato.",
+    infosPrivacy:
+      "Tu información se queda en este aparato: nunca se divulgará, venderá ni usará para fines distintos de OPC / Open Community.",
     reglagesHint: "El idioma elegido se guarda en este aparato. Sustituye el idioma del teléfono.",
     inviterBody: "Comparte Open Community con un vecino, un comercio, una familia.",
     aProposBody:

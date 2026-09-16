@@ -22,7 +22,13 @@ import type { Avatar } from "@/lib/avatars";
 import { useSpeech } from "@/lib/speech";
 import { FeedbackRow } from "@/components/FeedbackRow";
 
-export function AvatarChat({ avatar }: { avatar: Avatar }) {
+export function AvatarChat({
+  avatar,
+  newsHeadlines = "",
+}: {
+  avatar: Avatar;
+  newsHeadlines?: string;
+}) {
   const { speak, prime, stop } = useSpeech();
   const { city, placeName, localeHint } = usePlace();
   const { locale, m } = useI18n();
@@ -127,7 +133,13 @@ export function AvatarChat({ avatar }: { avatar: Avatar }) {
 
     try {
       const reply = await completeChat({
-        system: avatarSystemPromptFor(city, placeName, locale, avatarLabel),
+        system: avatarSystemPromptFor(
+          city,
+          placeName,
+          locale,
+          avatarLabel,
+          newsHeadlines,
+        ),
         messages: nextMessages,
         signal: controller.signal,
       });

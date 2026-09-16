@@ -99,6 +99,8 @@ Voir [`.env.example`](.env.example). `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID` est 
 
 `NEXT_PUBLIC_GEO_API_URL` : `GET|POST /geo` sur le même Worker (`{ lat, lon }` → `{ city, countryCode, localeHint }`). Si le Worker n’est pas encore redéployé, le navigateur utilise BigDataCloud (sans clé). Secours : Gatineau, `fr-CA`.
 
+`NEXT_PUBLIC_NEWS_API_URL` : `GET /news?city=&lang=&country=` sur le même Worker — manchettes Google News RSS (numérique/économie d’abord, puis local). Jamais de fausses nouvelles. L’Accueil cache le dernier bon résultat en localStorage/IndexedDB par ville ; si le fetch échoue, état vide/chargement clair.
+
 ### Chat avatar (Cloudflare Workers AI, sans login)
 
 Le chat n’utilise **pas** Puter. Les visiteurs n’ont **aucun compte** à créer. Le navigateur envoie `POST` JSON `{ "system", "messages": [{ "role", "content" }] }` vers le Worker ; la réponse attendue est `{ "reply": "…" }` (le front accepte aussi un format type OpenAI `choices`).
@@ -113,7 +115,7 @@ npx wrangler login
 npx wrangler deploy
 ```
 
-Le Worker déployé est `https://xsnow-chat.xsnowopc.workers.dev`. Pour un autre compte, coller la nouvelle URL dans `NEXT_PUBLIC_CHAT_API_URL` (variable Actions du même nom) ou dans `CHAT_API_FALLBACK_URL`. Après un changement de Worker (`/geo` inclus), `npx wrangler deploy` depuis `workers/xsnow-chat`.
+Le Worker déployé est `https://xsnow-chat.xsnowopc.workers.dev`. Pour un autre compte, coller la nouvelle URL dans `NEXT_PUBLIC_CHAT_API_URL` (variable Actions du même nom) ou dans `CHAT_API_FALLBACK_URL`. Après un changement de Worker (`/geo`, `/news` inclus), `npx wrangler deploy` depuis `workers/xsnow-chat`.
 
 ### Ville du visiteur (géolocalisation)
 
@@ -169,7 +171,7 @@ npx wrangler login
 npx wrangler deploy
 ```
 
-Deployed Worker: `https://xsnow-chat.xsnowopc.workers.dev`. Override with `NEXT_PUBLIC_CHAT_API_URL` (GitHub Actions variable of the same name) or `CHAT_API_FALLBACK_URL` in `src/lib/llm.ts`. Redeploy after adding `/geo`.
+Deployed Worker: `https://xsnow-chat.xsnowopc.workers.dev`. Override with `NEXT_PUBLIC_CHAT_API_URL` (GitHub Actions variable of the same name) or `CHAT_API_FALLBACK_URL` in `src/lib/llm.ts`. Redeploy after adding `/geo` or `/news`.
 
 ### Visitor city
 

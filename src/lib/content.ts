@@ -43,8 +43,16 @@ export function avatarSystemPromptFor(
   placeName: string,
   locale: Locale = DEFAULT_LOCALE,
   avatar = "",
+  newsHeadlines = "",
 ) {
-  return interpolate(getMessages(locale).systemPrompt, { city, placeName, avatar });
+  const base = interpolate(getMessages(locale).systemPrompt, { city, placeName, avatar });
+  const trimmed = newsHeadlines.trim();
+  if (!trimmed) {
+    return `${base} ${getMessages(locale).neighborhoodNews.promptNoHeadlines}`;
+  }
+  return `${base} ${interpolate(getMessages(locale).neighborhoodNews.promptWithHeadlines, {
+    headlines: trimmed,
+  })}`;
 }
 
 export const AVATAR_SYSTEM_PROMPT = avatarSystemPromptFor(

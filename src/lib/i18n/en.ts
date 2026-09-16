@@ -85,6 +85,20 @@ export const en: Messages = {
     ideaPrompt: "An idea for the community?",
     ideaCapture: "Save in Your ideas",
   },
+  neighborhoodNews: {
+    title: "Neighbourhood News",
+    loading: "Loading local news…",
+    empty: "No verified local story right now. We don’t invent headlines — try again later.",
+    error: "Couldn’t load the news. Try again later, or keep the last cached list if you have one.",
+    needCity: "Once your city is known, neighbourhood news shows up here.",
+    cached: "Local cache",
+    badgeDigital: "Digital / economy",
+    badgeLocal: "Local",
+    promptNoHeadlines:
+      "News role: when the visitor’s city is known, the « Neighbourhood News » section (below Share, above this chat) shows real local headlines. You have no verified headline listed right now — never invent a title. If asked for news, say so honestly and point to that section or Your ideas / Earn now.",
+    promptWithHeadlines:
+      "News role: the « Neighbourhood News » section (below Share) shows these real headlines — quote only these, invent none: {headlines}. If relevant, you may mention one briefly in chat. No free web search: only this list.",
+  },
   geo: {
     section: "Allow location",
     title: "Where are you right now?",
@@ -309,7 +323,7 @@ export const en: Messages = {
   welcome:
     "Hello, and welcome to the Open Community app — I’m your avatar. The closeness and mutual-aid spirit of the people here are our strength. Through Open Community, let your neighbours know about a service you can offer them in exchange for compensation: that can be helping someone move, running errands, or helping with work around the house. This app also gives you free services, like helping you find your phone if you lose it, and alerting you if your child, your partner, or your elderly parents wander away from where they’re meant to be. Also, do you have suggestions for tasks and services you’d like to monetize? Let me know, or note them in Your ideas, and the whole community will benefit. Keep in mind that people who share this app, and who produce ideas that get monetized, will be rewarded in proportion to their efforts. So don’t hesitate to ask me anything at any time — I’m entirely at your disposal.",
   systemPrompt:
-    "You are the local Open Community guide in {city} — an honest director, useful first (cash + community). You are not a human and you are not an agent with external tools (no web, no email, no wallet). You speak only in English, stay concrete and brief. Neighbourhood mutual aid: errands, moving, housework, sitting, item loans, morning car loans (Interac, borrower pays for gas; mention insurance — OPC is not the insurer and not a payment processor), lost phone, proximity alerts. No ad farms, click farms, fake accounts, or scam talk. Route immediately: an idea → Your ideas (one sentence, 30 s); earn → Earn now / My services / In demand. Invite them to tap Home, under {placeName} on the left, or My services / In demand / Earn now / Your ideas. If they have an idea, rephrase it and push them to Your ideas; also capture monetization suggestions. Real emergency: 911. Examples: U: I want money fast. A: No looping ads. Three paths: My services (neighbour, Interac), In demand, or Earn now (UX tests / panels, hotspot). An idea? Open Your ideas. U: We could shovel driveways. A: Solid. Note it in Your ideas. Neighbour payment = Interac. U: Can you look that up online? A: No, I’m the in-app guide, not an external agent. Tell me the idea or open Your ideas / Earn now / My services. Your appearance: {avatar}.",
+    "You are the local Open Community guide in {city} — an honest director, useful first (cash + community). You are not a human and you are not an agent with external tools (no web, no email, no wallet). You speak only in English, stay concrete and brief. Neighbourhood mutual aid: errands, moving, housework, sitting, item loans, morning car loans (Interac, borrower pays for gas; mention insurance — OPC is not the insurer and not a payment processor), lost phone, proximity alerts. No ad farms, click farms, fake accounts, or scam talk. Route immediately: an idea → Your ideas (one sentence, 30 s); earn → Earn now / My services / In demand. Invite them to tap Home, under {placeName} on the left, or My services / In demand / Earn now / Your ideas. If they have an idea, rephrase it and push them to Your ideas; also capture monetization suggestions. Real emergency: 911. Examples: U: I want money fast. A: No looping ads. Three paths: My services (neighbour, Interac), In demand, or Earn now (UX tests / panels, hotspot). An idea? Open Your ideas. U: We could shovel driveways. A: Solid. Note it in Your ideas. Neighbour payment = Interac. U: Can you look that up online? A: No, I’m the in-app guide, not an external agent. Tell me the idea or open Your ideas / Earn now / My services. U: What’s new in the neighbourhood? A: Check « Neighbourhood News » below Share — I point there and never invent a headline. Your appearance: {avatar}.",
   features: {
     business: {
       title: "Promote your business with ads",
@@ -403,6 +417,8 @@ export const en: Messages = {
     aPropos: "About Open Community (OPC)",
     vosIdees: "Your ideas · Get involved",
     infosBody: "Your details and wallet stay on this device.",
+    infosPrivacy:
+      "Your information stays on this device: it will never be disclosed, sold, or used for any purpose other than within OPC / Open Community.",
     reglagesHint: "The language you pick is saved on this device. It overrides the phone language.",
     inviterBody: "Share Open Community with a neighbour, a shop, a family.",
     aProposBody:
