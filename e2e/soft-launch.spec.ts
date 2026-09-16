@@ -92,7 +92,7 @@ test.describe("Open Community soft-launch smoke", () => {
     await expect(page.getByRole("status")).toContainText("Idée bien reçue");
     await expect(page.getByRole("status")).toContainText("enregistrée sur cet appareil");
     await expect(page.locator("[data-idea-inbox=sent]")).toContainText("opencommunity.opc@gmail.com");
-    await expect(page.getByRole("button", { name: "Ajouter une autre idée" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Ajouter une autre idée" })).toBeEnabled();
     await expect(page.getByLabel("Ton idée")).toHaveCount(0);
 
     await page.getByRole("button", { name: "Ajouter une autre idée" }).click();
@@ -130,7 +130,28 @@ test.describe("Open Community soft-launch smoke", () => {
     await expect(page.getByRole("status")).toContainText("Idée bien reçue");
     await expect(page.locator("[data-idea-inbox=failed]")).toBeVisible();
     await expect(page.getByRole("button", { name: "Renvoyer au propriétaire" })).toHaveCount(0);
-    await expect(page.getByRole("button", { name: "Ajouter une autre idée" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Ajouter une autre idée" })).toBeEnabled();
+  });
+
+  test("local confirm and add-another do not wait for a slow inbox POST", async ({ page }) => {
+    await stubIdeaInbox(page, "failed", { delayMs: 4_000 });
+    const idea = `Co-voiturage OPC-e2e ${Date.now()}`;
+    await page.goto("./vos-idees/");
+    await page.getByLabel("Ton idée").fill(idea);
+    await page.getByRole("button", { name: "Envoyer l’idée" }).click();
+
+    await expect(page.getByRole("status")).toContainText("Idée bien reçue", { timeout: 2_000 });
+    await expect(page.getByRole("button", { name: "Ajouter une autre idée" })).toBeEnabled({
+      timeout: 1_000,
+    });
+    await expect(page.getByRole("button", { name: "Renvoyer au propriétaire" })).toHaveCount(0);
+    const stored = await page.evaluate(() => window.localStorage.getItem("xsnow.ideas"));
+    expect(stored).toContain(idea);
+
+    await page.getByRole("button", { name: "Ajouter une autre idée" }).click();
+    await expect(page.getByLabel("Ton idée")).toHaveValue("");
+    await expect(page.getByRole("button", { name: "Envoyer l’idée" })).toBeVisible();
+    await page.unrouteAll({ behavior: "ignoreErrors" });
   });
 
   test("transparency pages are reachable from the footer", async ({ page }) => {

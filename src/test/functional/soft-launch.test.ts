@@ -12,6 +12,7 @@ import {
   parseStoredIdea,
   type CommunityIdea,
 } from "../../lib/ideas.ts";
+import { postIdeaToInbox } from "../../lib/idea-inbox.ts";
 import {
   FEATURED_CAR_MORNING_ID,
   IMPORTED_OFFERS_KEY,
@@ -226,6 +227,32 @@ describe("Vos idées stay on-device", () => {
       assert.doesNotMatch(fr.ideas.thankYouBody, /pipeline|serveur|GitHub/i);
       assert.equal(en.ideas.newIdea, "Add another idea");
       assert.equal(es.ideas.newIdea, "Añadir otra idea");
+    } finally {
+      mock.restore();
+    }
+  });
+
+  it("keeps the local idea and confirm copy when the Worker POST fails", async () => {
+    const mock = memoryWindow();
+    try {
+      const idea = ideaFromForm({
+        text: "Partager une perceuse",
+        involvement: [],
+        hoursPerWeek: "",
+        neighborhood: "",
+      });
+      writeList(IDEAS_KEY, [idea]);
+      const result = await postIdeaToInbox(
+        { id: idea.id, text: idea.text, city: "Gatineau" },
+        async () => {
+          throw new Error("offline");
+        },
+      );
+      assert.equal(result, "failed");
+      assert.equal(readList(IDEAS_KEY)[0]?.text, "Partager une perceuse");
+      assert.equal(fr.ideas.thankYou, "Idée bien reçue");
+      assert.equal(fr.ideas.newIdea, "Ajouter une autre idée");
+      assert.match(fr.ideas.inboxFailed, /enregistrée ici/);
     } finally {
       mock.restore();
     }
