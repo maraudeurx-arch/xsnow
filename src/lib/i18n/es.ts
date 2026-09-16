@@ -173,7 +173,7 @@ export const es: Messages = {
         },
         {
           heading: "Qué recogemos",
-          body: "En este aparato (localStorage): idioma, avatar, tus anuncios, tus consentimientos, y si te inscribes: nombre, apellidos, correo, teléfono y un número local OPC-XXXX — nada se envía a un servidor de perfiles. Si aceptas la ubicación: ciudad + coordenadas para el nombre de la ciudad — sin seguimiento continuo. Si aceptas las estadísticas: eventos anónimos a un Worker de Cloudflare (D1): sesión, idioma, ciudad/país si también aceptaste la ubicación, extractos cortos de ideas de monetización (correos y GPS eliminados). El chat del avatar envía tus mensajes al Worker para una respuesta. Sin publicidad de terceros.",
+          body: "En este aparato (localStorage): idioma, avatar, tus anuncios, tus consentimientos, y si te inscribes: nombre, apellidos, correo, teléfono y un número local OPC-XXXX — nada se envía a un servidor de perfiles. Si aceptas la ubicación: ciudad + coordenadas para el nombre de la ciudad — sin seguimiento continuo. Si aceptas las estadísticas: eventos anónimos a un Worker de Cloudflare (D1): sesión, idioma, ciudad/país si también aceptaste la ubicación, extractos cortos de ideas de monetización (correos y GPS eliminados). Si envías una idea en Tus ideas: una copia saneada (frase, ciudad, fecha — sin nombre, correo, teléfono ni número OPC) va a la bandeja del propietario (el mismo Worker / D1) para decidir qué construir; no depende del consentimiento de estadísticas. El chat del avatar envía tus mensajes al Worker para una respuesta. Sin publicidad de terceros.",
         },
         {
           heading: "Por qué",
@@ -193,7 +193,7 @@ export const es: Messages = {
         },
         {
           heading: "Anuncios personales",
-          body: "Tus ofertas (Mis servicios), solicitudes (En demanda), ideas (Tus ideas) y textos para compartir se quedan en este aparato. No es un feed social global. Un enlace que copias tú puede mostrar una oferta a quien lo abra. Para que algo aparezca en todos los teléfonos, hace falta la aprobación de GOV + el propietario y una versión numerada (catálogo público).",
+          body: "Tus ofertas (Mis servicios), solicitudes (En demanda), ideas (Tus ideas) y textos para compartir se quedan en este aparato. No es un feed social global. Una copia saneada de una idea enviada va a la bandeja del propietario; los demás visitantes no la ven. Un enlace que copias tú puede mostrar una oferta a quien lo abra. Para que algo aparezca en todos los teléfonos, hace falta la aprobación de GOV + el propietario y una versión numerada (catálogo público).",
         },
       ],
     },
@@ -292,7 +292,7 @@ export const es: Messages = {
       sections: [
         {
           heading: "Datos de los visitantes",
-          body: "Las ideas, el chat, los textos para compartir y las notas de ofertas se tratan como texto plano no fiable. Nunca se convierten en HTML ejecutado, nunca en Git, nunca en un archivo subido. Este MVP no tiene carga de archivos, imágenes ni adjuntos. Las ofertas e ideas personales se quedan en el aparato hasta una versión numerada aprobada.",
+          body: "Las ideas, el chat, los textos para compartir y las notas de ofertas se tratan como texto plano no fiable. Nunca se convierten en HTML ejecutado, nunca en Git, nunca en un archivo subido. Este MVP no tiene carga de archivos, imágenes ni adjuntos. Las ofertas personales se quedan en el aparato. Las ideas también; una copia saneada (frase, ciudad, fecha) puede ir a la bandeja del propietario en el Worker, nunca a una cuenta de visitante.",
         },
         {
           heading: "Saneamiento",
@@ -454,10 +454,10 @@ export const es: Messages = {
       "{placeName} / {community} — {slogan} Nuestra proximidad y nuestro espíritu de ayuda mutua son la garantía de nuestro éxito.",
     versionLabel: "Versión",
     deviceLocalNote:
-      "Tus ofertas, solicitudes, ideas, textos para compartir, inscripción (nombre, apellidos, correo, teléfono, número OPC-XXXX) y datos Interac/PayPal se quedan en este aparato. Nada personal aparece en el de otro visitante hasta que GOV + el propietario aprueben una publicación en una versión numerada (catálogo público).",
+      "Tus ofertas, solicitudes, ideas, textos para compartir, inscripción (nombre, apellidos, correo, teléfono, número OPC-XXXX) y datos Interac/PayPal se quedan en este aparato. Una copia saneada de una idea (frase, ciudad, fecha — no tus datos de contacto) puede ir a la bandeja del propietario. Nada personal aparece en el de otro visitante hasta que GOV + el propietario aprueben una publicación en una versión numerada (catálogo público).",
     releaseNotesTitle: "Notas de la versión",
     releaseNotesBody:
-      "0.3.2 — Inscripción local en Mi perfil (nombre, apellidos, correo, teléfono, número OPC-XXXX). Avatar, perfil e ideas se quedan en este aparato al recargar (el inicio no vuelve a reproducir el mensaje de bienvenida). El catálogo público sigue vacío.",
+      "0.3.3 — Tus ideas: muro local más claro, y copia saneada hacia la bandeja del propietario en el Worker (POST /ideas). Politzer compila con GET /ideas?secret= o /proprietaire/idees. La inscripción OPC-XXXX sigue local. El catálogo público sigue vacío.",
     language: "Idioma",
     comingSoon: "Las notificaciones y la estación de pantalla llegarán aquí.",
     locationConsent: "Ubicación",
@@ -920,13 +920,21 @@ export const es: Messages = {
     neighborhoodShare: "Barrio",
     neighborhoodPh: "Hull, Aylmer, Plateau…",
     submit: "Enviar la idea",
+    submitHint:
+      "Tu idea se queda en este aparato. Una copia (frase, ciudad, fecha — no tu nombre, correo ni número OPC) va a la bandeja del propietario para decidir qué construir. No es una cuenta en un servidor.",
+    registerHint: "La inscripción local (número OPC) se queda en este aparato:",
+    registerLink: "Inscribirse",
+    registeredHint: "Número local de este aparato:",
     thankYou: "Idea bien recibida",
     thankYouBody:
-      "Gracias. Tu idea está guardada en este aparato. Otros teléfonos no la ven hasta que GOV + el propietario la aprueben en una versión numerada.",
+      "Gracias. Tu idea está guardada en este aparato. Otros teléfonos no la ven hasta que GOV + el propietario la aprueben en una versión numerada. Una copia saneada (frase, ciudad, fecha) va a la bandeja del propietario.",
     wallTitle: "Muro de ideas (este aparato)",
     wallHint:
-      "Tus ideas se quedan aquí. No aparecen en otro teléfono hasta que estén en una versión pública aprobada.",
+      "Tus ideas se quedan aquí. No aparecen en otro teléfono. El propietario compila las copias recibidas aparte, para decidir qué construir.",
     wallEmpty: "Aún no hay ninguna idea aquí. La primera suele ser la más útil.",
+    inboxSent: "Copia enviada a la bandeja del propietario.",
+    inboxFailed: "Guardada aquí. La copia del propietario no pudo salir (red).",
+    retryInbox: "Reenviar al propietario",
     editIdea: "Editar",
     share: "Texto para compartir",
     shareHint: "Edita el texto y luego cópialo para un vecino o un grupo.",
@@ -938,5 +946,21 @@ export const es: Messages = {
     newIdea: "Añadir otra idea",
     shareHeading: "Idea Open Community",
     catalogBadge: "Catálogo",
+  },
+  ownerIdeas: {
+    title: "Bandeja de ideas",
+    lead: "Compilación para Politzer. Hace falta el secreto. Ninguna idea se inventa.",
+    how: "Los visitantes envían desde Tus ideas. Aquí lees el texto, la ciudad y la fecha. Sin nombre, correo ni número OPC. También puedes abrir el Worker: GET /ideas?secret=… (HTML) o &format=json. Configura el secreto con wrangler secret put IDEAS_OWNER_SECRET y vuelve a desplegar el Worker. No compartas la URL.",
+    secretLabel: "Secreto del propietario",
+    secretPh: "Pegar IDEAS_OWNER_SECRET",
+    open: "Abrir la bandeja",
+    loading: "Cargando…",
+    unauthorized: "Secreto rechazado o aún no configurado en el Worker.",
+    network: "No se pudo contactar la bandeja ahora.",
+    empty: "Ninguna idea recibida por ahora. Los visitantes envían desde Tus ideas. Aquí no se inventa nada.",
+    count: "{n} idea(s)",
+    compiledTitle: "Por ciudad",
+    cityUnknown: "Ciudad no indicada",
+    exportJson: "Exportar JSON",
   },
 };

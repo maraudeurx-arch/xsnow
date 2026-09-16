@@ -123,6 +123,8 @@ describe("vos idees copy", () => {
     assert.equal(es.ideas.mains, "Manos");
     assert.deepEqual(Object.keys(en.ideas), Object.keys(fr.ideas));
     assert.deepEqual(Object.keys(es.ideas), Object.keys(fr.ideas));
+    assert.deepEqual(Object.keys(en.ownerIdeas), Object.keys(fr.ownerIdeas));
+    assert.deepEqual(Object.keys(es.ownerIdeas), Object.keys(fr.ownerIdeas));
     assert.deepEqual(Object.keys(en.chat), Object.keys(fr.chat));
     assert.deepEqual(Object.keys(es.chat), Object.keys(fr.chat));
     assert.deepEqual(Object.keys(en.shareOpc), Object.keys(fr.shareOpc));
@@ -150,7 +152,9 @@ describe("vos idees copy", () => {
     assert.equal(fr.register.shareEdit, "Modifier");
     assert.equal(fr.register.shareCopy, "Copier");
     assert.match(fr.legal.privacy.sections[1].body, /OPC-XXXX/);
-    assert.match(fr.legal.privacy.sections[1].body, /serveur de profils/);
+    assert.match(fr.legal.privacy.sections[1].body, /boîte du propriétaire/);
+    assert.match(en.legal.privacy.sections[1].body, /owner inbox/);
+    assert.match(es.legal.privacy.sections[1].body, /bandeja del propietario/);
     assert.match(en.legal.privacy.sections[1].body, /profile server/);
     assert.match(es.legal.privacy.sections[1].body, /servidor de perfiles/);
     assert.deepEqual(Object.keys(en.feedback), Object.keys(fr.feedback));
@@ -168,6 +172,8 @@ describe("vos idees copy", () => {
     assert.equal(fr.ideas.submit, "Envoyer l’idée");
     assert.equal(en.ideas.submit, "Send the idea");
     assert.equal(es.ideas.submit, "Enviar la idea");
+    assert.match(fr.ideas.submitHint, /boîte du propriétaire/);
+    assert.equal(fr.ownerIdeas.empty.includes("invent"), true);
     assert.equal(fr.ideas.thankYou, "Idée bien reçue");
     assert.equal(en.ideas.thankYou, "Idea received");
     assert.equal(es.ideas.thankYou, "Idea bien recibida");
@@ -433,7 +439,7 @@ describe("legal copy is present in FR/EN/ES", () => {
     assert.match(en.profile.infosPrivacy, /sold/);
     assert.match(es.profile.infosPrivacy, /nunca se divulgará/);
     assert.match(es.profile.infosPrivacy, /venderá/);
-    assert.match(en.profile.releaseNotesBody, /0\.3\.2/);
+    assert.match(en.profile.releaseNotesBody, /0\.3\.3/);
     assert.deepEqual(Object.keys(en.profile), Object.keys(fr.profile));
     assert.deepEqual(Object.keys(es.profile), Object.keys(fr.profile));
   });

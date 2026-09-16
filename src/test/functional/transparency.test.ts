@@ -43,6 +43,8 @@ describe("transparency pages exist", () => {
       assert.equal(existsSync(pageFile(item.href)), true, item.href);
     }
     assert.equal(existsSync(pageFile("/mon-profil/a-propos")), true);
+    assert.equal(existsSync(pageFile("/proprietaire/idees")), true);
+    assert.match(readFileSync(pageFile("/proprietaire/idees"), "utf8"), /OwnerIdeasBoard/);
     assert.match(readFileSync(pageFile(ABOUT_HREF), "utf8"), /kind="about"/);
     assert.match(readFileSync(pageFile(HOW_IT_WORKS_HREF), "utf8"), /kind="how"/);
     assert.match(readFileSync(pageFile(SECURITY_HREF), "utf8"), /kind="security"/);

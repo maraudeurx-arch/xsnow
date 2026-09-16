@@ -117,7 +117,20 @@ npx wrangler login
 npx wrangler deploy
 ```
 
-Le Worker déployé est `https://xsnow-chat.xsnowopc.workers.dev`. Pour un autre compte, coller la nouvelle URL dans `NEXT_PUBLIC_CHAT_API_URL` (variable Actions du même nom) ou dans `CHAT_API_FALLBACK_URL`. Après un changement de Worker (`/geo`, `/news` inclus), `npx wrangler deploy` depuis `workers/xsnow-chat`.
+Le Worker déployé est `https://xsnow-chat.xsnowopc.workers.dev`. Pour un autre compte, coller la nouvelle URL dans `NEXT_PUBLIC_CHAT_API_URL` (variable Actions du même nom) ou dans `CHAT_API_FALLBACK_URL`. Après un changement de Worker (`/geo`, `/news`, `/ideas` inclus), `npx wrangler deploy` depuis `workers/xsnow-chat`.
+
+### Boîte d’idées (propriétaire)
+
+Les idées restent **sur l’appareil du visiteur**. Il n’y a pas de compte serveur. Pour que Politzer puisse **compiler** ce que les gens proposent :
+
+1. Le visiteur envoie depuis **Vos idées**. L’app enregistre en local **et** `POST` une copie assainie (phrase, ville, date — pas de nom, e-mail, téléphone, ni OPC-XXXX) vers `https://xsnow-chat.xsnowopc.workers.dev/ideas`.
+2. Configurer le secret (une fois) : `cd workers/xsnow-chat && npx wrangler secret put IDEAS_OWNER_SECRET` puis `npx wrangler deploy`.
+3. Ouvrir la boîte :
+   - HTML : `https://xsnow-chat.xsnowopc.workers.dev/ideas?secret=…`
+   - JSON : la même URL avec `&format=json`
+   - Page app (non listée dans le menu) : `/xsnow/proprietaire/idees/?secret=…`
+
+Sans secret, GET renvoie 401. La page vide n’invente **aucune** idée. Les autres téléphones ne voient toujours pas le mur local d’un visiteur.
 
 ### Ville du visiteur (géolocalisation)
 
@@ -173,7 +186,20 @@ npx wrangler login
 npx wrangler deploy
 ```
 
-Deployed Worker: `https://xsnow-chat.xsnowopc.workers.dev`. Override with `NEXT_PUBLIC_CHAT_API_URL` (GitHub Actions variable of the same name) or `CHAT_API_FALLBACK_URL` in `src/lib/llm.ts`. Redeploy after adding `/geo` or `/news`.
+Deployed Worker: `https://xsnow-chat.xsnowopc.workers.dev`. Override with `NEXT_PUBLIC_CHAT_API_URL` (GitHub Actions variable of the same name) or `CHAT_API_FALLBACK_URL` in `src/lib/llm.ts`. Redeploy after adding `/geo`, `/news`, or `/ideas`.
+
+### Owner idea inbox
+
+Visitor ideas stay **on that device**. There is no server account. To compile what people propose:
+
+1. Visitors submit **Your ideas**. The app stores locally **and** `POST`s a sanitized copy (sentence, city, date — no name, email, phone, or OPC-XXXX) to `https://xsnow-chat.xsnowopc.workers.dev/ideas`.
+2. Set the secret once: `cd workers/xsnow-chat && npx wrangler secret put IDEAS_OWNER_SECRET` then `npx wrangler deploy`.
+3. Open the inbox:
+   - HTML: `https://xsnow-chat.xsnowopc.workers.dev/ideas?secret=…`
+   - JSON: same URL with `&format=json`
+   - Unlisted app page: `/xsnow/proprietaire/idees/?secret=…`
+
+GET without the secret returns 401. The empty inbox does **not** invent ideas. Other phones still do not see a visitor’s local wall.
 
 ### Visitor city
 

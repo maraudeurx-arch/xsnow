@@ -1,6 +1,6 @@
 {
   "name": "xsnow",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "private": true,
   "description": "Xsnow / Open-Community — Monétisé Vous!",
   "scripts": {
@@ -8,8 +8,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "node --experimental-strip-types --test src/lib/*.test.ts src/test/**/*.test.ts",
-    "test:unit": "node --experimental-strip-types --test src/lib/*.test.ts",
+    "test": "node --experimental-strip-types --test src/lib/*.test.ts src/test/**/*.test.ts workers/xsnow-chat/src/*.test.ts",
+    "test:unit": "node --experimental-strip-types --test src/lib/*.test.ts workers/xsnow-chat/src/*.test.ts",
     "test:functional": "node --experimental-strip-types --test src/test/**/*.test.ts",
     "test:e2e": "playwright test",
     "serve:static": "node scripts/serve-e2e.mjs"

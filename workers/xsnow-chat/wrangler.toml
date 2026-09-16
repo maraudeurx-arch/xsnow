@@ -5,8 +5,13 @@ compatibility_date = "2026-09-01"
 [ai]
 binding = "AI"
 
-# Anonymous /stats events. Database already exists; apply schema with
+# Anonymous /stats events and the owner ideas inbox (`community_idea` rows).
+# Database already exists; apply schema with
 # `npx wrangler d1 migrations apply xsnow-opc-stats --remote`.
+#
+# Owner review: `npx wrangler secret put IDEAS_OWNER_SECRET`
+# then open GET /ideas?secret=… (HTML) or the same URL with &format=json.
+# Do not put the secret in this file.
 [[d1_databases]]
 binding = "DB"
 database_name = "xsnow-opc-stats"
