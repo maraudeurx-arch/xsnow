@@ -73,9 +73,9 @@ test.describe("Accueil neighbourhood news + partner slots", () => {
 
     const gap = footerBox!.y - (cardBox!.y + cardBox!.height);
     expect(gap).toBeGreaterThanOrEqual(0);
-    expect(gap).toBeLessThan(14);
+    expect(gap).toBeLessThan(8);
     expect(newsBox!.height).toBeGreaterThan(chatBox!.height);
-    expect(newsBox!.height).toBeGreaterThan(220);
+    expect(newsBox!.height).toBeGreaterThan(260);
 
     const privacy = page.getByRole("contentinfo").getByRole("link", { name: "Vie privée" });
     await expect(privacy).toBeVisible();
