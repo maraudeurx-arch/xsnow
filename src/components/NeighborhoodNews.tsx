@@ -128,7 +128,7 @@ export function NeighborhoodNews({ onNewsChange }: Props) {
       data-neighborhood-news
       data-news-status={status}
       aria-label={copy.title}
-      className="flex min-h-0 flex-1 grow flex-col gap-1 self-stretch overflow-hidden rounded-xl border border-gold/30 bg-[rgba(8,8,12,0.88)] px-2 py-1 sm:min-h-[24rem]"
+      className="flex min-h-0 flex-1 grow flex-col gap-1 self-stretch overflow-hidden rounded-xl border border-gold/30 bg-[rgba(8,8,12,0.88)] px-2 py-0.5 sm:min-h-[24rem]"
     >
       <div className="flex shrink-0 items-baseline justify-between gap-2 px-0.5">
         <h2 className="text-[12px] font-extrabold tracking-wide text-gold">{copy.title}</h2>
@@ -171,7 +171,7 @@ export function NeighborhoodNews({ onNewsChange }: Props) {
         </div>
       ) : null}
 
-      <div data-news-body className="flex min-h-0 flex-1 grow flex-col gap-1.5 overflow-hidden">
+      <div data-news-body className="flex min-h-0 flex-1 grow flex-col gap-1 overflow-hidden">
         {status === "ready" && items.length > 0 ? (
           <ul
             data-news-list

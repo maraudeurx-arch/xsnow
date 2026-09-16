@@ -162,19 +162,19 @@ function CreativeBody({
           src={imageUrl}
           alt=""
           className={`w-full object-cover object-left ${
-            grow ? "min-h-0 flex-1" : "h-[2.4rem] shrink-0"
+            grow ? "min-h-0 max-h-[3.2rem] flex-1" : "h-[1.6rem] shrink-0"
           }`}
           loading="lazy"
           decoding="async"
         />
       ) : null}
-      <div className="flex shrink-0 flex-col justify-center gap-px px-2 py-1 text-left">
-        <p className="text-[10px] font-extrabold leading-snug text-snow">{name}</p>
-        <p className="text-[8px] leading-snug text-snow/75">{tagline}</p>
-        <span className="mt-0.5 inline-flex w-fit max-w-full items-center rounded-full bg-cobalt px-1.5 py-0.5 text-[8px] font-extrabold leading-none text-snow">
+      <div className="flex shrink-0 flex-col justify-center gap-px px-1.5 py-0.5 text-left">
+        <p className="line-clamp-1 text-[10px] font-extrabold leading-tight text-snow">{name}</p>
+        <p className="line-clamp-2 text-[8px] leading-tight text-snow/75">{tagline}</p>
+        <span className="mt-px inline-flex w-fit max-w-full items-center rounded-full bg-cobalt px-1.5 py-0.5 text-[8px] font-extrabold leading-none text-snow">
           {cta}
         </span>
-        <p className="text-[8px] leading-snug text-ice/60">{funding}</p>
+        <p className="line-clamp-1 text-[8px] leading-tight text-ice/60">{funding}</p>
       </div>
     </>
   );
