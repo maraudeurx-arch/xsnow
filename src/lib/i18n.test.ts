@@ -185,6 +185,17 @@ describe("vos idees copy", () => {
     assert.equal(es.neighborhoodNews.partnerSlot, "Espacio para socios");
     assert.match(fr.neighborhoodNews.partnerPlaceholder, /ferme à clics/);
     assert.match(fr.neighborhoodNews.partnerFunding, /Grok et Cursor/);
+    assert.equal(fr.neighborhoodNews.partnerCtaRegister, "S’inscrire / Mes infos");
+    assert.equal(en.neighborhoodNews.partnerCtaRegister, "Sign up / My info");
+    assert.equal(es.neighborhoodNews.partnerCtaRegister, "Inscribirse / Mis datos");
+    assert.equal(fr.neighborhoodNews.partnerCtaShare, "Partager / inviter");
+    assert.equal(en.neighborhoodNews.partnerCtaShare, "Share / invite");
+    assert.equal(es.neighborhoodNews.partnerCtaShare, "Compartir / invitar");
+    assert.match(fr.neighborhoodNews.partnerGrowRegisterName, /exemple/);
+    assert.match(en.neighborhoodNews.partnerGrowRegisterName, /example/i);
+    assert.match(es.neighborhoodNews.partnerGrowShareName, /ejemplo/i);
+    assert.match(fr.neighborhoodNews.partnerGrowRegisterTagline, /fausse manchette/);
+    assert.match(fr.neighborhoodNews.partnerGrowShareTagline, /Invite un voisin/);
     assert.equal(fr.neighborhoodNews.retry, "Réessayer");
   });
 });
@@ -295,6 +306,9 @@ describe("home shortcut copy", () => {
     assert.equal(fr.guide.partager, "Partager");
     assert.equal(en.guide.partager, "Share");
     assert.equal(es.guide.partager, "Compartir");
+    assert.match(fr.guide.offerShortcuts, /S’inscrire/);
+    assert.match(en.guide.offerShortcuts, /Sign up/);
+    assert.match(es.guide.offerShortcuts, /Inscribirse/);
     assert.equal(fr.chat.placeholder, "Écris à ton avatar…");
     assert.ok(!fr.chat.placeholder.includes("avate"));
     assert.deepEqual(Object.keys(en.guide), Object.keys(fr.guide));

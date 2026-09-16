@@ -16,7 +16,9 @@ import {
 } from "@/components/ConsentSheet";
 import { AVATARS, avatarById, type Avatar, type AvatarId } from "@/lib/avatars";
 import { welcomeSpeechFor } from "@/lib/content";
+import { hrefWithLang } from "@/lib/i18n";
 import { useI18n } from "@/lib/i18n/locale";
+import { PARTNER_REGISTER_HREF } from "@/lib/partner-ads";
 import { PUBLIC_SITE_URL } from "@/lib/paths";
 import { usePlace } from "@/lib/place";
 import { hasPlayedWelcomeFor, markWelcomePlayed } from "@/lib/device-memory";
@@ -49,7 +51,7 @@ export function Guide() {
   }, []);
   const { speak, prime } = useSpeech();
   const { city, needsPrompt, resolved } = usePlace();
-  const { locale, m } = useI18n();
+  const { locale, m, source } = useI18n();
   const unanswered = useConsentUnanswered();
   const welcomeGateOpen = useWelcomeGate();
 
@@ -168,6 +170,13 @@ export function Guide() {
                 {m.nav.vosIdees}
               </Link>
               <ShareHomeButton />
+              <Link
+                href={hrefWithLang(PARTNER_REGISTER_HREF, locale, source)}
+                data-home-inscrire
+                className={shortcutClass}
+              >
+                {m.register.cta}
+              </Link>
             </nav>
           </div>
           <NeighborhoodNews onNewsChange={onNewsChange} />
@@ -211,7 +220,7 @@ function ShareHomeButton() {
   return (
     <button
       type="button"
-      className={`${shortcutClass} col-span-2`}
+      className={shortcutClass}
       onClick={() => void shareApp()}
     >
       {m.shareOpc.short}

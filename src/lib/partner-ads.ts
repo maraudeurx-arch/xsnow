@@ -1,10 +1,11 @@
 /**
  * Accueil partner inventory — labeled sponsored slots, never fake news.
  *
- * Soft-launch: rotating placeholder creatives (partner name + image + url).
- * A real network (AdSense, Mediavine, Canadian direct-sold, local sponsors)
- * plugs in via env without mixing ads into headline titles. No click-farm
- * chrome, no invented stories, no claim of live ad revenue.
+ * Soft-launch: rotating house ads that push register (S’inscrire / Mes infos)
+ * and share (Partager / invite). A real network (AdSense, Mediavine, Canadian
+ * direct-sold, local sponsors) plugs in via NEXT_PUBLIC_ADS_* without mixing
+ * ads into headline titles. No click-farm chrome, no invented stories, no
+ * claim of live ad revenue.
  */
 
 import { durableGet, durableSet } from "./durable-storage.ts";
@@ -12,17 +13,38 @@ import { assetUrl } from "./paths.ts";
 
 export type AdProvider = "placeholder" | "adsense" | "none";
 export type PartnerSlotId = "news-mid" | "news-bottom";
+/** House-ad intent until a real sold partner is swapped in. */
+export type PartnerGrowthKind = "register" | "share" | "local";
+
+export const PARTNER_REGISTER_HREF = "/mon-profil";
+export const PARTNER_SHARE_HREF = "/mon-profil/inviter";
 
 export type PartnerCreative = {
   id: string;
-  /** Display name shown next to the Publicité label. */
-  name: string;
+  /** Soft-launch house-ad intent (register / share / local partner). */
+  kind: PartnerGrowthKind;
   /** Destination when the creative is tapped (in-app path or https). */
   href: string;
   /** Optional creative art (served under basePath via assetUrl). */
   imagePath?: string;
-  /** Short soft-launch blurb — not a news headline. */
-  tagline: string;
+  /** Override display name for a real sold partner. */
+  name?: string;
+  /** Override blurb for a real sold partner — never a news headline. */
+  tagline?: string;
+  /** Override CTA chip for a real sold partner. */
+  cta?: string;
+};
+
+/** i18n slice used to resolve house-ad copy (FR/EN/ES). */
+export type PartnerSlotCopy = {
+  partnerCtaRegister: string;
+  partnerCtaShare: string;
+  partnerGrowRegisterName: string;
+  partnerGrowRegisterTagline: string;
+  partnerGrowShareName: string;
+  partnerGrowShareTagline: string;
+  partnerGrowLocalName: string;
+  partnerGrowLocalTagline: string;
 };
 
 export const NEWS_PARTNER_SLOTS: readonly PartnerSlotId[] = ["news-mid", "news-bottom"];
@@ -40,24 +62,21 @@ export const PARTNER_ROTATION_KEY = "xsnow.partnerAdRotation";
 export const PLACEHOLDER_PARTNERS: readonly PartnerCreative[] = [
   {
     id: "placeholder-coop",
-    name: "Coop du quartier (exemple)",
-    href: "/monetise",
+    kind: "register",
+    href: PARTNER_REGISTER_HREF,
     imagePath: "/partners/coop.svg",
-    tagline: "Emplacement réservé — partenaire réel à venir.",
   },
   {
     id: "placeholder-atelier",
-    name: "Atelier voisin (exemple)",
-    href: "/monetise",
+    kind: "share",
+    href: PARTNER_SHARE_HREF,
     imagePath: "/partners/atelier.svg",
-    tagline: "Exemple soft-launch — pas une publicité vendue.",
   },
   {
     id: "placeholder-marche",
-    name: "Marché local (exemple)",
-    href: "/monetise",
+    kind: "local",
+    href: PARTNER_REGISTER_HREF,
     imagePath: "/partners/marche.svg",
-    tagline: "Inventaire démonstration — revenus pubs pas encore en direct.",
   },
 ];
 
@@ -157,6 +176,32 @@ export function listPartnerCreatives(
 export function partnerCreativeImageUrl(creative: PartnerCreative): string | null {
   if (!creative.imagePath) return null;
   return assetUrl(creative.imagePath);
+}
+
+export function partnerCtaKind(kind: PartnerGrowthKind): "register" | "share" {
+  return kind === "share" ? "share" : "register";
+}
+
+/** Localized name / tagline / CTA for a placeholder or sold creative. */
+export function resolvePartnerCreative(
+  creative: PartnerCreative,
+  copy: PartnerSlotCopy,
+): { name: string; tagline: string; cta: string; href: string; ctaKind: "register" | "share" } {
+  const ctaKind = partnerCtaKind(creative.kind);
+  const fallbackCta = ctaKind === "share" ? copy.partnerCtaShare : copy.partnerCtaRegister;
+  const byKind =
+    creative.kind === "share"
+      ? { name: copy.partnerGrowShareName, tagline: copy.partnerGrowShareTagline }
+      : creative.kind === "local"
+        ? { name: copy.partnerGrowLocalName, tagline: copy.partnerGrowLocalTagline }
+        : { name: copy.partnerGrowRegisterName, tagline: copy.partnerGrowRegisterTagline };
+  return {
+    name: (creative.name || byKind.name).trim() || byKind.name,
+    tagline: (creative.tagline || byKind.tagline).trim() || byKind.tagline,
+    cta: (creative.cta || fallbackCta).trim() || fallbackCta,
+    href: creative.href,
+    ctaKind,
+  };
 }
 
 /** Normalize a stored rotation cursor. */

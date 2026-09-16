@@ -59,7 +59,7 @@ export const es: Messages = {
     pickAvatar: "Elige tu avatar",
     changeAvatar: "Cambiar de avatar",
     replay: "Volver a escuchar",
-    offerShortcuts: "Atajos a Ganar ahora, Tus ideas y Compartir",
+    offerShortcuts: "Atajos a Ganar ahora, Tus ideas, Compartir e Inscribirse",
     vosIdees: "Tus ideas",
     partager: "Compartir",
     shareText: "Únete a Open Community — proximidad y ayuda mutua de barrio.",
@@ -109,6 +109,17 @@ export const es: Messages = {
     partnerPlaceholder:
       "Socio local pronto. Ayuda mutua real — sin titulares falsos ni granjas de clics.",
     partnerFunding: "Estos espacios podrán ayudar a financiar Grok y Cursor para OPC — sin ingresos publicitarios en directo por ahora.",
+    partnerCtaRegister: "Inscribirse / Mis datos",
+    partnerCtaShare: "Compartir / invitar",
+    partnerGrowRegisterName: "Inscribirse · Mis datos (ejemplo)",
+    partnerGrowRegisterTagline:
+      "Inscríbete en este aparato — el barrio crece contigo. Sin titulares falsos ni granjas de clics.",
+    partnerGrowShareName: "Compartir · invitar (ejemplo)",
+    partnerGrowShareTagline:
+      "Invita a un vecino a Open Community. Ayuda mutua real — sin titulares falsos ni granjas de clics.",
+    partnerGrowLocalName: "Coop del barrio (ejemplo)",
+    partnerGrowLocalTagline:
+      "Espacio para socios pronto. Mientras tanto: inscríbete e invita a un vecino. Sin granjas de clics.",
     promptNoHeadlines:
       "Rol noticias: cuando se conoce la ciudad del visitante, la sección « Noticias del Barrio » (bajo Compartir, encima de este chat) muestra titulares locales reales. Ahora no tienes ningún titular verificado listado — nunca inventes un título. Si te piden noticias, dilo con honestidad y orienta a esa sección o a Tus ideas / Ganar ahora.",
     promptWithHeadlines:
