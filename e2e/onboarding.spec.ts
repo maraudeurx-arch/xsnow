@@ -65,6 +65,20 @@ fresh.describe("new visitor onboarding order", () => {
     await page.goto("./");
     await expect(page.getByText("Choisis ton avatar")).toHaveCount(0);
     await expect(page.getByRole("button", { name: "Réécouter" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Gagner maintenant" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Vos idées" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Partager" })).toBeVisible();
+
+    const cobalt = "rgb(37, 99, 235)";
+    for (const locator of [
+      page.getByRole("link", { name: "Gagner maintenant" }),
+      page.getByRole("link", { name: "Vos idées" }),
+      page.getByRole("button", { name: "Partager" }),
+      page.getByRole("button", { name: "Réécouter" }),
+    ]) {
+      await expect(locator).toHaveCSS("background-color", cobalt);
+    }
+
     await expect(page.getByText("Position — optionnelle")).toHaveCount(0);
     await expect(page.getByRole("dialog")).toHaveCount(0);
     await expect(page.getByRole("button", { name: "Compris" })).toHaveCount(0);
