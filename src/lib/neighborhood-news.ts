@@ -32,6 +32,21 @@ export const NEWS_API_URL =
   process.env.NEXT_PUBLIC_NEWS_API_URL ||
   `${String(CHAT_API_URL).replace(/\/$/, "")}/news`;
 
+/** Worker GET /news — keep short so a missing /news route (405) or hang cannot freeze Accueil. */
+export const NEWS_WORKER_TIMEOUT_MS = 4_000;
+/** rss2json CORS JSON fallback after the Worker miss. */
+export const NEWS_FALLBACK_TIMEOUT_MS = 5_000;
+export const NEWS_RSS_JSON_PROXY = "https://api.rss2json.com/v1/api.json";
+
+export type NeighborhoodNewsFetchOptions = {
+  city: string;
+  locale: "fr" | "en" | "es";
+  countryCode?: string;
+  signal?: AbortSignal;
+  workerTimeoutMs?: number;
+  fallbackTimeoutMs?: number;
+};
+
 const DIGITAL_ECONOMY_RE =
   /(num[eé]rique|digital|\btech\b|technologies?|internet|cyber|start-?ups?|econom(?:ie|y)|\b[eé]conom(?:ie|ique|y)\b|business|commerces?|fintech|crypto|bitcoin|\bIA\b|\bAI\b|intelligence artificielle|artificial intelligence|software|logiciel|broadband|fibres?|\b5g\b|emploi tech|remote work|t[eé]l[eé]travail|e-?commerce|innovation)/iu;
 
@@ -287,58 +302,143 @@ export function cacheIsFresh(payload: NeighborhoodNewsPayload, now = Date.now())
   return now - payload.fetchedAt < NEWS_CACHE_MAX_AGE_MS;
 }
 
-async function fetchRssText(rssUrl: string, signal?: AbortSignal): Promise<string> {
-  // Direct fetch usually fails (no CORS on Google News). Try public read proxies.
-  const proxies = [
-    `https://api.allorigins.win/raw?url=${encodeURIComponent(rssUrl)}`,
-    `https://corsproxy.io/?${encodeURIComponent(rssUrl)}`,
-  ];
-  for (const proxy of proxies) {
-    try {
-      const response = await fetch(proxy, {
-        method: "GET",
-        headers: { Accept: "application/rss+xml, application/xml, text/xml, */*" },
-        signal,
-      });
-      if (!response.ok) continue;
-      const text = await response.text();
-      if (text.includes("<item")) return text;
-    } catch (caught) {
-      if (caught instanceof DOMException && caught.name === "AbortError") throw caught;
-    }
-  }
-  return "";
+export function isAbortError(caught: unknown): boolean {
+  return (
+    (typeof DOMException !== "undefined" &&
+      caught instanceof DOMException &&
+      caught.name === "AbortError") ||
+    (caught instanceof Error && caught.name === "AbortError")
+  );
 }
 
-async function fetchNeighborhoodNewsViaRss(options: {
-  city: string;
-  locale: "fr" | "en" | "es";
-  countryCode?: string;
-  signal?: AbortSignal;
-}): Promise<NeighborhoodNewsPayload> {
+export function mergeAbortSignals(signals: Array<AbortSignal | undefined>): AbortSignal | undefined {
+  const live = signals.filter((signal): signal is AbortSignal => Boolean(signal));
+  if (live.length === 0) return undefined;
+  if (live.length === 1) return live[0];
+  if (typeof AbortSignal.any === "function") return AbortSignal.any(live);
+  const controller = new AbortController();
+  for (const signal of live) {
+    if (signal.aborted) {
+      controller.abort();
+      break;
+    }
+    signal.addEventListener("abort", () => controller.abort(), { once: true });
+  }
+  return controller.signal;
+}
+
+export async function fetchWithTimeout(
+  url: string,
+  init: RequestInit,
+  timeoutMs: number,
+  parent?: AbortSignal,
+): Promise<Response> {
+  if (parent?.aborted) {
+    throw parent.reason instanceof Error
+      ? parent.reason
+      : new DOMException("Aborted", "AbortError");
+  }
+  const timer = new AbortController();
+  const id = setTimeout(() => timer.abort(), timeoutMs);
+  const signal = mergeAbortSignals([parent, timer.signal]);
+  try {
+    return await fetch(url, { ...init, signal });
+  } finally {
+    clearTimeout(id);
+  }
+}
+
+export function parseRss2JsonItems(value: unknown): Array<{
+  title: string;
+  link: string;
+  source: string;
+  publishedAt: string | null;
+}> {
+  if (!value || typeof value !== "object") return [];
+  const record = value as { status?: unknown; items?: unknown };
+  if (record.status === "error") return [];
+  if (!Array.isArray(record.items)) return [];
+
+  const items: Array<{
+    title: string;
+    link: string;
+    source: string;
+    publishedAt: string | null;
+  }> = [];
+  for (const entry of record.items) {
+    if (!entry || typeof entry !== "object") continue;
+    const row = entry as Record<string, unknown>;
+    const rawTitle = typeof row.title === "string" ? row.title.trim() : "";
+    const link = typeof row.link === "string" ? row.link.trim() : "";
+    if (!rawTitle || !link || !/^https?:\/\//i.test(link)) continue;
+    const author = typeof row.author === "string" ? row.author.trim() : "";
+    const source = author || sourceFromItem("", rawTitle);
+    const title = stripSourceSuffix(rawTitle, source) || rawTitle;
+    let publishedAt: string | null = null;
+    if (typeof row.pubDate === "string" && row.pubDate.trim()) {
+      const ms = Date.parse(row.pubDate.replace(" ", "T"));
+      publishedAt = Number.isFinite(ms) ? new Date(ms).toISOString() : null;
+    }
+    items.push({ title, link, source: source || "Google News", publishedAt });
+  }
+  return items;
+}
+
+type RssFallbackResult = {
+  items: Array<{ title: string; link: string; source: string; publishedAt: string | null }>;
+  ok: boolean;
+};
+
+async function fetchRssItemsFallback(
+  rssUrl: string,
+  parent: AbortSignal | undefined,
+  timeoutMs: number,
+): Promise<RssFallbackResult> {
+  try {
+    const jsonUrl = `${NEWS_RSS_JSON_PROXY}?rss_url=${encodeURIComponent(rssUrl)}`;
+    const response = await fetchWithTimeout(
+      jsonUrl,
+      { method: "GET", headers: { Accept: "application/json" } },
+      timeoutMs,
+      parent,
+    );
+    if (response.ok) {
+      const payload = (await response.json()) as unknown;
+      if (payload && typeof payload === "object" && (payload as { status?: unknown }).status === "ok") {
+        return { items: parseRss2JsonItems(payload), ok: true };
+      }
+    }
+  } catch (caught) {
+    if (isAbortError(caught) && parent?.aborted) throw caught;
+  }
+  return { items: [], ok: false };
+}
+
+async function fetchNeighborhoodNewsViaRss(
+  options: NeighborhoodNewsFetchOptions & { city: string },
+): Promise<NeighborhoodNewsPayload & { ok: boolean }> {
+  const timeoutMs = options.fallbackTimeoutMs ?? NEWS_FALLBACK_TIMEOUT_MS;
   const locale = newsLocaleParams(options.locale, options.countryCode);
   const digitalUrl = googleNewsSearchUrl(
     digitalEconomyQuery(options.city, options.locale),
     locale,
   );
   const localUrl = googleNewsSearchUrl(localNewsQuery(options.city), locale);
-  const [digitalXml, localXml] = await Promise.all([
-    fetchRssText(digitalUrl, options.signal),
-    fetchRssText(localUrl, options.signal),
+  const [digital, local] = await Promise.all([
+    fetchRssItemsFallback(digitalUrl, options.signal, timeoutMs),
+    fetchRssItemsFallback(localUrl, options.signal, timeoutMs),
   ]);
   return {
     city: options.city,
     fetchedAt: Date.now(),
-    items: mergeNewsBuckets(parseRssItems(digitalXml), parseRssItems(localXml)),
+    items: mergeNewsBuckets(digital.items, local.items),
+    ok: digital.ok || local.ok,
   };
 }
 
-export async function fetchNeighborhoodNews(options: {
-  city: string;
-  locale: "fr" | "en" | "es";
-  countryCode?: string;
-  signal?: AbortSignal;
-}): Promise<NeighborhoodNewsPayload> {
+export async function fetchNeighborhoodNews(
+  options: NeighborhoodNewsFetchOptions,
+): Promise<NeighborhoodNewsPayload> {
   const city = options.city.trim();
   if (!city) {
     return { city: "", fetchedAt: Date.now(), items: [] };
@@ -350,22 +450,25 @@ export async function fetchNeighborhoodNews(options: {
   if (options.countryCode) url.searchParams.set("country", options.countryCode);
 
   try {
-    const response = await fetch(url.toString(), {
-      method: "GET",
-      headers: { Accept: "application/json" },
-      signal: options.signal,
-    });
+    const response = await fetchWithTimeout(
+      url.toString(),
+      { method: "GET", headers: { Accept: "application/json" } },
+      options.workerTimeoutMs ?? NEWS_WORKER_TIMEOUT_MS,
+      options.signal,
+    );
     if (response.ok) {
       const payload = parseNewsPayload(await response.json());
       if (payload) return payload;
     }
   } catch (caught) {
-    if (caught instanceof DOMException && caught.name === "AbortError") throw caught;
+    if (isAbortError(caught) && options.signal?.aborted) throw caught;
   }
 
-  // Worker not redeployed yet, or CORS/network miss — try RSS via CORS-friendly proxies.
+  // Worker not redeployed (GET /news → 405) or hang/CORS — timed rss2json fallback.
   const viaRss = await fetchNeighborhoodNewsViaRss({ ...options, city });
-  if (viaRss.items.length) return viaRss;
+  if (viaRss.items.length || viaRss.ok) {
+    return { city: viaRss.city, fetchedAt: viaRss.fetchedAt, items: viaRss.items };
+  }
   throw new Error("news_unavailable");
 }
 

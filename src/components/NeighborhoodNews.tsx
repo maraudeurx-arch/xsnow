@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { PartnerAdSlot } from "@/components/PartnerAdSlot";
 import { useI18n } from "@/lib/i18n/locale";
 import { usePlace } from "@/lib/place";
 import {
@@ -12,6 +13,7 @@ import {
   type NeighborhoodNewsItem,
   type NeighborhoodNewsPayload,
 } from "@/lib/neighborhood-news";
+import { visiblePartnerSlots } from "@/lib/partner-ads";
 
 export type NeighborhoodNewsState = {
   status: "hidden" | "need_city" | "loading" | "ready" | "empty" | "error";
@@ -27,19 +29,25 @@ export function NeighborhoodNews({ onNewsChange }: Props) {
   const { city, countryCode, resolved } = usePlace();
   const { locale, m } = useI18n();
   const copy = m.neighborhoodNews;
+  const slots = visiblePartnerSlots();
   const [status, setStatus] = useState<NeighborhoodNewsState["status"]>(
     resolved ? "loading" : "need_city",
   );
   const [items, setItems] = useState<NeighborhoodNewsItem[]>([]);
   const [fromCache, setFromCache] = useState(false);
+  const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
+    let alive = true;
+
     if (!resolved) {
       setStatus("need_city");
       setItems([]);
       setFromCache(false);
       onNewsChange?.({ status: "need_city", items: [], headlineLine: "" });
-      return;
+      return () => {
+        alive = false;
+      };
     }
 
     const cached = readCachedNews(city);
@@ -52,7 +60,11 @@ export function NeighborhoodNews({ onNewsChange }: Props) {
         items: cached.items,
         headlineLine: headlinesForPrompt(cached.items),
       });
-      if (cacheIsFresh(cached)) return;
+      if (cacheIsFresh(cached) && attempt === 0) {
+        return () => {
+          alive = false;
+        };
+      }
     } else {
       setStatus("loading");
       setItems([]);
@@ -68,6 +80,7 @@ export function NeighborhoodNews({ onNewsChange }: Props) {
       signal: controller.signal,
     })
       .then((payload: NeighborhoodNewsPayload) => {
+        if (!alive) return;
         writeCachedNews(payload);
         setItems(payload.items);
         setFromCache(false);
@@ -79,8 +92,8 @@ export function NeighborhoodNews({ onNewsChange }: Props) {
           headlineLine: headlinesForPrompt(payload.items),
         });
       })
-      .catch((caught) => {
-        if (caught instanceof DOMException && caught.name === "AbortError") return;
+      .catch(() => {
+        if (!alive) return;
         if (cached?.items.length) {
           setItems(cached.items);
           setFromCache(true);
@@ -97,17 +110,20 @@ export function NeighborhoodNews({ onNewsChange }: Props) {
         onNewsChange?.({ status: "error", items: [], headlineLine: "" });
       });
 
-    return () => controller.abort();
-  }, [city, countryCode, locale, onNewsChange, resolved]);
+    return () => {
+      alive = false;
+      controller.abort();
+    };
+  }, [attempt, city, countryCode, locale, onNewsChange, resolved]);
 
   return (
     <section
       data-neighborhood-news
       data-news-status={status}
       aria-label={copy.title}
-      className="flex shrink-0 flex-col gap-1 rounded-xl border border-gold/30 bg-[rgba(8,8,12,0.88)] px-2 py-1.5"
+      className="flex min-h-0 flex-1 flex-col gap-1 overflow-hidden rounded-xl border border-gold/30 bg-[rgba(8,8,12,0.88)] px-2 py-1.5"
     >
-      <div className="flex items-baseline justify-between gap-2 px-0.5">
+      <div className="flex shrink-0 items-baseline justify-between gap-2 px-0.5">
         <h2 className="text-[10px] font-extrabold tracking-wide text-gold">{copy.title}</h2>
         {fromCache && status === "ready" ? (
           <span className="text-[8px] font-semibold text-ice/60">{copy.cached}</span>
@@ -115,54 +131,76 @@ export function NeighborhoodNews({ onNewsChange }: Props) {
       </div>
 
       {status === "need_city" ? (
-        <p className="px-0.5 text-[10px] leading-snug text-snow/70" role="status">
+        <p className="shrink-0 px-0.5 text-[10px] leading-snug text-snow/70" role="status">
           {copy.needCity}
         </p>
       ) : null}
 
       {status === "loading" ? (
-        <p className="px-0.5 text-[10px] leading-snug text-ice/70" role="status">
+        <p className="shrink-0 px-0.5 text-[10px] leading-snug text-ice/70" role="status">
           {copy.loading}
         </p>
       ) : null}
 
       {status === "empty" ? (
-        <p className="px-0.5 text-[10px] leading-snug text-snow/70" role="status">
+        <p className="shrink-0 px-0.5 text-[10px] leading-snug text-snow/70" role="status">
           {copy.empty}
         </p>
       ) : null}
 
       {status === "error" ? (
-        <p className="px-0.5 text-[10px] leading-snug text-gold" role="status">
-          {copy.error}
-        </p>
+        <div className="flex shrink-0 items-start justify-between gap-2 px-0.5">
+          <p className="text-[10px] leading-snug text-gold" role="status">
+            {copy.error}
+          </p>
+          <button
+            type="button"
+            data-news-retry
+            className="shrink-0 rounded-full border border-gold/50 px-2 py-0.5 text-[9px] font-extrabold text-gold"
+            onClick={() => setAttempt((value) => value + 1)}
+          >
+            {copy.retry}
+          </button>
+        </div>
       ) : null}
 
-      {status === "ready" && items.length > 0 ? (
-        <ul className="flex max-h-[min(28dvh,9.5rem)] flex-col gap-1 overflow-y-auto">
-          {items.map((item) => (
-            <li key={item.id}>
-              <a
-                href={item.link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block rounded-lg border border-white/10 bg-white/[0.04] px-2 py-1.5 hover:border-gold/40 hover:bg-white/[0.07]"
-              >
-                <span className="block text-[11px] font-semibold leading-snug text-snow">
-                  {item.title}
-                </span>
-                <span className="mt-0.5 flex flex-wrap items-center gap-x-1.5 text-[8px] font-bold uppercase tracking-wide text-ice/65">
-                  <span>
-                    {item.category === "digital_economy" ? copy.badgeDigital : copy.badgeLocal}
+      <div className="flex min-h-0 flex-1 flex-col gap-1 overflow-hidden">
+        {status === "ready" && items.length > 0 ? (
+          <ul className="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto">
+            {items.map((item) => (
+              <li key={item.id}>
+                <a
+                  href={item.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block rounded-lg border border-white/10 bg-white/[0.04] px-2 py-1.5 hover:border-gold/40 hover:bg-white/[0.07]"
+                >
+                  <span className="block text-[11px] font-semibold leading-snug text-snow">
+                    {item.title}
                   </span>
-                  <span aria-hidden>·</span>
-                  <span>{item.source}</span>
-                </span>
-              </a>
-            </li>
-          ))}
-        </ul>
-      ) : null}
+                  <span className="mt-0.5 flex flex-wrap items-center gap-x-1.5 text-[8px] font-bold uppercase tracking-wide text-ice/65">
+                    <span>
+                      {item.category === "digital_economy" ? copy.badgeDigital : copy.badgeLocal}
+                    </span>
+                    <span aria-hidden>·</span>
+                    <span>{item.source}</span>
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <div className="min-h-0 flex-1" aria-hidden />
+        )}
+
+        {slots.length > 0 ? (
+          <div className="flex shrink-0 flex-col gap-1">
+            {slots.map((slot) => (
+              <PartnerAdSlot key={slot} slot={slot} />
+            ))}
+          </div>
+        ) : null}
+      </div>
     </section>
   );
 }

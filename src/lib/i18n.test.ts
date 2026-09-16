@@ -180,6 +180,12 @@ describe("vos idees copy", () => {
     assert.deepEqual(Object.keys(es.neighborhoodNews), Object.keys(fr.neighborhoodNews));
     assert.match(fr.systemPrompt, /Nouvelles du Quartier/);
     assert.match(fr.neighborhoodNews.promptNoHeadlines, /ne fabrique jamais/);
+    assert.equal(fr.neighborhoodNews.partnerSlot, "Espace partenaire");
+    assert.equal(en.neighborhoodNews.partnerSlot, "Partner space");
+    assert.equal(es.neighborhoodNews.partnerSlot, "Espacio para socios");
+    assert.match(fr.neighborhoodNews.partnerPlaceholder, /ferme à clics/);
+    assert.match(fr.neighborhoodNews.partnerFunding, /Grok et Cursor/);
+    assert.equal(fr.neighborhoodNews.retry, "Réessayer");
   });
 });
 
