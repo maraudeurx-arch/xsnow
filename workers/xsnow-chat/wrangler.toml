@@ -16,6 +16,11 @@ binding = "AI"
 # Optional compile page:
 #   npx wrangler secret put IDEAS_OWNER_SECRET
 # CORS allowlist lives in src/cors.ts (GitHub Pages + opencommunity.app, never *).
+# Proximity-alert SMS (optional; soft-fails if unset):
+#   npx wrangler secret put TWILIO_ACCOUNT_SID
+#   npx wrangler secret put TWILIO_AUTH_TOKEN
+#   npx wrangler secret put TWILIO_FROM_NUMBER
+# D1 table `proximity_alerts`: `npx wrangler d1 migrations apply xsnow-opc-stats --remote`
 # Do not put secrets in this file.
 [[d1_databases]]
 binding = "DB"

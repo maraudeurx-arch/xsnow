@@ -16,6 +16,7 @@ Covers pure lib helpers:
 - Client-side stats event shaping
 - Owner idea inbox payload sanitization (`src/lib/idea-inbox.ts`, `workers/xsnow-chat/src/ideas.ts`)
 - Worker CORS allowlist (`workers/xsnow-chat/src/cors.ts`) — GitHub Pages + opencommunity.app, never `*`
+- Consent-based proximity alerts: weekly schedule, 5/10/20 km, invite token, geofence, Twilio SMS soft-fail (`src/lib/proximity-alerts.ts`, `src/lib/alert-sms.ts`, `workers/xsnow-chat/src/alerts.ts`)
 - Neighbourhood news fetch timeouts (Worker + JSON RSS fallback) and Accueil partner-slot config (`src/lib/neighborhood-news.ts`, `src/lib/partner-ads.ts`)
 
 ```bash
@@ -65,6 +66,7 @@ Critical paths:
 - Fresh storage: `/services/{kind}` boards empty (no demo seed titles)
 - Regional ambiance: autumn before geo; Caribbean for `?city=Port-au-Prince`; CA stays seasonal
 - Vos idées: submit stays in `localStorage` (device wall); a sanitized copy is POSTed to `/ideas` (e2e stubs the Worker so CI does not pollute production)
+- Alertes de proximité: guardian form (prénom, lien, place, weekly hours, 5/10/20 km) + real invite/accept consent (e2e stubs `/alerts`)
 - Owner inbox page: empty state has no invented ideas; secret required
 - Onboarding: avatar picker before geo; About readable without the consent sheet
 - Transparency: footer trust pages, shipped `APP_VERSION`, public OPC email / GitHub

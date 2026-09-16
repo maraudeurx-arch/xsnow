@@ -443,7 +443,7 @@ describe("legal copy is present in FR/EN/ES", () => {
     assert.match(en.profile.infosPrivacy, /sold/);
     assert.match(es.profile.infosPrivacy, /nunca se divulgará/);
     assert.match(es.profile.infosPrivacy, /venderá/);
-    assert.match(en.profile.releaseNotesBody, /0\.3\.3/);
+    assert.match(en.profile.releaseNotesBody, /0\.3\.4/);
     assert.deepEqual(Object.keys(en.profile), Object.keys(fr.profile));
     assert.deepEqual(Object.keys(es.profile), Object.keys(fr.profile));
   });
@@ -544,6 +544,35 @@ describe("transparency copy stays honest", () => {
       const text = flattenTrust(pack);
       assert.doesNotMatch(text, /CertiK|OpenZeppelin|Trail of Bits/i);
     }
+  });
+});
+
+describe("alertes de proximité copy", () => {
+  it("keeps FR/EN/ES alert strings in sync and stays honest about consent", () => {
+    assert.deepEqual(Object.keys(en.alerts), Object.keys(fr.alerts));
+    assert.deepEqual(Object.keys(es.alerts), Object.keys(fr.alerts));
+    assert.deepEqual(Object.keys(en.alerts.days), Object.keys(fr.alerts.days));
+    assert.deepEqual(Object.keys(es.alerts.days), Object.keys(fr.alerts.days));
+    assert.equal(fr.alerts.person, "Prénom");
+    assert.equal(fr.alerts.place, "Endroit où la personne doit être");
+    assert.equal(fr.alerts.radius5, "5 km");
+    assert.equal(fr.alerts.radius10, "10 km");
+    assert.equal(fr.alerts.radius20, "20 km");
+    assert.equal(fr.alerts.days.lun, "Lundi");
+    assert.equal(fr.alerts.days.dim, "Dimanche");
+    assert.match(fr.alerts.honestLead, /Apple Localiser/);
+    assert.match(fr.alerts.honestLead, /iCloud/);
+    assert.match(fr.alerts.honestLead, /Messages/);
+    assert.match(en.alerts.honestLead, /Find My/);
+    assert.match(es.alerts.honestLead, /Apple Buscar/);
+    assert.match(fr.alerts.honestIos, /écran d’accueil/);
+    assert.match(en.alerts.consentAccept, /I agree to share my location/);
+    assert.match(fr.alerts.consentAccept, /J’accepte de partager ma position/);
+    assert.match(fr.features.alertes.lead, /pas Apple Localiser/);
+    assert.match(en.features.alertes.lead, /not Apple Find My/);
+    assert.match(fr.legal.privacy.sections[3].body, /Apple Localiser/);
+    assert.match(en.legal.privacy.sections[3].body, /Find My/);
+    assert.doesNotMatch(fr.alerts.honestLead, /identifiant iCloud d’un proche/i);
   });
 });
 

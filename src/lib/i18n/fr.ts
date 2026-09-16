@@ -171,7 +171,7 @@ export const fr = {
         },
         {
           heading: "Ce que nous collectons",
-          body: "Sur cet appareil (localStorage) : langue, avatar, tes annonces, tes consentements, et si tu t’inscris : prénom, nom, e-mail, téléphone et un numéro local OPC-XXXX — pas de serveur de profils. Si tu t’inscris, un avis (prénom, numéro OPC, e-mail) part vers opencommunity.opc@gmail.com. Si tu acceptes la position : ville + coordonnées pour le nom de ville — pas de suivi continu. Si tu acceptes les stats : événements anonymes vers un Worker Cloudflare (D1) : session, langue, ville/pays si la position est aussi acceptée, extraits d’idées de monétisation (texte court ; e-mails et GPS retirés). Si tu envoies une idée dans Vos idées : un e-mail assaini (phrase, ville, date, numéro OPC si inscrit — pas de téléphone) va à opencommunity.opc@gmail.com, pour décider quoi construire ; ça ne dépend pas du consentement stats. Le chat de l’avatar envoie tes messages au Worker pour une réponse. Pas de pub tierce.",
+          body: "Sur cet appareil (localStorage) : langue, avatar, tes annonces, tes consentements, alertes de proximité (horaire, endroit, lien d’invitation), et si tu t’inscris : prénom, nom, e-mail, téléphone et un numéro local OPC-XXXX — pas de serveur de profils. Si tu t’inscris, un avis (prénom, numéro OPC, e-mail) part vers opencommunity.opc@gmail.com. Si tu acceptes la position : ville + coordonnées pour le nom de ville — pas de suivi continu. Un proche d’alerte n’est localisé que s’il a accepté le GPS dans OPC. Si tu acceptes les stats : événements anonymes vers un Worker Cloudflare (D1) : session, langue, ville/pays si la position est aussi acceptée, extraits d’idées de monétisation (texte court ; e-mails et GPS retirés). Si tu envoies une idée dans Vos idées : un e-mail assaini (phrase, ville, date, numéro OPC si inscrit — pas de téléphone) va à opencommunity.opc@gmail.com, pour décider quoi construire ; ça ne dépend pas du consentement stats. Le chat de l’avatar envoie tes messages au Worker pour une réponse. Pas de pub tierce.",
         },
         {
           heading: "Pourquoi",
@@ -179,7 +179,7 @@ export const fr = {
         },
         {
           heading: "Ce que nous ne faisons pas",
-          body: "Nous ne vendons pas de données personnelles. Pas de suivi GPS continu sans consentement. Pas de revente à des annonceurs. Tu peux tout refuser et quand même utiliser l’app (libellé générique : votre quartier, ou ta dernière ville connue).",
+          body: "Nous ne vendons pas de données personnelles. Pas de suivi GPS continu sans consentement. Les alertes de proximité n’utilisent pas Apple Localiser : chaque proche ouvre OPC et accorde lui-même le GPS du navigateur. Pas d’identifiant Apple, pas d’accès Messages. Pas de revente à des annonceurs. Tu peux tout refuser et quand même utiliser l’app (libellé générique : votre quartier, ou ta dernière ville connue).",
         },
         {
           heading: "Consentement (Canada / Québec)",
@@ -367,7 +367,7 @@ export const fr = {
     },
     alertes: {
       title: "Alertes de proximité",
-      lead: "Recevez une alerte si un enfant, un conjoint ou des parents âgés s’éloignent de la zone où ils doivent être.",
+      lead: "Recevez une alerte si un enfant, un conjoint ou des parents âgés s’éloignent de la zone où ils doivent être. Le proche accepte lui-même — pas Apple Localiser.",
     },
     reportage: {
       title: "Avec l’IA, crée des reportages sur votre quartier",
@@ -456,7 +456,7 @@ export const fr = {
       "Tes offres, demandes, idées, textes de partage, inscription (prénom, nom, e-mail, téléphone, numéro OPC-XXXX) et coordonnées Interac/PayPal restent sur cet appareil. Une copie assainie d’une idée (phrase, ville, date, numéro OPC si inscrit — pas tes coordonnées) peut partir par e-mail vers opencommunity.opc@gmail.com. Rien de personnel n’apparaît chez un autre visiteur tant que GOV + propriétaire n’approuvent pas une publication dans une version numérotée (catalogue public).",
     releaseNotesTitle: "Notes de version",
     releaseNotesBody:
-      "0.3.3 — Vos idées : confirmation locale, puis e-mail assaini vers opencommunity.opc@gmail.com (Worker POST /ideas, Resend). Inscription : avis optionnel POST /register. OPC-XXXX reste local. Catalogue public toujours vide.",
+      "0.3.4 — Alertes de proximité : horaire lundi→dimanche, rayon 5/10/20 km, invitation et consentement du proche (GPS du navigateur / PWA). SMS Twilio optionnel (secrets Worker). Pas d’Apple Localiser / iCloud / Messages. 0.3.3 — Vos idées : e-mail assaini vers opencommunity.opc@gmail.com. Catalogue public toujours vide.",
     language: "Langue",
     comingSoon: "Notifications et saison d’affichage arriveront ici.",
     locationConsent: "Position",
@@ -603,6 +603,67 @@ export const fr = {
     radiusPh: "200 m",
     submit: "Créer l’alerte",
     zone: "Zone : {place}",
+    honestLead:
+      "Chaque proche doit ouvrir Open Community (ou le lien d’invitation) et accorder le partage de position lui-même. OPC n’utilise pas Apple Localiser, iCloud, ni Messages. L’avatar ne lit pas tes textos.",
+    honestIos:
+      "Sur iPhone (écran d’accueil), les vérifications ont lieu quand OPC est ouvert. iOS ne permet pas un GPS de fond fiable dans une app web.",
+    radius5: "5 km",
+    radius10: "10 km",
+    radius20: "20 km",
+    schedule: "Horaire de la semaine",
+    dayOn: "Actif",
+    start: "Début",
+    end: "Fin",
+    days: {
+      lun: "Lundi",
+      mar: "Mardi",
+      mer: "Mercredi",
+      jeu: "Jeudi",
+      ven: "Vendredi",
+      sam: "Samedi",
+      dim: "Dimanche",
+    },
+    capturePlace: "Enregistrer ma position actuelle comme endroit",
+    placeCaptured: "Endroit enregistré sur cet appareil ({lat}, {lon}).",
+    placeMissing:
+      "Sans GPS, on ne peut pas mesurer la distance tant que le proche n’enregistre pas l’endroit en acceptant.",
+    phone: "Téléphone SMS (tuteur)",
+    phonePh: "819-…",
+    email: "E-mail d’alerte (optionnel)",
+    emailPh: "toi@exemple.ca",
+    notifyHint:
+      "SMS via le Worker si Twilio est configuré ; sinon l’alerte reste dans l’app. L’e-mail suit la même idée (Resend), sans lire Messages.",
+    consentPending: "En attente d’acceptation",
+    consentGranted: "Partage accepté par le proche",
+    consentDenied: "Partage refusé",
+    inviteLabel: "Lien d’invitation",
+    copyInvite: "Copier le lien",
+    inviteCopied: "Lien copié.",
+    inviteFailed: "Copie impossible. Sélectionne le lien.",
+    inviteBlurb:
+      "Open Community — {person} doit ouvrir ce lien et accepter le partage de position (pas Apple Localiser) : {url}",
+    checkNow: "Vérifier la position maintenant",
+    remove: "Retirer",
+    noticesTitle: "Alertes sur cet appareil",
+    noticeLine: "{person} est à {km} km de {place}.",
+    pingOk: "Position reçue.",
+    pingOutside: "{person} est hors zone ({km} km / {radius} km) pendant la plage prévue.",
+    pingInside: "{person} est dans la zone ({km} km).",
+    pingUnscheduled: "Hors horaire : pas d’alerte.",
+    pingNoPlace: "Endroit sans coordonnées : enregistre la position (toi ou le proche).",
+    pingDenied: "Position refusée. Le proche doit autoriser le GPS dans le navigateur.",
+    pingUnsupported: "La géolocalisation n’est pas disponible sur cet appareil.",
+    consentTitle: "Partager ta position",
+    consentLead:
+      "{person} — endroit prévu : {place} ({radius} km). C’est toi qui acceptes. Pas Apple Localiser, pas d’identifiant Apple, pas de Messages.",
+    consentAccept: "J’accepte de partager ma position",
+    consentRefuse: "Refuser",
+    consentNeedGps: "Il faut autoriser la position de ce téléphone pour accepter.",
+    setPlaceHere: "Je suis à l’endroit prévu maintenant",
+    sharingAs: "Cet appareil partage la position pour {person}.",
+    lastPing: "Dernier point : {km} km",
+    smsSoft: "SMS : {status}",
+    hoursSummary: "{days} · {start}–{end}",
   },
   attributes: {
     suggestions: ["Voisin", "Commerçant", "Bénévole", "Parent", "Grand-parent", "Livreur", "Étudiant", "Aidant"],

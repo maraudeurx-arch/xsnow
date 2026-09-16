@@ -1,5 +1,5 @@
 /**
- * Browser origins allowed to call the Worker (chat, news, geo, stats, /ideas, /register).
+ * Browser origins allowed to call the Worker (chat, news, geo, stats, /ideas, /register, /alerts).
  * Allowlist only — never `*`. Unknown hosts (previews, ub.io, …) get no
  * Access-Control-Allow-Origin, so the browser blocks the request as a network error.
  */
