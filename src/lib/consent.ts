@@ -1,9 +1,11 @@
 /**
- * Optional analytics consent — localStorage only.
+ * Optional analytics consent — device-local (localStorage + IndexedDB backup).
  *
  * Location consent stays in `location.ts` (`xsnow.geoConsent`). Both must be
  * answered before the app asks the browser for GPS or POSTs usage events.
  */
+
+import { durableGet, durableSet } from "./durable-storage.ts";
 
 export const ANALYTICS_CONSENT_KEY = "xsnow.analyticsConsent";
 
@@ -28,26 +30,12 @@ export function subscribeAnalyticsConsent(onStoreChange: () => void) {
   };
 }
 
-function storageOf(
-  store?: Storage,
-): Storage | undefined {
-  if (store) return store;
-  if (typeof window === "undefined") return undefined;
-  try {
-    return window.localStorage;
-  } catch {
-    return undefined;
-  }
-}
-
 export function readAnalyticsConsent(
   store?: Storage,
 ): AnalyticsConsent {
   if (store === undefined && cached !== undefined) return cached;
-  const storage = storageOf(store);
-  if (!storage) return "unset";
   try {
-    const raw = storage.getItem(ANALYTICS_CONSENT_KEY);
+    const raw = durableGet(ANALYTICS_CONSENT_KEY, store);
     if (!raw) {
       if (store === undefined) cached = "unset";
       return "unset";
@@ -66,9 +54,7 @@ export function writeAnalyticsConsent(
   consent: Exclude<AnalyticsConsent, "unset">,
   store?: Storage,
 ) {
-  const storage = storageOf(store);
-  if (!storage) return;
-  storage.setItem(ANALYTICS_CONSENT_KEY, JSON.stringify(consent));
+  durableSet(ANALYTICS_CONSENT_KEY, JSON.stringify(consent), store);
   if (store === undefined) emit();
 }
 

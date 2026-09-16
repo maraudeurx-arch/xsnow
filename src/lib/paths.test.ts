@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import {
   ABOUT_HREF,
+  BASE_PATH,
   GITHUB_ISSUES_URL,
   GITHUB_REPO_URL,
   HOW_IT_WORKS_HREF,
@@ -10,6 +11,7 @@ import {
   OPC_PUBLIC_MAILTO,
   PRIVACY_HREF,
   PROOFS_HREF,
+  PWA_SCOPE,
   SECURITY_HREF,
   TERMS_HREF,
   TRUST_NAV,
@@ -30,6 +32,13 @@ describe("public trust paths", () => {
     assert.equal(OPC_PUBLIC_EMAIL, "opencommunity.opc@gmail.com");
     assert.equal(OPC_PUBLIC_MAILTO, "mailto:opencommunity.opc@gmail.com");
     assert.doesNotMatch(OPC_PUBLIC_EMAIL, /icloud/i);
+  });
+
+  it("keeps the PWA Home Screen URL under /xsnow/, not github.io root", () => {
+    assert.equal(BASE_PATH, "/xsnow");
+    assert.equal(PWA_SCOPE, "/xsnow/");
+    assert.equal(PWA_SCOPE.startsWith(BASE_PATH), true);
+    assert.notEqual(PWA_SCOPE, "/");
   });
 
   it("treats trust pages as readable without the consent sheet", () => {
