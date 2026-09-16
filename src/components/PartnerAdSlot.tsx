@@ -148,7 +148,7 @@ function CreativeBody({
           decoding="async"
         />
       ) : null}
-      <div className="flex flex-1 flex-col justify-center gap-0.5 px-2 py-1.5 text-left">
+      <div className={`flex flex-1 flex-col justify-center gap-0.5 text-left ${compact ? "px-2 py-1" : "px-2 py-1.5"}`}>
         <p className="text-[10px] font-extrabold leading-snug text-snow">{creative.name}</p>
         <p className="text-[8px] leading-snug text-snow/75">{creative.tagline}</p>
         {compact ? null : <p className="text-[8px] leading-snug text-ice/60">{funding}</p>}

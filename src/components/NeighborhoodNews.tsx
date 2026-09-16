@@ -168,47 +168,54 @@ export function NeighborhoodNews({ onNewsChange }: Props) {
       ) : null}
 
       <div data-news-body className="flex min-h-0 flex-1 grow flex-col gap-1.5 overflow-hidden">
-        {placed.leading.map((slot) => (
-          <PartnerAdSlot key={slot} slot={slot} />
-        ))}
         {hasHeadlines ? (
-          <ul
-            data-news-list
-            className="flex min-h-0 flex-1 grow flex-col gap-1 overflow-y-auto"
-          >
-            {items.map((item, index) => (
-              <li key={item.id}>
-                <a
-                  href={item.link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block rounded-lg border border-white/10 bg-white/[0.04] px-2 py-1.5 hover:border-gold/40 hover:bg-white/[0.07]"
-                >
-                  <span className="block text-[11px] font-semibold leading-snug text-snow">
-                    {item.title}
-                  </span>
-                  <span className="mt-0.5 flex flex-wrap items-center gap-x-1.5 text-[8px] font-bold uppercase tracking-wide text-ice/65">
-                    <span>
-                      {item.category === "digital_economy"
-                        ? copy.badgeDigital
-                        : copy.badgeLocal}
-                    </span>
-                    <span aria-hidden>·</span>
-                    <span>{item.source}</span>
-                  </span>
-                </a>
-                {index === 0
-                  ? placed.inline.map((slot) => (
-                      <div key={slot} className="mt-1.5">
-                        <PartnerAdSlot slot={slot} />
-                      </div>
-                    ))
-                  : null}
-              </li>
+          <div className="flex min-h-0 flex-1 grow flex-col gap-1 overflow-y-auto">
+            {placed.leading.map((slot) => (
+              <PartnerAdSlot key={slot} slot={slot} />
             ))}
-          </ul>
+            <ul
+              data-news-list
+              className="flex min-h-0 flex-1 grow flex-col gap-1"
+            >
+              {items.map((item, index) => (
+                <li key={item.id}>
+                  <a
+                    href={item.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block rounded-lg border border-white/10 bg-white/[0.04] px-2 py-1.5 hover:border-gold/40 hover:bg-white/[0.07]"
+                  >
+                    <span className="block text-[11px] font-semibold leading-snug text-snow">
+                      {item.title}
+                    </span>
+                    <span className="mt-0.5 flex flex-wrap items-center gap-x-1.5 text-[8px] font-bold uppercase tracking-wide text-ice/65">
+                      <span>
+                        {item.category === "digital_economy"
+                          ? copy.badgeDigital
+                          : copy.badgeLocal}
+                      </span>
+                      <span aria-hidden>·</span>
+                      <span>{item.source}</span>
+                    </span>
+                  </a>
+                  {index === 0
+                    ? placed.inline.map((slot) => (
+                        <div key={slot} className="mt-1.5">
+                          <PartnerAdSlot slot={slot} />
+                        </div>
+                      ))
+                    : null}
+                </li>
+              ))}
+            </ul>
+          </div>
         ) : (
-          <div data-news-spacer className="min-h-0 flex-1 grow" aria-hidden />
+          <>
+            {placed.leading.map((slot) => (
+              <PartnerAdSlot key={slot} slot={slot} />
+            ))}
+            <div data-news-spacer className="min-h-0 flex-1 grow" aria-hidden />
+          </>
         )}
 
         {placed.trailing.map((slot) => (
