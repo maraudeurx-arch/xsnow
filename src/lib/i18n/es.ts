@@ -353,7 +353,7 @@ export const es: Messages = {
     },
     gagnerMaintenant: {
       title: "Ganar ahora",
-      lead: "Tres caminos honestos — no una granja de anuncios. El barrio primero.",
+      lead: "",
     },
     sondages: {
       title: "Responde encuestas y gana dinero",
@@ -789,43 +789,6 @@ export const es: Messages = {
     requestMailSubject: "Solicitud: {title}",
     requestMailBody:
       "Hola,\n\nQuiero reservar « {title} » el {date}.\n\n{name}\n{contact}\n\n{message}\n\n— Open Community",
-  },
-  gagner: {
-    antiPattern:
-      "Ver anuncios en bucle, las granjas de clics y las cuentas falsas no están admitidos.",
-    neighborsTitle: "Ofertas de vecinos",
-    neighborsBody:
-      "El camino más real: publicar o reservar un servicio de barrio en este aparato. El préstamo de coche por la mañana (Interac, gasolina aparte) es una plantilla — no una oferta ya en línea para todo el mundo.",
-    neighborsCtaServices: "Publicar en Mis servicios",
-    neighborsCtaDemand: "Ver En demanda",
-    neighborsCtaCar: "Préstamo de coche (mañanas)",
-    missionsTitle: "Misiones de pago",
-    missionsBody:
-      "Los tests UX y los paneles serios pagan mejor que ver anuncios. Los importes siguen siendo modestos: cuenta en minutos, no un sueldo.",
-    missionsExamplesTitle: "Ejemplos de misiones",
-    missionsExample1: "Tests de apps y sitios (comentarios honestos, a menudo 10–20 min)",
-    missionsExample2: "Paneles de investigación tipo Prolific (estudios de pago, criterios claros)",
-    missionsExample3: "Encuestas de barrio Open Community — socios pronto",
-    missionsSoon: "Socios pronto en Open Community",
-    missionsProlific: "Prolific",
-    missionsUserTesting: "UserTesting",
-    missionsExternalHint: "Sitios externos conocidos — sales de Open Community (nueva pestaña).",
-    missionsLocal: "Encuestas OPC (pronto)",
-    missionsMicro1Title: "Anotación IA / robots (micro1)",
-    missionsMicro1Body:
-      "Etiquetado y evaluación remota de salidas de modelos (IA / robots). Rango anunciado en su ficha: unos 50–90 USD/h. Canadá figura entre los países elegibles. Candidatura solo en el sitio de micro1 — no a través de OPC.",
-    missionsMicro1Disclaimer:
-      "Tarifa no garantizada · selección · horas intermitentes · OPC no es el empleador · no pagues a OPC para postular.",
-    missionsMicro1Cta: "Postular en micro1",
-    timeTitle: "Tiempo y conexión",
-    timeBody:
-      "Publica una oferta en Mis servicios: hotspot / conexión, una mano, o presencia. Indica una tarifa y tus reglas. El vecino paga por Interac.",
-    timeCta: "Crear una oferta en Mis servicios",
-    timeHotspot: "Plantilla: Hotspot / conexión compartida",
-    timeUx: "Plantilla: Sesión de test de usuario",
-    timeWarn: "Sin granjas de clics, sin cuentas falsas.",
-    bandwidthNote:
-      "Compartir ancho de banda (fuera de OPC): importes pequeños, verifica tu operador. No es un camino recomendado aquí.",
   },
   shareOpc: {
     title: "Compartir OPC",

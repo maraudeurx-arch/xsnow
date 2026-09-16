@@ -32,13 +32,15 @@ export function FeaturePanel({
       >
         {title}
       </h2>
-      <p
-        className={`mx-auto max-w-md text-sm leading-relaxed text-pretty text-ice/85 ${
-          compact ? "mt-1" : "mt-2"
-        }`}
-      >
-        {lead}
-      </p>
+      {lead ? (
+        <p
+          className={`mx-auto max-w-md text-sm leading-relaxed text-pretty text-ice/85 ${
+            compact ? "mt-1" : "mt-2"
+          }`}
+        >
+          {lead}
+        </p>
+      ) : null}
       <div className={compact ? "mt-3 text-left" : "mt-5 text-left"}>{children}</div>
     </section>
   );
