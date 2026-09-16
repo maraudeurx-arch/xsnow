@@ -108,25 +108,33 @@ test.describe("Open Community soft-launch smoke", () => {
     await expect(page.getByLabel("Ton idée")).toBeVisible();
     await expect(page.getByRole("button", { name: "Envoyer l’idée" })).toBeVisible();
 
-    // Wipe every on-device layer so we prove the empty public catalog does not refill ideas.
-    // localStorage alone is not enough: durable memory also keeps sessionStorage + IndexedDB.
+    // Leave the app so IndexedDB connections close, then wipe every durable layer.
+    // Proves the empty public catalog does not refill ideas (localStorage alone is not enough).
+    await page.goto("about:blank");
     await page.evaluate(async () => {
       for (const key of Object.keys(window.localStorage)) {
         if (key.startsWith("xsnow.")) window.localStorage.removeItem(key);
       }
-      window.sessionStorage.clear();
+      try {
+        window.sessionStorage.clear();
+      } catch {
+        /* private mode */
+      }
       await new Promise<void>((resolve, reject) => {
         const req = indexedDB.deleteDatabase("xsnow-device-memory");
         req.onsuccess = () => resolve();
         req.onerror = () => reject(req.error ?? new Error("idb delete"));
-        req.onblocked = () => resolve();
+        req.onblocked = () => {
+          window.setTimeout(() => resolve(), 50);
+        };
       });
     });
-    await page.reload();
-    const cleared = await page.evaluate(() => window.localStorage.getItem("xsnow.ideas"));
-    expect(cleared).toBeNull();
+    await page.goto("./vos-idees/");
     await expect(page.getByLabel("Ton idée")).toBeVisible();
+    await expect(page.locator("[data-idea-wall]")).toContainText("Pas encore d’idée ici");
     await expect(page.locator("[data-idea-wall]")).not.toContainText(idea);
+    const cleared = await page.evaluate(() => window.localStorage.getItem("xsnow.ideas"));
+    expect(cleared == null || cleared === "[]").toBeTruthy();
   });
 
   test("transparency pages are reachable from the footer", async ({ page }) => {
