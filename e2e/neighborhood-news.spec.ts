@@ -58,21 +58,65 @@ test.describe("Accueil neighbourhood news + partner slots", () => {
     await expect(page.getByText(/ferme à clics/).first()).toBeVisible();
     await expect(page.getByText(/Grok et Cursor/).first()).toBeVisible();
 
+    const title = page.getByRole("heading", { name: "Open Community", level: 1 });
+    const chrome = page.locator(".chrome-panel").first();
     const card = page.locator("#home-guide .home-stage");
     const footer = page.locator("footer");
+    const titleBox = await title.boundingBox();
+    const chromeBox = await chrome.boundingBox();
     const cardBox = await card.boundingBox();
     const footerBox = await footer.boundingBox();
     const newsBox = await news.boundingBox();
     const chatBox = await page.locator("#avatar-chat").boundingBox();
+    expect(titleBox).toBeTruthy();
+    expect(chromeBox).toBeTruthy();
     expect(cardBox).toBeTruthy();
     expect(footerBox).toBeTruthy();
     expect(newsBox).toBeTruthy();
     expect(chatBox).toBeTruthy();
 
+    expect(titleBox!.y).toBeLessThan(36);
+
+    const headerToCard = cardBox!.y - (chromeBox!.y + chromeBox!.height);
+    expect(headerToCard).toBeGreaterThanOrEqual(0);
+    expect(headerToCard).toBeLessThan(16);
+
     const gap = footerBox!.y - (cardBox!.y + cardBox!.height);
     expect(gap).toBeGreaterThanOrEqual(0);
-    expect(gap).toBeLessThan(56);
+    expect(gap).toBeLessThan(24);
     expect(newsBox!.height).toBeGreaterThan(chatBox!.height);
+    expect(newsBox!.height).toBeGreaterThan(160);
+    expect(footerBox!.height).toBeLessThan(64);
+  });
+
+  test("need-city Accueil still stacks tight with a tall news inventory and partner slots", async ({
+    page,
+  }) => {
+    await seedReturningVisitor(page);
+    await page.goto("./");
+
+    const news = page.locator("[data-neighborhood-news]");
+    await expect(news).toHaveAttribute("data-news-status", "need_city");
+    await expect(page.getByText(/Dès que ta ville est connue/)).toBeVisible();
+    await expect(page.locator("[data-partner-slot]")).toHaveCount(2);
+    await expect(page.getByText("Commandité").first()).toBeVisible();
+
+    const titleBox = await page.getByRole("heading", { name: "Open Community", level: 1 }).boundingBox();
+    const chromeBox = await page.locator(".chrome-panel").first().boundingBox();
+    const cardBox = await page.locator("#home-guide .home-stage").boundingBox();
+    const footerBox = await page.locator("footer").boundingBox();
+    const newsBox = await news.boundingBox();
+    expect(titleBox).toBeTruthy();
+    expect(chromeBox).toBeTruthy();
+    expect(cardBox).toBeTruthy();
+    expect(footerBox).toBeTruthy();
+    expect(newsBox).toBeTruthy();
+
+    expect(titleBox!.y).toBeLessThan(36);
+    expect(cardBox!.y - (chromeBox!.y + chromeBox!.height)).toBeLessThan(16);
+    expect(footerBox!.y - (cardBox!.y + cardBox!.height)).toBeLessThan(24);
+    expect(newsBox!.height).toBeGreaterThan(160);
+    expect(footerBox!.height).toBeLessThan(64);
   });
 
   test("Worker 405 still shows real headlines via the JSON RSS fallback", async ({ page }) => {

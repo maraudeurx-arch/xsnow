@@ -18,8 +18,8 @@
   --home-chip-h: 2.2rem;
   --home-avatar: min(12vw, 6.2dvh, 2.85rem);
   --home-gap: 0.4rem;
-  /* Space between the header card and the avatar/chat card on home only. */
-  --home-block-gap: 1.25rem;
+  /* Tight stack: title/nav card, Accueil card, footer. Leftover height is news/ads. */
+  --home-block-gap: 0.32rem;
   /* Gaps inside the avatar/chat card — larger than --home-gap so rows don’t collide. */
   --home-stack-gap: 0.85rem;
   --home-nav-gap: 0.4rem;
@@ -38,7 +38,7 @@
     --home-chip-h: 2.6rem;
     --home-avatar: min(16vw, 10dvh, 4.5rem);
     --home-gap: 0.55rem;
-    --home-block-gap: 1.4rem;
+    --home-block-gap: 0.4rem;
     --home-stack-gap: 1rem;
     --home-nav-gap: 0.5rem;
     --home-chip-gap: 0.65rem;
@@ -55,7 +55,7 @@
     --home-chip-h: 1.95rem;
     --home-avatar: min(11vw, 5.5dvh, 2.45rem);
     --home-gap: 0.3rem;
-    --home-block-gap: 0.95rem;
+    --home-block-gap: 0.26rem;
     --home-stack-gap: 0.55rem;
     --home-nav-gap: 0.34rem;
     --home-chip-gap: 0.42rem;
@@ -72,7 +72,7 @@
     --home-chip-h: 1.85rem;
     --home-avatar: min(10vw, 4.9dvh, 2.25rem);
     --home-gap: 0.25rem;
-    --home-block-gap: 0.78rem;
+    --home-block-gap: 0.2rem;
     --home-stack-gap: 0.45rem;
     --home-nav-gap: 0.3rem;
     --home-chip-gap: 0.36rem;
@@ -119,18 +119,16 @@ body {
   max-height: 100vh;
   max-height: 100svh;
   max-height: 100dvh;
-  /* Safe-area only. Tiny floor when the inset is 0; no 54px extra under the status bar. */
-  padding-top: max(2px, var(--safe-top));
+  /* Safe-area only. No extra floor under the status bar — Accueil title hugs the top. */
+  padding-top: var(--safe-top);
   padding-right: max(10px, var(--safe-right));
-  padding-bottom: max(6px, calc(var(--safe-bottom) + 2px));
+  padding-bottom: max(4px, var(--safe-bottom));
   padding-left: max(10px, var(--safe-left));
 }
 
 /*
  * Open Community + slogan sit above the wordmark/nav card.
- * On home, the banner is vertically centered in the leftover band between
- * the viewport top and the first chrome card (balanced by a matching 1fr
- * below the stack so the cards stay in the middle of the screen).
+ * On home, the banner hugs the top of the safe frame (content height only).
  */
 .brand-banner {
   position: relative;
@@ -170,26 +168,22 @@ body {
 .app-stage:has(#home-guide) {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  /* Modest banner band; the Accueil card stretches almost to the footer. */
-  grid-template-rows: minmax(min-content, 0.42fr) auto minmax(0, 1fr) minmax(0.12rem, 0.08fr);
+  /* Title + nav hug the top; leftover height is the Accueil card (news/ads). */
+  grid-template-rows: auto auto minmax(0, 1fr);
   align-items: stretch;
   justify-content: stretch;
   overflow: visible;
-  gap: 0;
-}
-
-.app-stage:has(#home-guide)::after {
-  content: "";
+  gap: var(--home-block-gap);
 }
 
 .app-stage:has(#home-guide) > .brand-banner {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   min-height: 0;
-  padding-top: 0.45rem;
-  padding-bottom: 0.45rem;
+  padding-top: 0.04rem;
+  padding-bottom: 0.06rem;
 }
 
 .app-stage-main {
@@ -211,7 +205,7 @@ body {
 .app-stage:has(#home-guide) > .app-stage-main {
   flex: none;
   min-height: 0;
-  margin-top: var(--home-block-gap);
+  margin-top: 0;
   align-items: stretch;
   justify-content: stretch;
   /* Accueil menu lives in the header card; clip here so the two home cards
