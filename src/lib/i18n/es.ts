@@ -920,9 +920,9 @@ export const es: Messages = {
     neighborhoodShare: "Barrio",
     neighborhoodPh: "Hull, Aylmer, Plateau…",
     submit: "Enviar la idea",
-    thankYou: "Gracias — formas parte de aquí.",
+    thankYou: "Idea bien recibida",
     thankYouBody:
-      "Tu idea está en el muro de este aparato. Otros teléfonos no la ven hasta que GOV + el propietario la aprueben en una versión numerada. Cabeza, Corazón, Manos: así avanza Open Community. Compártela si quieres, o añade otra.",
+      "Gracias. Tu idea está guardada en este aparato. Otros teléfonos no la ven hasta que GOV + el propietario la aprueben en una versión numerada.",
     wallTitle: "Muro de ideas (este aparato)",
     wallHint:
       "Tus ideas se quedan aquí. No aparecen en otro teléfono hasta que estén en una versión pública aprobada.",
@@ -935,7 +935,7 @@ export const es: Messages = {
     shareCopied: "Copiado.",
     shareFailed: "No se pudo copiar. El texto está abajo: selecciónalo.",
     hoursLine: "{hours} h / semana",
-    newIdea: "Otra idea",
+    newIdea: "Añadir otra idea",
     shareHeading: "Idea Open Community",
     catalogBadge: "Catálogo",
   },

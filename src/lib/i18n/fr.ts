@@ -909,9 +909,9 @@ export const fr = {
     neighborhoodShare: "Quartier",
     neighborhoodPh: "Hull, Aylmer, Plateau…",
     submit: "Envoyer l’idée",
-    thankYou: "Merci — tu fais partie d’ici.",
+    thankYou: "Idée bien reçue",
     thankYouBody:
-      "Ton idée est sur le mur de cet appareil. Les autres téléphones ne la voient pas tant que GOV + propriétaire ne l’approuvent pas dans une version numérotée. Tête, Cœur, Mains : c’est comme ça qu’Open Community avance. Partage-la si tu veux, ou ajoute-en une autre.",
+      "Merci. Ton idée est enregistrée sur cet appareil. Les autres téléphones ne la voient pas tant que GOV + propriétaire ne l’approuvent pas dans une version numérotée.",
     wallTitle: "Mur d’idées (cet appareil)",
     wallHint:
       "Tes idées restent ici. Elles n’apparaissent pas sur un autre téléphone tant qu’elles ne sont pas dans une version publique approuvée.",
@@ -924,7 +924,7 @@ export const fr = {
     shareCopied: "Texte copié.",
     shareFailed: "Copie impossible. Le texte est affiché : sélectionnez-le.",
     hoursLine: "{hours} h / semaine",
-    newIdea: "Autre idée",
+    newIdea: "Ajouter une autre idée",
     shareHeading: "Idée Open Community",
     catalogBadge: "Catalogue",
   },
