@@ -94,6 +94,12 @@ export const en: Messages = {
     cached: "Local cache",
     badgeDigital: "Digital / economy",
     badgeLocal: "Local",
+    retry: "Try again",
+    partnerSlot: "Partner space",
+    partnerSponsored: "Sponsored",
+    partnerPlaceholder:
+      "Local partner coming soon. Real mutual aid — no fake headlines, no click farms.",
+    partnerFunding: "These spaces help fund Grok and Cursor for OPC.",
     promptNoHeadlines:
       "News role: when the visitor’s city is known, the « Neighbourhood News » section (below Share, above this chat) shows real local headlines. You have no verified headline listed right now — never invent a title. If asked for news, say so honestly and point to that section or Your ideas / Earn now.",
     promptWithHeadlines:

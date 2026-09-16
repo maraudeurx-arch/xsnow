@@ -99,7 +99,9 @@ Voir [`.env.example`](.env.example). `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID` est 
 
 `NEXT_PUBLIC_GEO_API_URL` : `GET|POST /geo` sur le même Worker (`{ lat, lon }` → `{ city, countryCode, localeHint }`). Si le Worker n’est pas encore redéployé, le navigateur utilise BigDataCloud (sans clé). Secours : Gatineau, `fr-CA`.
 
-`NEXT_PUBLIC_NEWS_API_URL` : `GET /news?city=&lang=&country=` sur le même Worker — manchettes Google News RSS (numérique/économie d’abord, puis local). Jamais de fausses nouvelles. L’Accueil cache le dernier bon résultat en localStorage/IndexedDB par ville ; si le fetch échoue, état vide/chargement clair.
+`NEXT_PUBLIC_NEWS_API_URL` : `GET /news?city=&lang=&country=` sur le même Worker — manchettes Google News RSS (numérique/économie d’abord, puis local). Jamais de fausses nouvelles. L’Accueil cache le dernier bon résultat en localStorage/IndexedDB par ville. Chaque fetch a un délai (Worker puis proxy JSON CORS) : Accueil n’affiche plus « Chargement… » pour toujours. Si le Worker n’a pas encore `/news` (405), secours rss2json / XML, puis état vide ou erreur.
+
+`NEXT_PUBLIC_ADS_ENABLED` / `NEXT_PUBLIC_ADS_PROVIDER` : espaces **Commandité / Espace partenaire** sous les manchettes (pas de fausses news). Défaut : placeholders. `adsense` + `NEXT_PUBLIC_ADSENSE_CLIENT` / `NEXT_PUBLIC_ADSENSE_SLOT_NEWS_*` pour brancher un réseau plus tard. `false` ou `provider=none` les cache.
 
 ### Chat avatar (Cloudflare Workers AI, sans login)
 

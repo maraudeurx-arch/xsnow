@@ -150,8 +150,9 @@ body {
 
 /*
  * Wordmark/nav + main share leftover height above the sticky footer.
- * On home (#home-guide), a 4-row grid balances leftover space above the
- * chrome card (banner centered there) and below the avatar card.
+ * On home (#home-guide), leftover height goes into the Accueil card so
+ * Nouvelles du Quartier (headlines + partner slots) can grow toward the
+ * footer — not an empty photo band under the chat.
  */
 .app-stage {
   position: relative;
@@ -169,8 +170,8 @@ body {
 .app-stage:has(#home-guide) {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  /* Banner keeps its content; the chat card is the row that may shrink. */
-  grid-template-rows: minmax(min-content, 0.85fr) auto minmax(0, auto) minmax(0, 1.15fr);
+  /* Modest banner band; the Accueil card stretches almost to the footer. */
+  grid-template-rows: minmax(min-content, 0.42fr) auto minmax(0, 1fr) minmax(0.12rem, 0.08fr);
   align-items: stretch;
   justify-content: stretch;
   overflow: visible;
@@ -211,13 +212,15 @@ body {
   flex: none;
   min-height: 0;
   margin-top: var(--home-block-gap);
-  justify-content: center;
+  align-items: stretch;
+  justify-content: stretch;
   /* Accueil menu lives in the header card; clip here so the two home cards
      cannot spill into each other or the footer. */
   overflow: hidden;
 }
 
 .app-stage:has(#home-guide) > .app-stage-main > #home-guide {
+  height: 100%;
   max-height: 100%;
 }
 

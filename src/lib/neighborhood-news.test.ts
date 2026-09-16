@@ -8,11 +8,13 @@ import {
   cacheIsFresh,
   categorizeHeadline,
   digitalEconomyQuery,
+  fetchNeighborhoodNews,
   headlinesForPrompt,
   mergeNewsBuckets,
   newsCacheKey,
   orderNeighborhoodNews,
   parseNewsPayload,
+  parseRss2JsonItems,
   parseRssItems,
   toNeighborhoodItem,
   type NeighborhoodNewsItem,
@@ -210,5 +212,114 @@ describe("avatar news prompt training", () => {
     assert.match(en.systemPrompt, /Neighbourhood News/);
     assert.match(es.systemPrompt, /Noticias del Barrio/);
     assert.match(digitalEconomyQuery("Gatineau", "fr"), /numérique/);
+  });
+});
+
+describe("parseRss2JsonItems", () => {
+  it("keeps real titles and https links, strips source suffix, drops junk", () => {
+    const items = parseRss2JsonItems({
+      status: "ok",
+      items: [
+        {
+          title: "Fibre optique à Gatineau - Le Droit",
+          link: "https://news.google.com/rss/articles/abc",
+          pubDate: "2026-09-16 10:00:00",
+          author: "",
+        },
+        { title: "Nope", link: "javascript:alert(1)" },
+        { title: "", link: "https://example.com/x" },
+      ],
+    });
+    assert.equal(items.length, 1);
+    assert.equal(items[0]?.source, "Le Droit");
+    assert.match(items[0]?.title ?? "", /Fibre optique/);
+    assert.doesNotMatch(items[0]?.title ?? "", /Le Droit$/);
+    assert.equal(parseRss2JsonItems({ status: "error", items: [] }).length, 0);
+  });
+});
+
+describe("fetchNeighborhoodNews timeouts", () => {
+  const originalFetch = globalThis.fetch;
+
+  function hang(signal?: AbortSignal): Promise<Response> {
+    return new Promise((_, reject) => {
+      const fail = () => {
+        const err = new DOMException("Aborted", "AbortError");
+        reject(err);
+      };
+      if (signal?.aborted) {
+        fail();
+        return;
+      }
+      signal?.addEventListener("abort", fail, { once: true });
+    });
+  }
+
+  async function withFetch<T>(
+    impl: typeof fetch,
+    run: () => Promise<T>,
+  ): Promise<T> {
+    globalThis.fetch = impl;
+    try {
+      return await run();
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+  }
+
+  it("uses rss2json when Worker returns 405 and hanging XML proxies are ignored", async () => {
+    const calls: string[] = [];
+    await withFetch(async (input, init) => {
+      const url = String(input);
+      calls.push(url);
+      if (url.includes("/news?") || url.endsWith("/news")) {
+        return new Response(JSON.stringify({ error: "method_not_allowed" }), { status: 405 });
+      }
+      if (url.includes("rss2json.com")) {
+        return new Response(
+          JSON.stringify({
+            status: "ok",
+            items: [
+              {
+                title: "Startup tech à Gatineau - Le Droit",
+                link: "https://news.google.com/rss/articles/xyz",
+                pubDate: "2026-09-16 12:00:00",
+              },
+            ],
+          }),
+          { status: 200, headers: { "Content-Type": "application/json" } },
+        );
+      }
+      return hang(init?.signal);
+    }, async () => {
+      const payload = await fetchNeighborhoodNews({
+        city: "Gatineau",
+        locale: "fr",
+        countryCode: "CA",
+        workerTimeoutMs: 40,
+        fallbackTimeoutMs: 80,
+      });
+      assert.ok(payload.items.length >= 1);
+      assert.match(payload.items[0]?.title ?? "", /Startup tech/);
+    });
+    assert.ok(calls.some((url) => url.includes("/news")));
+    assert.ok(calls.some((url) => url.includes("rss2json.com")));
+  });
+
+  it("throws news_unavailable instead of hanging when Worker and fallback never return", async () => {
+    const started = Date.now();
+    await withFetch(async (_input, init) => hang(init?.signal), async () => {
+      await assert.rejects(
+        () =>
+          fetchNeighborhoodNews({
+            city: "Gatineau",
+            locale: "fr",
+            workerTimeoutMs: 40,
+            fallbackTimeoutMs: 40,
+          }),
+        /news_unavailable/,
+      );
+    });
+    assert.ok(Date.now() - started < 1500);
   });
 });

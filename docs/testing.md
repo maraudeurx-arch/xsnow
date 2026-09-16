@@ -14,7 +14,7 @@ Covers pure lib helpers:
 - Invite query parsing
 - Versioned public catalog / publish gate
 - Client-side stats event shaping
-- i18n helpers and FR/EN/ES copy sync
+- Neighbourhood news fetch timeouts (Worker + JSON RSS fallback) and Accueil partner-slot config (`src/lib/neighborhood-news.ts`, `src/lib/partner-ads.ts`)
 
 ```bash
 npm test          # unit + functional
@@ -58,7 +58,7 @@ Playwright against a **production-like static export**, one iPhone viewport (`39
 
 Critical paths:
 
-- Home: **Open Community** banner, avatar picker rings
+- Accueil: Nouvelles du Quartier settles (not infinite loading); labeled Espace partenaire slots; home card almost reaches the footer
 - Fresh storage: Mes services / En demande empty (no bundled Gatineau car offer)
 - Fresh storage: `/services/{kind}` boards empty (no demo seed titles)
 - Regional ambiance: autumn before geo; Caribbean for `?city=Port-au-Prince`; CA stays seasonal
