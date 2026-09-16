@@ -107,12 +107,13 @@ describe("transparency version and contact markers", () => {
 });
 
 describe("PWA manifest start URL", () => {
-  it("uses root-relative start_url/scope so Next basePath is applied once", () => {
+  it("prefixes start_url/scope/id with the GitHub Pages basePath (Next does not rewrite Manifest JSON)", () => {
     const source = readFileSync(join(appDir, "manifest.ts"), "utf8");
-    assert.match(source, /start_url: "\/"/);
-    assert.match(source, /scope: "\/"/);
-    assert.doesNotMatch(source, /start_url: `\$\{BASE_PATH\}/);
-    assert.doesNotMatch(source, /src: `\$\{BASE_PATH\}/);
+    assert.match(source, /start_url: `\$\{BASE_PATH\}\/`/);
+    assert.match(source, /scope: `\$\{BASE_PATH\}\/`/);
+    assert.match(source, /id: `\$\{BASE_PATH\}\/`/);
+    assert.match(source, /src: `\$\{BASE_PATH\}\/brand\/app-icon-192\.png`/);
+    assert.match(source, /from "@\/lib\/paths"/);
   });
 });
 

@@ -100,6 +100,33 @@ test.describe("Open Community soft-launch smoke", () => {
     await page.evaluate(() => {
       window.localStorage.removeItem("xsnow.ideas");
     });
+    await page.evaluate(async () => {
+      await new Promise<void>((resolve) => {
+        const open = indexedDB.open("xsnow-device-memory", 1);
+        open.onupgradeneeded = () => {
+          if (!open.result.objectStoreNames.contains("kv")) open.result.createObjectStore("kv");
+        };
+        open.onsuccess = () => {
+          const db = open.result;
+          if (!db.objectStoreNames.contains("kv")) {
+            db.close();
+            resolve();
+            return;
+          }
+          const tx = db.transaction("kv", "readwrite");
+          tx.objectStore("kv").delete("xsnow.ideas");
+          tx.oncomplete = () => {
+            db.close();
+            resolve();
+          };
+          tx.onerror = () => {
+            db.close();
+            resolve();
+          };
+        };
+        open.onerror = () => resolve();
+      });
+    });
     await page.reload();
     const cleared = await page.evaluate(() => window.localStorage.getItem("xsnow.ideas"));
     expect(cleared).toBeNull();

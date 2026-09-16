@@ -9,6 +9,8 @@
  * 5. Add a label in each dictionary’s `settings.languages`
  */
 
+import { durableGet, durableSet } from "../durable-storage.ts";
+
 export const LOCALES = ["fr", "en", "es"] as const;
 export type Locale = (typeof LOCALES)[number];
 
@@ -40,7 +42,7 @@ export function parseLangOverride(search: string): Locale | null {
 export function readStoredLocale(): Locale | null {
   if (typeof window === "undefined") return null;
   try {
-    const raw = window.localStorage.getItem(LANG_STORAGE_KEY);
+    const raw = durableGet(LANG_STORAGE_KEY);
     if (!raw) return null;
     const parsed = JSON.parse(raw) as unknown;
     return isLocale(parsed) ? parsed : null;
@@ -51,7 +53,7 @@ export function readStoredLocale(): Locale | null {
 
 export function writeStoredLocale(locale: Locale) {
   if (typeof window === "undefined") return;
-  window.localStorage.setItem(LANG_STORAGE_KEY, JSON.stringify(locale));
+  durableSet(LANG_STORAGE_KEY, JSON.stringify(locale));
 }
 
 export function browserLanguages(): string[] {

@@ -8,10 +8,19 @@ import {
   writeAnalyticsConsent,
   type AnalyticsConsent,
 } from "@/lib/consent";
+import { subscribeDurableStorage } from "@/lib/durable-storage";
 
 export function useAnalyticsConsent() {
+  const subscribe = useCallback((onStoreChange: () => void) => {
+    const stopLocal = subscribeAnalyticsConsent(onStoreChange);
+    const stopDurable = subscribeDurableStorage(onStoreChange);
+    return () => {
+      stopLocal();
+      stopDurable();
+    };
+  }, []);
   const consent = useSyncExternalStore(
-    subscribeAnalyticsConsent,
+    subscribe,
     readAnalyticsConsent,
     () => "unset" as const,
   );

@@ -1,9 +1,10 @@
 import assert from "node:assert/strict";
-import { describe, it } from "node:test";
+import { describe, it, beforeEach } from "node:test";
 import { ideaFromForm } from "./ideas.ts";
 import {
   DEVICE_KEYS,
   DEVICE_MEMORY_VERSION,
+  bootDeviceMemory,
   emptyDeviceMemory,
   hasPlayedWelcomeFor,
   markWelcomePlayed,
@@ -18,6 +19,7 @@ import {
   writeStoredIdeas,
 } from "./device-memory.ts";
 import {
+  resetDurableStorageForTests,
   setDurableBackupForTests,
   shouldRestoreFromBackup,
 } from "./durable-storage.ts";
@@ -47,6 +49,10 @@ function memoryStore(initial: Record<string, string> = {}) {
     data,
   } as Storage & { data: Record<string, string> };
 }
+
+beforeEach(() => {
+  resetDurableStorageForTests();
+});
 
 describe("device memory snapshot", () => {
   it("starts empty on a new device", () => {
@@ -232,6 +238,38 @@ describe("standalone cold-start restore", () => {
       await restoreDeviceMemoryFromBackup(local);
       assert.equal(readStoredAvatar(local), "femme-noire");
       assert.equal(readStoredIdeas(local)[0]?.text, "Ancienne idée");
+    } finally {
+      setDurableBackupForTests(null);
+    }
+  });
+
+  it("bootDeviceMemory restores Mes infos after a cold start with empty localStorage", async () => {
+    const local = memoryStore();
+    const backup = new Map<string, string>();
+    setDurableBackupForTests(backup);
+    try {
+      writeStoredAvatar("femme-noire", local);
+      const profile = profileFromForm(
+        {
+          firstName: "Marie",
+          lastName: "Tremblay",
+          email: "marie@voisin.test",
+          phone: "819-555-0100",
+        },
+        null,
+        () => "2026-09-16T00:00:00.000Z",
+        () => "OPC-7K3M",
+      );
+      assert.ok(profile);
+      writeLocalProfile(profile, local);
+      local.clear();
+      assert.equal(readStoredAvatar(local), null);
+      assert.equal(readLocalProfile(local), null);
+
+      await bootDeviceMemory(local, memoryStore());
+      assert.equal(readStoredAvatar(local), "femme-noire");
+      assert.equal(readLocalProfile(local)?.id, "OPC-7K3M");
+      assert.equal(readLocalProfile(local)?.email, "marie@voisin.test");
     } finally {
       setDurableBackupForTests(null);
     }

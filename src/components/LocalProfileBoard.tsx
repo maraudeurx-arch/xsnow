@@ -12,6 +12,7 @@ import {
   profileFromForm,
   type LocalProfileInput,
 } from "@/lib/local-profile";
+import { useDeviceMemoryReady } from "@/lib/useDeviceMemoryReady";
 import { useLocalProfile } from "@/lib/useLocalProfile";
 
 const fieldClass =
@@ -23,10 +24,17 @@ const blueCtaClass =
 export function LocalProfileBoard() {
   const { m } = useI18n();
   const copy = m.register;
+  const memoryReady = useDeviceMemoryReady();
   const [profile, setProfile] = useLocalProfile();
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState<LocalProfileInput>(emptyProfileInput);
   const [error, setError] = useState<"" | "firstName" | "lastName" | "email" | "phone">("");
+
+  function openForm() {
+    setError("");
+    setForm(profile ? inputFromProfile(profile) : emptyProfileInput());
+    setOpen(true);
+  }
 
   function openForm() {
     setError("");
@@ -64,7 +72,9 @@ export function LocalProfileBoard() {
 
   return (
     <section className="space-y-2 rounded-2xl border border-sky-400/35 bg-sky-500/10 p-3">
-      {!profile ? (
+      {!profile && !memoryReady ? (
+        <div data-device-memory-pending aria-busy="true" className="min-h-11" />
+      ) : !profile ? (
         <button type="button" className={blueCtaClass} data-register-cta onClick={openForm}>
           {copy.cta}
         </button>

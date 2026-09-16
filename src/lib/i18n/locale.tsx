@@ -23,6 +23,7 @@ import {
   type Locale,
   type Messages,
 } from "@/lib/i18n";
+import { subscribeDurableStorage } from "@/lib/durable-storage";
 
 const listeners = new Set<() => void>();
 let storedCache: Locale | null | undefined;
@@ -63,8 +64,13 @@ function LocaleProviderInner({ children }: { children: ReactNode }) {
 
   const subscribe = useCallback((onStoreChange: () => void) => {
     listeners.add(onStoreChange);
+    const stopDurable = subscribeDurableStorage(() => {
+      storedCache = undefined;
+      onStoreChange();
+    });
     return () => {
       listeners.delete(onStoreChange);
+      stopDurable();
     };
   }, []);
 

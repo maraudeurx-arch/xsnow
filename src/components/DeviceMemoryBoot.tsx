@@ -1,27 +1,35 @@
 "use client";
 
 import { useEffect } from "react";
+import { bootDeviceMemory, resumeDeviceMemory } from "@/lib/device-memory";
 import {
-  migrateDeviceMemory,
-  restoreDeviceMemoryFromBackup,
-} from "@/lib/device-memory";
-import { emitDurableStorage, listenForAppResume } from "@/lib/durable-storage";
+  isDurableBootReady,
+  listenForAppResume,
+} from "@/lib/durable-storage";
+
+function markDocument(ready: boolean) {
+  if (typeof document === "undefined") return;
+  document.documentElement.dataset.deviceMemory = ready ? "ready" : "pending";
+}
+
+if (typeof window !== "undefined") {
+  markDocument(isDurableBootReady());
+  void bootDeviceMemory().then(() => markDocument(true));
+}
 
 /** Boot + resume: migrate keys, restore from IndexedDB, re-read on iOS/Android PWA wake. */
 export function DeviceMemoryBoot() {
   useEffect(() => {
-    migrateDeviceMemory();
     let cancelled = false;
-    const hydrate = () => {
-      migrateDeviceMemory();
-      void restoreDeviceMemoryFromBackup().then((count) => {
-        if (cancelled) return;
-        if (count > 0) emitDurableStorage();
+    markDocument(isDurableBootReady());
+    void bootDeviceMemory().then(() => {
+      if (!cancelled) markDocument(true);
+    });
+    const stop = listenForAppResume(() => {
+      void resumeDeviceMemory().then(() => {
+        if (!cancelled) markDocument(true);
       });
-      emitDurableStorage();
-    };
-    hydrate();
-    const stop = listenForAppResume(hydrate);
+    });
     return () => {
       cancelled = true;
       stop();

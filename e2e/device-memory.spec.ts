@@ -170,6 +170,153 @@ test.describe("durable on-device memory", () => {
   });
 });
 
+const SAMPLE_PROFILE = {
+  id: "OPC-7K3M",
+  firstName: "Marie",
+  lastName: "Tremblay",
+  email: "marie@voisin.test",
+  phone: "819-555-0100",
+  createdAt: "2026-09-16T00:00:00.000Z",
+  updatedAt: "2026-09-16T00:00:00.000Z",
+};
+
+test.describe("IndexedDB backup after empty localStorage", () => {
+  test("restores avatar, Mes infos, and ideas when only IndexedDB still has them", async ({
+    page,
+  }) => {
+    await page.addInitScript((profile) => {
+      const idea = JSON.stringify([
+        {
+          id: "idea-1",
+          text: "Déneiger le stationnement",
+          involvement: ["mains"],
+          hoursPerWeek: "1",
+          neighborhood: "Hull",
+          createdAt: "2026-09-16T00:00:00.000Z",
+          updatedAt: "2026-09-16T00:00:00.000Z",
+        },
+      ]);
+      return new Promise<void>((resolve, reject) => {
+        const open = indexedDB.open("xsnow-device-memory", 1);
+        open.onupgradeneeded = () => {
+          if (!open.result.objectStoreNames.contains("kv")) open.result.createObjectStore("kv");
+        };
+        open.onsuccess = () => {
+          const db = open.result;
+          const tx = db.transaction("kv", "readwrite");
+          const store = tx.objectStore("kv");
+          store.put(JSON.stringify("homme-blanc"), "xsnow.avatar");
+          store.put(JSON.stringify(["homme-blanc"]), "xsnow.welcomePlayed");
+          store.put(JSON.stringify(profile), "xsnow.localProfile");
+          store.put(idea, "xsnow.ideas");
+          tx.oncomplete = () => {
+            db.close();
+            resolve();
+          };
+          tx.onerror = () => reject(tx.error);
+        };
+        open.onerror = () => reject(open.error);
+      });
+    }, SAMPLE_PROFILE);
+
+    await page.goto("./");
+    await expect(page.locator("html")).toHaveAttribute("data-device-memory", "ready");
+    await expect(page.getByText("Choisis ton avatar")).toHaveCount(0);
+    await expect(page.locator("[data-header-profile]")).toHaveText("M.T.");
+    await expect(page.getByRole("button", { name: "Réécouter" })).toBeVisible();
+
+    const restored = await page.evaluate(() => ({
+      avatar: window.localStorage.getItem("xsnow.avatar"),
+      profile: window.localStorage.getItem("xsnow.localProfile"),
+      ideas: window.localStorage.getItem("xsnow.ideas"),
+    }));
+    expect(restored.avatar).toContain("homme-blanc");
+    expect(restored.profile).toContain("marie@voisin.test");
+    expect(restored.ideas).toContain("Déneiger le stationnement");
+
+    await page.goto("./mon-profil/");
+    await expect(page.locator("[data-member-id]")).toHaveText(/Numéro OPC-7K3M/);
+    await expect(page.getByText("Marie Tremblay")).toBeVisible();
+    await expect(page.getByRole("button", { name: "S’inscrire" })).toHaveCount(0);
+  });
+
+  test("a later visit with wiped localStorage still shows the saved profile", async ({ page }) => {
+    await page.addInitScript(stubSpeech());
+    await page.goto("./");
+    await expect(page.getByText("Choisis ton avatar")).toBeVisible();
+    await page.getByRole("button", { name: "Femme, peau foncée" }).click();
+    await page.goto("./mon-profil/");
+    await page.getByRole("button", { name: "S’inscrire" }).click();
+    await page.locator('input[name="firstName"]').fill("Marie");
+    await page.locator('input[name="lastName"]').fill("Tremblay");
+    await page.locator('input[name="email"]').fill("marie@voisin.test");
+    await page.locator('input[name="phone"]').fill("819-555-0100");
+    await page.getByRole("button", { name: "Enregistrer" }).click();
+    await expect(page.locator("[data-header-profile]")).toHaveText("M.T.");
+
+    await expect
+      .poll(async () =>
+        page.evaluate(
+          () =>
+            new Promise<boolean>((resolve) => {
+              const open = indexedDB.open("xsnow-device-memory", 1);
+              open.onsuccess = () => {
+                const db = open.result;
+                if (!db.objectStoreNames.contains("kv")) {
+                  db.close();
+                  resolve(false);
+                  return;
+                }
+                const req = db.transaction("kv", "readonly").objectStore("kv").get("xsnow.localProfile");
+                req.onsuccess = () => {
+                  const value = req.result;
+                  db.close();
+                  resolve(typeof value === "string" && value.includes("marie@voisin.test"));
+                };
+                req.onerror = () => {
+                  db.close();
+                  resolve(false);
+                };
+              };
+              open.onerror = () => resolve(false);
+            }),
+        ),
+      )
+      .toBe(true);
+
+    await page.evaluate(() => {
+      window.localStorage.removeItem("xsnow.avatar");
+      window.localStorage.removeItem("xsnow.localProfile");
+      window.localStorage.removeItem("xsnow.welcomePlayed");
+      window.localStorage.removeItem("xsnow.ideas");
+    });
+    await page.reload();
+    await expect(page.locator("html")).toHaveAttribute("data-device-memory", "ready");
+    await expect(page.locator("[data-header-profile]")).toHaveText("M.T.");
+    await expect(page.locator("[data-member-id]")).toHaveText(/Numéro OPC-/);
+    await expect(page.getByText("Marie Tremblay")).toBeVisible();
+    await page.goto("./");
+    await expect(page.getByText("Choisis ton avatar")).toHaveCount(0);
+  });
+});
+
+test.describe("PWA launch URL", () => {
+  test("manifest start_url stays on the GitHub Pages app path", async ({ request }) => {
+    const response = await request.get("/xsnow/manifest.webmanifest");
+    expect(response.ok()).toBeTruthy();
+    const manifest = (await response.json()) as {
+      id?: string;
+      start_url?: string;
+      scope?: string;
+      icons?: Array<{ src?: string }>;
+    };
+    expect(manifest.start_url).toBe("/xsnow/");
+    expect(manifest.scope).toBe("/xsnow/");
+    expect(manifest.id).toBe("/xsnow/");
+    expect(manifest.icons?.[0]?.src).toContain("/xsnow/brand/");
+  });
+});
+
 test.describe("Android Chrome installed-app memory", () => {
   test.use({
     userAgent: devices["Pixel 5"].userAgent,

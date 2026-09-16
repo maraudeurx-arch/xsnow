@@ -20,6 +20,7 @@ import { useI18n } from "@/lib/i18n/locale";
 import { PUBLIC_SITE_URL } from "@/lib/paths";
 import { usePlace } from "@/lib/place";
 import { hasPlayedWelcomeFor, markWelcomePlayed } from "@/lib/device-memory";
+import { useDeviceMemoryReady } from "@/lib/useDeviceMemoryReady";
 import { useSpeech, type SpeakOptions } from "@/lib/speech";
 import {
   beginWelcomeIntent,
@@ -41,6 +42,7 @@ const shortcutClass =
   "inline-flex min-h-[var(--home-chip-h)] w-full items-center justify-center rounded-lg border border-cobalt/55 bg-cobalt px-1.5 text-center text-[10px] font-extrabold leading-tight text-snow shadow-[0_4px_14px_rgba(37,99,235,0.28)]";
 
 export function Guide() {
+  const memoryReady = useDeviceMemoryReady();
   const [avatarId, setAvatarId] = useStoredAvatar();
   const [picking, setPicking] = useState(false);
   const [newsHeadlines, setNewsHeadlines] = useState("");
@@ -53,7 +55,8 @@ export function Guide() {
   const unanswered = useConsentUnanswered();
   const welcomeGateOpen = useWelcomeGate();
 
-  const showPicker = !avatarId || picking;
+  const waitingForMemory = !memoryReady && !avatarId;
+  const showPicker = !waitingForMemory && (!avatarId || picking);
   const chosen = avatarId ? avatarById(avatarId) : null;
 
   const playWelcome = useCallback(
@@ -103,12 +106,18 @@ export function Guide() {
     <section
       id="home-guide"
       className={`flex min-h-0 w-full flex-col ${
-        showPicker
+        waitingForMemory || showPicker
           ? "items-center justify-center gap-3"
           : "h-full min-h-0 items-stretch justify-stretch gap-0 self-stretch"
       }`}
     >
-      {showPicker ? (
+      {waitingForMemory ? (
+        <div
+          data-device-memory-pending
+          aria-busy="true"
+          className="home-stage flex min-h-0 w-full flex-col items-center justify-center gap-1.5 rounded-2xl px-3 py-3"
+        />
+      ) : showPicker ? (
         <div
           role="group"
           aria-label={m.guide.pickAvatar}

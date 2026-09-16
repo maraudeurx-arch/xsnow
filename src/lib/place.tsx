@@ -32,6 +32,7 @@ import {
   type GeoConsent,
   type StoredPlace,
 } from "@/lib/location";
+import { subscribeDurableStorage } from "@/lib/durable-storage";
 
 const listeners = new Set<() => void>();
 
@@ -120,8 +121,13 @@ function PlaceProviderInner({ children }: { children: ReactNode }) {
 
   const subscribe = useCallback((onStoreChange: () => void) => {
     listeners.add(onStoreChange);
+    const stopDurable = subscribeDurableStorage(() => {
+      cached = undefined;
+      onStoreChange();
+    });
     return () => {
       listeners.delete(onStoreChange);
+      stopDurable();
     };
   }, []);
 
