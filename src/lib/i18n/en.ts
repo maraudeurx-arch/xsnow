@@ -59,7 +59,7 @@ export const en: Messages = {
     pickAvatar: "Choose your avatar",
     changeAvatar: "Change avatar",
     replay: "Listen again",
-    offerShortcuts: "Shortcuts to Earn now, Your ideas, and Share",
+    offerShortcuts: "Shortcuts to Earn now, Your ideas, Share, and Sign up",
     vosIdees: "Your ideas",
     partager: "Share",
     shareText: "Join Open Community — neighbourhood proximity and mutual aid.",
@@ -109,6 +109,17 @@ export const en: Messages = {
     partnerPlaceholder:
       "Local partner coming soon. Real mutual aid — no fake headlines, no click farms.",
     partnerFunding: "These spaces may help fund Grok and Cursor for OPC — no live ad revenue yet.",
+    partnerCtaRegister: "Sign up / My info",
+    partnerCtaShare: "Share / invite",
+    partnerGrowRegisterName: "Sign up · My info (example)",
+    partnerGrowRegisterTagline:
+      "Register on this device — the neighbourhood grows with you. No fake headlines, no click farms.",
+    partnerGrowShareName: "Share · invite (example)",
+    partnerGrowShareTagline:
+      "Invite a neighbour to Open Community. Real mutual aid — no fake headlines, no click farms.",
+    partnerGrowLocalName: "Neighbourhood co-op (example)",
+    partnerGrowLocalTagline:
+      "Partner space coming soon. Meanwhile: sign up and invite a neighbour. No click farms.",
     promptNoHeadlines:
       "News role: when the visitor’s city is known, the « Neighbourhood News » section (below Share, above this chat) shows real local headlines. You have no verified headline listed right now — never invent a title. If asked for news, say so honestly and point to that section or Your ideas / Earn now.",
     promptWithHeadlines:

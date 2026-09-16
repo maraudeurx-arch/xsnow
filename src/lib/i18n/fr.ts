@@ -57,7 +57,7 @@ export const fr = {
     pickAvatar: "Choisis ton avatar",
     changeAvatar: "Changer d’avatar",
     replay: "Réécouter",
-    offerShortcuts: "Raccourcis Gagner maintenant, Vos idées et Partager",
+    offerShortcuts: "Raccourcis Gagner maintenant, Vos idées, Partager et S’inscrire",
     vosIdees: "Vos idées",
     partager: "Partager",
     shareText: "Rejoins Open Community — proximité et entraide de quartier.",
@@ -107,6 +107,17 @@ export const fr = {
     partnerPlaceholder:
       "Partenaire local à venir. Entraide réelle — pas de fausse manchette, pas de ferme à clics.",
     partnerFunding: "Ces espaces pourront aider à financer Grok et Cursor pour OPC — pas de revenus pubs en direct pour l’instant.",
+    partnerCtaRegister: "S’inscrire / Mes infos",
+    partnerCtaShare: "Partager / inviter",
+    partnerGrowRegisterName: "S’inscrire · Mes infos (exemple)",
+    partnerGrowRegisterTagline:
+      "Inscris-toi sur cet appareil — le quartier grandit avec toi. Pas de fausse manchette, pas de ferme à clics.",
+    partnerGrowShareName: "Partager · inviter (exemple)",
+    partnerGrowShareTagline:
+      "Invite un voisin à Open Community. Entraide réelle — pas de fausse manchette, pas de ferme à clics.",
+    partnerGrowLocalName: "Coop du quartier (exemple)",
+    partnerGrowLocalTagline:
+      "Emplacement partenaire à venir. En attendant : inscris-toi et invite un voisin. Pas de ferme à clics.",
     promptNoHeadlines:
       "Rôle nouvelles : quand la ville du visiteur est connue, la section « Nouvelles du Quartier » (sous Partager, au-dessus de ce chat) affiche de vraies manchettes locales. Tu n’as pas de manchette vérifiée listée maintenant — ne fabrique jamais de titre. Si on te demande les news, dis-le honnêtement et oriente vers cette section ou Vos idées / Gagner maintenant.",
     promptWithHeadlines:
