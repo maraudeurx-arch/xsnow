@@ -50,6 +50,8 @@ test.describe("Accueil neighbourhood news + partner slots", () => {
     await expect(news).toHaveAttribute("data-news-status", "ready");
     await expect(page.getByText("Fibre optique à Hull")).toBeVisible();
     await expect(page.getByText("Tour de Gatineau dimanche")).toBeVisible();
+    const fibreBox = await page.getByText("Fibre optique à Hull").boundingBox();
+    expect(fibreBox?.height ?? 0).toBeGreaterThan(12);
     await expect(page.locator("[data-partner-slot]")).toHaveCount(2);
     await expect(page.getByText("Espace partenaire").first()).toBeVisible();
     await expect(page.getByText("Commandité").first()).toBeVisible();
