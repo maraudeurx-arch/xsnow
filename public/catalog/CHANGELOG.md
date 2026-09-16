@@ -8,6 +8,7 @@ Personal Mes services offers, En demande requests, Interac/PayPal, chat, Vos id�
 
 - Device-local registration on Mon profil (first name, last name, email, phone) with a stable `OPC-XXXX` member number.
 - Header shows a short first name or initials next to the logo. Email and phone stay off the chrome and off any server.
+- Returning visits restore avatar, profile, and Vos idées from localStorage. Home skips the picker and does not auto-replay welcome speech.
 - Public catalog remains empty.
 
 ## 0.3.1 — 2026-09-15

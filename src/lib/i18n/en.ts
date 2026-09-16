@@ -412,7 +412,7 @@ export const en: Messages = {
       "Your offers, requests, ideas, share texts, registration (first name, last name, email, phone, OPC-XXXX number), and Interac/PayPal details stay on this device. Nothing personal appears for another visitor until GOV + owner approve a numbered public release (public catalog).",
     releaseNotesTitle: "Release notes",
     releaseNotesBody:
-      "0.3.2 — Local registration on My profile (first name, last name, email, phone). An OPC-XXXX number stays on this device. First name (or initials) shows next to the logo. Email and phone do not leave the device. Public catalog is still empty.",
+      "0.3.2 — Local registration on My profile (first name, last name, email, phone, OPC-XXXX number). Avatar, profile, and ideas stay on this device across reloads (home does not replay the welcome speech). Public catalog is still empty.",
     language: "Language",
     comingSoon: "Notifications and display season will land here.",
     locationConsent: "Location",

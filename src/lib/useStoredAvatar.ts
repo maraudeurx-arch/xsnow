@@ -1,11 +1,8 @@
 "use client";
 
 import { useCallback, useSyncExternalStore } from "react";
-import {
-  AVATAR_STORAGE_KEY,
-  isAvatarId,
-  type AvatarId,
-} from "@/lib/avatars";
+import { type AvatarId } from "@/lib/avatars";
+import { readStoredAvatar, writeStoredAvatar } from "@/lib/device-memory";
 
 const listeners = new Set<() => void>();
 let cached: AvatarId | null | undefined;
@@ -15,15 +12,7 @@ function emit() {
 }
 
 function readAvatar(): AvatarId | null {
-  if (typeof window === "undefined") return null;
-  try {
-    const raw = window.localStorage.getItem(AVATAR_STORAGE_KEY);
-    if (!raw) return null;
-    const parsed = JSON.parse(raw) as unknown;
-    return isAvatarId(parsed) ? parsed : null;
-  } catch {
-    return null;
-  }
+  return readStoredAvatar();
 }
 
 export function useStoredAvatar() {
@@ -51,7 +40,7 @@ export function useStoredAvatar() {
 
   const setAvatarId = useCallback((id: AvatarId) => {
     cached = id;
-    window.localStorage.setItem(AVATAR_STORAGE_KEY, JSON.stringify(id));
+    writeStoredAvatar(id);
     emit();
   }, []);
 

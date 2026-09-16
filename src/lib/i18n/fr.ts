@@ -411,7 +411,7 @@ export const fr = {
       "Tes offres, demandes, idées, textes de partage, inscription (prénom, nom, e-mail, téléphone, numéro OPC-XXXX) et coordonnées Interac/PayPal restent sur cet appareil. Rien de personnel n’apparaît chez un autre visiteur tant que GOV + propriétaire n’approuvent pas une publication dans une version numérotée (catalogue public).",
     releaseNotesTitle: "Notes de version",
     releaseNotesBody:
-      "0.3.2 — Inscription locale sur Mon profil (prénom, nom, e-mail, téléphone). Un numéro OPC-XXXX reste sur cet appareil. Le prénom (ou les initiales) s’affiche à côté du logo. L’e-mail et le téléphone ne quittent pas l’appareil. Le catalogue public est toujours vide.",
+      "0.3.2 — Inscription locale sur Mon profil (prénom, nom, e-mail, téléphone, numéro OPC-XXXX). Avatar, profil et idées restent sur cet appareil au rechargement (accueil sans rejouer le message d’accueil). Le catalogue public est toujours vide.",
     language: "Langue",
     comingSoon: "Notifications et saison d’affichage arriveront ici.",
     locationConsent: "Position",

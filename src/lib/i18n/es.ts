@@ -412,7 +412,7 @@ export const es: Messages = {
       "Tus ofertas, solicitudes, ideas, textos para compartir, inscripción (nombre, apellidos, correo, teléfono, número OPC-XXXX) y datos Interac/PayPal se quedan en este aparato. Nada personal aparece en el de otro visitante hasta que GOV + el propietario aprueben una publicación en una versión numerada (catálogo público).",
     releaseNotesTitle: "Notas de la versión",
     releaseNotesBody:
-      "0.3.2 — Inscripción local en Mi perfil (nombre, apellidos, correo, teléfono). Un número OPC-XXXX se queda en este aparato. El nombre (o las iniciales) aparece junto al logo. El correo y el teléfono no salen del aparato. El catálogo público sigue vacío.",
+      "0.3.2 — Inscripción local en Mi perfil (nombre, apellidos, correo, teléfono, número OPC-XXXX). Avatar, perfil e ideas se quedan en este aparato al recargar (el inicio no vuelve a reproducir el mensaje de bienvenida). El catálogo público sigue vacío.",
     language: "Idioma",
     comingSoon: "Las notificaciones y la estación de pantalla llegarán aquí.",
     locationConsent: "Ubicación",

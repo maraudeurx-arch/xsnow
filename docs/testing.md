@@ -67,5 +67,6 @@ Critical paths:
 - Transparency: footer trust pages, shipped `APP_VERSION`, public OPC email / GitHub
 - Connect is visible; the suite does **not** open WalletConnect (no project id required)
 - Mon profil: local registration (OPC-XXXX) stays in `localStorage`; first name (not email) appears next to the logo
+- Reload: avatar, profile, and Vos idées restore for that device; home skips the picker and does not auto-play welcome
 
 CI: `.github/workflows/build.yml` runs unit + functional on every PR/`main` push, and Playwright after `npm run build`.

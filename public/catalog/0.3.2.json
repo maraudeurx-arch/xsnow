@@ -8,7 +8,7 @@
     {
       "version": "0.3.2",
       "date": "2026-09-16",
-      "text": "Device-local registration on My profile. Personal offers, requests, ideas, and the local OPC-XXXX profile stay on-device until GOV+owner approval ships them in a numbered release. Public catalog stays empty."
+      "text": "Device-local registration on My profile, plus durable restore of avatar, profile, and ideas on reload. Personal offers, requests, ideas, and the local OPC-XXXX profile stay on-device until GOV+owner approval ships them in a numbered release. Public catalog stays empty."
     }
   ]
 }
