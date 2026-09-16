@@ -17,15 +17,15 @@
   --home-nav-h: 2.3rem;
   --home-chip-h: 2.2rem;
   --home-avatar: min(12vw, 6.2dvh, 2.85rem);
-  --home-gap: 0.34rem;
+  --home-gap: 0.28rem;
   /* Accueil: keep header→card gap tiny so leftover height feeds Nouvelles. */
-  --home-block-gap: 0.2rem;
+  --home-block-gap: 0.12rem;
   /* Gaps inside the avatar/chat card — keep compact so news flex-grows hard. */
-  --home-stack-gap: 0.62rem;
-  --home-nav-gap: 0.36rem;
-  --home-chip-gap: 0.48rem;
-  --home-card-pad-x: 0.58rem;
-  --home-card-pad-y: 0.48rem;
+  --home-stack-gap: 0.48rem;
+  --home-nav-gap: 0.3rem;
+  --home-chip-gap: 0.4rem;
+  --home-card-pad-x: 0.52rem;
+  --home-card-pad-y: 0.36rem;
   --home-avatar-ring: 0.32rem;
   --brand-title: clamp(1.5rem, 7.4vw, 3rem);
   --brand-slogan: clamp(0.9rem, 3.8vw, 1.2rem);
@@ -54,13 +54,13 @@
     --home-nav-h: 2.05rem;
     --home-chip-h: 1.95rem;
     --home-avatar: min(11vw, 5.5dvh, 2.45rem);
-    --home-gap: 0.26rem;
-    --home-block-gap: 0.16rem;
-    --home-stack-gap: 0.42rem;
-    --home-nav-gap: 0.3rem;
-    --home-chip-gap: 0.36rem;
-    --home-card-pad-x: 0.5rem;
-    --home-card-pad-y: 0.36rem;
+    --home-gap: 0.2rem;
+    --home-block-gap: 0.08rem;
+    --home-stack-gap: 0.32rem;
+    --home-nav-gap: 0.24rem;
+    --home-chip-gap: 0.3rem;
+    --home-card-pad-x: 0.45rem;
+    --home-card-pad-y: 0.26rem;
     --home-avatar-ring: 0.28rem;
   }
 }
@@ -71,13 +71,13 @@
     --home-nav-h: 1.95rem;
     --home-chip-h: 1.85rem;
     --home-avatar: min(10vw, 4.9dvh, 2.25rem);
-    --home-gap: 0.2rem;
-    --home-block-gap: 0.12rem;
-    --home-stack-gap: 0.34rem;
-    --home-nav-gap: 0.26rem;
-    --home-chip-gap: 0.3rem;
-    --home-card-pad-x: 0.45rem;
-    --home-card-pad-y: 0.28rem;
+    --home-gap: 0.16rem;
+    --home-block-gap: 0.06rem;
+    --home-stack-gap: 0.26rem;
+    --home-nav-gap: 0.2rem;
+    --home-chip-gap: 0.24rem;
+    --home-card-pad-x: 0.4rem;
+    --home-card-pad-y: 0.2rem;
     --home-avatar-ring: 0.24rem;
   }
 }
@@ -122,7 +122,7 @@ body {
   /* Safe-area only. No extra floor — Accueil card keeps leftover height. */
   padding-top: var(--safe-top);
   padding-right: max(10px, var(--safe-right));
-  padding-bottom: max(2px, var(--safe-bottom));
+  padding-bottom: max(0px, var(--safe-bottom));
   padding-left: max(10px, var(--safe-left));
 }
 
@@ -185,8 +185,8 @@ body {
   align-items: center;
   justify-content: flex-start;
   min-height: 0;
-  padding-top: 0.04rem;
-  padding-bottom: 0.04rem;
+  padding-top: 0;
+  padding-bottom: 0;
 }
 
 .app-stage-main {
@@ -475,16 +475,35 @@ body {
  * Mobile Accueil: force Nouvelles du Quartier to claim leftover card height
  * aggressively (loading / empty / headlines + partner slots). Chat stays
  * shrink-0 at the bottom; footer links stay reachable outside the card.
+ * Also compact top chrome so the green card itself grows toward the footer.
  */
 @media (max-width: 639px) {
+  .app-stage:has(#home-guide) > .brand-banner h1 {
+    font-size: clamp(1.28rem, 6.4vw, 2.55rem);
+  }
+
+  .app-stage:has(#home-guide) > .brand-banner p {
+    margin-top: 0;
+    font-size: clamp(0.78rem, 3.2vw, 1.05rem);
+  }
+
+  .app-stage:has(#home-guide) .chrome-panel {
+    padding-top: 0.12rem;
+    padding-bottom: 0.12rem;
+  }
+
+  .app-stage:has(#home-guide) .chrome-panel nav {
+    margin-top: 0.2rem;
+  }
+
   .app-stage:has(#home-guide) [data-neighborhood-news] {
-    flex: 1 1 auto;
-    min-height: max(17.5rem, 40dvh);
+    flex: 1 1 0%;
+    min-height: max(19rem, 44dvh);
   }
 
   .app-stage:has(#home-guide) [data-neighborhood-news] [data-news-body] {
-    flex: 1 1 auto;
-    min-height: max(11rem, 22dvh);
+    flex: 1 1 0%;
+    min-height: max(13rem, 26dvh);
   }
 }
 
