@@ -108,10 +108,13 @@ test.describe("Open Community soft-launch smoke", () => {
     await expect(page.getByLabel("Ton idée")).toBeVisible();
     await expect(page.getByRole("button", { name: "Envoyer l’idée" })).toBeVisible();
 
-    // Wipe local + IndexedDB so we prove the empty public catalog does not refill ideas.
-    // Clearing only localStorage is no longer enough: durable memory restores from IDB.
+    // Wipe every on-device layer so we prove the empty public catalog does not refill ideas.
+    // localStorage alone is not enough: durable memory also keeps sessionStorage + IndexedDB.
     await page.evaluate(async () => {
-      window.localStorage.removeItem("xsnow.ideas");
+      for (const key of Object.keys(window.localStorage)) {
+        if (key.startsWith("xsnow.")) window.localStorage.removeItem(key);
+      }
+      window.sessionStorage.clear();
       await new Promise<void>((resolve, reject) => {
         const req = indexedDB.deleteDatabase("xsnow-device-memory");
         req.onsuccess = () => resolve();
