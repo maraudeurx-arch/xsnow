@@ -164,9 +164,9 @@ export function NeighborhoodNews({ onNewsChange }: Props) {
         </div>
       ) : null}
 
-      <div className="flex min-h-0 flex-1 flex-col gap-1 overflow-hidden">
+      <div className="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto">
         {status === "ready" && items.length > 0 ? (
-          <ul className="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto">
+          <ul className="flex min-h-[6rem] flex-1 flex-col gap-1 overflow-y-auto">
             {items.map((item) => (
               <li key={item.id}>
                 <a

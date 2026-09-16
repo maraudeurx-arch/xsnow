@@ -9,8 +9,8 @@ import {
 } from "@/lib/partner-ads";
 
 const SLOT_MIN_H: Record<PartnerSlotId, string> = {
-  "news-mid": "min-h-[3.4rem]",
-  "news-bottom": "min-h-[5.6rem]",
+  "news-mid": "min-h-[3.1rem]",
+  "news-bottom": "min-h-[4.6rem]",
 };
 
 export function PartnerAdSlot({ slot }: { slot: PartnerSlotId }) {
