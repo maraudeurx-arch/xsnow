@@ -336,7 +336,7 @@ test.describe("Accueil neighbourhood news + partner slots", () => {
     await expect(mid).toHaveAttribute("data-partner-creative", "placeholder-garderie");
     await expect(mid).toHaveAttribute("data-partner-kind", "garderie");
     await expect(mid.getByText("Place en garderie du quartier")).toBeVisible();
-    await expect(mid.getByText("Publicité")).toBeVisible();
+    await expect(mid.getByText("Publicité · Espace partenaire")).toBeVisible();
     await expect(mid.locator("[data-partner-download]")).toBeVisible();
     await expect(mid.locator('[data-partner-cta="register"]')).toBeVisible();
 
@@ -389,14 +389,14 @@ test.describe("Accueil neighbourhood news + partner slots", () => {
     await expect(page.locator("[data-ad-photo-ready]")).toBeVisible();
     await page.getByLabel("Nom du commerce").fill("Atelier photo");
     await page.getByRole("button", { name: "Publier dans Open Community" }).click();
-    await expect(page.getByText(/400 Ko/)).toBeVisible();
+    await expect(page.getByText(/Enregistré sur cet appareil/)).toBeVisible();
 
     await page.goto("./?city=Gatineau");
     await expect(page.locator("[data-neighborhood-news]")).toHaveAttribute("data-news-status", "ready");
     const mid = page.locator('[data-partner-slot="news-mid"]');
     await expect(mid).toHaveAttribute("data-partner-creative", /visitor-/);
     await expect(mid.getByText("Atelier photo")).toBeVisible();
-    await expect(mid.getByText("Publicité")).toBeVisible();
+    await expect(mid.getByText("Publicité · Espace partenaire")).toBeVisible();
     const download = mid.locator("[data-partner-download]");
     await expect(download).toBeVisible();
     await expect(download).toHaveAttribute("href", /^data:image\//);
