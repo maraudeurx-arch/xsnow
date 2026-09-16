@@ -59,14 +59,16 @@ test.describe("Open Community soft-launch smoke", () => {
   test("Vos idées stay on this device and do not come back from the empty catalog", async ({ page }) => {
     const idea = `Déneiger les allées OPC-e2e ${Date.now()}`;
     await page.goto("./vos-idees/");
-    await expect(page.getByText("Pas encore d’idée ici.")).toBeVisible();
+    await expect(page.getByRole("button", { name: "Vos idées" })).toBeVisible();
+    await expect(page.getByText("S’impliquer : Tête, Cœur, Mains")).toHaveCount(0);
+    await expect(page.getByRole("heading", { name: "Vos idées", level: 2 })).toHaveCount(0);
 
+    await page.getByRole("button", { name: "Vos idées" }).click();
     await page.getByLabel("Ton idée").fill(idea);
-    await page.getByRole("button", { name: /Mains/ }).click();
-    await page.getByRole("button", { name: "Envoyer l’idée" }).click();
+    await page.getByRole("button", { name: "Soumettre" }).click();
 
-    await expect(page.getByText("Merci — tu fais partie d’ici.")).toBeVisible();
     await expect(page.getByText(idea).first()).toBeVisible();
+    await expect(page.getByRole("button", { name: "Vos idées" })).toBeVisible();
 
     const stored = await page.evaluate(() => window.localStorage.getItem("xsnow.ideas"));
     expect(stored).toContain(idea);
@@ -78,7 +80,7 @@ test.describe("Open Community soft-launch smoke", () => {
       window.localStorage.removeItem("xsnow.ideas");
     });
     await page.reload();
-    await expect(page.getByText("Pas encore d’idée ici.")).toBeVisible();
+    await expect(page.getByRole("button", { name: "Vos idées" })).toBeVisible();
     await expect(page.getByText(idea)).toHaveCount(0);
   });
 
