@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { FormEvent, useState } from "react";
 import { useI18n } from "@/lib/i18n/locale";
 import {
@@ -65,9 +66,19 @@ export function LocalProfileBoard() {
   return (
     <section className="space-y-2 rounded-2xl border border-sky-400/35 bg-sky-500/10 p-3">
       {!profile ? (
-        <button type="button" className={blueCtaClass} data-register-cta onClick={openForm}>
-          {copy.cta}
-        </button>
+        <div className="space-y-2">
+          <button type="button" className={blueCtaClass} data-register-cta onClick={openForm}>
+            {copy.cta}
+          </button>
+          <p className="text-[11px] leading-snug text-snow/80">{copy.nudgeHint}</p>
+          <Link
+            href="/mon-profil/inviter"
+            className="tap inline-flex w-full min-h-11 items-center justify-center rounded-full border border-sky-300/50 bg-sky-500/20 px-3 text-sm font-extrabold tracking-wide text-snow hover:brightness-110"
+            data-register-share
+          >
+            {copy.inviteCta}
+          </Link>
+        </div>
       ) : (
         <div className="space-y-2">
           <p className="text-sm font-extrabold text-snow">{copy.saved}</p>
@@ -80,6 +91,13 @@ export function LocalProfileBoard() {
           <button type="button" className={blueCtaClass} data-register-cta onClick={openForm}>
             {copy.edit}
           </button>
+          <Link
+            href="/mon-profil/inviter"
+            className="tap inline-flex w-full min-h-11 items-center justify-center rounded-full border border-sky-300/50 bg-sky-500/20 px-3 text-sm font-extrabold tracking-wide text-snow hover:brightness-110"
+            data-register-share
+          >
+            {copy.inviteCta}
+          </Link>
         </div>
       )}
 

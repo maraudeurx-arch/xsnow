@@ -23,8 +23,9 @@ test.describe("local registration on Mon profil", () => {
     await expect(installGuide.getByText(/Installer l’app/)).toBeVisible();
     await expect(installGuide.getByRole("button", { name: "Compris" })).toHaveCount(0);
     await expect(hub.getByRole("link", { name: /Vos idées/ })).toHaveCount(0);
-    await expect(hub.getByRole("link", { name: /Inviter d’autres/ })).toHaveCount(0);
+    await expect(hub.getByRole("link", { name: /Inviter d’autres/ })).toBeVisible();
     await expect(page.getByRole("button", { name: "Partager", exact: true })).toHaveCount(0);
+    await expect(page.getByRole("link", { name: "Inviter un voisin" })).toBeVisible();
 
     const cta = page.getByRole("button", { name: "S’inscrire" });
     await expect(cta).toBeVisible();
@@ -54,6 +55,7 @@ test.describe("local registration on Mon profil", () => {
 
     await expect(page.getByRole("button", { name: "Modifier le profil" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Partager", exact: true })).toHaveCount(0);
+    await expect(page.getByRole("link", { name: "Inviter un voisin" })).toBeVisible();
     await expect(page.locator("[data-share-panel]")).toHaveCount(0);
     await expect(page.getByText("Inviter quelqu’un")).toHaveCount(0);
     await expect(page.locator("[data-infos-privacy]")).toHaveCount(0);
@@ -61,6 +63,10 @@ test.describe("local registration on Mon profil", () => {
     // Connect stays in the top nav only — not duplicated in the Mon profil body.
     await expect(page.getByRole("navigation", { name: "Navigation principale" }).getByRole("button", { name: /Connect/ })).toBeVisible();
     await expect(page.locator("main").getByRole("button", { name: /Connect/ })).toHaveCount(0);
+
+    await page.getByRole("link", { name: "Inviter un voisin" }).click();
+    await expect(page).toHaveURL(/mon-profil\/inviter/);
+    await expect(page.getByText("Partager OPC")).toBeVisible();
 
     await page.locator("[data-home-back]").click();
     await expect(page).toHaveURL(/\/xsnow\/?$/);

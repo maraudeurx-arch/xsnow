@@ -67,12 +67,14 @@ fresh.describe("new visitor onboarding order", () => {
     await expect(page.getByRole("button", { name: "Réécouter" })).toBeVisible();
     await expect(page.getByRole("link", { name: "Gagner maintenant" })).toBeVisible();
     await expect(page.getByRole("link", { name: "Vos idées" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "S’inscrire" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Partager" })).toBeVisible();
 
     const cobalt = "rgb(37, 99, 235)";
     for (const locator of [
       page.getByRole("link", { name: "Gagner maintenant" }),
       page.getByRole("link", { name: "Vos idées" }),
+      page.getByRole("link", { name: "S’inscrire" }),
       page.getByRole("button", { name: "Partager" }),
       page.getByRole("button", { name: "Réécouter" }),
     ]) {
@@ -84,6 +86,12 @@ fresh.describe("new visitor onboarding order", () => {
     await expect(page.getByRole("button", { name: "Compris" })).toHaveCount(0);
     await expect(page.getByRole("note")).toHaveCount(0);
     await expect(page.locator("[data-install-guide]")).toHaveCount(0);
+
+    await page.getByRole("link", { name: "S’inscrire" }).click();
+    await expect(page).toHaveURL(/mon-profil/);
+    await expect(page.getByRole("button", { name: "S’inscrire" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Inviter un voisin" })).toBeVisible();
+    await expect(page.getByRole("navigation", { name: "Mon profil" }).getByRole("link", { name: /Inviter d’autres/ })).toBeVisible();
   });
 
   fresh("lets a new visitor read About version and contact without geo", async ({ page }) => {

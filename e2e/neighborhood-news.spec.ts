@@ -52,9 +52,11 @@ test.describe("Accueil neighbourhood news + partner slots", () => {
     await expect(page.getByText("Tour de Gatineau dimanche")).toBeVisible();
     const fibreBox = await page.getByText("Fibre optique à Hull").boundingBox();
     expect(fibreBox?.height ?? 0).toBeGreaterThan(12);
-    await expect(page.locator("[data-partner-slot]")).toHaveCount(2);
+    await expect(page.locator("[data-partner-slot]")).toHaveCount(3);
+    await expect(page.locator('[data-partner-slot="news-top"]')).toBeVisible();
+    await expect(page.locator('[data-partner-label="commandite"]')).toHaveCount(3);
     await expect(page.getByText("Espace partenaire").first()).toBeVisible();
-    await expect(page.getByText("Publicité").first()).toBeVisible();
+    await expect(page.getByText("Commandité").first()).toBeVisible();
     await expect(page.getByText(/ferme à clics|exemple|soft-launch|pas une publicité vendue|pas de revenus pubs/i).first()).toBeVisible();
     await expect(page.getByText(/Grok et Cursor/).first()).toBeVisible();
     await expect(page.locator("[data-partner-creative]").first()).toBeVisible();
@@ -104,7 +106,10 @@ test.describe("Accueil neighbourhood news + partner slots", () => {
 
     await expect(page.getByRole("link", { name: "Gagner maintenant" })).toBeVisible();
     await expect(page.getByRole("link", { name: "Vos idées" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "S’inscrire" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Partager" })).toBeVisible();
+    await expect(page.locator("[data-home-growth]")).toBeVisible();
+    await expect(page.locator("[data-home-register]")).toHaveText("S’inscrire");
     await expect(page.locator("#avatar-chat")).toBeVisible();
     expect(chatBox!.y + chatBox!.height).toBeLessThanOrEqual(footerBox!.y + 1);
 
@@ -181,6 +186,7 @@ test.describe("Accueil neighbourhood news + partner slots", () => {
     const spacerBox = await spacer.boundingBox();
     expect(spacerBox!.height).toBeGreaterThan(200);
     await expect(page.getByRole("link", { name: "Gagner maintenant" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "S’inscrire" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Partager" })).toBeVisible();
     await expect(page.locator("#avatar-chat")).toBeVisible();
     const privacy = page.getByRole("contentinfo").getByRole("link", { name: "Vie privée" });
@@ -206,6 +212,6 @@ test.describe("Accueil neighbourhood news + partner slots", () => {
     await expect(news).toHaveAttribute("data-news-status", "error", { timeout: 15_000 });
     await expect(page.getByText("Chargement des nouvelles locales…")).toHaveCount(0);
     await expect(page.getByRole("button", { name: "Réessayer" })).toBeVisible();
-    await expect(page.locator("[data-partner-slot]")).toHaveCount(2);
+    await expect(page.locator("[data-partner-slot]")).toHaveCount(3);
   });
 });

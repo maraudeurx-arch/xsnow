@@ -33,6 +33,7 @@ import {
 } from "@/lib/welcome-place";
 import { useStoredAvatar } from "@/lib/useStoredAvatar";
 import { useDurableHydrated } from "@/lib/useDurableHydrated";
+import { useLocalProfile } from "@/lib/useLocalProfile";
 
 const pickerSize =
   "size-[min(26vw,17dvh,6.6rem)] sm:size-[min(22vw,8.5rem)]";
@@ -54,6 +55,7 @@ export function Guide() {
   const { locale, m } = useI18n();
   const unanswered = useConsentUnanswered();
   const welcomeGateOpen = useWelcomeGate();
+  const [profile] = useLocalProfile();
 
   const showPicker = picking || (memoryReady && !avatarId);
   const chosen = avatarId ? avatarById(avatarId) : null;
@@ -162,12 +164,20 @@ export function Guide() {
             <nav
               aria-label={m.guide.offerShortcuts}
               className="grid shrink-0 grid-cols-2 gap-[var(--home-chip-gap)]"
+              data-home-growth
             >
               <Link href="/gagner-maintenant" className={shortcutClass}>
                 {m.menu.gagnerMaintenant}
               </Link>
               <Link href="/vos-idees/#form" className={shortcutClass}>
                 {m.nav.vosIdees}
+              </Link>
+              <Link
+                href="/mon-profil"
+                className={shortcutClass}
+                data-home-register
+              >
+                {profile ? m.nav.monProfil : m.register.cta}
               </Link>
               <ShareHomeButton />
             </nav>
@@ -213,7 +223,7 @@ function ShareHomeButton() {
   return (
     <button
       type="button"
-      className={`${shortcutClass} col-span-2`}
+      className={shortcutClass}
       onClick={() => void shareApp()}
     >
       {m.shareOpc.short}

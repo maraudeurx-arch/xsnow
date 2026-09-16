@@ -19,6 +19,7 @@ describe("Accueil Nouvelles layout fills toward the footer", () => {
     assert.match(guide, /grid-rows-\[auto_minmax\(0,1fr\)_auto\]/);
     assert.match(guide, /gagner-maintenant/);
     assert.match(guide, /vos-idees/);
+    assert.match(guide, /data-home-register/);
     assert.match(guide, /ShareHomeButton/);
     assert.match(guide, /AvatarChat/);
     assert.match(

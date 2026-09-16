@@ -13,7 +13,7 @@ import {
   type NeighborhoodNewsItem,
   type NeighborhoodNewsPayload,
 } from "@/lib/neighborhood-news";
-import { visiblePartnerSlots, type PartnerSlotId } from "@/lib/partner-ads";
+import { placePartnerSlots, visiblePartnerSlots } from "@/lib/partner-ads";
 
 export type NeighborhoodNewsState = {
   status: "hidden" | "need_city" | "loading" | "ready" | "empty" | "error";
@@ -24,10 +24,6 @@ export type NeighborhoodNewsState = {
 type Props = {
   onNewsChange?: (state: NeighborhoodNewsState) => void;
 };
-
-function hasSlot(slots: PartnerSlotId[], id: PartnerSlotId) {
-  return slots.includes(id);
-}
 
 export function NeighborhoodNews({ onNewsChange }: Props) {
   const { city, countryCode, resolved } = usePlace();
@@ -120,8 +116,8 @@ export function NeighborhoodNews({ onNewsChange }: Props) {
     };
   }, [attempt, city, countryCode, locale, onNewsChange, resolved]);
 
-  const showMid = hasSlot(slots, "news-mid");
-  const showBottom = hasSlot(slots, "news-bottom");
+  const hasHeadlines = status === "ready" && items.length > 0;
+  const placed = placePartnerSlots(slots, hasHeadlines);
 
   return (
     <section
@@ -172,7 +168,10 @@ export function NeighborhoodNews({ onNewsChange }: Props) {
       ) : null}
 
       <div data-news-body className="flex min-h-0 flex-1 grow flex-col gap-1.5 overflow-hidden">
-        {status === "ready" && items.length > 0 ? (
+        {placed.leading.map((slot) => (
+          <PartnerAdSlot key={slot} slot={slot} />
+        ))}
+        {hasHeadlines ? (
           <ul
             data-news-list
             className="flex min-h-0 flex-1 grow flex-col gap-1 overflow-y-auto"
@@ -198,22 +197,23 @@ export function NeighborhoodNews({ onNewsChange }: Props) {
                     <span>{item.source}</span>
                   </span>
                 </a>
-                {index === 0 && showMid ? (
-                  <div className="mt-1.5">
-                    <PartnerAdSlot slot="news-mid" />
-                  </div>
-                ) : null}
+                {index === 0
+                  ? placed.inline.map((slot) => (
+                      <div key={slot} className="mt-1.5">
+                        <PartnerAdSlot slot={slot} />
+                      </div>
+                    ))
+                  : null}
               </li>
             ))}
           </ul>
         ) : (
-          <>
-            <div data-news-spacer className="min-h-0 flex-1 grow" aria-hidden />
-            {showMid ? <PartnerAdSlot slot="news-mid" /> : null}
-          </>
+          <div data-news-spacer className="min-h-0 flex-1 grow" aria-hidden />
         )}
 
-        {showBottom ? <PartnerAdSlot slot="news-bottom" /> : null}
+        {placed.trailing.map((slot) => (
+          <PartnerAdSlot key={slot} slot={slot} />
+        ))}
       </div>
     </section>
   );

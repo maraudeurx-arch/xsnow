@@ -19,6 +19,7 @@ import {
 } from "@/lib/partner-ads";
 
 const SLOT_MIN_H: Record<PartnerSlotId, string> = {
+  "news-top": "min-h-[2.4rem]",
   "news-mid": "min-h-[4.6rem]",
   "news-bottom": "min-h-[5.4rem]",
 };
@@ -59,19 +60,24 @@ export function PartnerAdSlot({ slot }: { slot: PartnerSlotId }) {
 
   const imageUrl = partnerCreativeImageUrl(creative);
   const external = isExternalHref(creative.href);
+  const compact = slot === "news-top";
 
   return (
     <aside
       data-partner-slot={slot}
       data-partner-creative={creative.id}
       data-partner-rotation={rotation}
-      aria-label={`${copy.partnerSponsored} — ${creative.name}`}
-      className="shrink-0 rounded-lg border border-dashed border-gold/35 bg-white/[0.03] px-2 py-1.5 text-left"
+      data-partner-label="commandite"
+      aria-label={`${copy.partnerSponsored} — ${copy.partnerSlot} — ${creative.name}`}
+      className="shrink-0 rounded-lg border border-dashed border-gold/50 bg-white/[0.03] px-2 py-1.5 text-left"
     >
-      <p className="text-[8px] font-extrabold uppercase tracking-wide text-ice/70">
-        {copy.partnerSponsored}
-        <span aria-hidden> · </span>
-        {copy.partnerSlot}
+      <p className="flex flex-wrap items-center gap-1">
+        <span className="inline-flex rounded-full bg-gold/25 px-1.5 py-px text-[8px] font-extrabold uppercase tracking-wide text-gold">
+          {copy.partnerSponsored}
+        </span>
+        <span className="text-[8px] font-extrabold uppercase tracking-wide text-ice/70">
+          {copy.partnerSlot}
+        </span>
       </p>
       {adsense ? (
         <ins
@@ -96,6 +102,7 @@ export function PartnerAdSlot({ slot }: { slot: PartnerSlotId }) {
                 creative={creative}
                 imageUrl={imageUrl}
                 funding={copy.partnerFunding}
+                compact={compact}
               />
             </a>
           ) : (
@@ -108,6 +115,7 @@ export function PartnerAdSlot({ slot }: { slot: PartnerSlotId }) {
                 creative={creative}
                 imageUrl={imageUrl}
                 funding={copy.partnerFunding}
+                compact={compact}
               />
             </Link>
           )}
@@ -121,14 +129,16 @@ function CreativeBody({
   creative,
   imageUrl,
   funding,
+  compact,
 }: {
   creative: PartnerCreative;
   imageUrl: string | null;
   funding: string;
+  compact?: boolean;
 }) {
   return (
     <>
-      {imageUrl ? (
+      {imageUrl && !compact ? (
         // eslint-disable-next-line @next/next/no-img-element -- static export SVG placeholders
         <img
           src={imageUrl}
@@ -141,7 +151,7 @@ function CreativeBody({
       <div className="flex flex-1 flex-col justify-center gap-0.5 px-2 py-1.5 text-left">
         <p className="text-[10px] font-extrabold leading-snug text-snow">{creative.name}</p>
         <p className="text-[8px] leading-snug text-snow/75">{creative.tagline}</p>
-        <p className="text-[8px] leading-snug text-ice/60">{funding}</p>
+        {compact ? null : <p className="text-[8px] leading-snug text-ice/60">{funding}</p>}
       </div>
     </>
   );

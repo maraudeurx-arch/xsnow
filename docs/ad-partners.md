@@ -2,7 +2,7 @@
 
 **Status:** UI placeholders only on Accueil (**Nouvelles du Quartier**). No signed contracts, no claim of live ad revenue. Creatives are data in `src/lib/partner-ads.ts` (`PLACEHOLDER_PARTNERS`: `{ id, name, href, imagePath?, tagline }`) — swap in real partners without rewriting layout.
 
-**Inventory today:** labeled **Publicité · Espace partenaire** mid + bottom slots, rotating demo banners. Env: `NEXT_PUBLIC_ADS_*` / AdSense slot IDs in `.env.example`.
+**Inventory today:** labeled **Commandité · Espace partenaire** top + mid + bottom slots, rotating demo banners (top is compact, no fake headlines). Env: `NEXT_PUBLIC_ADS_*` / AdSense slot IDs in `.env.example`.
 
 This note is public research for the owner. Contact only after the product owner decides; do not invent agreements.
 

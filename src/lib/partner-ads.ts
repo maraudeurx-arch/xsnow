@@ -11,11 +11,23 @@ import { durableGet, durableSet } from "./durable-storage.ts";
 import { assetUrl } from "./paths.ts";
 
 export type AdProvider = "placeholder" | "adsense" | "none";
-export type PartnerSlotId = "news-mid" | "news-bottom";
+export type PartnerSlotId = "news-top" | "news-mid" | "news-bottom";
+
+export type PartnerSlotPlacement = {
+  leading: PartnerSlotId[];
+  inline: PartnerSlotId[];
+  trailing: PartnerSlotId[];
+};
+
+export type AdsenseSlotEnv = {
+  top?: string;
+  mid?: string;
+  bottom?: string;
+};
 
 export type PartnerCreative = {
   id: string;
-  /** Display name shown next to the Publicité label. */
+  /** Display name shown next to the Commandité label. */
   name: string;
   /** Destination when the creative is tapped (in-app path or https). */
   href: string;
@@ -25,7 +37,11 @@ export type PartnerCreative = {
   tagline: string;
 };
 
-export const NEWS_PARTNER_SLOTS: readonly PartnerSlotId[] = ["news-mid", "news-bottom"];
+export const NEWS_PARTNER_SLOTS: readonly PartnerSlotId[] = [
+  "news-top",
+  "news-mid",
+  "news-bottom",
+];
 
 /** How often placeholder creatives advance (ms). */
 export const PARTNER_ROTATION_MS = 9_000;
@@ -62,6 +78,7 @@ export const PLACEHOLDER_PARTNERS: readonly PartnerCreative[] = [
 ];
 
 const SLOT_OFFSET: Record<PartnerSlotId, number> = {
+  "news-top": 2,
   "news-mid": 0,
   "news-bottom": 1,
 };
@@ -103,14 +120,19 @@ export function adsenseClientId(
   return (raw || "").trim();
 }
 
-export function adsenseSlotId(
-  slot: PartnerSlotId,
-  env: { mid?: string; bottom?: string } = {
+function defaultAdsenseEnv(): AdsenseSlotEnv {
+  return {
+    top: process.env.NEXT_PUBLIC_ADSENSE_SLOT_NEWS_TOP,
     mid: process.env.NEXT_PUBLIC_ADSENSE_SLOT_NEWS_MID,
     bottom: process.env.NEXT_PUBLIC_ADSENSE_SLOT_NEWS_BOTTOM,
-  },
+  };
+}
+
+export function adsenseSlotId(
+  slot: PartnerSlotId,
+  env: AdsenseSlotEnv = defaultAdsenseEnv(),
 ): string {
-  const value = slot === "news-mid" ? env.mid : env.bottom;
+  const value = slot === "news-top" ? env.top : slot === "news-mid" ? env.mid : env.bottom;
   return (value || "").trim();
 }
 
@@ -120,24 +142,24 @@ export function usesAdsense(
     provider?: string;
     enabled?: string;
     client?: string;
+    top?: string;
     mid?: string;
     bottom?: string;
   } = {
     provider: process.env.NEXT_PUBLIC_ADS_PROVIDER,
     enabled: process.env.NEXT_PUBLIC_ADS_ENABLED,
     client: process.env.NEXT_PUBLIC_ADSENSE_CLIENT,
-    mid: process.env.NEXT_PUBLIC_ADSENSE_SLOT_NEWS_MID,
-    bottom: process.env.NEXT_PUBLIC_ADSENSE_SLOT_NEWS_BOTTOM,
+    ...defaultAdsenseEnv(),
   },
 ): boolean {
   return (
     adProvider(env.provider, env.enabled) === "adsense" &&
     Boolean(adsenseClientId(env.client)) &&
-    Boolean(adsenseSlotId(slot, { mid: env.mid, bottom: env.bottom }))
+    Boolean(adsenseSlotId(slot, { top: env.top, mid: env.mid, bottom: env.bottom }))
   );
 }
 
-/** Slots to render under real headlines inside Nouvelles du Quartier. */
+/** Slots to render inside Nouvelles du Quartier (labeled Commandité, never fake news). */
 export function visiblePartnerSlots(
   env: { enabled?: string; provider?: string } = {
     enabled: process.env.NEXT_PUBLIC_ADS_ENABLED,
@@ -146,6 +168,26 @@ export function visiblePartnerSlots(
 ): PartnerSlotId[] {
   if (!adsEnabled(env)) return [];
   return [...NEWS_PARTNER_SLOTS];
+}
+
+/**
+ * news-top sits above headlines, news-mid after the first headline when
+ * stories exist, news-bottom after the list. Without headlines, mid joins
+ * the trailing stack so inventory stays visible on empty/error.
+ */
+export function placePartnerSlots(
+  slots: readonly PartnerSlotId[],
+  hasHeadlines: boolean,
+): PartnerSlotPlacement {
+  const leading: PartnerSlotId[] = [];
+  const inline: PartnerSlotId[] = [];
+  const trailing: PartnerSlotId[] = [];
+  for (const slot of slots) {
+    if (slot === "news-top") leading.push(slot);
+    else if (slot === "news-mid" && hasHeadlines) inline.push(slot);
+    else trailing.push(slot);
+  }
+  return { leading, inline, trailing };
 }
 
 export function listPartnerCreatives(

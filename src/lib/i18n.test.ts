@@ -183,9 +183,21 @@ describe("vos idees copy", () => {
     assert.equal(fr.neighborhoodNews.partnerSlot, "Espace partenaire");
     assert.equal(en.neighborhoodNews.partnerSlot, "Partner space");
     assert.equal(es.neighborhoodNews.partnerSlot, "Espacio para socios");
+    assert.equal(fr.neighborhoodNews.partnerSponsored, "Commandité");
+    assert.equal(en.neighborhoodNews.partnerSponsored, "Sponsored");
+    assert.equal(es.neighborhoodNews.partnerSponsored, "Patrocinado");
     assert.match(fr.neighborhoodNews.partnerPlaceholder, /ferme à clics/);
     assert.match(fr.neighborhoodNews.partnerFunding, /Grok et Cursor/);
     assert.equal(fr.neighborhoodNews.retry, "Réessayer");
+    assert.equal(fr.register.inviteCta, "Inviter un voisin");
+    assert.equal(en.register.inviteCta, "Invite a neighbour");
+    assert.equal(es.register.inviteCta, "Invitar a un vecino");
+    assert.match(fr.register.nudgeHint, /invite un voisin/);
+    assert.match(en.register.nudgeHint, /invite a neighbour/);
+    assert.match(es.register.nudgeHint, /invita a un vecino/);
+    assert.match(fr.guide.offerShortcuts, /Mon profil/);
+    assert.match(en.guide.offerShortcuts, /My profile/);
+    assert.match(es.guide.offerShortcuts, /Mi perfil/);
   });
 });
 

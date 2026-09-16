@@ -10,6 +10,7 @@ import { useI18n } from "@/lib/i18n/locale";
 import { pathMatches } from "@/lib/paths";
 
 const PROFILE_LINKS = [
+  { href: "/mon-profil/inviter", key: "inviter" as const },
   { href: "/mon-profil/reglages", key: "reglages" as const },
   { href: "/mon-profil/a-propos", key: "aPropos" as const },
 ];
