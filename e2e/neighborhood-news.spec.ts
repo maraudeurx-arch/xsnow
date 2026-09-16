@@ -73,14 +73,16 @@ test.describe("Accueil neighbourhood news + partner slots", () => {
 
     const gap = footerBox!.y - (cardBox!.y + cardBox!.height);
     expect(gap).toBeGreaterThanOrEqual(0);
-    expect(gap).toBeLessThan(20);
+    expect(gap).toBeLessThan(14);
     expect(newsBox!.height).toBeGreaterThan(chatBox!.height);
+    expect(newsBox!.height).toBeGreaterThan(220);
 
     const privacy = page.getByRole("contentinfo").getByRole("link", { name: "Vie privée" });
     await expect(privacy).toBeVisible();
     const privacyBox = await privacy.boundingBox();
     expect(privacyBox).toBeTruthy();
     expect(privacyBox!.y).toBeGreaterThan(cardBox!.y + cardBox!.height - 1);
+    expect(footerBox!.height).toBeLessThan(64);
   });
 
   test("Worker 405 still shows real headlines via the JSON RSS fallback", async ({ page }) => {

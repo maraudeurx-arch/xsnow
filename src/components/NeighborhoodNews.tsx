@@ -128,7 +128,7 @@ export function NeighborhoodNews({ onNewsChange }: Props) {
       data-neighborhood-news
       data-news-status={status}
       aria-label={copy.title}
-      className="flex min-h-[12.5rem] flex-1 flex-col gap-1 overflow-hidden rounded-xl border border-gold/30 bg-[rgba(8,8,12,0.88)] px-2 py-1.5 sm:min-h-[14rem]"
+      className="flex min-h-[15rem] flex-1 flex-col gap-1 overflow-hidden rounded-xl border border-gold/30 bg-[rgba(8,8,12,0.88)] px-2 py-1.5 sm:min-h-[16.5rem]"
     >
       <div className="flex shrink-0 items-baseline justify-between gap-2 px-0.5">
         <h2 className="text-[10px] font-extrabold tracking-wide text-gold">{copy.title}</h2>
@@ -173,7 +173,7 @@ export function NeighborhoodNews({ onNewsChange }: Props) {
 
       <div className="flex min-h-0 flex-1 flex-col gap-1.5 overflow-y-auto">
         {status === "ready" && items.length > 0 ? (
-          <ul className="flex min-h-[7.5rem] flex-1 flex-col gap-1">
+          <ul className="flex min-h-[9rem] flex-1 flex-col gap-1">
             {items.map((item, index) => (
               <li key={item.id}>
                 <a
@@ -203,7 +203,7 @@ export function NeighborhoodNews({ onNewsChange }: Props) {
           </ul>
         ) : (
           <>
-            <div className="min-h-[4.5rem] flex-1" aria-hidden />
+            <div className="min-h-[9rem] flex-1" aria-hidden />
             {showMid ? <PartnerAdSlot slot="news-mid" /> : null}
           </>
         )}
