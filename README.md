@@ -137,7 +137,7 @@ npx wrangler deploy
 
 Le `To:` est **codé en dur** (`opencommunity.opc@gmail.com`) — un visiteur ne peut pas le rediriger. Resend exige un domaine d’envoi vérifié pour livrer vers Gmail (le From `beth.t@example.com` ne sert qu’aux tests Resend).
 
-4. Compilation optionnelle (D1), si `IDEAS_OWNER_SECRET` est posé :
+4. Compilation optionnelle (D1), si `IDEAS_OWNER_SECRET` est posé (détail : [`docs/owner-ideas.md`](docs/owner-ideas.md)) :
    - HTML : `https://xsnow-chat.xsnowopc.workers.dev/ideas?secret=…`
    - JSON : la même URL avec `&format=json`
    - Page app (non listée) : `/xsnow/proprietaire/idees/?secret=…`
@@ -218,7 +218,7 @@ npx wrangler deploy
 
 `To:` is **hardcoded** (`opencommunity.opc@gmail.com`) — visitors cannot redirect it. Resend needs a verified sending domain to deliver to Gmail (`beth.t@example.com` is test-only).
 
-4. Optional D1 compile page if `IDEAS_OWNER_SECRET` is set:
+4. Optional D1 compile page if `IDEAS_OWNER_SECRET` is set (see [`docs/owner-ideas.md`](docs/owner-ideas.md)):
    - HTML: `https://xsnow-chat.xsnowopc.workers.dev/ideas?secret=…`
    - JSON: same URL with `&format=json`
    - Unlisted app page: `/xsnow/proprietaire/idees/?secret=…`
