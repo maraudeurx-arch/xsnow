@@ -129,7 +129,7 @@ test.describe("Open Community soft-launch smoke", () => {
     expect(stored).toContain(idea);
     await expect(page.getByRole("status")).toContainText("Idée bien reçue");
     await expect(page.locator("[data-idea-inbox=failed]")).toBeVisible();
-    await expect(page.getByRole("button", { name: "Renvoyer au propriétaire" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Renvoyer au propriétaire" })).toHaveCount(0);
     await expect(page.getByRole("button", { name: "Ajouter une autre idée" })).toBeVisible();
   });
 

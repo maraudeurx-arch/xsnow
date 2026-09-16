@@ -934,7 +934,6 @@ export const es: Messages = {
     wallEmpty: "Aún no hay ninguna idea aquí. La primera suele ser la más útil.",
     inboxSent: "Correo enviado a opencommunity.opc@gmail.com.",
     inboxFailed: "Guardada aquí. El correo al propietario no pudo salir (red).",
-    retryInbox: "Reenviar al propietario",
     editIdea: "Editar",
     share: "Texto para compartir",
     shareHint: "Edita el texto y luego cópialo para un vecino o un grupo.",

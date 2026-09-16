@@ -932,7 +932,6 @@ export const en: Messages = {
     wallEmpty: "No idea here yet. The first one is often the most useful.",
     inboxSent: "Email sent to opencommunity.opc@gmail.com.",
     inboxFailed: "Saved here. The owner email could not be sent (network).",
-    retryInbox: "Resend to the owner",
     editIdea: "Edit",
     share: "Text to share",
     shareHint: "Edit the text, then copy it for a neighbour or a group.",

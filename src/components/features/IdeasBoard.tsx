@@ -51,7 +51,6 @@ export function IdeasBoard() {
   const [received, setReceived] = useState(false);
   const [busy, setBusy] = useState(false);
   const [inbox, setInbox] = useState<CommunityIdea["inbox"]>("local");
-  const [lastIdea, setLastIdea] = useState<CommunityIdea | null>(null);
   const formRef = useRef<HTMLFormElement | null>(null);
   const textArea = useRef<HTMLTextAreaElement | null>(null);
   const focusAfterReset = useRef(false);
@@ -120,7 +119,6 @@ export function IdeasBoard() {
     noteIdeaSubmit(idea.involvement.join("+") || "text");
     setForm(emptyIdeaForm());
     setError(false);
-    setLastIdea(idea);
     setInbox("local");
     setReceived(true);
     setBusy(true);
@@ -137,7 +135,6 @@ export function IdeasBoard() {
     setForm(emptyIdeaForm());
     setError(false);
     setInbox("local");
-    setLastIdea(null);
   }
 
   if (received) {
@@ -154,19 +151,9 @@ export function IdeasBoard() {
             </p>
           ) : null}
           {inbox === "failed" ? (
-            <div className="flex flex-wrap items-center gap-2" data-idea-inbox="failed">
-              <p className="text-sm font-semibold text-gold">{copy.inboxFailed}</p>
-              {lastIdea ? (
-                <button
-                  type="button"
-                  className="tap rounded-full border border-white/20 px-3 py-1 text-xs font-bold text-snow"
-                  onClick={() => void sendInbox(lastIdea)}
-                  disabled={busy}
-                >
-                  {copy.retryInbox}
-                </button>
-              ) : null}
-            </div>
+            <p className="text-sm font-semibold text-gold" data-idea-inbox="failed">
+              {copy.inboxFailed}
+            </p>
           ) : null}
         </div>
         <button type="button" className={ctaClass} onClick={addAnother}>
@@ -239,16 +226,9 @@ export function IdeasBoard() {
                   </p>
                 ) : null}
                 {idea.inbox === "failed" ? (
-                  <div className="mt-1 flex flex-wrap items-center gap-2" data-idea-inbox="failed">
-                    <p className="text-[11px] font-semibold text-gold">{copy.inboxFailed}</p>
-                    <button
-                      type="button"
-                      className="tap rounded-full border border-white/20 px-2 py-1 text-[11px] font-bold text-snow"
-                      onClick={() => void sendInbox(idea)}
-                    >
-                      {copy.retryInbox}
-                    </button>
-                  </div>
+                  <p className="mt-1 text-[11px] font-semibold text-gold" data-idea-inbox="failed">
+                    {copy.inboxFailed}
+                  </p>
                 ) : null}
               </li>
             ))}
