@@ -8,6 +8,14 @@ test.describe("local registration on Mon profil", () => {
     await expect(page.getByRole("heading", { name: "Mon profil", level: 2 })).toBeVisible();
     await expect(page.locator("[data-home-back]")).toBeVisible();
 
+    const hub = page.getByRole("navigation", { name: "Mon profil" });
+    await expect(hub.getByRole("link", { name: "Mes infos" })).toBeVisible();
+    await expect(hub.getByRole("link", { name: "Réglages" })).toBeVisible();
+    await expect(hub.getByRole("link", { name: "À propos de Open Community (OPC)" })).toBeVisible();
+    await expect(hub.getByRole("link", { name: /Vos idées/ })).toHaveCount(0);
+    await expect(hub.getByRole("link", { name: /Inviter d’autres/ })).toHaveCount(0);
+    await expect(page.getByRole("button", { name: "Partager", exact: true })).toHaveCount(0);
+
     const cta = page.getByRole("button", { name: "S’inscrire" });
     await expect(cta).toBeVisible();
     await expect(cta).toHaveCSS("background-color", "rgb(29, 78, 216)");
