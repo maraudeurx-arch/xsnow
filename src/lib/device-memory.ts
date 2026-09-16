@@ -23,6 +23,7 @@ import {
 import { IDEAS_KEY, parseStoredIdea, type CommunityIdea } from "./ideas.ts";
 import { LANG_STORAGE_KEY } from "./i18n/locales.ts";
 import { LOCAL_PROFILE_KEY, parseStoredProfile, type LocalProfile } from "./local-profile.ts";
+import { ALERTS_KEY, ALERT_NOTICES_KEY, ALERT_SHARES_KEY } from "./proximity-alerts.ts";
 
 /** Same strings as `location.ts` — do not import that module (Node tests + @/ aliases). */
 const GEO_CONSENT_KEY = "xsnow.geoConsent";
@@ -45,6 +46,9 @@ export const DEVICE_KEYS = {
   analyticsConsent: ANALYTICS_CONSENT_KEY,
   welcomePlayed: WELCOME_PLAYED_KEY,
   welcomeSpokenCity: WELCOME_CITY_KEY,
+  alerts: ALERTS_KEY,
+  alertShares: ALERT_SHARES_KEY,
+  alertNotices: ALERT_NOTICES_KEY,
 } as const;
 
 export type DeviceMemorySnapshot = {

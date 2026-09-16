@@ -144,7 +144,7 @@ export const FEATURE_COPY = {
   },
   alertes: {
     title: "Alertes de proximité",
-    lead: "Recevez une alerte si un enfant, un conjoint ou des parents âgés s’éloignent de la zone où ils doivent être.",
+    lead: "Recevez une alerte si un enfant, un conjoint ou des parents âgés s’éloignent de la zone où ils doivent être. Le proche accepte lui-même — pas Apple Localiser.",
   },
   reportage: {
     title: "Avec l’IA, crée des reportages sur votre quartier",

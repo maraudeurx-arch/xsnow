@@ -1,10 +1,9 @@
 /**
  * Visitor place — device-local (localStorage + IndexedDB backup).
  *
- * Same GPS consent will later power « qui est à proximité » and family
- * geofence alerts (école, travail, maison de retraite). This module stores
- * { lat, lon, city, updatedAt } on the phone and reverse-geocodes the city.
- * Do not start realtime tracking, watches, or server-side location shares here.
+ * Stores { lat, lon, city, updatedAt } on the phone and reverse-geocodes the city.
+ * Family geofence alerts live in AlertBoard after the proche consents in OPC.
+ * Do not start silent tracking, Apple Find My, iCloud access, or realtime watches here.
  */
 
 import { displayCity } from "@/lib/demonym";
@@ -263,8 +262,8 @@ export async function fetchNearbyPeople(place: StoredPlace): Promise<[]> {
 }
 
 /**
- * Future: alert when a child, partner, or parent leaves a trusted zone.
- * Returns an unsubscribe no-op so call sites can wire it later.
+ * Family geofences run from AlertBoard after the proche consents in OPC.
+ * This helper stays a no-op so PlaceProvider never starts a silent watch.
  */
 export function watchFamilyGeofences(opts?: {
   members?: Array<{ id: string; lat: number; lon: number }>;

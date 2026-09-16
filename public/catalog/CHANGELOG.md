@@ -4,6 +4,12 @@ Community-wide offers and ideas appear here **only after GOV + owner approval**,
 
 Personal Mes services offers, En demande requests, Interac/PayPal, chat, Vos idées, and the local registration profile stay on the visitor’s device until that happens. A sanitized copy of a submitted idea (text, city, timestamp, optional OPC id — no last name or phone) is emailed to opencommunity.opc@gmail.com. That inbox is not a public catalog.
 
+## 0.3.4 — 2026-09-16
+
+- Alertes de proximité: guardian schedule (lundi→dimanche), 5/10/20 km radius, invite link, proche consent in the app (browser / PWA geolocation). Optional Worker SMS (Twilio env, soft-fail) and in-app notices.
+- Not included: Apple Find My, iCloud, Messages inbox, another person’s Apple ID, silent background agents.
+- Public catalog remains empty.
+
 ## 0.3.3 — 2026-09-16
 
 - Vos idées: on-device confirmation, then a sanitized email to `opencommunity.opc@gmail.com` via Worker `POST /ideas` (Resend). Optional registration notice: `POST /register`.

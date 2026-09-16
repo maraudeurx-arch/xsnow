@@ -11,11 +11,24 @@
  * `POST /ideas` = sanitized visitor ideas; emails opencommunity.opc@gmail.com
  * `POST /register` = optional registration notice to the same inbox
  * `GET /ideas` = owner list (JSON or HTML) behind `IDEAS_OWNER_SECRET`
+ * `POST /alerts` = guardian registers a consented proximity alert (schedule + place)
+ * `GET /alerts?token=` = invite preview for the proche (no phone)
+ * `POST /alerts/consent` = proche grants location sharing themselves
+ * `POST /alerts/ping` = consented GPS ping; optional Twilio SMS / Resend email
  *
  * D1: `npx wrangler d1 create xsnow-stats` then set database_id in wrangler.toml
  * and `npx wrangler d1 migrations apply xsnow-stats --remote`.
  */
 
+import {
+  handleAlertsConsent,
+  handleAlertsGet,
+  handleAlertsPing,
+  handleAlertsRegister,
+  isAlertsConsentPath,
+  isAlertsPath,
+  isAlertsPingPath,
+} from "./alerts";
 import { corsHeaders } from "./cors";
 import { parseLatLon, reverseGeocode } from "./geo";
 import { handleIdeasGet, handleIdeasPost, handleRegisterPost, isIdeasPath, isRegisterPath } from "./ideas";
@@ -40,6 +53,10 @@ export interface Env {
   RESEND_API_KEY?: string;
   /** Optional From: header, verified Resend domain. Default: beth.t@example.com */
   IDEAS_FROM_EMAIL?: string;
+  /** Twilio SMS for proximity alerts. `npx wrangler secret put TWILIO_ACCOUNT_SID` (and AUTH_TOKEN, FROM_NUMBER). */
+  TWILIO_ACCOUNT_SID?: string;
+  TWILIO_AUTH_TOKEN?: string;
+  TWILIO_FROM_NUMBER?: string;
 }
 
 const MODEL = "@cf/meta/llama-3.2-3b-instruct";
@@ -304,6 +321,42 @@ async function handleIdeas(request: Request, env: Env, origin: string | null): P
   return json(result.json ?? { error: "unauthorized" }, result.status, origin);
 }
 
+async function handleAlerts(request: Request, env: Env, origin: string | null): Promise<Response> {
+  if (tooMany(clientIp(request))) {
+    return json({ error: "rate_limited" }, 429, origin);
+  }
+
+  if (isAlertsConsentPath(new URL(request.url).pathname)) {
+    if (request.method !== "POST") return json({ error: "method_not_allowed" }, 405, origin);
+    const body = await readJsonBody(request, origin);
+    if (!body.ok) return body.response;
+    const result = await handleAlertsConsent(body.value, env);
+    return json(result.data, result.status, origin);
+  }
+
+  if (isAlertsPingPath(new URL(request.url).pathname)) {
+    if (request.method !== "POST") return json({ error: "method_not_allowed" }, 405, origin);
+    const body = await readJsonBody(request, origin);
+    if (!body.ok) return body.response;
+    const result = await handleAlertsPing(body.value, env);
+    return json(result.data, result.status, origin);
+  }
+
+  if (request.method === "GET") {
+    const result = await handleAlertsGet(request, env);
+    return json(result.data, result.status, origin);
+  }
+
+  if (request.method !== "POST") {
+    return json({ error: "method_not_allowed" }, 405, origin);
+  }
+
+  const body = await readJsonBody(request, origin);
+  if (!body.ok) return body.response;
+  const result = await handleAlertsRegister(body.value, env);
+  return json(result.data, result.status, origin);
+}
+
 async function handleRegister(request: Request, env: Env, origin: string | null): Promise<Response> {
   if (request.method !== "POST") {
     return json({ error: "method_not_allowed" }, 405, origin);
@@ -406,6 +459,10 @@ export default {
 
     if (isIdeasPath(pathname)) {
       return handleIdeas(request, env, origin);
+    }
+
+    if (isAlertsConsentPath(pathname) || isAlertsPingPath(pathname) || isAlertsPath(pathname)) {
+      return handleAlerts(request, env, origin);
     }
 
     if (isRegisterPath(pathname)) {

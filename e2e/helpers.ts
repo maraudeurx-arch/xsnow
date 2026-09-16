@@ -12,7 +12,7 @@ export async function skipConsent(page: Page) {
   });
 }
 
-/** Never POST e2e ideas/registrations to the production Worker (no live email). */
+/** Never POST e2e ideas/registrations/alerts to the production Worker. */
 export async function stubIdeaInbox(
   page: Page,
   inbox: "sent" | "failed" = "sent",
@@ -25,7 +25,7 @@ export async function stubIdeaInbox(
     "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
   };
 
-  await page.route(/\/(ideas|register)(\?|$)/, async (route) => {
+  await page.route(/\/(ideas|register|alerts(?:\/consent|\/ping)?)(\?|$)/, async (route) => {
     const method = route.request().method();
     const path = new URL(route.request().url()).pathname;
     if (method === "OPTIONS") {
@@ -35,15 +35,36 @@ export async function stubIdeaInbox(
     if (method === "POST") {
       if (delayMs) await new Promise((resolve) => setTimeout(resolve, delayMs));
       const emailed = inbox === "sent";
+      const isAlert = path.includes("/alerts");
       await route.fulfill({
         status: emailed ? 200 : 503,
         contentType: "application/json",
         headers: cors,
         body: JSON.stringify(
           emailed
-            ? { ok: true, persisted: path.endsWith("/ideas"), emailed: true }
+            ? isAlert
+              ? {
+                  ok: true,
+                  persisted: false,
+                  scheduled: true,
+                  outside: false,
+                  distanceKm: 0.2,
+                  sms: { sent: false, reason: "not_configured" },
+                  email: { sent: false, reason: "not_configured" },
+                  consent: "granted",
+                }
+              : { ok: true, persisted: path.endsWith("/ideas"), emailed: true }
             : { error: "mail_failed" },
         ),
+      });
+      return;
+    }
+    if (method === "GET" && path.includes("/alerts")) {
+      await route.fulfill({
+        status: 404,
+        contentType: "application/json",
+        headers: cors,
+        body: JSON.stringify({ error: "not_found" }),
       });
       return;
     }

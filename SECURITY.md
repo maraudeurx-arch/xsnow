@@ -2,13 +2,17 @@
 
 Public summary in the app (FR / EN / ES): [Sécurité](https://maraudeurx-arch.github.io/xsnow/securite/). Responsible disclosure: [GitHub Issues](https://github.com/maraudeurx-arch/xsnow/issues) or [opencommunity.opc@gmail.com](mailto:opencommunity.opc@gmail.com). There is **no independent third-party audit yet**.
 
-Visitor ideas, chat, share text, offer notes, and monetization suggestions are **untrusted data**. They never become Git, never become HTML, and never become executable URLs.
+Visitor ideas, chat, share text, offer notes, monetization suggestions, and proximity-alert fields are **untrusted data**. They never become Git, never become HTML, and never become executable URLs.
 
 ## Personal data stays on-device
 
 Mes services offers, En demande requests, Interac/PayPal, share blurbs, chat, and the optional registration profile (first name, last name, email, phone, `OPC-XXXX` member number) are **device-local**. Vos idées stay on-device **and** a sanitized copy (text, city, timestamp, optional OPC id — never last name or phone) is emailed to **opencommunity.opc@gmail.com** via the Worker (`POST /ideas` → Resend). Registration may also send a notice (`POST /register`: first name, OPC id, visitor email, city). There is no remote profile API in this MVP. A fresh browser starts empty: the client does **not** ship the owner’s Gatineau car loan (or any other personal listing) as default content.
 
 Community-wide features/offers/ideas appear for everyone only after **GOV + owner approval**, then as a numbered app release (`public/catalog/<version>.json`, currently empty for soft launch). A link a visitor copies themselves can show that one offer to the person who opens it — that is opt-in share, not a shared account.
+
+## Proximity alerts (consent only)
+
+Alertes de proximité never use Apple Find My, iCloud, Messages, or another person’s Apple ID. The proche must open OPC (or the invite link) and grant **browser geolocation** themselves. Pings run while the app/PWA is open — iOS Home Screen has no reliable background GPS. Optional outbound SMS uses Twilio env vars on the Worker (`TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_FROM_NUMBER`) and soft-fails if unset, like Resend. Live ping coordinates are evaluated and discarded (not stored in D1).
 
 See **À propos OPC** for the visible version number (semver) and release notes.
 
@@ -31,6 +35,7 @@ See **À propos OPC** for the visible version number (semver) and release notes.
 | Offer notes / titles | Plain text | Notes kept; neighborhood redacted | 800 / 80 |
 | Interac / PayPal | Contact string or `https://www.paypal.me/…` handle | Interac emails kept | 80 |
 | Local registration | Plain text in `localStorage` (`xsnow.localProfile`); optional Worker notice | Kept on-device; visitor email may be mailed to the owner | name 40 / email 80 / phone 24 |
+| Proximity alerts | On-device schedule + invite token; Worker may store place/radius/hours + guardian phone for SMS | SMS Twilio; optional Resend to guardian email | name 40 / place 80 |
 | `idea_submit` / `monetize_suggestion` | Plain text in D1 `suggestion` | Redacted | 80 / 280 |
 
 Analytics also drops GPS-looking strings and forbidden keys (`lat`, `email`, `name`, …). The stats worker rejects non-JSON `Content-Type`, bodies over 16 KiB, and unknown event types.

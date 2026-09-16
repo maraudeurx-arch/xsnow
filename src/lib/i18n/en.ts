@@ -173,7 +173,7 @@ export const en: Messages = {
         },
         {
           heading: "What we collect",
-          body: "On this device (localStorage): language, avatar, listings you write, your consents, and if you register: first name, last name, email, phone and a local OPC-XXXX number — no profile server. If you register, a notice (first name, OPC number, email) goes to opencommunity.opc@gmail.com. If you allow location: city + coordinates for the city label — no continuous tracking. If you allow stats: anonymous events to a Cloudflare Worker (D1): session, language, city/country if location is also allowed, short monetization-idea snippets (emails and GPS stripped). If you send an idea in Your ideas: a sanitized email (sentence, city, date, OPC number if registered — no phone) goes to opencommunity.opc@gmail.com so they can decide what to build; this does not depend on stats consent. Avatar chat sends your messages to the Worker for a reply. No third-party ads.",
+          body: "On this device (localStorage): language, avatar, listings you write, your consents, proximity alerts (hours, place, invite link), and if you register: first name, last name, email, phone and a local OPC-XXXX number — no profile server. If you register, a notice (first name, OPC number, email) goes to opencommunity.opc@gmail.com. If you allow location: city + coordinates for the city label — no continuous tracking. A proximity-alert proche is located only if they accepted GPS in OPC. If you allow stats: anonymous events to a Cloudflare Worker (D1): session, language, city/country if location is also allowed, short monetization-idea snippets (emails and GPS stripped). If you send an idea in Your ideas: a sanitized email (sentence, city, date, OPC number if registered — no phone) goes to opencommunity.opc@gmail.com so they can decide what to build; this does not depend on stats consent. Avatar chat sends your messages to the Worker for a reply. No third-party ads.",
         },
         {
           heading: "Why",
@@ -181,7 +181,7 @@ export const en: Messages = {
         },
         {
           heading: "What we do not do",
-          body: "We do not sell personal data. No continuous GPS tracking without consent. No resale to advertisers. You can decline everything and still use the app (generic label: your neighbourhood, or your last known city).",
+          body: "We do not sell personal data. No continuous GPS tracking without consent. Proximity alerts do not use Apple Find My: each loved one opens OPC and grants browser GPS themselves. No Apple ID, no Messages access. No resale to advertisers. You can decline everything and still use the app (generic label: your neighbourhood, or your last known city).",
         },
         {
           heading: "Consent (Canada / Quebec)",
@@ -368,7 +368,7 @@ export const en: Messages = {
     },
     alertes: {
       title: "Proximity alerts",
-      lead: "Get an alert if a child, partner, or elderly parents leave the zone they’re meant to be in.",
+      lead: "Get an alert if a child, partner, or elderly parents leave the zone they’re meant to be in. The loved one accepts themselves — not Apple Find My.",
     },
     reportage: {
       title: "With AI, create reports about your neighbourhood",
@@ -457,7 +457,7 @@ export const en: Messages = {
       "Your offers, requests, ideas, share texts, registration (first name, last name, email, phone, OPC-XXXX number), and Interac/PayPal details stay on this device. A sanitized copy of an idea (sentence, city, date, OPC number if registered — not your contact details) may be emailed to opencommunity.opc@gmail.com. Nothing personal appears for another visitor until GOV + owner approve a numbered public release (public catalog).",
     releaseNotesTitle: "Release notes",
     releaseNotesBody:
-      "0.3.3 — Your ideas: on-device confirmation, then a sanitized email to opencommunity.opc@gmail.com (Worker POST /ideas, Resend). Registration: optional POST /register notice. OPC-XXXX stays local. Public catalog is still empty.",
+      "0.3.4 — Proximity alerts: Monday–Sunday hours, 5/10/20 km radius, invite and consent from the loved one (browser / PWA GPS). Optional Twilio SMS (Worker secrets). No Apple Find My / iCloud / Messages. 0.3.3 — Your ideas: sanitized email to opencommunity.opc@gmail.com. Public catalog is still empty.",
     language: "Language",
     comingSoon: "Notifications and display season will land here.",
     locationConsent: "Location",
@@ -604,6 +604,67 @@ export const en: Messages = {
     radiusPh: "200 m",
     submit: "Create the alert",
     zone: "Zone: {place}",
+    honestLead:
+      "Each loved one must open Open Community (or the invite link) and grant location sharing themselves. OPC does not use Apple Find My, iCloud, or Messages. The avatar does not read your texts.",
+    honestIos:
+      "On iPhone (Home Screen), checks run while OPC is open. iOS does not allow reliable background GPS in a web app.",
+    radius5: "5 km",
+    radius10: "10 km",
+    radius20: "20 km",
+    schedule: "Weekly hours",
+    dayOn: "On",
+    start: "Start",
+    end: "End",
+    days: {
+      lun: "Monday",
+      mar: "Tuesday",
+      mer: "Wednesday",
+      jeu: "Thursday",
+      ven: "Friday",
+      sam: "Saturday",
+      dim: "Sunday",
+    },
+    capturePlace: "Save my current location as the place",
+    placeCaptured: "Place saved on this device ({lat}, {lon}).",
+    placeMissing:
+      "Without GPS we cannot measure distance until the loved one saves the place when they accept.",
+    phone: "SMS phone (guardian)",
+    phonePh: "819-…",
+    email: "Alert email (optional)",
+    emailPh: "you@example.ca",
+    notifyHint:
+      "SMS via the Worker if Twilio is configured; otherwise the alert stays in the app. Email follows the same idea (Resend) and never reads Messages.",
+    consentPending: "Waiting for acceptance",
+    consentGranted: "Sharing accepted by the loved one",
+    consentDenied: "Sharing declined",
+    inviteLabel: "Invite link",
+    copyInvite: "Copy the link",
+    inviteCopied: "Link copied.",
+    inviteFailed: "Could not copy. Select the link.",
+    inviteBlurb:
+      "Open Community — {person} must open this link and accept location sharing (not Apple Find My): {url}",
+    checkNow: "Check location now",
+    remove: "Remove",
+    noticesTitle: "Alerts on this device",
+    noticeLine: "{person} is {km} km from {place}.",
+    pingOk: "Location received.",
+    pingOutside: "{person} is outside the zone ({km} km / {radius} km) during the planned hours.",
+    pingInside: "{person} is inside the zone ({km} km).",
+    pingUnscheduled: "Outside scheduled hours: no alert.",
+    pingNoPlace: "Place has no coordinates: save location (you or the loved one).",
+    pingDenied: "Location denied. The loved one must allow GPS in the browser.",
+    pingUnsupported: "Geolocation isn’t available on this device.",
+    consentTitle: "Share your location",
+    consentLead:
+      "{person} — planned place: {place} ({radius} km). You accept yourself. Not Apple Find My, no Apple ID, no Messages.",
+    consentAccept: "I agree to share my location",
+    consentRefuse: "Decline",
+    consentNeedGps: "This phone must allow location for you to accept.",
+    setPlaceHere: "I am at the planned place now",
+    sharingAs: "This device is sharing location for {person}.",
+    lastPing: "Last ping: {km} km",
+    smsSoft: "SMS: {status}",
+    hoursSummary: "{days} · {start}–{end}",
   },
   attributes: {
     suggestions: [
