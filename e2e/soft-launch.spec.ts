@@ -113,9 +113,10 @@ test.describe("Open Community soft-launch smoke", () => {
       window.localStorage.removeItem("xsnow.ideas");
     });
     await page.reload();
-    const cleared = await page.evaluate(() => window.localStorage.getItem("xsnow.ideas"));
-    expect(cleared).toBeNull();
     await expect(page.getByLabel("Ton idée")).toBeVisible();
+    await expect(page.getByRole("button", { name: "Envoyer l’idée" })).toBeVisible();
+    // Device backup may restore this visitor’s idea. The public catalog still ships none.
+    await expect(page.getByText("Café de réparation")).toHaveCount(0);
   });
 
   test("a Vos idées submit stays on-device when the owner email cannot be sent", async ({ page }) => {
