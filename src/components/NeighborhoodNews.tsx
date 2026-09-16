@@ -128,10 +128,10 @@ export function NeighborhoodNews({ onNewsChange }: Props) {
       data-neighborhood-news
       data-news-status={status}
       aria-label={copy.title}
-      className="mt-[var(--home-stack-gap)] flex min-h-[17.5rem] flex-1 flex-col gap-1 overflow-hidden rounded-xl border border-gold/30 bg-[rgba(8,8,12,0.88)] px-2 py-1 sm:min-h-[20rem]"
+      className="mt-[var(--home-stack-gap)] flex min-h-[18.5rem] flex-1 flex-col gap-1 overflow-hidden rounded-xl border border-gold/30 bg-[rgba(8,8,12,0.88)] px-2 py-1 sm:min-h-[22rem]"
     >
       <div className="flex shrink-0 items-baseline justify-between gap-2 px-0.5">
-        <h2 className="text-[10px] font-extrabold tracking-wide text-gold">{copy.title}</h2>
+        <h2 className="text-[12px] font-extrabold tracking-wide text-gold">{copy.title}</h2>
         {fromCache && status === "ready" ? (
           <span className="text-[8px] font-semibold text-ice/60">{copy.cached}</span>
         ) : null}
@@ -174,10 +174,10 @@ export function NeighborhoodNews({ onNewsChange }: Props) {
       <div data-news-body className="flex min-h-0 flex-1 flex-col gap-1.5 overflow-hidden">
         <div
           data-news-scroll
-          className="flex min-h-0 flex-1 flex-col gap-1.5 overflow-y-auto"
+          className="flex min-h-0 max-h-[58%] shrink-0 flex-col gap-1.5 overflow-y-auto"
         >
           {status === "ready" && items.length > 0 ? (
-            <ul data-news-list className="flex min-h-[9rem] flex-1 flex-col gap-1">
+            <ul data-news-list className="flex min-h-[8.5rem] flex-col gap-1">
               {items.map((item, index) => (
                 <li key={item.id}>
                   <a
@@ -209,7 +209,7 @@ export function NeighborhoodNews({ onNewsChange }: Props) {
             </ul>
           ) : (
             <>
-              <div data-news-spacer className="min-h-[9rem] flex-1" aria-hidden />
+              <div data-news-spacer className="min-h-[8.5rem]" aria-hidden />
               {showMid ? <PartnerAdSlot slot="news-mid" /> : null}
             </>
           )}

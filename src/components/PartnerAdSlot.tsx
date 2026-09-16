@@ -19,8 +19,8 @@ import {
 } from "@/lib/partner-ads";
 
 const SLOT_MIN_H: Record<PartnerSlotId, string> = {
-  "news-mid": "min-h-[4.6rem]",
-  "news-bottom": "min-h-[5.4rem]",
+  "news-mid": "min-h-[5.4rem]",
+  "news-bottom": "min-h-[7.2rem]",
 };
 
 function isExternalHref(href: string): boolean {
@@ -66,7 +66,9 @@ export function PartnerAdSlot({ slot }: { slot: PartnerSlotId }) {
       data-partner-creative={creative.id}
       data-partner-rotation={rotation}
       aria-label={`${copy.partnerSponsored} — ${creative.name}`}
-      className="shrink-0 rounded-lg border border-dashed border-gold/35 bg-white/[0.03] px-2 py-1.5 text-left"
+      className={`${
+        slot === "news-bottom" ? "flex min-h-[7.2rem] flex-1 flex-col" : "shrink-0"
+      } rounded-lg border border-dashed border-gold/35 bg-white/[0.03] px-2 py-1.5 text-left`}
     >
       <p className="text-[8px] font-extrabold uppercase tracking-wide text-ice/70">
         {copy.partnerSponsored}
@@ -83,7 +85,7 @@ export function PartnerAdSlot({ slot }: { slot: PartnerSlotId }) {
           data-full-width-responsive="true"
         />
       ) : (
-        <div className={`mt-1 ${SLOT_MIN_H[slot]}`}>
+        <div className={`mt-1 flex min-h-0 flex-1 flex-col ${SLOT_MIN_H[slot]}`}>
           {external ? (
             <a
               href={creative.href}
@@ -133,12 +135,12 @@ function CreativeBody({
         <img
           src={imageUrl}
           alt=""
-          className="h-[3.1rem] w-full object-cover object-left"
+          className="min-h-[3.8rem] w-full flex-1 object-cover object-left"
           loading="lazy"
           decoding="async"
         />
       ) : null}
-      <div className="flex flex-1 flex-col justify-center gap-0.5 px-2 py-1.5 text-left">
+      <div className="flex shrink-0 flex-col justify-center gap-0.5 px-2 py-1.5 text-left">
         <p className="text-[10px] font-extrabold leading-snug text-snow">{creative.name}</p>
         <p className="text-[8px] leading-snug text-snow/75">{creative.tagline}</p>
         <p className="text-[8px] leading-snug text-ice/60">{funding}</p>
