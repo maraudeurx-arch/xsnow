@@ -10,7 +10,6 @@ import {
   useConsentUnanswered,
   useWelcomeGate,
 } from "@/components/ConsentSheet";
-import { InstallTip } from "@/components/InstallTip";
 import { AVATARS, avatarById, type Avatar, type AvatarId } from "@/lib/avatars";
 import { welcomeSpeechFor } from "@/lib/content";
 import { useI18n } from "@/lib/i18n/locale";
@@ -97,8 +96,8 @@ export function Guide() {
       id="home-guide"
       className={`flex min-h-0 w-full flex-col ${
         showPicker
-          ? "items-center justify-center gap-1.5"
-          : "h-full min-h-0 items-stretch justify-center gap-0 self-stretch"
+          ? "items-center justify-center gap-3"
+          : "h-full min-h-0 items-stretch justify-stretch gap-0 self-stretch"
       }`}
     >
       {showPicker ? (
@@ -135,7 +134,7 @@ export function Guide() {
           </div>
         </div>
       ) : chosen ? (
-        <div className="home-stage flex min-h-0 w-full flex-col gap-[var(--home-stack-gap)] overflow-hidden rounded-2xl px-[var(--home-card-pad-x)] py-[var(--home-card-pad-y)]">
+        <div className="home-stage flex min-h-0 w-full flex-1 flex-col justify-between gap-[var(--home-stack-gap)] overflow-hidden rounded-2xl px-[var(--home-card-pad-x)] py-[var(--home-card-pad-y)]">
           <div className="flex shrink-0 items-center gap-2">
             <AvatarDisc avatar={chosen} className={chosenSize} priority />
             <div className="flex min-w-0 flex-1 items-center gap-2">
@@ -161,12 +160,13 @@ export function Guide() {
             </Link>
             <ShareHomeButton />
           </nav>
-          <InstallTip compact />
-          {needsPrompt && !unanswered && Boolean(avatarId) && welcomeGateOpen ? (
-            <LocationPrompt />
-          ) : (
-            <AvatarChat avatar={chosen} />
-          )}
+          <div className="flex min-h-0 flex-1 flex-col">
+            {needsPrompt && !unanswered && Boolean(avatarId) && welcomeGateOpen ? (
+              <LocationPrompt />
+            ) : (
+              <AvatarChat avatar={chosen} />
+            )}
+          </div>
         </div>
       ) : null}
     </section>

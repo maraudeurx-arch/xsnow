@@ -17,15 +17,15 @@
   --home-nav-h: 2.3rem;
   --home-chip-h: 2.2rem;
   --home-avatar: min(12vw, 6.2dvh, 2.85rem);
-  --home-gap: 0.25rem;
+  --home-gap: 0.4rem;
   /* Space between the header card and the avatar/chat card on home only. */
-  --home-block-gap: 0.9rem;
+  --home-block-gap: 1.25rem;
   /* Gaps inside the avatar/chat card — larger than --home-gap so rows don’t collide. */
-  --home-stack-gap: 0.5rem;
-  --home-nav-gap: 0.32rem;
-  --home-chip-gap: 0.4rem;
-  --home-card-pad-x: 0.5rem;
-  --home-card-pad-y: 0.4rem;
+  --home-stack-gap: 0.85rem;
+  --home-nav-gap: 0.4rem;
+  --home-chip-gap: 0.55rem;
+  --home-card-pad-x: 0.65rem;
+  --home-card-pad-y: 0.65rem;
   --home-avatar-ring: 0.32rem;
   --brand-title: clamp(1.5rem, 7.4vw, 3rem);
   --brand-slogan: clamp(0.9rem, 3.8vw, 1.2rem);
@@ -37,13 +37,13 @@
     --home-nav-h: 2.75rem;
     --home-chip-h: 2.6rem;
     --home-avatar: min(16vw, 10dvh, 4.5rem);
-    --home-gap: 0.4rem;
-    --home-block-gap: 1.05rem;
-    --home-stack-gap: 0.6rem;
-    --home-nav-gap: 0.4rem;
-    --home-chip-gap: 0.5rem;
-    --home-card-pad-x: 0.7rem;
-    --home-card-pad-y: 0.55rem;
+    --home-gap: 0.55rem;
+    --home-block-gap: 1.4rem;
+    --home-stack-gap: 1rem;
+    --home-nav-gap: 0.5rem;
+    --home-chip-gap: 0.65rem;
+    --home-card-pad-x: 0.85rem;
+    --home-card-pad-y: 0.75rem;
   }
 }
 
@@ -54,13 +54,13 @@
     --home-nav-h: 2.05rem;
     --home-chip-h: 1.95rem;
     --home-avatar: min(11vw, 5.5dvh, 2.45rem);
-    --home-gap: 0.2rem;
-    --home-block-gap: 0.72rem;
-    --home-stack-gap: 0.38rem;
-    --home-nav-gap: 0.28rem;
-    --home-chip-gap: 0.34rem;
-    --home-card-pad-x: 0.45rem;
-    --home-card-pad-y: 0.3rem;
+    --home-gap: 0.3rem;
+    --home-block-gap: 0.95rem;
+    --home-stack-gap: 0.55rem;
+    --home-nav-gap: 0.34rem;
+    --home-chip-gap: 0.42rem;
+    --home-card-pad-x: 0.55rem;
+    --home-card-pad-y: 0.45rem;
     --home-avatar-ring: 0.28rem;
   }
 }
@@ -71,13 +71,13 @@
     --home-nav-h: 1.95rem;
     --home-chip-h: 1.85rem;
     --home-avatar: min(10vw, 4.9dvh, 2.25rem);
-    --home-gap: 0.15rem;
-    --home-block-gap: 0.58rem;
-    --home-stack-gap: 0.3rem;
-    --home-nav-gap: 0.24rem;
-    --home-chip-gap: 0.28rem;
-    --home-card-pad-x: 0.4rem;
-    --home-card-pad-y: 0.24rem;
+    --home-gap: 0.25rem;
+    --home-block-gap: 0.78rem;
+    --home-stack-gap: 0.45rem;
+    --home-nav-gap: 0.3rem;
+    --home-chip-gap: 0.36rem;
+    --home-card-pad-x: 0.5rem;
+    --home-card-pad-y: 0.36rem;
     --home-avatar-ring: 0.24rem;
   }
 }
@@ -170,7 +170,7 @@ body {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   /* Banner keeps its content; the chat card is the row that may shrink. */
-  grid-template-rows: minmax(min-content, 1fr) auto minmax(0, auto) minmax(0, 1fr);
+  grid-template-rows: minmax(min-content, 0.85fr) auto minmax(0, auto) minmax(0, 1.15fr);
   align-items: stretch;
   justify-content: stretch;
   overflow: visible;
@@ -187,8 +187,8 @@ body {
   align-items: center;
   justify-content: center;
   min-height: 0;
-  padding-top: 0.25rem;
-  padding-bottom: 0.25rem;
+  padding-top: 0.45rem;
+  padding-bottom: 0.45rem;
 }
 
 .app-stage-main {
@@ -395,16 +395,16 @@ body {
 .season-scrim[data-season="spring"],
 .season-scrim[data-season="summer"] {
   background:
-    linear-gradient(180deg, rgba(6, 8, 14, 0.58) 0%, rgba(6, 8, 14, 0.28) 28%, rgba(6, 8, 14, 0.32) 64%, rgba(6, 8, 14, 0.62) 100%);
+    linear-gradient(180deg, rgba(6, 8, 14, 0.4) 0%, rgba(6, 8, 14, 0.14) 28%, rgba(6, 8, 14, 0.18) 64%, rgba(6, 8, 14, 0.46) 100%);
 }
 
 .season-scrim[data-season="autumn"] {
   background:
-    linear-gradient(180deg, rgba(8, 6, 10, 0.66) 0%, rgba(12, 8, 8, 0.42) 26%, rgba(14, 8, 6, 0.46) 62%, rgba(8, 6, 8, 0.72) 100%);
+    linear-gradient(180deg, rgba(8, 6, 10, 0.48) 0%, rgba(12, 8, 8, 0.26) 26%, rgba(14, 8, 6, 0.3) 62%, rgba(8, 6, 8, 0.54) 100%);
 }
 
 [data-season="autumn"] .season-photo {
-  filter: brightness(0.72) saturate(0.88);
+  filter: brightness(0.84) saturate(0.92);
 }
 
 .season-sun[data-season="autumn"] {
@@ -413,27 +413,27 @@ body {
 
 [data-ambiance="caribbean"] .season-photo {
   object-position: center 42%;
-  filter: brightness(0.88) saturate(1.05);
+  filter: brightness(0.96) saturate(1.05);
 }
 
 [data-ambiance="africa"] .season-photo {
   object-position: center 55%;
-  filter: brightness(0.9) saturate(1.04);
+  filter: brightness(0.97) saturate(1.04);
 }
 
 [data-ambiance="europe"] .season-photo {
   object-position: center 58%;
-  filter: brightness(0.9) saturate(1.02);
+  filter: brightness(0.97) saturate(1.02);
 }
 
 [data-ambiance="asia"] .season-photo {
   object-position: center 46%;
-  filter: brightness(0.9) saturate(1.04);
+  filter: brightness(0.97) saturate(1.04);
 }
 
 [data-ambiance="southamerica"] .season-photo {
   object-position: center 42%;
-  filter: brightness(0.9) saturate(1.02);
+  filter: brightness(0.97) saturate(1.02);
 }
 
 .season-sun[data-ambiance="caribbean"],
@@ -450,7 +450,7 @@ body {
 .season-scrim[data-ambiance="asia"],
 .season-scrim[data-ambiance="southamerica"] {
   background:
-    linear-gradient(180deg, rgba(6, 8, 14, 0.5) 0%, rgba(6, 8, 14, 0.18) 30%, rgba(6, 8, 14, 0.22) 64%, rgba(6, 8, 14, 0.55) 100%);
+    linear-gradient(180deg, rgba(6, 8, 14, 0.36) 0%, rgba(6, 8, 14, 0.1) 30%, rgba(6, 8, 14, 0.14) 64%, rgba(6, 8, 14, 0.42) 100%);
 }
 
 .chrome-panel {
