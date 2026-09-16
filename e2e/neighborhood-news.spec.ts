@@ -58,21 +58,44 @@ test.describe("Accueil neighbourhood news + partner slots", () => {
     await expect(page.getByText(/ferme à clics/).first()).toBeVisible();
     await expect(page.getByText(/Grok et Cursor/).first()).toBeVisible();
 
+    const banner = page.locator("header.brand-banner");
+    const heading = page.getByRole("heading", { name: "Open Community", level: 1 });
+    const quartier = page.locator(".chrome-panel");
     const card = page.locator("#home-guide .home-stage");
     const footer = page.locator("footer");
+    const bannerBox = await banner.boundingBox();
+    const headingBox = await heading.boundingBox();
+    const quartierBox = await quartier.boundingBox();
     const cardBox = await card.boundingBox();
     const footerBox = await footer.boundingBox();
     const newsBox = await news.boundingBox();
     const chatBox = await page.locator("#avatar-chat").boundingBox();
+    expect(bannerBox).toBeTruthy();
+    expect(headingBox).toBeTruthy();
+    expect(quartierBox).toBeTruthy();
     expect(cardBox).toBeTruthy();
     expect(footerBox).toBeTruthy();
     expect(newsBox).toBeTruthy();
     expect(chatBox).toBeTruthy();
 
+    // Title sits under the safe-area floor (2px when inset is 0), not in a
+    // leftover sky band. Playwright 390×844 has no iPhone notch inset.
+    expect(headingBox!.y).toBeGreaterThanOrEqual(0);
+    expect(headingBox!.y).toBeLessThan(28);
+
+    const bannerToNav = quartierBox!.y - (bannerBox!.y + bannerBox!.height);
+    expect(bannerToNav).toBeGreaterThanOrEqual(0);
+    expect(bannerToNav).toBeLessThan(16);
+
+    const navToCard = cardBox!.y - (quartierBox!.y + quartierBox!.height);
+    expect(navToCard).toBeGreaterThanOrEqual(0);
+    expect(navToCard).toBeLessThan(16);
+
     const gap = footerBox!.y - (cardBox!.y + cardBox!.height);
     expect(gap).toBeGreaterThanOrEqual(0);
-    expect(gap).toBeLessThan(56);
+    expect(gap).toBeLessThan(24);
     expect(newsBox!.height).toBeGreaterThan(chatBox!.height);
+    expect(footerBox!.height).toBeLessThan(68);
   });
 
   test("Worker 405 still shows real headlines via the JSON RSS fallback", async ({ page }) => {

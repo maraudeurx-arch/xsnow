@@ -18,10 +18,10 @@
   --home-chip-h: 2.2rem;
   --home-avatar: min(12vw, 6.2dvh, 2.85rem);
   --home-gap: 0.4rem;
-  /* Space between the header card and the avatar/chat card on home only. */
-  --home-block-gap: 1.25rem;
+  /* Tight gap between title, quartier nav, and Accueil card on home. */
+  --home-block-gap: 0.32rem;
   /* Gaps inside the avatar/chat card — larger than --home-gap so rows don’t collide. */
-  --home-stack-gap: 0.85rem;
+  --home-stack-gap: 0.58rem;
   --home-nav-gap: 0.4rem;
   --home-chip-gap: 0.55rem;
   --home-card-pad-x: 0.65rem;
@@ -38,8 +38,8 @@
     --home-chip-h: 2.6rem;
     --home-avatar: min(16vw, 10dvh, 4.5rem);
     --home-gap: 0.55rem;
-    --home-block-gap: 1.4rem;
-    --home-stack-gap: 1rem;
+    --home-block-gap: 0.42rem;
+    --home-stack-gap: 0.7rem;
     --home-nav-gap: 0.5rem;
     --home-chip-gap: 0.65rem;
     --home-card-pad-x: 0.85rem;
@@ -55,8 +55,8 @@
     --home-chip-h: 1.95rem;
     --home-avatar: min(11vw, 5.5dvh, 2.45rem);
     --home-gap: 0.3rem;
-    --home-block-gap: 0.95rem;
-    --home-stack-gap: 0.55rem;
+    --home-block-gap: 0.26rem;
+    --home-stack-gap: 0.42rem;
     --home-nav-gap: 0.34rem;
     --home-chip-gap: 0.42rem;
     --home-card-pad-x: 0.55rem;
@@ -72,8 +72,8 @@
     --home-chip-h: 1.85rem;
     --home-avatar: min(10vw, 4.9dvh, 2.25rem);
     --home-gap: 0.25rem;
-    --home-block-gap: 0.78rem;
-    --home-stack-gap: 0.45rem;
+    --home-block-gap: 0.2rem;
+    --home-stack-gap: 0.36rem;
     --home-nav-gap: 0.3rem;
     --home-chip-gap: 0.36rem;
     --home-card-pad-x: 0.5rem;
@@ -128,15 +128,14 @@ body {
 
 /*
  * Open Community + slogan sit above the wordmark/nav card.
- * On home, the banner is vertically centered in the leftover band between
- * the viewport top and the first chrome card (balanced by a matching 1fr
- * below the stack so the cards stay in the middle of the screen).
+ * On home, the banner is content-sized and pinned under the safe area so
+ * leftover height can feed Nouvelles du Quartier instead of empty sky.
  */
 .brand-banner {
   position: relative;
   z-index: 30;
   flex-shrink: 0;
-  padding: 0.15rem 0.25rem 0.25rem;
+  padding: 0.08rem 0.25rem 0.12rem;
   text-align: center;
 }
 
@@ -170,26 +169,26 @@ body {
 .app-stage:has(#home-guide) {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  /* Modest banner band; the Accueil card stretches almost to the footer. */
-  grid-template-rows: minmax(min-content, 0.42fr) auto minmax(0, 1fr) minmax(0.12rem, 0.08fr);
+  /* Title + quartier stay content-sized; Accueil/news take leftover height. */
+  grid-template-rows: min-content min-content minmax(0, 1fr);
   align-items: stretch;
   justify-content: stretch;
   overflow: visible;
-  gap: 0;
+  gap: var(--home-block-gap);
 }
 
 .app-stage:has(#home-guide)::after {
-  content: "";
+  content: none;
 }
 
 .app-stage:has(#home-guide) > .brand-banner {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   min-height: 0;
-  padding-top: 0.45rem;
-  padding-bottom: 0.45rem;
+  padding-top: 0.02rem;
+  padding-bottom: 0;
 }
 
 .app-stage-main {
@@ -211,7 +210,7 @@ body {
 .app-stage:has(#home-guide) > .app-stage-main {
   flex: none;
   min-height: 0;
-  margin-top: var(--home-block-gap);
+  margin-top: 0;
   align-items: stretch;
   justify-content: stretch;
   /* Accueil menu lives in the header card; clip here so the two home cards
