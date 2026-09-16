@@ -16,7 +16,9 @@ test.describe("local registration on Mon profil", () => {
     const installGuide = page.locator("[data-install-guide]");
     await expect(installGuide).toBeVisible();
     await expect(installGuide.getByRole("heading", { name: "Mettre OPC sur l’écran d’accueil" })).toBeVisible();
-    await expect(installGuide.getByText(/Ouvre Open Community dans Safari/)).toBeVisible();
+    await expect(installGuide.getByText(/Ouvre exactement https:\/\/maraudeurx-arch\.github\.io\/xsnow\//)).toBeVisible();
+    await expect(installGuide.getByRole("link", { name: "https://maraudeurx-arch.github.io/xsnow/" })).toBeVisible();
+    await expect(installGuide.getByText(/There isn’t a GitHub Pages site here/)).toBeVisible();
     await expect(installGuide.getByText(/Partager/)).toBeVisible();
     await expect(installGuide.getByText(/Sur l’écran d’accueil/)).toBeVisible();
     await expect(installGuide.getByText(/Android \(Chrome\)/)).toBeVisible();
@@ -72,14 +74,17 @@ test.describe("local registration on Mon profil", () => {
     await page.goto("./mon-profil/");
     const guide = page.locator("[data-install-guide]");
     await expect(guide.getByRole("heading", { name: "Mettre OPC sur l’écran d’accueil" })).toBeVisible();
+    await expect(guide.getByText(/https:\/\/maraudeurx-arch\.github\.io\/xsnow\//).first()).toBeVisible();
     await expect(guide.getByText(/Partager/)).toBeVisible();
     await expect(guide.getByText(/Sur l’écran d’accueil/)).toBeVisible();
 
     await page.getByRole("button", { name: "English" }).click();
     await expect(guide.getByRole("heading", { name: "Put OPC on the Home Screen" })).toBeVisible();
+    await expect(guide.getByRole("link", { name: "https://maraudeurx-arch.github.io/xsnow/" })).toBeVisible();
     await expect(guide.getByText(/Share/)).toBeVisible();
     await expect(guide.getByText(/Add to Home Screen/)).toBeVisible();
     await expect(guide.getByText(/Install app/)).toBeVisible();
+    await expect(guide.getByText(/There isn’t a GitHub Pages site here/)).toBeVisible();
 
     await page.getByRole("button", { name: "Español" }).click();
     await expect(guide.getByRole("heading", { name: "Poner OPC en la pantalla de inicio" })).toBeVisible();
