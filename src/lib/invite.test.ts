@@ -2,12 +2,15 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import {
   DEFAULT_SHARE_CODE,
+  bindShareCodeToMemberId,
   captureInviteFromSearch,
   defaultShareBlurb,
+  inviteCodeFromMemberId,
   parseInviteSearch,
   publicInviteUrl,
   readOrCreateShareCode,
   rememberInviteTouch,
+  resolveShareCode,
   sanitizeInviteCode,
 } from "./invite.ts";
 
@@ -89,5 +92,17 @@ describe("invite query params", () => {
     });
     assert.equal(sanitizeInviteCode("javascript:alert(1)").includes(":"), false);
     assert.equal(publicInviteUrl("<script>"), "https://maraudeurx-arch.github.io/xsnow/?invite=script");
+  });
+});
+
+describe("member number as invite code", () => {
+  it("maps OPC-XXXX to invite=opc-xxxx and binds the share code", () => {
+    assert.equal(inviteCodeFromMemberId("OPC-7K3M"), "opc-7k3m");
+    const store = memoryStore();
+    const code = bindShareCodeToMemberId("OPC-7K3M", store);
+    assert.equal(code, "opc-7k3m");
+    assert.equal(readOrCreateShareCode(store, () => "opc-other"), "opc-7k3m");
+    assert.equal(resolveShareCode("OPC-AB23", memoryStore()), "opc-ab23");
+    assert.match(publicInviteUrl(code), /invite=opc-7k3m/);
   });
 });

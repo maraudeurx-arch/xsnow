@@ -364,15 +364,15 @@ export const fr = {
     },
     mesServices: {
       title: "Mes services",
-      lead: "Publiez ce que vous offrez. Ça reste sur cet appareil jusqu’à une version publique approuvée.",
+      lead: "",
     },
     enDemande: {
       title: "En demande",
-      lead: "Offres de cet appareil, d’un lien partagé, ou du catalogue de cette version. Un appareil neuf commence vide.",
+      lead: "",
     },
     monProfil: {
       title: "Mon profil",
-      lead: "Votre fiche locale : inscription, infos, réglages, invitations.",
+      lead: "",
     },
     mesInfos: {
       title: "Mes infos",
@@ -673,6 +673,19 @@ export const fr = {
       description: "Week-end du 20 septembre, camping familial. Je peux laisser une caution.",
     },
   },
+  mesServicesButtons: {
+    lendCar: "Prêter ma voiture",
+    moving: "Aider au déménagement",
+    babysitting: "Baby-sitting",
+    tools: "Prêt d’outils",
+  },
+  enDemandeButtons: {
+    moving: "Aide au déménagement",
+    diy: "Aide au bricolage",
+    carpool: "Co-voiturage",
+    equipment: "Prêt d’équipement",
+  },
+
   offers: {
     typeLabel: "Type d’offre",
     typeCarMorning: "Prêt de voiture — matins",
@@ -789,7 +802,7 @@ export const fr = {
     failed: "Copie impossible. Le texte est affiché : sélectionnez-le.",
   },
   register: {
-    cta: "Inviter à s’inscrire",
+    cta: "S’inscrire",
     ctaAria: "Ouvrir le formulaire d’inscription",
     title: "S’inscrire sur cet appareil",
     hint: "Prénom, nom, e-mail et téléphone restent sur cet appareil. Pas de mot de passe. Rien n’est envoyé à un serveur de profils.",

@@ -22,17 +22,27 @@ test.describe("Open Community soft-launch smoke", () => {
     }
   });
 
-  test("fresh storage: Mes services and En demande stay empty", async ({ page }) => {
+  test("fresh storage: Mes services and En demande show four CTAs and stay empty", async ({ page }) => {
     await page.goto("./mes-services/");
     await expect(page.getByRole("heading", { name: "Mes services", level: 2 })).toBeVisible();
-    await expect(page.getByText(/Pas encore d’offre sur cet appareil/)).toBeVisible();
+    await expect(page.getByRole("button", { name: "Prêter ma voiture" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Aider au déménagement" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Baby-sitting" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Prêt d’outils" })).toBeVisible();
     await expect(page.getByText("Publiée")).toHaveCount(0);
+    await expect(page.getByText(/Publiez ce que vous offrez/)).toHaveCount(0);
+    await expect(page.getByText("Modèles")).toHaveCount(0);
 
     await page.getByRole("link", { name: "En demande" }).click();
     await expect(page).toHaveURL(/en-demande/);
-    await expect(page.getByText(/Pas encore d’offre ici/)).toBeVisible();
-    await expect(page.getByText(/pas d’offre Gatineau injectée/i)).toBeVisible();
-    await expect(page.getByText(/Aucune demande pour l’instant/)).toBeVisible();
+    await expect(page.getByRole("heading", { name: "En demande", level: 2 })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Aide au déménagement" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Aide au bricolage" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Co-voiturage" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Prêt d’équipement" })).toBeVisible();
+    await expect(page.getByText(/Offres de cet appareil/)).toHaveCount(0);
+    await expect(page.getByText(/Entente privée entre voisins/)).toHaveCount(0);
+    await expect(page.getByText(/Sur cet appareil seulement/)).toHaveCount(0);
   });
 
   test("fresh storage: neighbourhood service boards stay empty", async ({ page }) => {

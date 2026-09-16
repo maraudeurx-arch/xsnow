@@ -5,7 +5,7 @@ import { useI18n } from "@/lib/i18n/locale";
 import {
   defaultShareBlurb,
   publicInviteUrl,
-  readOrCreateShareCode,
+  resolveShareCode,
 } from "@/lib/invite";
 import {
   EMAIL_TEXT_MAX,
@@ -41,10 +41,10 @@ export function LocalProfileBoard() {
   const [shareStatus, setShareStatus] = useState<"ok" | "fail" | "">("");
   const area = useRef<HTMLTextAreaElement | null>(null);
 
-  const code = hydrated ? readOrCreateShareCode() : "opc";
+  const code = hydrated ? resolveShareCode(profile?.id) : "opc";
   const url = publicInviteUrl(code);
   const seeded = useMemo(() => {
-    if (profile) return defaultRegisterShareBlurb(url, profile.firstName, locale);
+    if (profile) return defaultRegisterShareBlurb(url, profile.firstName, locale, profile.id);
     return defaultShareBlurb(url, locale);
   }, [locale, profile, url]);
   const value = shareText || seeded;
@@ -68,7 +68,8 @@ export function LocalProfileBoard() {
       return;
     }
     setProfile(next);
-    setShareText(defaultRegisterShareBlurb(url, next.firstName, locale));
+    const inviteUrl = publicInviteUrl(resolveShareCode(next.id));
+    setShareText(defaultRegisterShareBlurb(inviteUrl, next.firstName, locale, next.id));
     setOpen(false);
     setError("");
   }
@@ -104,8 +105,6 @@ export function LocalProfileBoard() {
           <p className="text-sm font-bold text-snow">
             {profile.firstName} {profile.lastName}
           </p>
-          <p className="text-[11px] leading-snug text-ice/80">{copy.memberNumberHint}</p>
-          <p className="text-[11px] leading-snug text-ice/80">{copy.localOnly}</p>
           <button type="button" className={blueCtaClass} data-register-cta onClick={openForm}>
             {copy.edit}
           </button>

@@ -5,11 +5,12 @@ import { useI18n } from "@/lib/i18n/locale";
 import {
   defaultShareBlurb,
   publicInviteUrl,
-  readOrCreateShareCode,
+  resolveShareCode,
 } from "@/lib/invite";
 import { copyText, clipShareText } from "@/lib/offers";
 import { SHARE_TEXT_MAX } from "@/lib/sanitize";
 import { useHasHydrated } from "@/lib/useAnalyticsConsent";
+import { useLocalProfile } from "@/lib/useLocalProfile";
 
 const fieldClass =
   "tap w-full rounded-2xl border border-white/15 bg-white/5 px-3 py-2 text-sm font-normal text-snow outline-none focus:border-gold";
@@ -18,7 +19,8 @@ export function InviteShareBoard({ compact = false }: { compact?: boolean }) {
   const { locale, m } = useI18n();
   const copy = m.shareOpc;
   const hydrated = useHasHydrated();
-  const code = hydrated ? readOrCreateShareCode() : "opc";
+  const [profile] = useLocalProfile();
+  const code = hydrated ? resolveShareCode(profile?.id) : "opc";
   const url = publicInviteUrl(code);
   const [text, setText] = useState("");
   const [status, setStatus] = useState<"ok" | "fail" | "">("");

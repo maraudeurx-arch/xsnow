@@ -365,15 +365,15 @@ export const en: Messages = {
     },
     mesServices: {
       title: "My services",
-      lead: "Publish what you offer. It stays on this device until an approved public release.",
+      lead: "",
     },
     enDemande: {
       title: "In demand",
-      lead: "Offers from this device, a shared link, or this version’s catalog. A fresh install starts empty.",
+      lead: "",
     },
     monProfil: {
       title: "My profile",
-      lead: "Your local card: registration, info, settings, invitations.",
+      lead: "",
     },
     mesInfos: {
       title: "My info",
@@ -682,6 +682,19 @@ export const en: Messages = {
       description: "Weekend of September 20, family camping. I can leave a deposit.",
     },
   },
+  mesServicesButtons: {
+    lendCar: "Lend my car",
+    moving: "Help with a move",
+    babysitting: "Babysitting",
+    tools: "Tool lending",
+  },
+  enDemandeButtons: {
+    moving: "Moving help",
+    diy: "DIY / handyman help",
+    carpool: "Carpool",
+    equipment: "Equipment loan",
+  },
+
   offers: {
     typeLabel: "Offer type",
     typeCarMorning: "Car loan — mornings",
@@ -798,7 +811,7 @@ export const en: Messages = {
     failed: "Couldn’t copy. The text is below — select it.",
   },
   register: {
-    cta: "Invite to register",
+    cta: "Sign up",
     ctaAria: "Open the registration form",
     title: "Register on this device",
     hint: "First name, last name, email and phone stay on this device. No password. Nothing is sent to a profile server.",

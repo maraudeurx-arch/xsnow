@@ -365,15 +365,15 @@ export const es: Messages = {
     },
     mesServices: {
       title: "Mis servicios",
-      lead: "Publica lo que ofreces. Se queda en este aparato hasta una versión pública aprobada.",
+      lead: "",
     },
     enDemande: {
       title: "En demanda",
-      lead: "Ofertas de este aparato, de un enlace compartido, o del catálogo de esta versión. Una instalación nueva empieza vacía.",
+      lead: "",
     },
     monProfil: {
       title: "Mi perfil",
-      lead: "Tu ficha local: inscripción, datos, ajustes, invitaciones.",
+      lead: "",
     },
     mesInfos: {
       title: "Mis datos",
@@ -684,6 +684,19 @@ export const es: Messages = {
       description: "Fin de semana del 20 de septiembre, camping familiar. Puedo dejar una fianza.",
     },
   },
+  mesServicesButtons: {
+    lendCar: "Prestar mi coche",
+    moving: "Ayudar en una mudanza",
+    babysitting: "Niñera",
+    tools: "Préstamo de herramientas",
+  },
+  enDemandeButtons: {
+    moving: "Ayuda de mudanza",
+    diy: "Ayuda de bricolaje",
+    carpool: "Viaje compartido",
+    equipment: "Préstamo de equipo",
+  },
+
   offers: {
     typeLabel: "Tipo de oferta",
     typeCarMorning: "Préstamo de coche — mañanas",
@@ -800,7 +813,7 @@ export const es: Messages = {
     failed: "No se pudo copiar. El texto está abajo: selecciónalo.",
   },
   register: {
-    cta: "Invitar a inscribirse",
+    cta: "Inscribirse",
     ctaAria: "Abrir el formulario de inscripción",
     title: "Inscribirse en este aparato",
     hint: "Nombre, apellidos, correo y teléfono se quedan en este aparato. Sin contraseña. Nada se envía a un servidor de perfiles.",

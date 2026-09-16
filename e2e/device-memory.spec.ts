@@ -60,7 +60,7 @@ test.describe("durable on-device memory", () => {
     await page.goto("./");
     await expect(page.getByText("Choisis ton avatar")).toHaveCount(0);
     await expect(page.getByRole("button", { name: "Réécouter" })).toBeVisible();
-    await expect(page.locator("[data-header-profile]")).toHaveText("Marie");
+    await expect(page.locator("[data-header-profile]")).toHaveText("M.T.");
 
     await page.goto("./vos-idees/");
     await page.getByLabel("Ton idée").fill(idea);
@@ -70,7 +70,7 @@ test.describe("durable on-device memory", () => {
 
     await page.reload();
     await expect(page.getByText(idea).first()).toBeVisible();
-    await expect(page.locator("[data-header-profile]")).toHaveText("Marie");
+    await expect(page.locator("[data-header-profile]")).toHaveText("M.T.");
 
     await page.goto("./mon-profil/");
     await expect(page.locator("[data-member-id]")).toHaveText(/Numéro OPC-7K3M/);
@@ -79,7 +79,7 @@ test.describe("durable on-device memory", () => {
     await page.goto("./");
     await expect(page.getByText("Choisis ton avatar")).toHaveCount(0);
     await expect(page.getByRole("button", { name: "Réécouter" })).toBeVisible();
-    await expect(page.locator("[data-header-profile]")).toHaveText("Marie");
+    await expect(page.locator("[data-header-profile]")).toHaveText("M.T.");
     await expect(page.locator("[data-header-profile]")).not.toContainText("@");
 
     const stored = await page.evaluate(() => ({
@@ -101,24 +101,24 @@ test.describe("durable on-device memory", () => {
     await expect(page.getByText("Choisis ton avatar")).toHaveCount(0);
 
     await page.goto("./mon-profil/");
-    await page.getByRole("button", { name: "Inviter à s’inscrire" }).click();
+    await page.getByRole("button", { name: "S’inscrire" }).click();
     await page.locator('input[name="firstName"]').fill("Marie");
     await page.locator('input[name="lastName"]').fill("Tremblay");
     await page.locator('input[name="email"]').fill("marie@voisin.test");
     await page.locator('input[name="phone"]').fill("819-555-0100");
     await page.getByRole("button", { name: "Enregistrer" }).click();
-    await expect(page.locator("[data-header-profile]")).toHaveText("Marie");
+    await expect(page.locator("[data-header-profile]")).toHaveText("M.T.");
     await expect(page.locator("[data-member-id]")).toHaveText(/Numéro OPC-/);
 
     await page.reload();
-    await expect(page.locator("[data-header-profile]")).toHaveText("Marie");
+    await expect(page.locator("[data-header-profile]")).toHaveText("M.T.");
     await expect(page.locator("[data-member-id]")).toHaveText(/Numéro OPC-/);
     await expect(page.getByText("Marie Tremblay")).toBeVisible();
 
     await page.goto("./");
     await expect(page.getByText("Choisis ton avatar")).toHaveCount(0);
     await expect(page.getByRole("button", { name: "Réécouter" })).toBeVisible();
-    await expect(page.locator("[data-header-profile]")).toHaveText("Marie");
+    await expect(page.locator("[data-header-profile]")).toHaveText("M.T.");
 
     const stored = await page.evaluate(() => ({
       avatar: window.localStorage.getItem("xsnow.avatar"),
