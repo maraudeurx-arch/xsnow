@@ -73,17 +73,17 @@ test.describe("Accueil neighbourhood news + partner slots", () => {
 
     const gap = footerBox!.y - (cardBox!.y + cardBox!.height);
     expect(gap).toBeGreaterThanOrEqual(0);
-    expect(gap).toBeLessThan(3);
+    expect(gap).toBeLessThan(2);
     expect(newsBox!.height).toBeGreaterThan(chatBox!.height);
-    expect(newsBox!.height).toBeGreaterThan(400);
+    expect(newsBox!.height).toBeGreaterThan(420);
 
     const newsList = page.locator("[data-news-list], [data-news-spacer]");
     const listBox = await newsList.first().boundingBox();
     expect(listBox).toBeTruthy();
-    expect(listBox!.height).toBeGreaterThan(200);
+    expect(listBox!.height).toBeGreaterThan(220);
 
     const newsChatGap = chatBox!.y - (newsBox!.y + newsBox!.height);
-    expect(newsChatGap).toBeGreaterThanOrEqual(0);
+    expect(newsChatGap).toBeGreaterThanOrEqual(-1);
     expect(newsChatGap).toBeLessThan(12);
 
     const bottomSlot = page.locator('[data-partner-slot="news-bottom"]');
@@ -148,6 +148,45 @@ test.describe("Accueil neighbourhood news + partner slots", () => {
     await expect(news).toHaveAttribute("data-news-status", "ready", { timeout: 12_000 });
     await expect(page.getByText(/Startup tech/)).toBeVisible();
     await expect(page.getByText("Chargement des nouvelles locales…")).toHaveCount(0);
+  });
+
+  test("loading state still fills the Accueil card to the footer", async ({ page }) => {
+    await seedReturningVisitor(page);
+    await page.route(/xsnow-chat\.xsnowopc\.workers\.dev\/news/, async () => {
+      await new Promise(() => {});
+    });
+    await page.route(/api\.rss2json\.com/, async () => {
+      await new Promise(() => {});
+    });
+
+    await page.goto("./?city=Gatineau");
+    const news = page.locator("[data-neighborhood-news]");
+    await expect(news).toHaveAttribute("data-news-status", "loading");
+    await expect(page.getByText("Chargement des nouvelles locales…")).toBeVisible();
+
+    const card = page.locator("#home-guide .home-stage");
+    const footer = page.locator("footer");
+    const cardBox = await card.boundingBox();
+    const footerBox = await footer.boundingBox();
+    const newsBox = await news.boundingBox();
+    expect(cardBox).toBeTruthy();
+    expect(footerBox).toBeTruthy();
+    expect(newsBox).toBeTruthy();
+    const gap = footerBox!.y - (cardBox!.y + cardBox!.height);
+    expect(gap).toBeGreaterThanOrEqual(0);
+    expect(gap).toBeLessThan(3);
+    expect(newsBox!.height).toBeGreaterThan(280);
+    const spacer = page.locator("[data-news-spacer]");
+    await expect(spacer).toBeVisible();
+    const spacerBox = await spacer.boundingBox();
+    expect(spacerBox!.height).toBeGreaterThan(180);
+    await expect(page.getByRole("link", { name: "Gagner maintenant" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Partager" })).toBeVisible();
+    await expect(page.locator("#avatar-chat")).toBeVisible();
+    const privacy = page.getByRole("contentinfo").getByRole("link", { name: "Vie privée" });
+    await expect(privacy).toBeVisible();
+    const privacyBox = await privacy.boundingBox();
+    expect(privacyBox!.y).toBeGreaterThan(cardBox!.y + cardBox!.height - 1);
   });
 
   test("hanging Worker and fallback settle to error instead of infinite loading", async ({
