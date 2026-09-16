@@ -45,6 +45,15 @@ export const en: Messages = {
     tipAndroid:
       "On Android (Chrome): menu ⋮ → Install app, or Add to Home screen. The app then opens like an icon.",
     dismiss: "Got it",
+    profileTitle: "Put OPC on the Home Screen",
+    profileLead:
+      "Open Community is a web app, not an App Store app. On iPhone, open the link in Safari and add it to the Home Screen so it opens like an icon.",
+    iphoneHeading: "iPhone (Safari)",
+    iphoneSteps: [
+      "Open Open Community in Safari (Apple’s browser — not Chrome).",
+      "Tap Share — the square with the arrow pointing up, at the bottom of the screen.",
+      "Scroll and choose Add to Home Screen, then Add.",
+    ],
   },
   guide: {
     pickAvatar: "Choose your avatar",

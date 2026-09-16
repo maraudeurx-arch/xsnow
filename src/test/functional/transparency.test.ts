@@ -122,6 +122,15 @@ describe("Mon profil hub dedupes Accueil actions", () => {
     assert.doesNotMatch(profilMenu, /mon-profil\/infos/);
     assert.match(profilMenu, /mon-profil\/reglages/);
     assert.match(profilMenu, /mon-profil\/a-propos/);
+    assert.match(profilMenu, /InstallGuide/);
+
+    const installGuide = readFileSync(join(srcDir, "components/InstallGuide.tsx"), "utf8");
+    assert.match(installGuide, /data-install-guide/);
+    assert.match(installGuide, /profileTitle/);
+    assert.match(installGuide, /iphoneSteps/);
+    assert.match(installGuide, /tipAndroid/);
+    assert.doesNotMatch(installGuide, /shouldShowInstallTip/);
+    assert.doesNotMatch(installGuide, /writeInstallTipDismissed/);
 
     const board = readFileSync(join(srcDir, "components/LocalProfileBoard.tsx"), "utf8");
     assert.doesNotMatch(board, /data-share-cta/);
