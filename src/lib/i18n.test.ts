@@ -213,6 +213,10 @@ describe("vos idees copy", () => {
     assert.equal(fr.neighborhoodNews.partnerCtaShare, "Partager / inviter");
     assert.equal(en.neighborhoodNews.partnerCtaShare, "Share / invite");
     assert.equal(es.neighborhoodNews.partnerCtaShare, "Compartir / invitar");
+    assert.equal(fr.neighborhoodNews.partnerDownload, "Télécharger");
+    assert.equal(en.neighborhoodNews.partnerDownload, "Download");
+    assert.equal(es.neighborhoodNews.partnerDownload, "Descargar");
+    assert.match(fr.neighborhoodNews.partnerDownloadAria, /publicité/);
     assert.match(fr.neighborhoodNews.partnerGrowRegisterName, /exemple/);
     assert.match(en.neighborhoodNews.partnerGrowRegisterName, /example/i);
     assert.match(es.neighborhoodNews.partnerGrowShareName, /ejemplo/i);

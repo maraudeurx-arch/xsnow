@@ -178,6 +178,29 @@ export function partnerCreativeImageUrl(creative: PartnerCreative): string | nul
   return assetUrl(creative.imagePath);
 }
 
+/** Safe download filename for a published creative (never a news headline). */
+export function partnerCreativeDownloadName(creative: PartnerCreative): string {
+  const fromPath = filenameFromImagePath(creative.imagePath || "");
+  if (fromPath) return fromPath;
+  const id = creative.id.replace(/[^\w.-]+/g, "-").replace(/^-+|-+$/g, "") || "creative";
+  return `publicite-${id}.png`;
+}
+
+export function filenameFromImagePath(imagePath: string): string | null {
+  const trimmed = imagePath.trim();
+  if (!trimmed) return null;
+  let path = trimmed.split("?")[0] || "";
+  try {
+    if (/^https?:\/\//i.test(trimmed)) path = new URL(trimmed).pathname;
+  } catch {
+    // Keep the raw path if URL parsing fails.
+  }
+  const raw = (path.split("/").pop() || "").trim();
+  const cleaned = raw.replace(/[^\w.-]+/g, "-").replace(/^-+|-+$/g, "");
+  if (cleaned && /\.[a-z0-9]{2,5}$/i.test(cleaned)) return cleaned;
+  return cleaned || null;
+}
+
 export function partnerCtaKind(kind: PartnerGrowthKind): "register" | "share" {
   return kind === "share" ? "share" : "register";
 }

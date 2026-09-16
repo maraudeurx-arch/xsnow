@@ -123,6 +123,12 @@ export const en: Messages = {
     partnerGrowLocalName: "Neighbourhood co-op (example)",
     partnerGrowLocalTagline:
       "Partner space coming soon. Meanwhile: sign up and invite a neighbour. No click farms.",
+    partnerDownload: "Download",
+    partnerDownloadAria: "Download the advertisement image",
+    partnerDownloadFail:
+      "Couldn’t save the image. On iPhone: Share → Save Image, or long-press.",
+    partnerDownloadIosHint:
+      "On iPhone, save via Share → Save Image, or a long press.",
     promptNoHeadlines:
       "News role: when the visitor’s city is known, the « Neighbourhood News » section (below Share, above this chat) shows real local headlines. You have no verified headline listed right now — never invent a title. If asked for news, say so honestly and point to that section or Your ideas / Earn now.",
     promptWithHeadlines:

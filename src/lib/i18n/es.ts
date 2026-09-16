@@ -123,6 +123,12 @@ export const es: Messages = {
     partnerGrowLocalName: "Coop del barrio (ejemplo)",
     partnerGrowLocalTagline:
       "Espacio para socios pronto. Mientras tanto: inscríbete e invita a un vecino. Sin granjas de clics.",
+    partnerDownload: "Descargar",
+    partnerDownloadAria: "Descargar la imagen del anuncio",
+    partnerDownloadFail:
+      "No se pudo guardar la imagen. En iPhone: Compartir → Guardar imagen, o pulsación larga.",
+    partnerDownloadIosHint:
+      "En iPhone, guarda con Compartir → Guardar imagen, o una pulsación larga.",
     promptNoHeadlines:
       "Rol noticias: cuando se conoce la ciudad del visitante, la sección « Noticias del Barrio » (bajo Compartir, encima de este chat) muestra titulares locales reales. Ahora no tienes ningún titular verificado listado — nunca inventes un título. Si te piden noticias, dilo con honestidad y orienta a esa sección o a Tus ideas / Ganar ahora.",
     promptWithHeadlines:

@@ -121,6 +121,12 @@ export const fr = {
     partnerGrowLocalName: "Coop du quartier (exemple)",
     partnerGrowLocalTagline:
       "Emplacement partenaire à venir. En attendant : inscris-toi et invite un voisin. Pas de ferme à clics.",
+    partnerDownload: "Télécharger",
+    partnerDownloadAria: "Télécharger l’image de la publicité",
+    partnerDownloadFail:
+      "Impossible d’enregistrer l’image. Sur iPhone : Partager → Enregistrer l’image, ou appui long.",
+    partnerDownloadIosHint:
+      "Sur iPhone, l’enregistrement passe par Partager → Enregistrer l’image, ou un appui long.",
     promptNoHeadlines:
       "Rôle nouvelles : quand la ville du visiteur est connue, la section « Nouvelles du Quartier » (sous Partager, au-dessus de ce chat) affiche de vraies manchettes locales. Tu n’as pas de manchette vérifiée listée maintenant — ne fabrique jamais de titre. Si on te demande les news, dis-le honnêtement et oriente vers cette section ou Vos idées / Gagner maintenant.",
     promptWithHeadlines:

@@ -63,6 +63,22 @@ describe("Accueil Nouvelles layout fills toward the footer", () => {
     );
   });
 
+  it("offers Télécharger on published partner images outside the growth CTA link", () => {
+    const slot = read("components/PartnerAdSlot.tsx");
+    assert.match(slot, /data-partner-download/);
+    assert.match(slot, /partnerDownload/);
+    assert.match(slot, /downloadCreativeImage/);
+    assert.match(slot, /partnerCreativeDownloadName/);
+    assert.match(slot, /download=\{filename\}/);
+    // Download control is rendered in the Publicité header, not nested in the CTA link.
+    const usage = slot.indexOf("<CreativeDownload");
+    const linkOpen = slot.indexOf("data-partner-link");
+    assert.ok(usage > 0 && linkOpen > 0);
+    assert.ok(usage < linkOpen);
+    assert.match(slot, /data-partner-cta=\{display\.ctaKind\}/);
+    assert.doesNotMatch(slot, /CHAT PERDU|Bogo/);
+  });
+
   it("keeps chat and footer outside the news flex-grow so they are not crushed", () => {
     const guide = read("components/Guide.tsx");
     const chat = read("components/AvatarChat.tsx");

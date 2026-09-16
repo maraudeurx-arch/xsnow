@@ -264,4 +264,54 @@ test.describe("Accueil neighbourhood news + partner slots", () => {
     await expect(page).toHaveURL(/\/mon-profil\/?$/);
     await expect(page.getByRole("button", { name: "S’inscrire" })).toBeVisible();
   });
+
+  test("published image ads offer Télécharger without replacing growth CTAs", async ({
+    page,
+  }) => {
+    await seedReturningVisitor(page);
+    await page.route(/xsnow-chat\.xsnowopc\.workers\.dev\/news/, async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify(SAMPLE_NEWS),
+      });
+    });
+
+    await page.goto("./?city=Gatineau");
+    await expect(page.locator("[data-neighborhood-news]")).toHaveAttribute(
+      "data-news-status",
+      "ready",
+    );
+
+    const downloads = page.locator("[data-partner-download]");
+    await expect(downloads).toHaveCount(2);
+    const first = downloads.first();
+    await expect(first).toBeVisible();
+    await expect(first).toHaveText("Télécharger");
+    await expect(first).toHaveAttribute("download", /\.svg$/);
+    const href = await first.getAttribute("href");
+    expect(href).toMatch(/\/partners\/.+\.svg$/);
+    const image = await page.request.get(new URL(href!, page.url()).href);
+    expect(image.ok()).toBeTruthy();
+    expect(image.headers()["content-type"]).toMatch(/image\/(svg\+xml|png|jpeg|webp)/);
+
+    const [file] = await Promise.all([
+      page.waitForEvent("download"),
+      first.click(),
+    ]);
+    expect(file.suggestedFilename()).toMatch(/\.svg$/);
+    expect(await file.failure()).toBeNull();
+
+    await expect(page).toHaveURL(/city=Gatineau/);
+    await expect(page.getByText("Publicité").first()).toBeVisible();
+    await expect(page.locator('[data-partner-cta="register"]').first()).toBeVisible();
+    await expect(page.locator('[data-partner-cta="share"]').first()).toBeVisible();
+    await expect(page.getByText("S’inscrire / Mes infos").first()).toBeVisible();
+    await expect(page.getByText("Partager / inviter").first()).toBeVisible();
+
+    await page.goto("./?city=Gatineau&lang=en");
+    await expect(page.locator("[data-partner-download]").first()).toHaveText("Download");
+    await page.goto("./?city=Gatineau&lang=es");
+    await expect(page.locator("[data-partner-download]").first()).toHaveText("Descargar");
+  });
 });

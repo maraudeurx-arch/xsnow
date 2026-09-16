@@ -14,6 +14,7 @@ import {
   parseAdsEnabled,
   parseRotationIndex,
   partnerCtaKind,
+  partnerCreativeDownloadName,
   partnerCreativeImageUrl,
   PARTNER_REGISTER_HREF,
   PARTNER_SHARE_HREF,
@@ -71,6 +72,12 @@ describe("partner ad config", () => {
     assert.equal(fr.neighborhoodNews.partnerCtaShare, "Partager / inviter");
     assert.equal(en.neighborhoodNews.partnerCtaRegister, "Sign up / My info");
     assert.equal(es.neighborhoodNews.partnerCtaShare, "Compartir / invitar");
+    assert.equal(fr.neighborhoodNews.partnerDownload, "Télécharger");
+    assert.equal(en.neighborhoodNews.partnerDownload, "Download");
+    assert.equal(es.neighborhoodNews.partnerDownload, "Descargar");
+    assert.match(fr.neighborhoodNews.partnerDownloadAria, /image de la publicité/);
+    assert.match(en.neighborhoodNews.partnerDownloadFail, /long-press/i);
+    assert.match(es.neighborhoodNews.partnerDownloadIosHint, /iPhone/);
   });
 
   it("exposes rotating house ads that drive register and share", () => {
@@ -87,6 +94,7 @@ describe("partner ad config", () => {
     for (const creative of list) {
       assert.ok(creative.id);
       assert.ok(partnerCreativeImageUrl(creative)?.includes("/partners/"));
+      assert.ok(partnerCreativeDownloadName(creative).endsWith(".svg"));
       assert.equal(creative.href === PARTNER_REGISTER_HREF || creative.href === PARTNER_SHARE_HREF, true);
       const resolved = resolvePartnerCreative(creative, fr.neighborhoodNews);
       assert.doesNotMatch(resolved.name, /Chargement des nouvelles/);
