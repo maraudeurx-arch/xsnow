@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { headerNavBtnClass } from "@/components/AccueilMenu";
 import { InstallTip } from "@/components/InstallTip";
 import { LanguageSwitch } from "@/components/LanguageSwitch";
+import { LocalProfileBoard } from "@/components/LocalProfileBoard";
 import { useI18n } from "@/lib/i18n/locale";
 import { pathMatches } from "@/lib/paths";
 
@@ -23,6 +24,7 @@ export function ProfilMenu() {
   return (
     <div className="grid gap-3">
       <InstallTip />
+      <LocalProfileBoard />
       <nav aria-label={m.nav.monProfil} className="grid gap-1.5">
         {PROFILE_LINKS.map((item) => (
           <Link

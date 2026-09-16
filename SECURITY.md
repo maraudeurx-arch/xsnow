@@ -6,7 +6,7 @@ Visitor ideas, chat, share text, offer notes, and monetization suggestions are *
 
 ## Personal data stays on-device
 
-Mes services offers, En demande requests, Interac/PayPal, share blurbs, Vos idées, chat, and profile fields are **device-local**. They are not a global social feed. A fresh browser starts empty: the client does **not** ship the owner’s Gatineau car loan (or any other personal listing) as default content.
+Mes services offers, En demande requests, Interac/PayPal, share blurbs, Vos idées, chat, and the optional registration profile (first name, last name, email, phone, `OPC-XXXX` member number) are **device-local**. They are not a global social feed. There is no remote profile API in this MVP. A fresh browser starts empty: the client does **not** ship the owner’s Gatineau car loan (or any other personal listing) as default content.
 
 Community-wide features/offers/ideas appear for everyone only after **GOV + owner approval**, then as a numbered app release (`public/catalog/<version>.json`, currently empty for soft launch). A link a visitor copies themselves can show that one offer to the person who opens it — that is opt-in share, not a shared account.
 
@@ -28,6 +28,7 @@ See **À propos OPC** for the visible version number (semver) and release notes.
 | Share / invite text | Plain text (clipboard + `localStorage`) | Kept (site URLs) | 2500 |
 | Offer notes / titles | Plain text | Notes kept; neighborhood redacted | 800 / 80 |
 | Interac / PayPal | Contact string or `https://www.paypal.me/…` handle | Interac emails kept | 80 |
+| Local registration | Plain text in `localStorage` (`xsnow.localProfile`) | Kept on-device only | name 40 / email 80 / phone 24 |
 | `idea_submit` / `monetize_suggestion` | Plain text in D1 `suggestion` | Redacted | 80 / 280 |
 
 Analytics also drops GPS-looking strings and forbidden keys (`lat`, `email`, `name`, …). The stats worker rejects non-JSON `Content-Type`, bodies over 16 KiB, and unknown event types.

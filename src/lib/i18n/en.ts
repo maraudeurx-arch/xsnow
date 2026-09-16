@@ -130,7 +130,7 @@ export const en: Messages = {
         },
         {
           heading: "What we collect",
-          body: "On this device (localStorage): language, avatar, listings you write, your consents, and if you allow location: city + coordinates for the city label — no continuous tracking. If you allow stats: anonymous events to a Cloudflare Worker (D1): session, language, city/country if location is also allowed, short monetization-idea snippets (emails and GPS stripped). Avatar chat sends your messages to the Worker for a reply. No third-party ads.",
+          body: "On this device (localStorage): language, avatar, listings you write, your consents, and if you register: first name, last name, email, phone and a local OPC-XXXX number — nothing is sent to a profile server. If you allow location: city + coordinates for the city label — no continuous tracking. If you allow stats: anonymous events to a Cloudflare Worker (D1): session, language, city/country if location is also allowed, short monetization-idea snippets (emails and GPS stripped). Avatar chat sends your messages to the Worker for a reply. No third-party ads.",
         },
         {
           heading: "Why",
@@ -373,7 +373,7 @@ export const en: Messages = {
     },
     monProfil: {
       title: "My profile",
-      lead: "Your local card: info, settings, invitations.",
+      lead: "Your local card: registration, info, settings, invitations.",
     },
     mesInfos: {
       title: "My info",
@@ -409,10 +409,10 @@ export const en: Messages = {
       "{placeName} / {community} — {slogan} Our proximity and spirit of mutual aid is the guarantee of our success.",
     versionLabel: "Version",
     deviceLocalNote:
-      "Your offers, requests, ideas, share texts, and Interac/PayPal details stay on this device. Nothing personal appears for another visitor until GOV + owner approve a numbered public release (public catalog).",
+      "Your offers, requests, ideas, share texts, registration (first name, last name, email, phone, OPC-XXXX number), and Interac/PayPal details stay on this device. Nothing personal appears for another visitor until GOV + owner approve a numbered public release (public catalog).",
     releaseNotesTitle: "Release notes",
     releaseNotesBody:
-      "0.3.1 — Regional ambiance after location (Caribbean, Africa, Europe, Asia, South America). Canada and the USA keep the four seasons. Before location is known, the autumn background stays. Public catalog is still empty.",
+      "0.3.2 — Local registration on My profile (first name, last name, email, phone). An OPC-XXXX number stays on this device. First name (or initials) shows next to the logo. Email and phone do not leave the device. Public catalog is still empty.",
     language: "Language",
     comingSoon: "Notifications and display season will land here.",
     locationConsent: "Location",
@@ -427,7 +427,7 @@ export const en: Messages = {
   },
   stubs: {
     mesInfos:
-      "Name, neighbourhood and attributes will show here. Meanwhile you can connect a wallet — it’s optional.",
+      "Register on this device (first name, last name, email, phone). An OPC-XXXX number stays here. The wallet is optional.",
     inviter:
       "An invite link and QR will appear here. For now, tell a neighbour about Open Community.",
     monetise:
@@ -833,6 +833,39 @@ export const en: Messages = {
     copy: "Copy",
     copied: "Copied.",
     failed: "Couldn’t copy. The text is below — select it.",
+  },
+  register: {
+    cta: "Invite to register",
+    ctaAria: "Open the registration form",
+    title: "Register on this device",
+    hint: "First name, last name, email and phone stay on this device. No password. Nothing is sent to a profile server.",
+    firstName: "First name",
+    lastName: "Last name",
+    email: "Email",
+    phone: "Phone",
+    firstNamePh: "Marie",
+    lastNamePh: "Tremblay",
+    emailPh: "marie@example.ca",
+    phonePh: "819-…",
+    save: "Save",
+    cancel: "Close",
+    edit: "Edit profile",
+    saved: "Profile saved on this device.",
+    memberNumber: "Number",
+    memberNumberHint:
+      "Stable local ID, format OPC-XXXX (4 characters from A–Z / 2–9, no I, O, 0, or 1).",
+    needFirstName: "Enter your first name.",
+    needLastName: "Enter your last name.",
+    invalidEmail: "Enter a valid email.",
+    invalidPhone: "Enter a valid phone number.",
+    localOnly: "This stays on this device. It is not published, and email/phone never appear in the header.",
+    shareTitle: "Invite someone",
+    shareHint: "Edit the text, then copy it. The link does not include your email or phone.",
+    shareEdit: "Edit",
+    shareCopy: "Copy",
+    shareCopied: "Copied.",
+    shareFailed: "Couldn’t copy. The text is below — select it.",
+    headerAria: "Registered profile: {name}",
   },
   feedback: {
     prompt: "Useful?",

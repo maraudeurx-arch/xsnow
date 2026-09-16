@@ -130,7 +130,7 @@ export const es: Messages = {
         },
         {
           heading: "Qué recogemos",
-          body: "En este aparato (localStorage): idioma, avatar, tus anuncios, tus consentimientos, y si aceptas la ubicación: ciudad + coordenadas para el nombre de la ciudad — sin seguimiento continuo. Si aceptas las estadísticas: eventos anónimos a un Worker de Cloudflare (D1): sesión, idioma, ciudad/país si también aceptaste la ubicación, extractos cortos de ideas de monetización (correos y GPS eliminados). El chat del avatar envía tus mensajes al Worker para una respuesta. Sin publicidad de terceros.",
+          body: "En este aparato (localStorage): idioma, avatar, tus anuncios, tus consentimientos, y si te inscribes: nombre, apellidos, correo, teléfono y un número local OPC-XXXX — nada se envía a un servidor de perfiles. Si aceptas la ubicación: ciudad + coordenadas para el nombre de la ciudad — sin seguimiento continuo. Si aceptas las estadísticas: eventos anónimos a un Worker de Cloudflare (D1): sesión, idioma, ciudad/país si también aceptaste la ubicación, extractos cortos de ideas de monetización (correos y GPS eliminados). El chat del avatar envía tus mensajes al Worker para una respuesta. Sin publicidad de terceros.",
         },
         {
           heading: "Por qué",
@@ -373,7 +373,7 @@ export const es: Messages = {
     },
     monProfil: {
       title: "Mi perfil",
-      lead: "Tu ficha local: datos, ajustes, invitaciones.",
+      lead: "Tu ficha local: inscripción, datos, ajustes, invitaciones.",
     },
     mesInfos: {
       title: "Mis datos",
@@ -409,10 +409,10 @@ export const es: Messages = {
       "{placeName} / {community} — {slogan} Nuestra proximidad y nuestro espíritu de ayuda mutua son la garantía de nuestro éxito.",
     versionLabel: "Versión",
     deviceLocalNote:
-      "Tus ofertas, solicitudes, ideas, textos para compartir y datos Interac/PayPal se quedan en este aparato. Nada personal aparece en el de otro visitante hasta que GOV + el propietario aprueben una publicación en una versión numerada (catálogo público).",
+      "Tus ofertas, solicitudes, ideas, textos para compartir, inscripción (nombre, apellidos, correo, teléfono, número OPC-XXXX) y datos Interac/PayPal se quedan en este aparato. Nada personal aparece en el de otro visitante hasta que GOV + el propietario aprueben una publicación en una versión numerada (catálogo público).",
     releaseNotesTitle: "Notas de la versión",
     releaseNotesBody:
-      "0.3.1 — Ambiente regional tras la ubicación (Caribe, África, Europa, Asia, Sudamérica). Canadá y EE. UU. conservan las cuatro estaciones. Antes de saber la ubicación, se mantiene el fondo de otoño. El catálogo público sigue vacío.",
+      "0.3.2 — Inscripción local en Mi perfil (nombre, apellidos, correo, teléfono). Un número OPC-XXXX se queda en este aparato. El nombre (o las iniciales) aparece junto al logo. El correo y el teléfono no salen del aparato. El catálogo público sigue vacío.",
     language: "Idioma",
     comingSoon: "Las notificaciones y la estación de pantalla llegarán aquí.",
     locationConsent: "Ubicación",
@@ -428,7 +428,7 @@ export const es: Messages = {
   },
   stubs: {
     mesInfos:
-      "Nombre, barrio y atributos se mostrarán aquí. Mientras tanto puedes conectar una cartera — no es obligatorio.",
+      "Inscríbete en este aparato (nombre, apellidos, correo, teléfono). Un número OPC-XXXX se queda aquí. La cartera es opcional.",
     inviter:
       "Un enlace de invitación y un QR aparecerán aquí. Por ahora, habla de Open Community a un vecino.",
     monetise:
@@ -835,6 +835,39 @@ export const es: Messages = {
     copy: "Copiar",
     copied: "Copiado.",
     failed: "No se pudo copiar. El texto está abajo: selecciónalo.",
+  },
+  register: {
+    cta: "Invitar a inscribirse",
+    ctaAria: "Abrir el formulario de inscripción",
+    title: "Inscribirse en este aparato",
+    hint: "Nombre, apellidos, correo y teléfono se quedan en este aparato. Sin contraseña. Nada se envía a un servidor de perfiles.",
+    firstName: "Nombre",
+    lastName: "Apellidos",
+    email: "Correo",
+    phone: "Teléfono",
+    firstNamePh: "María",
+    lastNamePh: "Tremblay",
+    emailPh: "maria@ejemplo.ca",
+    phonePh: "819-…",
+    save: "Guardar",
+    cancel: "Cerrar",
+    edit: "Editar el perfil",
+    saved: "Perfil guardado en este aparato.",
+    memberNumber: "Número",
+    memberNumberHint:
+      "Identificador local estable, formato OPC-XXXX (4 caracteres de A–Z / 2–9, sin I, O, 0 ni 1).",
+    needFirstName: "Indica tu nombre.",
+    needLastName: "Indica tus apellidos.",
+    invalidEmail: "Indica un correo válido.",
+    invalidPhone: "Indica un teléfono válido.",
+    localOnly: "Estos datos se quedan en este aparato. No se publican, y el correo/teléfono no aparecen en el encabezado.",
+    shareTitle: "Invitar a alguien",
+    shareHint: "Edita el texto y luego cópialo. El enlace no incluye tu correo ni tu teléfono.",
+    shareEdit: "Editar",
+    shareCopy: "Copiar",
+    shareCopied: "Copiado.",
+    shareFailed: "No se pudo copiar. El texto está abajo: selecciónalo.",
+    headerAria: "Perfil inscrito: {name}",
   },
   feedback: {
     prompt: "¿Útil?",

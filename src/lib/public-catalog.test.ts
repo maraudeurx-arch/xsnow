@@ -18,7 +18,7 @@ describe("public catalog current version", () => {
       readFileSync(new URL(`../../public/catalog/${APP_VERSION}.json`, import.meta.url), "utf8"),
     );
     const catalog = parsePublicCatalog(raw);
-    assert.equal(APP_VERSION, "0.3.1");
+    assert.equal(APP_VERSION, "0.3.2");
     assert.equal(catalog.version, APP_VERSION);
     assert.deepEqual(catalog.offers, []);
     assert.deepEqual(catalog.ideas, []);

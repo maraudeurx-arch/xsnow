@@ -35,6 +35,13 @@ import {
   type ServiceKind,
   type ServiceListing,
 } from "../../lib/services.ts";
+import {
+  LOCAL_PROFILE_KEY,
+  headerDisplayName,
+  profileFromForm,
+  readLocalProfile,
+  writeLocalProfile,
+} from "../../lib/local-profile.ts";
 import { readList, writeList } from "../../lib/storage.ts";
 
 function memoryWindow() {
@@ -225,7 +232,7 @@ describe("catalog publish gate", () => {
 
 describe("About version copy", () => {
   it("shows the shipped app version on the About page strings", () => {
-    assert.equal(APP_VERSION, "0.3.1");
+    assert.equal(APP_VERSION, "0.3.2");
     assert.match(fr.profile.versionLabel, /Version/);
     assert.match(fr.profile.releaseNotesBody, new RegExp(APP_VERSION.replace(".", "\\.")));
     assert.match(fr.legal.about.sections[4].body, /version/i);
@@ -237,5 +244,34 @@ describe("About version copy", () => {
     });
     assert.match(spoken, /Open Community/);
     assert.match(spoken, /Monétisé Vous/);
+  });
+});
+
+describe("local registration profile", () => {
+  it("stays on this device and never promotes email or phone to the header", () => {
+    const mock = memoryWindow();
+    try {
+      const created = profileFromForm(
+        {
+          firstName: "Marie",
+          lastName: "Tremblay",
+          email: "marie@voisin.test",
+          phone: "819-555-0100",
+        },
+        null,
+        () => "2026-09-16T00:00:00.000Z",
+        () => "OPC-7K3M",
+      );
+      assert.ok(created);
+      writeLocalProfile(created);
+      const stored = readLocalProfile();
+      assert.equal(stored?.id, "OPC-7K3M");
+      assert.equal(stored?.email, "marie@voisin.test");
+      assert.equal(headerDisplayName(stored!), "Marie");
+      assert.doesNotMatch(headerDisplayName(stored!), /@|555/);
+      assert.equal(mock.data[LOCAL_PROFILE_KEY]?.includes("marie@voisin.test"), true);
+    } finally {
+      mock.restore();
+    }
   });
 });
