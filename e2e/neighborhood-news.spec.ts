@@ -73,14 +73,14 @@ test.describe("Accueil neighbourhood news + partner slots", () => {
 
     const gap = footerBox!.y - (cardBox!.y + cardBox!.height);
     expect(gap).toBeGreaterThanOrEqual(0);
-    expect(gap).toBeLessThan(4);
+    expect(gap).toBeLessThan(3);
     expect(newsBox!.height).toBeGreaterThan(chatBox!.height);
-    expect(newsBox!.height).toBeGreaterThan(380);
+    expect(newsBox!.height).toBeGreaterThan(400);
 
     const newsList = page.locator("[data-news-list], [data-news-spacer]");
     const listBox = await newsList.first().boundingBox();
     expect(listBox).toBeTruthy();
-    expect(listBox!.height).toBeGreaterThan(170);
+    expect(listBox!.height).toBeGreaterThan(200);
 
     const newsChatGap = chatBox!.y - (newsBox!.y + newsBox!.height);
     expect(newsChatGap).toBeGreaterThanOrEqual(0);

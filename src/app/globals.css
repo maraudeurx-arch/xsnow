@@ -17,17 +17,17 @@
   --home-nav-h: 2.15rem;
   --home-chip-h: 2.05rem;
   --home-avatar: min(11.5vw, 5.8dvh, 2.65rem);
-  --home-gap: 0.22rem;
+  --home-gap: 0.18rem;
   /* Accueil: keep header→card gap tiny so leftover height feeds Nouvelles. */
-  --home-block-gap: 0.08rem;
+  --home-block-gap: 0.04rem;
   /* Gaps inside the avatar/chat card — keep compact so news flex-grows hard. */
-  --home-stack-gap: 0.36rem;
+  --home-stack-gap: 0.28rem;
   /* Hairline between Nouvelles and the chat composer (not full stack gap). */
-  --home-news-chat-gap: 0.18rem;
-  --home-nav-gap: 0.24rem;
-  --home-chip-gap: 0.32rem;
-  --home-card-pad-x: 0.48rem;
-  --home-card-pad-y: 0.26rem;
+  --home-news-chat-gap: 0.1rem;
+  --home-nav-gap: 0.22rem;
+  --home-chip-gap: 0.28rem;
+  --home-card-pad-x: 0.44rem;
+  --home-card-pad-y: 0.18rem;
   --home-avatar-ring: 0.28rem;
   --brand-title: clamp(1.5rem, 7.4vw, 3rem);
   --brand-slogan: clamp(0.9rem, 3.8vw, 1.2rem);
@@ -483,75 +483,81 @@ body {
  */
 @media (max-width: 639px) {
   .app-stage:has(#home-guide) > .brand-banner h1 {
-    font-size: clamp(1.18rem, 5.8vw, 2.35rem);
+    font-size: clamp(1.12rem, 5.6vw, 2.25rem);
   }
 
   .app-stage:has(#home-guide) > .brand-banner p {
     margin-top: 0;
-    font-size: clamp(0.72rem, 3vw, 0.98rem);
+    font-size: clamp(0.7rem, 2.9vw, 0.94rem);
   }
 
   .app-stage:has(#home-guide) .chrome-panel {
-    padding-top: 0.06rem;
-    padding-bottom: 0.06rem;
+    padding-top: 0.04rem;
+    padding-bottom: 0.04rem;
   }
 
   .app-stage:has(#home-guide) .chrome-panel nav {
-    margin-top: 0.1rem;
+    margin-top: 0.08rem;
+  }
+
+  .app-stage:has(#home-guide) > .app-stage-main > #home-guide {
+    height: 100%;
   }
 
   .app-stage:has(#home-guide) > .app-stage-main > #home-guide > .home-stage {
+    flex: 1 1 0%;
     height: 100%;
+    min-height: 100%;
   }
 
   .app-stage:has(#home-guide) [data-neighborhood-news] {
     flex: 1 1 0%;
-    /* Soft floor for short Safari toolbars; flex:1 fills leftover on taller phones. */
-    min-height: max(17.5rem, 40dvh);
+    /* Soft floor; flex-grow fills leftover so the green card meets chat. */
+    min-height: max(20rem, 44dvh);
   }
 
   .app-stage:has(#home-guide) [data-neighborhood-news] [data-news-body] {
     flex: 1 1 0%;
-    min-height: max(12rem, 24dvh);
+    min-height: max(14rem, 28dvh);
   }
 
-  /* Headline list / loading spacer claims leftover body height (scroll inside). */
+  /* Headline list / loading spacer is the flex-grow inventory inside the card. */
   .app-stage:has(#home-guide) [data-neighborhood-news] [data-news-list],
   .app-stage:has(#home-guide) [data-neighborhood-news] [data-news-spacer] {
     flex: 1 1 0%;
-    min-height: max(9rem, 16dvh);
+    min-height: max(12rem, 22dvh);
   }
 }
 
 /* Tall mobile: push Nouvelles harder into the card→footer inventory. */
 @media (max-width: 639px) and (min-height: 740px) {
   .app-stage:has(#home-guide) [data-neighborhood-news] {
-    min-height: max(19.5rem, 46dvh);
+    min-height: max(22rem, 50dvh);
   }
 
   .app-stage:has(#home-guide) [data-neighborhood-news] [data-news-body] {
-    min-height: max(13.5rem, 28dvh);
+    min-height: max(16rem, 32dvh);
   }
 
   .app-stage:has(#home-guide) [data-neighborhood-news] [data-news-list],
   .app-stage:has(#home-guide) [data-neighborhood-news] [data-news-spacer] {
-    min-height: max(10rem, 20dvh);
+    min-height: max(14rem, 26dvh);
   }
 }
 
 /* Short Safari/Chrome dvh: drop rem floors so chat + footer links stay on-screen. */
 @media (max-width: 639px) and (max-height: 660px) {
   .app-stage:has(#home-guide) [data-neighborhood-news] {
-    min-height: max(14rem, 38dvh);
+    min-height: max(15rem, 38dvh);
   }
 
   .app-stage:has(#home-guide) [data-neighborhood-news] [data-news-body] {
-    min-height: max(9rem, 20dvh);
+    min-height: max(10rem, 22dvh);
   }
 
   .app-stage:has(#home-guide) [data-neighborhood-news] [data-news-list],
   .app-stage:has(#home-guide) [data-neighborhood-news] [data-news-spacer] {
-    min-height: max(6rem, 12dvh);
+    min-height: max(7rem, 14dvh);
   }
 }
 
