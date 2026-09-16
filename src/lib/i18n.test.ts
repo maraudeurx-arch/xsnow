@@ -188,6 +188,9 @@ describe("vos idees copy", () => {
     assert.doesNotMatch(en.ideas.thankYouBody, /server|GitHub|public catalog/i);
     assert.doesNotMatch(es.ideas.thankYouBody, /servidor|GitHub|catálogo público/i);
     assert.equal("openCta" in fr.ideas, false);
+    assert.equal("retryInbox" in fr.ideas, false);
+    assert.equal("retryInbox" in en.ideas, false);
+    assert.equal("retryInbox" in es.ideas, false);
     assert.match(fr.systemPrompt, /Vos idées/);
     assert.match(en.systemPrompt, /Your ideas/);
     assert.match(es.systemPrompt, /Tus ideas/);

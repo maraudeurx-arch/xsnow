@@ -923,7 +923,6 @@ export const fr = {
     wallEmpty: "Pas encore d’idée ici. La première est souvent la plus utile.",
     inboxSent: "E-mail envoyé à opencommunity.opc@gmail.com.",
     inboxFailed: "Idée enregistrée ici. L’e-mail au propriétaire n’a pas pu partir (réseau).",
-    retryInbox: "Renvoyer au propriétaire",
     editIdea: "Modifier",
     share: "Texte à partager",
     shareHint: "Modifiez le texte, puis copiez-le pour un voisin ou un groupe.",
