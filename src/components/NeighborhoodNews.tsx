@@ -166,7 +166,7 @@ export function NeighborhoodNews({ onNewsChange }: Props) {
 
       <div className="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto">
         {status === "ready" && items.length > 0 ? (
-          <ul className="flex min-h-[6rem] flex-1 flex-col gap-1 overflow-y-auto">
+          <ul className="flex max-h-[42%] min-h-[6rem] w-full shrink-0 flex-col gap-1 overflow-y-auto">
             {items.map((item) => (
               <li key={item.id}>
                 <a
@@ -189,9 +189,7 @@ export function NeighborhoodNews({ onNewsChange }: Props) {
               </li>
             ))}
           </ul>
-        ) : (
-          <div className="min-h-0 flex-1" aria-hidden />
-        )}
+        ) : null}
 
         {slots.length > 0 ? (
           <div className="flex min-h-0 flex-1 flex-col gap-1">
@@ -199,7 +197,9 @@ export function NeighborhoodNews({ onNewsChange }: Props) {
               <PartnerAdSlot key={slot} slot={slot} />
             ))}
           </div>
-        ) : null}
+        ) : (
+          <div className="min-h-0 flex-1" aria-hidden />
+        )}
       </div>
     </section>
   );

@@ -96,6 +96,8 @@ test.describe("Accueil neighbourhood news + partner slots", () => {
     expect(gap).toBeLessThan(24);
     expect(newsBox!.height).toBeGreaterThan(chatBox!.height);
     expect(footerBox!.height).toBeLessThan(68);
+    const slotBox = await page.locator("[data-partner-slot]").first().boundingBox();
+    expect(slotBox?.height ?? 0).toBeGreaterThan(72);
   });
 
   test("Worker 405 still shows real headlines via the JSON RSS fallback", async ({ page }) => {
