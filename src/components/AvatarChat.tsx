@@ -276,7 +276,7 @@ export function AvatarChat({
   return (
     <section
       id="avatar-chat"
-      className="flex min-h-0 w-full shrink-0 flex-col gap-1 rounded-xl border border-gold/25 bg-[linear-gradient(180deg,rgba(18,20,26,0.78)_0%,rgba(8,8,10,0.86)_100%)] p-1 text-left shadow-[0_8px_24px_rgba(0,0,0,0.28)]"
+      className="flex min-h-0 w-full shrink-0 flex-col gap-0.5 rounded-xl border border-gold/25 bg-[linear-gradient(180deg,rgba(18,20,26,0.78)_0%,rgba(8,8,10,0.86)_100%)] p-1 pt-0.5 text-left shadow-[0_8px_24px_rgba(0,0,0,0.28)]"
       aria-label={chat.title}
     >
       <div className="flex shrink-0 items-center gap-2 px-1">

@@ -71,8 +71,34 @@ test.describe("Accueil neighbourhood news + partner slots", () => {
 
     const gap = footerBox!.y - (cardBox!.y + cardBox!.height);
     expect(gap).toBeGreaterThanOrEqual(0);
-    expect(gap).toBeLessThan(56);
+    expect(gap).toBeLessThan(28);
     expect(newsBox!.height).toBeGreaterThan(chatBox!.height);
+    expect(newsBox!.height).toBeGreaterThan(200);
+
+    const titleBox = await page.getByRole("heading", { name: "Open Community", level: 1 }).boundingBox();
+    expect(titleBox).toBeTruthy();
+    expect(titleBox!.y).toBeGreaterThanOrEqual(0);
+    expect(titleBox!.y).toBeLessThan(28);
+
+    const newsChatGap = chatBox!.y - (newsBox!.y + newsBox!.height);
+    expect(newsChatGap).toBeGreaterThanOrEqual(0);
+    expect(newsChatGap).toBeLessThan(16);
+
+    expect(footerBox!.height).toBeLessThan(64);
+    expect(footerBox!.height).toBeGreaterThan(20);
+
+    const inventory = page.locator("[data-partner-inventory]");
+    const inventoryBox = await inventory.boundingBox();
+    expect(inventoryBox).toBeTruthy();
+    expect(inventoryBox!.height).toBeGreaterThan(120);
+
+    const fibreBottom = (fibreBox?.y ?? 0) + (fibreBox?.height ?? 0);
+    expect(fibreBottom).toBeLessThanOrEqual(inventoryBox!.y + 1);
+
+    for (const slot of await page.locator("[data-partner-slot]").all()) {
+      const adBox = await slot.boundingBox();
+      expect(adBox?.height ?? 0).toBeGreaterThan(48);
+    }
   });
 
   test("Worker 405 still shows real headlines via the JSON RSS fallback", async ({ page }) => {

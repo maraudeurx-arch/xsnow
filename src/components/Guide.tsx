@@ -142,34 +142,36 @@ export function Guide() {
           </div>
         </div>
       ) : chosen ? (
-        <div className="home-stage flex min-h-0 w-full flex-1 flex-col justify-start gap-[var(--home-stack-gap)] overflow-hidden rounded-2xl px-[var(--home-card-pad-x)] py-[var(--home-card-pad-y)]">
-          <div className="flex shrink-0 items-center gap-2">
-            <AvatarDisc avatar={chosen} className={chosenSize} priority />
-            <div className="flex min-w-0 flex-1 items-center gap-2">
-              <ReplayButton gender={chosen.gender} />
-              <button
-                type="button"
-                className="inline-flex min-h-[var(--home-chip-h)] min-w-0 flex-1 items-center justify-center rounded-full border border-white/20 bg-white/[0.06] px-2 text-[10px] font-semibold tracking-wide text-snow hover:border-violet/50 hover:bg-white/[0.09]"
-                onClick={() => setPicking(true)}
-              >
-                {m.guide.changeAvatar}
-              </button>
+        <div className="home-stage flex min-h-0 w-full flex-1 flex-col justify-start overflow-hidden rounded-2xl px-[var(--home-card-pad-x)] py-[var(--home-card-pad-y)]">
+          <div className="flex shrink-0 flex-col gap-[var(--home-stack-gap)]">
+            <div className="flex items-center gap-2">
+              <AvatarDisc avatar={chosen} className={chosenSize} priority />
+              <div className="flex min-w-0 flex-1 items-center gap-2">
+                <ReplayButton gender={chosen.gender} />
+                <button
+                  type="button"
+                  className="inline-flex min-h-[var(--home-chip-h)] min-w-0 flex-1 items-center justify-center rounded-full border border-white/20 bg-white/[0.06] px-2 text-[10px] font-semibold tracking-wide text-snow hover:border-violet/50 hover:bg-white/[0.09]"
+                  onClick={() => setPicking(true)}
+                >
+                  {m.guide.changeAvatar}
+                </button>
+              </div>
             </div>
+            <nav
+              aria-label={m.guide.offerShortcuts}
+              className="grid shrink-0 grid-cols-2 gap-[var(--home-chip-gap)]"
+            >
+              <Link href="/gagner-maintenant" className={shortcutClass}>
+                {m.menu.gagnerMaintenant}
+              </Link>
+              <Link href="/vos-idees/#form" className={shortcutClass}>
+                {m.nav.vosIdees}
+              </Link>
+              <ShareHomeButton />
+            </nav>
           </div>
-          <nav
-            aria-label={m.guide.offerShortcuts}
-            className="grid shrink-0 grid-cols-2 gap-[var(--home-chip-gap)]"
-          >
-            <Link href="/gagner-maintenant" className={shortcutClass}>
-              {m.menu.gagnerMaintenant}
-            </Link>
-            <Link href="/vos-idees/#form" className={shortcutClass}>
-              {m.nav.vosIdees}
-            </Link>
-            <ShareHomeButton />
-          </nav>
           <NeighborhoodNews onNewsChange={onNewsChange} />
-          <div className="flex shrink-0 flex-col">
+          <div className="mt-[var(--home-news-chat-gap)] flex shrink-0 flex-col">
             {needsPrompt && !unanswered && Boolean(avatarId) && welcomeGateOpen ? (
               <LocationPrompt />
             ) : (
