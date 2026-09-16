@@ -1,26 +1,17 @@
 "use client";
 
-import { FormEvent, useMemo, useRef, useState } from "react";
+import { FormEvent, useState } from "react";
 import { useI18n } from "@/lib/i18n/locale";
-import {
-  defaultShareBlurb,
-  publicInviteUrl,
-  resolveShareCode,
-} from "@/lib/invite";
 import {
   EMAIL_TEXT_MAX,
   NAME_TEXT_MAX,
   PHONE_TEXT_MAX,
-  defaultRegisterShareBlurb,
   emptyProfileInput,
   inputFromProfile,
   profileFormIssues,
   profileFromForm,
   type LocalProfileInput,
 } from "@/lib/local-profile";
-import { copyText, clipShareText } from "@/lib/offers";
-import { SHARE_TEXT_MAX } from "@/lib/sanitize";
-import { useHasHydrated } from "@/lib/useAnalyticsConsent";
 import { useLocalProfile } from "@/lib/useLocalProfile";
 
 const fieldClass =
@@ -30,30 +21,16 @@ const blueCtaClass =
   "tap inline-flex w-full min-h-11 items-center justify-center rounded-full border border-sky-300/80 bg-[#1d4ed8] px-3 text-sm font-extrabold tracking-wide text-snow shadow-[0_8px_24px_rgba(29,78,216,0.5)] hover:brightness-110";
 
 export function LocalProfileBoard() {
-  const { locale, m } = useI18n();
+  const { m } = useI18n();
   const copy = m.register;
-  const hydrated = useHasHydrated();
   const [profile, setProfile] = useLocalProfile();
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState<LocalProfileInput>(emptyProfileInput);
   const [error, setError] = useState<"" | "firstName" | "lastName" | "email" | "phone">("");
-  const [shareText, setShareText] = useState("");
-  const [shareStatus, setShareStatus] = useState<"ok" | "fail" | "">("");
-  const [shareOpen, setShareOpen] = useState(false);
-  const area = useRef<HTMLTextAreaElement | null>(null);
-
-  const code = hydrated ? resolveShareCode(profile?.id) : "opc";
-  const url = publicInviteUrl(code);
-  const seeded = useMemo(() => {
-    if (profile) return defaultRegisterShareBlurb(url, profile.firstName, locale, profile.id);
-    return defaultShareBlurb(url, locale);
-  }, [locale, profile, url]);
-  const value = shareText || seeded;
 
   function openForm() {
     setError("");
     setForm(profile ? inputFromProfile(profile) : emptyProfileInput());
-    setShareOpen(false);
     setOpen(true);
   }
 
@@ -70,15 +47,8 @@ export function LocalProfileBoard() {
       return;
     }
     setProfile(next);
-    const inviteUrl = publicInviteUrl(resolveShareCode(next.id));
-    setShareText(defaultRegisterShareBlurb(inviteUrl, next.firstName, locale, next.id));
     setOpen(false);
     setError("");
-  }
-
-  async function copyShare() {
-    const ok = await copyText(clipShareText(value));
-    setShareStatus(ok ? "ok" : "fail");
   }
 
   const errorText =
@@ -110,17 +80,6 @@ export function LocalProfileBoard() {
           <button type="button" className={blueCtaClass} data-register-cta onClick={openForm}>
             {copy.edit}
           </button>
-          {!open ? (
-            <button
-              type="button"
-              className={blueCtaClass}
-              data-share-cta
-              onClick={() => setShareOpen((prev) => !prev)}
-              aria-expanded={shareOpen}
-            >
-              {copy.share}
-            </button>
-          ) : null}
         </div>
       )}
 
@@ -128,9 +87,6 @@ export function LocalProfileBoard() {
         <form className="grid gap-2" onSubmit={onSubmit} data-register-form>
           <p className="text-sm font-extrabold text-snow">{copy.title}</p>
           <p className="text-[11px] leading-snug text-snow/80">{copy.hint}</p>
-          <p className="text-[11px] leading-snug text-gold/90" data-infos-privacy-inline>
-            {m.profile.infosPrivacy}
-          </p>
           <label className="grid gap-1 text-xs font-semibold">
             {copy.firstName}
             <input
@@ -201,43 +157,6 @@ export function LocalProfileBoard() {
             </button>
           </div>
         </form>
-      ) : null}
-
-      {profile && !open && shareOpen ? (
-        <div className="space-y-2 border-t border-white/10 pt-2" data-share-panel>
-          <p className="text-sm font-extrabold text-gold">{copy.shareTitle}</p>
-          <p className="text-[11px] leading-snug text-snow/80">{copy.shareHint}</p>
-          <textarea
-            ref={area}
-            value={value}
-            onChange={(event) => setShareText(event.target.value.slice(0, SHARE_TEXT_MAX))}
-            rows={4}
-            maxLength={SHARE_TEXT_MAX}
-            className={`${fieldClass} min-h-[88px] text-xs leading-relaxed`}
-            aria-label={copy.shareTitle}
-          />
-          <div className="grid grid-cols-2 gap-2">
-            <button
-              type="button"
-              className="tap rounded-full border border-white/20 bg-white/5 text-sm font-bold"
-              onClick={() => {
-                area.current?.focus();
-                area.current?.select();
-              }}
-            >
-              {copy.shareEdit}
-            </button>
-            <button
-              type="button"
-              className="tap rounded-full bg-gold text-sm font-extrabold text-night"
-              onClick={() => void copyShare()}
-            >
-              {copy.shareCopy}
-            </button>
-          </div>
-          {shareStatus === "ok" ? <p className="text-xs font-semibold text-gold">{copy.shareCopied}</p> : null}
-          {shareStatus === "fail" ? <p className="text-xs font-semibold text-gold">{copy.shareFailed}</p> : null}
-        </div>
       ) : null}
     </section>
   );

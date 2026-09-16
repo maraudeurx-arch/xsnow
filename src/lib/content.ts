@@ -209,7 +209,6 @@ export const FEATURE_COPY = {
 } as const;
 
 export const PROFILE_MENU = [
-  { href: "/mon-profil/infos", label: "Mes infos" },
   { href: "/mon-profil/reglages", label: "Réglages" },
   {
     href: "/mon-profil/inviter",

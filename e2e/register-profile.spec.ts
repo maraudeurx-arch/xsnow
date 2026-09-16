@@ -1,7 +1,7 @@
 import { expect, test } from "./helpers";
 
 test.describe("local registration on Mon profil", () => {
-  test("Sign up button saves a device-local OPC number, wires invite=opc-xxxx, and shows initials by the logo", async ({
+  test("Sign up button saves a device-local OPC number and shows initials by the logo", async ({
     page,
   }) => {
     await page.goto("./mon-profil/");
@@ -9,7 +9,7 @@ test.describe("local registration on Mon profil", () => {
     await expect(page.locator("[data-home-back]")).toBeVisible();
 
     const hub = page.getByRole("navigation", { name: "Mon profil" });
-    await expect(hub.getByRole("link", { name: "Mes infos" })).toBeVisible();
+    await expect(hub.getByRole("link", { name: "Mes infos" })).toHaveCount(0);
     await expect(hub.getByRole("link", { name: "Réglages" })).toBeVisible();
     await expect(hub.getByRole("link", { name: "À propos de Open Community (OPC)" })).toBeVisible();
     await expect(hub.getByRole("link", { name: /Vos idées/ })).toHaveCount(0);
@@ -43,21 +43,14 @@ test.describe("local registration on Mon profil", () => {
     expect(stored).toMatch(/OPC-[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{4}/);
 
     await expect(page.getByRole("button", { name: "Modifier le profil" })).toBeVisible();
-    const shareCta = page.getByRole("button", { name: "Partager", exact: true });
-    await expect(shareCta).toBeVisible();
-    await expect(shareCta).toHaveCSS("background-color", "rgb(29, 78, 216)");
+    await expect(page.getByRole("button", { name: "Partager", exact: true })).toHaveCount(0);
+    await expect(page.locator("[data-share-panel]")).toHaveCount(0);
     await expect(page.getByText("Inviter quelqu’un")).toHaveCount(0);
-    await expect(page.getByRole("button", { name: "Copier", exact: true })).toHaveCount(0);
-
-    await shareCta.click();
-    await expect(page.locator("[data-share-panel]")).toBeVisible();
-    await expect(page.getByText(/Marie t’invite sur Open Community/)).toBeVisible();
-    await expect(page.getByText(/invite=opc-/)).toBeVisible();
-    await expect(page.getByText(/Numéro membre : OPC-/)).toBeVisible();
-    const shareCode = await page.evaluate(() => window.localStorage.getItem("xsnow.shareCode"));
-    expect(shareCode).toMatch(/^opc-[a-z0-9]{4}$/);
-    await expect(page.getByRole("button", { name: "Modifier", exact: true })).toBeVisible();
-    await expect(page.getByRole("button", { name: "Copier", exact: true })).toBeVisible();
+    await expect(page.locator("[data-infos-privacy]")).toHaveCount(0);
+    await expect(page.locator("[data-infos-privacy-inline]")).toHaveCount(0);
+    // Connect stays in the top nav only — not duplicated in the Mon profil body.
+    await expect(page.getByRole("navigation", { name: "Navigation principale" }).getByRole("button", { name: /Connect/ })).toBeVisible();
+    await expect(page.locator("main").getByRole("button", { name: /Connect/ })).toHaveCount(0);
 
     await page.locator("[data-home-back]").click();
     await expect(page).toHaveURL(/\/xsnow\/?$/);
