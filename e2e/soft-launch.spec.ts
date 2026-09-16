@@ -108,13 +108,25 @@ test.describe("Open Community soft-launch smoke", () => {
     await expect(page.getByLabel("Ton idée")).toBeVisible();
     await expect(page.getByRole("button", { name: "Envoyer l’idée" })).toBeVisible();
 
-    // Wipe durable layers via CDP so IndexedDB cannot restore after reload.
-    // Proves the empty public catalog does not refill ideas.
+    // Wipe durable layers. CDP clears IndexedDB; also clear sessionStorage explicitly
+    // (CDP left session intact here, and boot prefers a non-empty session copy).
     const origin = new URL(page.url()).origin;
-    const session = await page.context().newCDPSession(page);
-    await session.send("Storage.clearDataForOrigin", {
+    const cdp = await page.context().newCDPSession(page);
+    await cdp.send("Storage.clearDataForOrigin", {
       origin,
       storageTypes: "local_storage,session_storage,indexeddb",
+    });
+    await page.evaluate(() => {
+      try {
+        window.sessionStorage.clear();
+      } catch {
+        /* private mode */
+      }
+      try {
+        window.localStorage.clear();
+      } catch {
+        /* private mode */
+      }
     });
     await page.reload();
     await expect(page.getByLabel("Ton idée")).toBeVisible();
