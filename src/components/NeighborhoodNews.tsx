@@ -13,7 +13,7 @@ import {
   type NeighborhoodNewsItem,
   type NeighborhoodNewsPayload,
 } from "@/lib/neighborhood-news";
-import { visiblePartnerSlots } from "@/lib/partner-ads";
+import { visiblePartnerSlots, type PartnerSlotId } from "@/lib/partner-ads";
 
 export type NeighborhoodNewsState = {
   status: "hidden" | "need_city" | "loading" | "ready" | "empty" | "error";
@@ -24,6 +24,10 @@ export type NeighborhoodNewsState = {
 type Props = {
   onNewsChange?: (state: NeighborhoodNewsState) => void;
 };
+
+function hasSlot(slots: PartnerSlotId[], id: PartnerSlotId) {
+  return slots.includes(id);
+}
 
 export function NeighborhoodNews({ onNewsChange }: Props) {
   const { city, countryCode, resolved } = usePlace();
@@ -116,12 +120,15 @@ export function NeighborhoodNews({ onNewsChange }: Props) {
     };
   }, [attempt, city, countryCode, locale, onNewsChange, resolved]);
 
+  const showMid = hasSlot(slots, "news-mid");
+  const showBottom = hasSlot(slots, "news-bottom");
+
   return (
     <section
       data-neighborhood-news
       data-news-status={status}
       aria-label={copy.title}
-      className="flex min-h-0 flex-1 flex-col gap-1 overflow-hidden rounded-xl border border-gold/30 bg-[rgba(8,8,12,0.88)] px-2 py-1.5"
+      className="flex min-h-[12.5rem] flex-1 flex-col gap-1 overflow-hidden rounded-xl border border-gold/30 bg-[rgba(8,8,12,0.88)] px-2 py-1.5 sm:min-h-[14rem]"
     >
       <div className="flex shrink-0 items-baseline justify-between gap-2 px-0.5">
         <h2 className="text-[10px] font-extrabold tracking-wide text-gold">{copy.title}</h2>
@@ -164,10 +171,10 @@ export function NeighborhoodNews({ onNewsChange }: Props) {
         </div>
       ) : null}
 
-      <div className="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto">
+      <div className="flex min-h-0 flex-1 flex-col gap-1.5 overflow-y-auto">
         {status === "ready" && items.length > 0 ? (
-          <ul className="flex min-h-[6rem] flex-1 flex-col gap-1 overflow-y-auto">
-            {items.map((item) => (
+          <ul className="flex min-h-[7.5rem] flex-1 flex-col gap-1">
+            {items.map((item, index) => (
               <li key={item.id}>
                 <a
                   href={item.link}
@@ -186,20 +193,22 @@ export function NeighborhoodNews({ onNewsChange }: Props) {
                     <span>{item.source}</span>
                   </span>
                 </a>
+                {index === 0 && showMid ? (
+                  <div className="mt-1.5">
+                    <PartnerAdSlot slot="news-mid" />
+                  </div>
+                ) : null}
               </li>
             ))}
           </ul>
         ) : (
-          <div className="min-h-0 flex-1" aria-hidden />
+          <>
+            <div className="min-h-[4.5rem] flex-1" aria-hidden />
+            {showMid ? <PartnerAdSlot slot="news-mid" /> : null}
+          </>
         )}
 
-        {slots.length > 0 ? (
-          <div className="flex shrink-0 flex-col gap-1">
-            {slots.map((slot) => (
-              <PartnerAdSlot key={slot} slot={slot} />
-            ))}
-          </div>
-        ) : null}
+        {showBottom ? <PartnerAdSlot slot="news-bottom" /> : null}
       </div>
     </section>
   );

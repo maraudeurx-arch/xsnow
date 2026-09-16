@@ -105,7 +105,7 @@ export function Guide() {
       className={`flex min-h-0 w-full flex-col ${
         showPicker
           ? "items-center justify-center gap-3"
-          : "h-full min-h-0 items-stretch justify-stretch gap-0 self-stretch"
+          : "min-h-0 flex-1 items-stretch justify-start gap-0 self-stretch"
       }`}
     >
       {showPicker ? (
