@@ -3,7 +3,9 @@ import { describe, it } from "node:test";
 import {
   durableGet,
   durableSet,
+  ensureDurableHydration,
   hydrateDurableFromBackup,
+  isDurableBootReady,
   isEmptyDurableValue,
   resetDurableMemoryForTests,
   setDurableBackupForTests,
@@ -171,3 +173,55 @@ describe("same-tab session fallback", () => {
     }
   });
 });
+
+describe("boot restore race", () => {
+  it("ensureDurableHydration copies backup and marks boot ready", async () => {
+    const local = memoryStore();
+    const backup = new Map<string, string>([
+      ["xsnow.avatar", JSON.stringify("homme-blanc")],
+      ["xsnow.localProfile", JSON.stringify({ id: "OPC-7K3M", firstName: "Marie" })],
+    ]);
+    setDurableBackupForTests(backup);
+    resetDurableMemoryForTests();
+    try {
+      assert.equal(isDurableBootReady(), false);
+      const restored = await ensureDurableHydration(["xsnow.avatar", "xsnow.localProfile"], local);
+      assert.ok(restored >= 2);
+      assert.equal(isDurableBootReady(), true);
+      assert.equal(durableGet("xsnow.avatar", local), JSON.stringify("homme-blanc"));
+      assert.match(durableGet("xsnow.localProfile", local) ?? "", /OPC-7K3M/);
+    } finally {
+      setDurableBackupForTests(null);
+      resetDurableMemoryForTests();
+    }
+  });
+
+  it("does not let an empty write during boot wipe a richer backup", async () => {
+    const local = memoryStore();
+    const backup = new Map<string, string>();
+    setDurableBackupForTests(backup);
+    resetDurableMemoryForTests();
+    try {
+      durableSet("xsnow.avatar", JSON.stringify("femme-noire"), local);
+      durableSet("xsnow.ideas", JSON.stringify([{ id: "kept", text: "Prêter une perceuse" }]), local);
+      assert.equal(backup.get("xsnow.ideas")?.includes("Prêter une perceuse"), true);
+
+      local.clear();
+      assert.equal(durableGet("xsnow.avatar", local), null);
+
+      const boot = ensureDurableHydration(["xsnow.avatar", "xsnow.ideas"], local);
+      durableSet("xsnow.ideas", "[]", local);
+      durableSet("xsnow.avatar", "", local);
+      await boot;
+
+      assert.equal(durableGet("xsnow.avatar", local), JSON.stringify("femme-noire"));
+      assert.match(durableGet("xsnow.ideas", local) ?? "", /Prêter une perceuse/);
+      assert.match(backup.get("xsnow.ideas") ?? "", /Prêter une perceuse/);
+      assert.equal(backup.get("xsnow.avatar"), JSON.stringify("femme-noire"));
+    } finally {
+      setDurableBackupForTests(null);
+      resetDurableMemoryForTests();
+    }
+  });
+});
+

@@ -32,6 +32,11 @@ let testBackup: Map<string, string> | null = null;
 let idbQueue: Promise<void> = Promise.resolve();
 let dbPromise: Promise<IDBDatabase> | null = null;
 let hydrated = false;
+/** While false, durableSet queues mirrors instead of writing IndexedDB (boot race). */
+let mirroringEnabled = true;
+const pendingMirrors = new Map<string, string>();
+let initialHydration: Promise<number> | null = null;
+const BOOT_TIMEOUT_MS = 2_000;
 
 export function subscribeDurableStorage(onChange: () => void) {
   listeners.add(onChange);
@@ -70,6 +75,21 @@ export function setDurableBackupForTests(backup: Map<string, string> | null) {
 export function resetDurableMemoryForTests() {
   memory.clear();
   hydrated = false;
+  mirroringEnabled = true;
+  pendingMirrors.clear();
+  initialHydration = null;
+  idbQueue = Promise.resolve();
+  dbPromise = null;
+}
+
+/** Alias kept for call sites that prefer the PR #75 naming. */
+export function resetDurableStorageForTests() {
+  resetDurableMemoryForTests();
+  testBackup = null;
+}
+
+export function isDurableBootReady() {
+  return hydrated;
 }
 
 function localStore(store?: Storage): Storage | undefined {
@@ -162,6 +182,10 @@ export function durableSet(key: string, value: string, store?: Storage) {
   }
   writeSlot(localStore(store), key, value);
   writeSlot(sessionStore(store), key, value);
+  if (!mirroringEnabled) {
+    pendingMirrors.set(key, value);
+    return;
+  }
   void mirrorToBackup(key, value);
 }
 
@@ -307,6 +331,86 @@ export async function hydrateDurableFromBackup(
     }
   }
   return restored;
+}
+
+async function flushPendingMirrors() {
+  const entries = [...pendingMirrors.entries()];
+  pendingMirrors.clear();
+  for (const [key, value] of entries) {
+    if (isEmptyDurableValue(value)) continue;
+    if (testBackup) {
+      const existing = testBackup.get(key) ?? null;
+      if (shouldRestoreFromBackup(value, existing)) continue;
+      testBackup.set(key, value);
+      continue;
+    }
+    await mirrorToBackup(key, value);
+  }
+}
+
+/**
+ * First load: restore from IndexedDB with mirroring paused, then allow backup
+ * mirrors. Idempotent. Marks hydrated when restore finishes (or times out).
+ */
+export function ensureDurableHydration(keys: readonly string[] = [], store?: Storage) {
+  if (!initialHydration) {
+    mirroringEnabled = false;
+    initialHydration = (async () => {
+      requestPersistentStorage();
+      const work = hydrateDurableFromBackup(keys, store);
+      let timedOut = false;
+      await Promise.race([
+        work.then(
+          () => {},
+          () => {},
+        ),
+        new Promise<void>((resolve) => {
+          setTimeout(() => {
+            timedOut = true;
+            resolve();
+          }, BOOT_TIMEOUT_MS);
+        }),
+      ]);
+
+      const finish = async (count: number) => {
+        mirroringEnabled = true;
+        await flushPendingMirrors().catch(() => {});
+        markDurableHydrated();
+        emitDurableStorage();
+        return count;
+      };
+
+      if (timedOut) {
+        void work
+          .catch(() => 0)
+          .then(async (late) => {
+            await finish(late);
+          });
+        markDurableHydrated();
+        emitDurableStorage();
+        return 0;
+      }
+
+      const count = await work.catch(() => 0);
+      return finish(count);
+    })().catch(async () => {
+      mirroringEnabled = true;
+      await flushPendingMirrors().catch(() => {});
+      markDurableHydrated();
+      return 0;
+    });
+  }
+  return initialHydration;
+}
+
+/** pageshow / visible: copy backup → local again without resetting boot. */
+export function rerunDurableHydration(keys: readonly string[] = [], store?: Storage) {
+  return hydrateDurableFromBackup(keys, store)
+    .then((count) => {
+      emitDurableStorage();
+      return count;
+    })
+    .catch(() => 0);
 }
 
 export function flushDurableBackup() {
