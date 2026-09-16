@@ -142,7 +142,7 @@ export function Guide() {
           </div>
         </div>
       ) : chosen ? (
-        <div className="home-stage flex h-full min-h-0 w-full flex-1 grow flex-col justify-start overflow-hidden rounded-2xl px-[var(--home-card-pad-x)] py-[var(--home-card-pad-y)]">
+        <div className="home-stage grid h-full min-h-0 w-full flex-1 grow grid-rows-[auto_minmax(0,1fr)_auto] gap-y-[var(--home-news-chat-gap)] overflow-hidden rounded-2xl px-[var(--home-card-pad-x)] py-[var(--home-card-pad-y)]">
           <div className="flex shrink-0 flex-col gap-[var(--home-stack-gap)]">
             <div className="flex items-center gap-2">
               <AvatarDisc avatar={chosen} className={chosenSize} priority />
@@ -171,7 +171,7 @@ export function Guide() {
             </nav>
           </div>
           <NeighborhoodNews onNewsChange={onNewsChange} />
-          <div className="mt-[var(--home-news-chat-gap)] flex shrink-0 flex-col">
+          <div className="flex shrink-0 flex-col">
             {needsPrompt && !unanswered && Boolean(avatarId) && welcomeGateOpen ? (
               <LocationPrompt />
             ) : (

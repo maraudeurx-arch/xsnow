@@ -213,8 +213,10 @@ body {
 .app-stage:has(#home-guide) > .app-stage-main {
   flex: none;
   align-self: stretch;
+  height: 100%;
   min-height: 0;
   margin-top: 0;
+  margin-bottom: 0;
   align-items: stretch;
   justify-content: flex-start;
   /* Accueil menu lives in the header card; clip here so the two home cards
@@ -225,8 +227,29 @@ body {
 .app-stage:has(#home-guide) > .app-stage-main > #home-guide {
   flex: 1 1 0%;
   width: 100%;
+  height: 100%;
   min-height: 0;
   max-height: 100%;
+}
+
+/*
+ * Chosen-avatar Accueil card: explicit grid so the middle row (Nouvelles)
+ * owns every leftover pixel down to the chat — no autumn-photo band between
+ * the green card and the sticky footer.
+ */
+.app-stage:has(#home-guide) > .app-stage-main > #home-guide > .home-stage:has([data-neighborhood-news]) {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  height: 100%;
+  min-height: 0;
+  align-content: stretch;
+}
+
+.app-stage:has(#home-guide) > .app-stage-main > #home-guide > .home-stage:has([data-neighborhood-news]) > [data-neighborhood-news] {
+  min-height: 0;
+  max-height: 100%;
+  height: 100%;
+  overflow: hidden;
 }
 
 .tap {
@@ -477,9 +500,9 @@ body {
 }
 
 /*
- * Mobile Accueil: grow the middle card toward the footer and pour leftover
- * height into Nouvelles du Quartier (headline list + partner slots). Compact
- * top chrome; chat stays shrink-0; footer links stay tappable outside the card.
+ * Mobile Accueil: middle card is a 3-row grid (chrome / Nouvelles / chat) that
+ * fills down to the footer. Leftover height pours into Nouvelles (headlines +
+ * partner slots). Compact top chrome; chat stays row 3; footer stays usable.
  */
 @media (max-width: 639px) {
   .app-stage:has(#home-guide) > .brand-banner h1 {
@@ -500,48 +523,45 @@ body {
     margin-top: 0.08rem;
   }
 
-  .app-stage:has(#home-guide) > .app-stage-main > #home-guide {
+  .app-stage:has(#home-guide) > .app-stage-main > #home-guide > .home-stage:has([data-neighborhood-news]) {
+    flex: none;
     height: 100%;
-  }
-
-  .app-stage:has(#home-guide) > .app-stage-main > #home-guide > .home-stage {
-    flex: 1 1 0%;
-    height: 100%;
-    min-height: 100%;
+    min-height: 0;
   }
 
   .app-stage:has(#home-guide) [data-neighborhood-news] {
     flex: 1 1 0%;
-    /* Soft floor; flex-grow fills leftover so the green card meets chat. */
-    min-height: max(20rem, 44dvh);
+    align-self: stretch;
+    /* Clearly taller than #72 floors — leftover still flex-grows to the chat. */
+    min-height: max(22rem, 48dvh);
   }
 
   .app-stage:has(#home-guide) [data-neighborhood-news] [data-news-body] {
     flex: 1 1 0%;
-    min-height: max(14rem, 28dvh);
+    min-height: max(16rem, 34dvh);
   }
 
-  /* Headline list / loading spacer is the flex-grow inventory inside the card. */
+  /* Headline list / loading spacer is the flex-grow inventory inside the green card. */
   .app-stage:has(#home-guide) [data-neighborhood-news] [data-news-list],
   .app-stage:has(#home-guide) [data-neighborhood-news] [data-news-spacer] {
     flex: 1 1 0%;
-    min-height: max(12rem, 22dvh);
+    min-height: max(14rem, 28dvh);
   }
 }
 
 /* Tall mobile: push Nouvelles harder into the card→footer inventory. */
 @media (max-width: 639px) and (min-height: 740px) {
   .app-stage:has(#home-guide) [data-neighborhood-news] {
-    min-height: max(22rem, 50dvh);
+    min-height: max(25rem, 55dvh);
   }
 
   .app-stage:has(#home-guide) [data-neighborhood-news] [data-news-body] {
-    min-height: max(16rem, 32dvh);
+    min-height: max(18rem, 38dvh);
   }
 
   .app-stage:has(#home-guide) [data-neighborhood-news] [data-news-list],
   .app-stage:has(#home-guide) [data-neighborhood-news] [data-news-spacer] {
-    min-height: max(14rem, 26dvh);
+    min-height: max(16rem, 32dvh);
   }
 }
 
