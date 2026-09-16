@@ -13,7 +13,12 @@ export async function skipConsent(page: Page) {
 }
 
 /** Never POST e2e ideas/registrations to the production Worker (no live email). */
-export async function stubIdeaInbox(page: Page, inbox: "sent" | "failed" = "sent") {
+export async function stubIdeaInbox(
+  page: Page,
+  inbox: "sent" | "failed" = "sent",
+  options: { delayMs?: number } = {},
+) {
+  const delayMs = options.delayMs ?? 0;
   const cors = {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Headers": "Content-Type, Authorization",
@@ -28,6 +33,7 @@ export async function stubIdeaInbox(page: Page, inbox: "sent" | "failed" = "sent
       return;
     }
     if (method === "POST") {
+      if (delayMs) await new Promise((resolve) => setTimeout(resolve, delayMs));
       const emailed = inbox === "sent";
       await route.fulfill({
         status: emailed ? 200 : 503,

@@ -106,6 +106,7 @@ export function IdeasBoard() {
 
   async function onSubmit(event: FormEvent) {
     event.preventDefault();
+    if (busy) return;
     const issues = ideaFormIssues(form);
     if (issues.length) {
       setError(true);
@@ -122,16 +123,13 @@ export function IdeasBoard() {
     setInbox("local");
     setReceived(true);
     setBusy(true);
-    try {
-      await sendInbox(idea);
-    } finally {
-      setBusy(false);
-    }
+    void sendInbox(idea).finally(() => setBusy(false));
   }
 
   function addAnother() {
     focusAfterReset.current = true;
     setReceived(false);
+    setBusy(false);
     setForm(emptyIdeaForm());
     setError(false);
     setInbox("local");
