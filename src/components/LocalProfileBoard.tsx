@@ -36,12 +36,6 @@ export function LocalProfileBoard() {
     setOpen(true);
   }
 
-  function openForm() {
-    setError("");
-    setForm(profile ? inputFromProfile(profile) : emptyProfileInput());
-    setOpen(true);
-  }
-
   function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const issues = profileFormIssues(form);
