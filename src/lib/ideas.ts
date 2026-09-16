@@ -34,7 +34,7 @@ export type CommunityIdea = {
   neighborhood: string;
   createdAt: string;
   updatedAt: string;
-  /** Optional copy to the owner Worker inbox. Never name / email / OPC number. */
+  /** Optional copy emailed to the owner. Never last name / phone. */
   inbox?: IdeaInboxState;
 };
 

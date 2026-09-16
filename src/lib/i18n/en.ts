@@ -173,7 +173,7 @@ export const en: Messages = {
         },
         {
           heading: "What we collect",
-          body: "On this device (localStorage): language, avatar, listings you write, your consents, and if you register: first name, last name, email, phone and a local OPC-XXXX number — nothing is sent to a profile server. If you allow location: city + coordinates for the city label — no continuous tracking. If you allow stats: anonymous events to a Cloudflare Worker (D1): session, language, city/country if location is also allowed, short monetization-idea snippets (emails and GPS stripped). If you send an idea in Your ideas: a sanitized copy (sentence, city, date — no name, email, phone, or OPC number) goes to the owner inbox (same Worker / D1) so they can decide what to build; this does not depend on stats consent. Avatar chat sends your messages to the Worker for a reply. No third-party ads.",
+          body: "On this device (localStorage): language, avatar, listings you write, your consents, and if you register: first name, last name, email, phone and a local OPC-XXXX number — no profile server. If you register, a notice (first name, OPC number, email) goes to opencommunity.opc@gmail.com. If you allow location: city + coordinates for the city label — no continuous tracking. If you allow stats: anonymous events to a Cloudflare Worker (D1): session, language, city/country if location is also allowed, short monetization-idea snippets (emails and GPS stripped). If you send an idea in Your ideas: a sanitized email (sentence, city, date, OPC number if registered — no phone) goes to opencommunity.opc@gmail.com so they can decide what to build; this does not depend on stats consent. Avatar chat sends your messages to the Worker for a reply. No third-party ads.",
         },
         {
           heading: "Why",
@@ -193,7 +193,7 @@ export const en: Messages = {
         },
         {
           heading: "Personal listings",
-          body: "Your offers (My services), requests (In demand), ideas (Your ideas) and share texts stay on this device. This is not a global social feed. A sanitized copy of a submitted idea goes to the owner inbox; other visitors do not see it. A link you copy yourself can show an offer to the person who opens it. For something to appear for everyone, GOV + owner must approve it, then it ships in a numbered release (public catalog).",
+          body: "Your offers (My services), requests (In demand), ideas (Your ideas) and share texts stay on this device. This is not a global social feed. A sanitized copy of a submitted idea is emailed to opencommunity.opc@gmail.com; other visitors do not see it. A link you copy yourself can show an offer to the person who opens it. For something to appear for everyone, GOV + owner must approve it, then it ships in a numbered release (public catalog).",
         },
       ],
     },
@@ -292,7 +292,7 @@ export const en: Messages = {
       sections: [
         {
           heading: "Visitor data",
-          body: "Ideas, chat, share text, and offer notes are treated as untrusted plain text. They never become executed HTML, never become Git, and never become an uploaded file. This MVP has no file, image, or attachment uploads. Personal offers stay on the device. Ideas stay on the device too; a sanitized copy (sentence, city, date) may go to the Worker owner inbox, never a visitor account.",
+          body: "Ideas, chat, share text, and offer notes are treated as untrusted plain text. They never become executed HTML, never become Git, and never become an uploaded file. This MVP has no file, image, or attachment uploads. Personal offers stay on the device. Ideas stay on the device too; a sanitized copy (sentence, city, date) is emailed to opencommunity.opc@gmail.com, never a visitor account.",
         },
         {
           heading: "Sanitization",
@@ -454,10 +454,10 @@ export const en: Messages = {
       "{placeName} / {community} — {slogan} Our proximity and spirit of mutual aid is the guarantee of our success.",
     versionLabel: "Version",
     deviceLocalNote:
-      "Your offers, requests, ideas, share texts, registration (first name, last name, email, phone, OPC-XXXX number), and Interac/PayPal details stay on this device. A sanitized copy of an idea (sentence, city, date — not your contact details) may go to the owner inbox. Nothing personal appears for another visitor until GOV + owner approve a numbered public release (public catalog).",
+      "Your offers, requests, ideas, share texts, registration (first name, last name, email, phone, OPC-XXXX number), and Interac/PayPal details stay on this device. A sanitized copy of an idea (sentence, city, date, OPC number if registered — not your contact details) may be emailed to opencommunity.opc@gmail.com. Nothing personal appears for another visitor until GOV + owner approve a numbered public release (public catalog).",
     releaseNotesTitle: "Release notes",
     releaseNotesBody:
-      "0.3.3 — Your ideas: clearer local wall, and a sanitized copy to the owner Worker inbox (POST /ideas). Politzer compiles via GET /ideas?secret= or /proprietaire/idees. OPC-XXXX registration stays local. Public catalog is still empty.",
+      "0.3.3 — Your ideas: on-device confirmation, then a sanitized email to opencommunity.opc@gmail.com (Worker POST /ideas, Resend). Registration: optional POST /register notice. OPC-XXXX stays local. Public catalog is still empty.",
     language: "Language",
     comingSoon: "Notifications and display season will land here.",
     locationConsent: "Location",
@@ -861,7 +861,7 @@ export const en: Messages = {
     cta: "Sign up",
     ctaAria: "Open the registration form",
     title: "Register on this device",
-    hint: "First name, last name, email and phone stay on this device. No password. Nothing is sent to a profile server.",
+    hint: "First name, last name, email and phone stay on this device. No password. No profile server. A notice (first name, OPC number, email) goes to opencommunity.opc@gmail.com.",
     firstName: "First name",
     lastName: "Last name",
     email: "Email",
@@ -919,19 +919,19 @@ export const en: Messages = {
     neighborhoodPh: "Hull, Aylmer, Plateau…",
     submit: "Send the idea",
     submitHint:
-      "Your idea stays on this device. A copy (sentence, city, date — not your name, email, or OPC number) goes to the owner inbox so they can decide what to build next. This is not a server account.",
+      "Your idea stays on this device. Send also tries an email (sentence, city, date, OPC number if you signed up — not your phone) to opencommunity.opc@gmail.com, so Politzer can decide what to build. Offline: the idea stays here.",
     registerHint: "Local sign-up (OPC number) stays on this device:",
     registerLink: "Sign up",
     registeredHint: "Local number on this device:",
     thankYou: "Idea received",
     thankYouBody:
-      "Thank you. Your idea is saved on this device. Other phones do not see it until GOV + owner approve it in a numbered release. A sanitized copy (sentence, city, date) goes to the owner inbox.",
+      "Thank you. Your idea is saved on this device. A sanitized email goes to opencommunity.opc@gmail.com. Other phones do not see it until GOV + owner approve it in a numbered release.",
     wallTitle: "Idea wall (this device)",
     wallHint:
-      "Your ideas stay here. They do not appear on another phone. The owner compiles received copies separately, to decide what to build.",
+      "Your ideas stay here. They do not appear on another phone. Politzer receives them by email to decide what to build.",
     wallEmpty: "No idea here yet. The first one is often the most useful.",
-    inboxSent: "Copy sent to the owner inbox.",
-    inboxFailed: "Saved here. The owner copy could not be sent (network).",
+    inboxSent: "Email sent to opencommunity.opc@gmail.com.",
+    inboxFailed: "Saved here. The owner email could not be sent (network).",
     retryInbox: "Resend to the owner",
     editIdea: "Edit",
     share: "Text to share",
@@ -948,7 +948,7 @@ export const en: Messages = {
   ownerIdeas: {
     title: "Idea inbox",
     lead: "Compilation for Politzer. Secret required. No idea is invented.",
-    how: "Visitors send from Your ideas. Here you read the text, city, and date. No name, email, or OPC number. You can also open the Worker: GET /ideas?secret=… (HTML) or &format=json. Set the secret with wrangler secret put IDEAS_OWNER_SECRET, then redeploy the Worker. Do not share the URL.",
+    how: "The real inbox is email to opencommunity.opc@gmail.com (Resend, secret RESEND_API_KEY). This page also compiles GET /ideas?secret=… if IDEAS_OWNER_SECRET is set. No idea is invented.",
     secretLabel: "Owner secret",
     secretPh: "Paste IDEAS_OWNER_SECRET",
     open: "Open the inbox",

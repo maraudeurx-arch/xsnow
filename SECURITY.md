@@ -6,7 +6,7 @@ Visitor ideas, chat, share text, offer notes, and monetization suggestions are *
 
 ## Personal data stays on-device
 
-Mes services offers, En demande requests, Interac/PayPal, share blurbs, chat, and the optional registration profile (first name, last name, email, phone, `OPC-XXXX` member number) are **device-local**. Vos idées stay on-device **and** a sanitized copy (text, city, timestamp — never those profile fields) may be POSTed to the Worker owner inbox. There is no remote profile API in this MVP. A fresh browser starts empty: the client does **not** ship the owner’s Gatineau car loan (or any other personal listing) as default content.
+Mes services offers, En demande requests, Interac/PayPal, share blurbs, chat, and the optional registration profile (first name, last name, email, phone, `OPC-XXXX` member number) are **device-local**. Vos idées stay on-device **and** a sanitized copy (text, city, timestamp, optional OPC id — never last name or phone) is emailed to **opencommunity.opc@gmail.com** via the Worker (`POST /ideas` → Resend). Registration may also send a notice (`POST /register`: first name, OPC id, visitor email, city). There is no remote profile API in this MVP. A fresh browser starts empty: the client does **not** ship the owner’s Gatineau car loan (or any other personal listing) as default content.
 
 Community-wide features/offers/ideas appear for everyone only after **GOV + owner approval**, then as a numbered app release (`public/catalog/<version>.json`, currently empty for soft launch). A link a visitor copies themselves can show that one offer to the person who opens it — that is opt-in share, not a shared account.
 
@@ -14,8 +14,8 @@ See **À propos OPC** for the visible version number (semver) and release notes.
 
 ## What visitors cannot do
 
-- **No path to the GitHub repo.** Submitting *Vos idées*, chatting with the avatar, or sharing an offer only writes to the visitor’s `localStorage` and, for Vos idées, a sanitized copy (text, city, timestamp — no name/email/OPC number) to the Worker `/ideas` inbox. If they consented to stats, anonymous `/stats` events may also be sent. Nothing auto-opens a pull request, commit, or GitHub issue.
-- **GOV + owner review only.** Product changes land in git after a human reviews a PR. Visitor suggestions are never merged automatically. The owner compiles `/ideas` behind `IDEAS_OWNER_SECRET` (query param or `Authorization: Bearer`) to decide what to build next.
+- **No path to the GitHub repo.** Submitting *Vos idées*, chatting with the avatar, or sharing an offer only writes to the visitor’s `localStorage` and, for Vos idées, a sanitized copy (text, city, timestamp, optional OPC id — no last name/phone) emailed to opencommunity.opc@gmail.com via Worker `POST /ideas`. If they consented to stats, anonymous `/stats` events may also be sent. Nothing auto-opens a pull request, commit, or GitHub issue.
+- **GOV + owner review only.** Product changes land in git after a human reviews a PR. Visitor suggestions are never merged automatically. The owner’s live inbox is Gmail; optional compile is `GET /ideas` behind `IDEAS_OWNER_SECRET`.
 - **No file uploads.** This MVP has no visitor file, image, or attachment input. Pasted “ideas” that look like binaries, PEM blocks, or long base64 blobs are neutralized to `[removed-binary]`.
 - **No HTML execution.** User strings are React text nodes / `textarea` values (`textContent`), never `dangerouslySetInnerHTML`. Idea-wall URLs are **not** auto-linked. `javascript:`, `data:`, `vbscript:`, and `file:` schemes are stripped on input and again before analytics POST.
 
@@ -23,13 +23,14 @@ See **À propos OPC** for the visible version number (semver) and release notes.
 
 | Surface | Stored as | Emails | Length |
 | --- | --- | --- | --- |
-| Vos idées | Plain text in `localStorage` + optional Worker inbox | Redacted | 500 |
-| Owner inbox `POST /ideas` | Plain text in D1 (`community_idea`) | Redacted | 500 |
+| Vos idées | Plain text in `localStorage` + email to owner Gmail | Redacted in idea body | 500 |
+| Owner inbox `POST /ideas` | Plain text email (Resend) + optional D1 `community_idea` | Redacted in idea body | 500 |
+| Registration notice `POST /register` | Email only (first name, OPC id, visitor email, city) | Visitor email kept | name 40 / email 80 |
 | Avatar chat | Plain text in the session; worker JSON | Kept (Interac talk) | 4000 |
 | Share / invite text | Plain text (clipboard + `localStorage`) | Kept (site URLs) | 2500 |
 | Offer notes / titles | Plain text | Notes kept; neighborhood redacted | 800 / 80 |
 | Interac / PayPal | Contact string or `https://www.paypal.me/…` handle | Interac emails kept | 80 |
-| Local registration | Plain text in `localStorage` (`xsnow.localProfile`) | Kept on-device only | name 40 / email 80 / phone 24 |
+| Local registration | Plain text in `localStorage` (`xsnow.localProfile`); optional Worker notice | Kept on-device; visitor email may be mailed to the owner | name 40 / email 80 / phone 24 |
 | `idea_submit` / `monetize_suggestion` | Plain text in D1 `suggestion` | Redacted | 80 / 280 |
 
 Analytics also drops GPS-looking strings and forbidden keys (`lat`, `email`, `name`, …). The stats worker rejects non-JSON `Content-Type`, bodies over 16 KiB, and unknown event types.

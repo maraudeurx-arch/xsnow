@@ -2,12 +2,13 @@
  * Cross-device owner inbox for Vos idées.
  *
  * Visitors still persist ideas on-device (localStorage). A sanitized copy
- * (plain text + city + timestamp — never name, email, phone, or OPC-XXXX)
- * can be POSTed to the Cloudflare Worker. There is no visitor account.
- * The owner reads GET /ideas behind IDEAS_OWNER_SECRET.
+ * (plain text + city + timestamp + optional OPC id — never name, visitor phone)
+ * is POSTed to the Cloudflare Worker, which emails opencommunity.opc@gmail.com.
+ * The owner can also read GET /ideas behind IDEAS_OWNER_SECRET.
  */
 
 import { IDEA_TEXT_MAX, IDEA_TEXT_MIN, clipIdeaText, clipNeighborhood } from "./ideas.ts";
+import { clipOpcId } from "./owner-mail.ts";
 import { sanitizeRecordId } from "./sanitize.ts";
 
 export const IDEA_EVENT_TYPE = "community_idea";
@@ -22,6 +23,7 @@ export type IdeaInboxInput = {
   id: string;
   text: string;
   city: string;
+  opcId: string;
 };
 
 export type StoredInboxIdea = {
@@ -54,6 +56,11 @@ export function ideasInboxEndpoint(base?: string) {
   return `${String(raw).replace(/\/+$/, "")}/ideas`;
 }
 
+export function registerNoticeEndpoint(base?: string) {
+  const ideas = ideasInboxEndpoint(base);
+  return ideas.replace(/\/ideas$/, "/register");
+}
+
 export function clipInboxCity(value: string) {
   return clipNeighborhood(value).slice(0, IDEA_INBOX_CITY_MAX);
 }
@@ -66,7 +73,8 @@ export function parseIdeaInboxInput(raw: unknown): IdeaInboxInput | null {
   if (text.length > IDEA_TEXT_MAX) return null;
   const city = typeof record.city === "string" ? clipInboxCity(record.city) : "";
   const id = sanitizeRecordId(record.id) || "";
-  return { id, text, city };
+  const opcId = clipOpcId(record.opcId);
+  return { id, text, city, opcId };
 }
 
 export function compileIdeasByCity(ideas: Array<{ city: string }>): IdeaCityCompile[] {
@@ -97,7 +105,7 @@ function isInboxListPayload(raw: unknown): raw is IdeaInboxListPayload {
 }
 
 export async function postIdeaToInbox(
-  input: { id: string; text: string; city: string },
+  input: { id: string; text: string; city: string; opcId?: string },
   fetchImpl: typeof fetch = fetch,
 ): Promise<IdeaInboxPostResult> {
   const parsed = parseIdeaInboxInput(input);
@@ -122,8 +130,33 @@ export async function postIdeaToInbox(
       return "failed";
     }
     if (!payload || typeof payload !== "object") return "failed";
-    const record = payload as { ok?: unknown };
-    return record.ok === true ? "sent" : "failed";
+    const record = payload as { ok?: unknown; emailed?: unknown };
+    return record.ok === true && record.emailed === true ? "sent" : "failed";
+  } catch {
+    return "failed";
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+export async function postRegisterNotice(
+  input: { firstName: string; opcId: string; email: string; city: string },
+  fetchImpl: typeof fetch = fetch,
+): Promise<IdeaInboxPostResult> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), IDEA_INBOX_POST_TIMEOUT_MS);
+  try {
+    const response = await fetchImpl(registerNoticeEndpoint(), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(input),
+      keepalive: true,
+      credentials: "omit",
+      signal: controller.signal,
+    });
+    if (!response.ok) return "failed";
+    const payload = (await response.json()) as { ok?: unknown; emailed?: unknown };
+    return payload.ok === true && payload.emailed === true ? "sent" : "failed";
   } catch {
     return "failed";
   } finally {

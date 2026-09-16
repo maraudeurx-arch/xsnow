@@ -152,9 +152,9 @@ describe("vos idees copy", () => {
     assert.equal(fr.register.shareEdit, "Modifier");
     assert.equal(fr.register.shareCopy, "Copier");
     assert.match(fr.legal.privacy.sections[1].body, /OPC-XXXX/);
-    assert.match(fr.legal.privacy.sections[1].body, /boîte du propriétaire/);
-    assert.match(en.legal.privacy.sections[1].body, /owner inbox/);
-    assert.match(es.legal.privacy.sections[1].body, /bandeja del propietario/);
+    assert.match(fr.legal.privacy.sections[1].body, /opencommunity\.opc@gmail\.com/);
+    assert.match(en.legal.privacy.sections[1].body, /opencommunity\.opc@gmail\.com/);
+    assert.match(es.legal.privacy.sections[1].body, /opencommunity\.opc@gmail\.com/);
     assert.match(en.legal.privacy.sections[1].body, /profile server/);
     assert.match(es.legal.privacy.sections[1].body, /servidor de perfiles/);
     assert.deepEqual(Object.keys(en.feedback), Object.keys(fr.feedback));
@@ -172,7 +172,8 @@ describe("vos idees copy", () => {
     assert.equal(fr.ideas.submit, "Envoyer l’idée");
     assert.equal(en.ideas.submit, "Send the idea");
     assert.equal(es.ideas.submit, "Enviar la idea");
-    assert.match(fr.ideas.submitHint, /boîte du propriétaire/);
+    assert.match(fr.ideas.submitHint, /opencommunity\.opc@gmail\.com/);
+    assert.match(fr.ideas.thankYouBody, /opencommunity\.opc@gmail\.com/);
     assert.equal(fr.ownerIdeas.empty.includes("invent"), true);
     assert.equal(fr.ideas.thankYou, "Idée bien reçue");
     assert.equal(en.ideas.thankYou, "Idea received");

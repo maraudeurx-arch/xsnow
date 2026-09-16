@@ -2,6 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import { useI18n } from "@/lib/i18n/locale";
+import { postRegisterNotice } from "@/lib/idea-inbox";
 import {
   EMAIL_TEXT_MAX,
   NAME_TEXT_MAX,
@@ -13,6 +14,7 @@ import {
   type LocalProfileInput,
 } from "@/lib/local-profile";
 import { useLocalProfile } from "@/lib/useLocalProfile";
+import { usePlace } from "@/lib/place";
 
 const fieldClass =
   "tap w-full rounded-2xl border border-white/15 bg-white/5 px-3 py-2 text-sm font-normal text-snow outline-none focus:border-gold";
@@ -23,6 +25,7 @@ const blueCtaClass =
 export function LocalProfileBoard() {
   const { m } = useI18n();
   const copy = m.register;
+  const { city } = usePlace();
   const [profile, setProfile] = useLocalProfile();
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState<LocalProfileInput>(emptyProfileInput);
@@ -49,6 +52,12 @@ export function LocalProfileBoard() {
     setProfile(next);
     setOpen(false);
     setError("");
+    void postRegisterNotice({
+      firstName: next.firstName,
+      opcId: next.id,
+      email: next.email,
+      city: city || "",
+    });
   }
 
   const errorText =
