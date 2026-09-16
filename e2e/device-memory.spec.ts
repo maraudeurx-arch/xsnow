@@ -63,9 +63,9 @@ test.describe("durable on-device memory", () => {
     await expect(page.locator("[data-header-profile]")).toHaveText("M.T.");
 
     await page.goto("./vos-idees/");
+    await page.getByRole("button", { name: "Vos idées" }).click();
     await page.getByLabel("Ton idée").fill(idea);
-    await page.getByRole("button", { name: /Mains/ }).click();
-    await page.getByRole("button", { name: "Envoyer l’idée" }).click();
+    await page.getByRole("button", { name: "Soumettre" }).click();
     await expect(page.getByText(idea).first()).toBeVisible();
 
     await page.reload();

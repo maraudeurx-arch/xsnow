@@ -391,8 +391,8 @@ export const fr = {
       lead: "Proximité, entraide et visibilité locale — Monétisé Vous!",
     },
     vosIdees: {
-      title: "Vos idées",
-      lead: "S’impliquer : Tête, Cœur, Mains — une idée en moins de 30 secondes.",
+      title: "",
+      lead: "",
     },
   },
   profile: {
@@ -842,6 +842,7 @@ export const fr = {
     localOnly: "Sans stats, ça reste sur cet appareil.",
   },
   ideas: {
+    openCta: "Vos idées",
     textLabel: "Ton idée",
     textPh: "Ex. Déneiger les allées du quartier le samedi",
     textRequired: "Écris ton idée en une phrase.",
@@ -860,7 +861,7 @@ export const fr = {
     neighborhoodLabel: "Quartier (optionnel)",
     neighborhoodShare: "Quartier",
     neighborhoodPh: "Hull, Aylmer, Plateau…",
-    submit: "Envoyer l’idée",
+    submit: "Soumettre",
     thankYou: "Merci — tu fais partie d’ici.",
     thankYouBody:
       "Ton idée est sur le mur de cet appareil. Les autres téléphones ne la voient pas tant que GOV + propriétaire ne l’approuvent pas dans une version numérotée. Tête, Cœur, Mains : c’est comme ça qu’Open Community avance. Partage-la si tu veux, ou ajoute-en une autre.",

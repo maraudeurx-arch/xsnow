@@ -19,11 +19,11 @@ import { en } from "./i18n/en.ts";
 import { es } from "./i18n/es.ts";
 
 describe("idea form", () => {
-  it("requires text and at least one involvement", () => {
-    assert.deepEqual(ideaFormIssues(emptyIdeaForm()), ["text", "involvement"]);
+  it("requires text only (involvement optional on soft-launch)", () => {
+    assert.deepEqual(ideaFormIssues(emptyIdeaForm()), ["text"]);
     assert.deepEqual(
       ideaFormIssues({ text: "Déneiger les allées", involvement: [], hoursPerWeek: "", neighborhood: "" }),
-      ["involvement"],
+      [],
     );
     assert.deepEqual(
       ideaFormIssues({
@@ -54,7 +54,13 @@ describe("idea form", () => {
     });
     assert.equal(ok?.text, "Un café de réparation vélo");
     assert.deepEqual(ok?.involvement, ["tete", "coeur"]);
-    assert.equal(parseStoredIdea({ text: "ok", involvement: [] }), null);
+    const textOnly = parseStoredIdea({
+      id: "idea-text",
+      text: "Une idée sans tag",
+      involvement: [],
+    });
+    assert.equal(textOnly?.text, "Une idée sans tag");
+    assert.deepEqual(textOnly?.involvement, []);
     assert.equal(parseStoredIdea({ involvement: ["tete"] }), null);
   });
 

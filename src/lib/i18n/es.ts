@@ -392,8 +392,8 @@ export const es: Messages = {
       lead: "Proximidad, ayuda mutua y visibilidad local — ¡Monetízate!",
     },
     vosIdees: {
-      title: "Tus ideas",
-      lead: "Implicarte: Cabeza, Corazón, Manos — una idea en menos de 30 segundos.",
+      title: "",
+      lead: "",
     },
   },
   profile: {
@@ -853,6 +853,7 @@ export const es: Messages = {
     localOnly: "Sin estadísticas, esto se queda en este aparato.",
   },
   ideas: {
+    openCta: "Tus ideas",
     textLabel: "Tu idea",
     textPh: "Ej. Palear las entradas del barrio el sábado",
     textRequired: "Escribe tu idea en una frase.",
@@ -871,7 +872,7 @@ export const es: Messages = {
     neighborhoodLabel: "Barrio (opcional)",
     neighborhoodShare: "Barrio",
     neighborhoodPh: "Hull, Aylmer, Plateau…",
-    submit: "Enviar la idea",
+    submit: "Enviar",
     thankYou: "Gracias — formas parte de aquí.",
     thankYouBody:
       "Tu idea está en el muro de este aparato. Otros teléfonos no la ven hasta que GOV + el propietario la aprueben en una versión numerada. Cabeza, Corazón, Manos: así avanza Open Community. Compártela si quieres, o añade otra.",

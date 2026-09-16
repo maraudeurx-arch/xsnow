@@ -119,12 +119,11 @@ export function toggleInvolvement(current: Involvement[], key: Involvement): Inv
   return current.includes(key) ? current.filter((item) => item !== key) : [...current, key];
 }
 
-export type IdeaFormIssue = "text" | "involvement";
+export type IdeaFormIssue = "text";
 
 export function ideaFormIssues(form: IdeaFormInput): IdeaFormIssue[] {
   const issues: IdeaFormIssue[] = [];
   if (clipIdeaText(form.text).length < IDEA_TEXT_MIN) issues.push("text");
-  if (!parseInvolvement(form.involvement).length) issues.push("involvement");
   return issues;
 }
 
@@ -156,7 +155,6 @@ export function parseStoredIdea(raw: unknown): CommunityIdea | null {
   const text = typeof record.text === "string" ? clipIdeaText(record.text) : "";
   if (text.length < IDEA_TEXT_MIN) return null;
   const involvement = parseInvolvement(record.involvement);
-  if (!involvement.length) return null;
   const id = sanitizeRecordId(record.id) || uid();
   const createdAt =
     typeof record.createdAt === "string" && record.createdAt ? record.createdAt : new Date().toISOString();

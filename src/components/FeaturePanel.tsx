@@ -25,13 +25,15 @@ export function FeaturePanel({
           <HomeBackLink />
         </div>
       ) : null}
-      <h2
-        className={`font-[family-name:var(--font-fraunces)] text-balance font-extrabold text-snow ${
-          compact ? "text-xl" : "text-2xl"
-        }`}
-      >
-        {title}
-      </h2>
+      {title ? (
+        <h2
+          className={`font-[family-name:var(--font-fraunces)] text-balance font-extrabold text-snow ${
+            compact ? "text-xl" : "text-2xl"
+          }`}
+        >
+          {title}
+        </h2>
+      ) : null}
       {lead ? (
         <p
           className={`mx-auto max-w-md text-sm leading-relaxed text-pretty text-ice/85 ${
