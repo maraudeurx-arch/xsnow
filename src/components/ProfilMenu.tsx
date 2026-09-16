@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { headerNavBtnClass } from "@/components/AccueilMenu";
+import { InstallGuide } from "@/components/InstallGuide";
 import { LanguageSwitch } from "@/components/LanguageSwitch";
 import { LocalProfileBoard } from "@/components/LocalProfileBoard";
 import { useI18n } from "@/lib/i18n/locale";
@@ -30,10 +31,11 @@ export function ProfilMenu() {
             {m.profile[item.key]}
           </Link>
         ))}
-        <div className="mt-2 rounded-2xl border border-white/10 bg-white/[0.04] p-3">
-          <LanguageSwitch />
-        </div>
       </nav>
+      <InstallGuide />
+      <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-3">
+        <LanguageSwitch />
+      </div>
     </div>
   );
 }

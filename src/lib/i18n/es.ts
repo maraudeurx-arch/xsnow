@@ -45,6 +45,15 @@ export const es: Messages = {
     tipAndroid:
       "En Android (Chrome): menú ⋮ → Instalar la app, o Añadir a pantalla de inicio. Luego la app se abre como un icono.",
     dismiss: "Entendido",
+    profileTitle: "Poner OPC en la pantalla de inicio",
+    profileLead:
+      "Open Community es una app web, no está en el App Store. En iPhone, abre el enlace en Safari y añádela a la pantalla de inicio para abrirla como un icono.",
+    iphoneHeading: "iPhone (Safari)",
+    iphoneSteps: [
+      "Abre Open Community en Safari (el navegador de Apple — no Chrome).",
+      "Toca Compartir — el cuadrado con la flecha hacia arriba, abajo en la pantalla.",
+      "Desplázate y elige Añadir a pantalla de inicio, luego Añadir.",
+    ],
   },
   guide: {
     pickAvatar: "Elige tu avatar",

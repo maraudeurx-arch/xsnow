@@ -12,6 +12,16 @@ test.describe("local registration on Mon profil", () => {
     await expect(hub.getByRole("link", { name: "Mes infos" })).toHaveCount(0);
     await expect(hub.getByRole("link", { name: "Réglages" })).toBeVisible();
     await expect(hub.getByRole("link", { name: "À propos de Open Community (OPC)" })).toBeVisible();
+
+    const installGuide = page.locator("[data-install-guide]");
+    await expect(installGuide).toBeVisible();
+    await expect(installGuide.getByRole("heading", { name: "Mettre OPC sur l’écran d’accueil" })).toBeVisible();
+    await expect(installGuide.getByText(/Ouvre Open Community dans Safari/)).toBeVisible();
+    await expect(installGuide.getByText(/Partager/)).toBeVisible();
+    await expect(installGuide.getByText(/Sur l’écran d’accueil/)).toBeVisible();
+    await expect(installGuide.getByText(/Android \(Chrome\)/)).toBeVisible();
+    await expect(installGuide.getByText(/Installer l’app/)).toBeVisible();
+    await expect(installGuide.getByRole("button", { name: "Compris" })).toHaveCount(0);
     await expect(hub.getByRole("link", { name: /Vos idées/ })).toHaveCount(0);
     await expect(hub.getByRole("link", { name: /Inviter d’autres/ })).toHaveCount(0);
     await expect(page.getByRole("button", { name: "Partager", exact: true })).toHaveCount(0);
@@ -56,6 +66,25 @@ test.describe("local registration on Mon profil", () => {
     await expect(page).toHaveURL(/\/xsnow\/?$/);
     await expect(page.locator("[data-header-profile]")).toHaveText("M.T.");
     await expect(page.getByRole("button", { name: /Connect/ })).toBeVisible();
+  });
+
+  test("always shows iPhone home-screen steps in FR, EN, and ES", async ({ page }) => {
+    await page.goto("./mon-profil/");
+    const guide = page.locator("[data-install-guide]");
+    await expect(guide.getByRole("heading", { name: "Mettre OPC sur l’écran d’accueil" })).toBeVisible();
+    await expect(guide.getByText(/Partager/)).toBeVisible();
+    await expect(guide.getByText(/Sur l’écran d’accueil/)).toBeVisible();
+
+    await page.getByRole("button", { name: "English" }).click();
+    await expect(guide.getByRole("heading", { name: "Put OPC on the Home Screen" })).toBeVisible();
+    await expect(guide.getByText(/Share/)).toBeVisible();
+    await expect(guide.getByText(/Add to Home Screen/)).toBeVisible();
+    await expect(guide.getByText(/Install app/)).toBeVisible();
+
+    await page.getByRole("button", { name: "Español" }).click();
+    await expect(guide.getByRole("heading", { name: "Poner OPC en la pantalla de inicio" })).toBeVisible();
+    await expect(guide.getByText(/Compartir/)).toBeVisible();
+    await expect(guide.getByText(/elige Añadir a pantalla de inicio/)).toBeVisible();
   });
 
   test("strips HTML from the name and never shows email in the header", async ({ page }) => {
