@@ -109,6 +109,10 @@ describe("postIdeaToInbox / fetchOwnerIdeaInbox", () => {
     assert.equal(body.city, "Aylmer");
     assert.equal(body.opcId, "OPC-7K3M");
     assert.equal(body.text.includes("<"), false);
+    assert.equal(calls[0]?.init.credentials, "omit");
+    const headers = new Headers(calls[0]?.init.headers);
+    assert.equal(headers.get("Content-Type"), "application/json");
+    assert.equal(headers.get("Authorization"), null);
   });
 
   it("treats ok without emailed as failed (honest if Resend is unset)", async () => {

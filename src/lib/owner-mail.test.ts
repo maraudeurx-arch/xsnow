@@ -40,6 +40,12 @@ describe("clipOpcId / parseRegisterNotice", () => {
   });
 });
 
+describe("owner inbox destination", () => {
+  it("hardcodes Politzer’s Gmail and never a visitor-controlled To", () => {
+    assert.equal(OPC_INBOX_TO, "opencommunity.opc@gmail.com");
+  });
+});
+
 describe("buildIdeaOwnerMail / buildRegisterOwnerMail", () => {
   it("addresses Politzer and keeps plain text only", () => {
     const mail = buildIdeaOwnerMail(

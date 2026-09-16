@@ -167,3 +167,23 @@ describe("Mon profil hub dedupes Accueil actions", () => {
     assert.match(aboutUi, /InfosPrivacyNote/);
   });
 });
+
+describe("Vos idées auto-emails Politzer without permission UX", () => {
+  it("POSTs /ideas on submit with no mailto, share sheet, Notification, or confirm", () => {
+    const ideas = readFileSync(join(srcDir, "components/features/IdeasBoard.tsx"), "utf8");
+    assert.match(ideas, /postIdeaToInbox/);
+    assert.match(ideas, /await sendInbox\(idea\)/);
+    assert.doesNotMatch(ideas, /mailto:/);
+    assert.doesNotMatch(ideas, /Notification/);
+    assert.doesNotMatch(ideas, /navigator\.share/);
+    assert.doesNotMatch(ideas, /window\.confirm|confirm\(/);
+    assert.doesNotMatch(ideas, /retryInbox|Renvoyer au propriétaire/);
+
+    const register = readFileSync(join(srcDir, "components/LocalProfileBoard.tsx"), "utf8");
+    assert.match(register, /postRegisterNotice/);
+    assert.doesNotMatch(register, /mailto:/);
+    assert.doesNotMatch(register, /Notification/);
+    assert.doesNotMatch(register, /navigator\.share/);
+    assert.doesNotMatch(register, /window\.confirm|confirm\(/);
+  });
+});
