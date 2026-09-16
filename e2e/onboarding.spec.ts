@@ -67,6 +67,8 @@ fresh.describe("new visitor onboarding order", () => {
     await expect(page.getByRole("button", { name: "Réécouter" })).toBeVisible();
     await expect(page.getByText("Position — optionnelle")).toHaveCount(0);
     await expect(page.getByRole("dialog")).toHaveCount(0);
+    await expect(page.getByRole("button", { name: "Compris" })).toHaveCount(0);
+    await expect(page.getByRole("note")).toHaveCount(0);
   });
 
   fresh("lets a new visitor read About version and contact without geo", async ({ page }) => {
