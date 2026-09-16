@@ -53,6 +53,7 @@ export const en: Messages = {
       "Open Open Community in Safari (Apple’s browser — not Chrome).",
       "Tap Share — the square with the arrow pointing up, at the bottom of the screen.",
       "Scroll and choose Add to Home Screen, then Add.",
+      "If an old icon opens a GitHub 404 page, delete it and add it again from Safari.",
     ],
   },
   guide: {

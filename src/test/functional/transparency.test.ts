@@ -9,6 +9,7 @@ import { es } from "../../lib/i18n/es.ts";
 import { fr } from "../../lib/i18n/fr.ts";
 import {
   ABOUT_HREF,
+  BASE_PATH,
   GITHUB_ISSUES_URL,
   GITHUB_REPO_URL,
   GITHUB_SECURITY_MD_URL,
@@ -17,6 +18,7 @@ import {
   OPC_PUBLIC_MAILTO,
   PRIVACY_HREF,
   PROOFS_HREF,
+  PWA_SCOPE,
   SECURITY_HREF,
   TERMS_HREF,
   TRUST_NAV,
@@ -24,6 +26,28 @@ import {
 
 const appDir = join(dirname(fileURLToPath(import.meta.url)), "../../app");
 const srcDir = join(dirname(fileURLToPath(import.meta.url)), "../..");
+const repoRoot = join(srcDir, "..");
+
+function assertHomeScreenLaunch(
+  data: {
+    start_url?: string;
+    scope?: string;
+    id?: string;
+    icons?: { src?: string }[];
+  },
+  label: string,
+) {
+  assert.equal(data.start_url, PWA_SCOPE, `${label} start_url`);
+  assert.equal(data.scope, PWA_SCOPE, `${label} scope`);
+  assert.equal(data.id, PWA_SCOPE, `${label} id`);
+  assert.notEqual(data.start_url, "/");
+  assert.notEqual(data.start_url, "https://maraudeurx-arch.github.io/");
+  assert.doesNotMatch(String(data.start_url), /\/xsnow\/xsnow/);
+  for (const icon of data.icons ?? []) {
+    assert.match(String(icon.src), new RegExp(`^${BASE_PATH}/`), `${label} icon ${icon.src}`);
+    assert.doesNotMatch(String(icon.src), /\/xsnow\/xsnow/);
+  }
+}
 
 function pageFile(href: string) {
   return join(appDir, href.replace(/^\//, ""), "page.tsx");
@@ -107,13 +131,42 @@ describe("transparency version and contact markers", () => {
 });
 
 describe("PWA manifest start URL", () => {
-  it("embeds /xsnow/ so Home Screen does not open github.io root", () => {
+  it("launches /xsnow/ in the manifest source and the built Pages artifact", () => {
+    assert.equal(PWA_SCOPE, "/xsnow/");
+    assert.equal(PWA_SCOPE, `${BASE_PATH}/`);
+    assert.notEqual(PWA_SCOPE, "/");
+
     const source = readFileSync(join(appDir, "manifest.ts"), "utf8");
     assert.match(source, /start_url: PWA_SCOPE/);
     assert.match(source, /scope: PWA_SCOPE/);
     assert.match(source, /id: PWA_SCOPE/);
+    assert.match(source, /src: assetUrl\("\/brand\/app-icon-/);
     assert.doesNotMatch(source, /start_url: "\/"/);
-    assert.match(readFileSync(join(srcDir, "lib/paths.ts"), "utf8"), /PWA_SCOPE = `\$\{BASE_PATH\}\/`/);
+    assert.doesNotMatch(source, /id: "\/"/);
+
+    const built = join(repoRoot, "out/manifest.webmanifest");
+    if (existsSync(built)) {
+      const json = JSON.parse(readFileSync(built, "utf8")) as {
+        start_url?: string;
+        scope?: string;
+        id?: string;
+        icons?: { src?: string }[];
+      };
+      assertHomeScreenLaunch(json, "out/manifest.webmanifest");
+    }
+
+    const layout = readFileSync(join(appDir, "layout.tsx"), "utf8");
+    assert.match(layout, /assetUrl\("\/apple-touch-icon\.png"\)/);
+    assert.doesNotMatch(layout, /url: "\/apple-touch-icon/);
+
+    const htmlPath = join(repoRoot, "out/index.html");
+    if (existsSync(htmlPath)) {
+      const html = readFileSync(htmlPath, "utf8");
+      assert.match(html, /href="\/xsnow\/manifest\.webmanifest"/);
+      assert.match(html, /href="\/xsnow\/apple-touch-icon\.png"/);
+      assert.doesNotMatch(html, /href="\/manifest\.webmanifest"/);
+      assert.doesNotMatch(html, /href="\/apple-touch-icon\.png"/);
+    }
   });
 });
 

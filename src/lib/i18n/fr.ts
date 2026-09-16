@@ -51,6 +51,7 @@ export const fr = {
       "Ouvre Open Community dans Safari (le navigateur d’Apple — pas Chrome).",
       "Touche Partager — le carré avec la flèche vers le haut, en bas de l’écran.",
       "Fais défiler et choisis Sur l’écran d’accueil, puis Ajouter.",
+      "Si une ancienne icône ouvre une page GitHub 404, supprime-la et ajoute-la de nouveau depuis Safari.",
     ],
   },
   guide: {

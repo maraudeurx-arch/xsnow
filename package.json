@@ -12,6 +12,7 @@
     "test:unit": "node --experimental-strip-types --test src/lib/*.test.ts",
     "test:functional": "node --experimental-strip-types --test src/test/**/*.test.ts",
     "test:e2e": "playwright test",
+    "assert:pwa": "node scripts/assert-pwa-export.mjs",
     "serve:static": "node scripts/serve-e2e.mjs"
   },
   "engines": {

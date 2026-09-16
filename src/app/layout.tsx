@@ -31,6 +31,7 @@ export const metadata: Metadata = {
       { url: assetUrl("/brand/app-icon-192.png"), sizes: "192x192", type: "image/png" },
       { url: assetUrl("/brand/app-icon-512.png"), sizes: "512x512", type: "image/png" },
     ],
+    // Must stay under /xsnow — a root /apple-touch-icon.png 404s on github.io.
     apple: [{ url: assetUrl("/apple-touch-icon.png"), sizes: "180x180", type: "image/png" }],
   },
   appleWebApp: {

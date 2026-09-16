@@ -302,14 +302,33 @@ test.describe("iOS empty-localStorage cold start", () => {
 });
 
 test.describe("PWA launch URL", () => {
-  test("manifest start_url stays under /xsnow/", async ({ request }) => {
+  test("manifest start_url stays under /xsnow/", async ({ page, request }) => {
     const response = await request.get("./manifest.webmanifest");
     expect(response.ok()).toBeTruthy();
-    const body = (await response.json()) as { start_url?: string; scope?: string; id?: string };
-    expect(body.start_url).toMatch(/\/xsnow\/?$/);
+    const body = (await response.json()) as {
+      start_url?: string;
+      scope?: string;
+      id?: string;
+      icons?: { src?: string }[];
+    };
+    expect(body.start_url).toBe("/xsnow/");
+    expect(body.scope).toBe("/xsnow/");
+    expect(body.id).toBe("/xsnow/");
     expect(body.start_url).not.toBe("/");
     expect(body.start_url).not.toMatch(/\/xsnow\/xsnow/);
-    expect(body.scope).toMatch(/\/xsnow\/?$/);
-    expect(body.id).toMatch(/\/xsnow\/?$/);
+    for (const icon of body.icons ?? []) {
+      expect(icon.src).toMatch(/^\/xsnow\//);
+      expect(icon.src).not.toMatch(/\/xsnow\/xsnow/);
+    }
+
+    await page.goto("./");
+    await expect(page.locator('link[rel="manifest"]')).toHaveAttribute(
+      "href",
+      "/xsnow/manifest.webmanifest",
+    );
+    await expect(page.locator('link[rel="apple-touch-icon"]')).toHaveAttribute(
+      "href",
+      "/xsnow/apple-touch-icon.png",
+    );
   });
 });

@@ -53,6 +53,7 @@ export const es: Messages = {
       "Abre Open Community en Safari (el navegador de Apple — no Chrome).",
       "Toca Compartir — el cuadrado con la flecha hacia arriba, abajo en la pantalla.",
       "Desplázate y elige Añadir a pantalla de inicio, luego Añadir.",
+      "Si un icono antiguo abre una página 404 de GitHub, elimínalo y añádelo de nuevo desde Safari.",
     ],
   },
   guide: {
