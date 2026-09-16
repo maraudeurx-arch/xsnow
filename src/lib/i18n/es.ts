@@ -352,8 +352,8 @@ export const es: Messages = {
       lead: "Ofrece tu imagen o tu voz a la comunidad. Pronto conectado a tus servicios.",
     },
     gagnerMaintenant: {
-      title: "Ganar ahora",
-      lead: "",
+      title: "",
+      lead: "Estas empresas no están afiliadas a OPC / Open Community. Sí permiten, en cambio, trabajar desde el teléfono y ganar dinero.",
     },
     sondages: {
       title: "Responde encuestas y gana dinero",

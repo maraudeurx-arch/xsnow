@@ -351,8 +351,8 @@ export const fr = {
       lead: "Proposez votre image ou votre voix à la communauté. Bientôt branché sur vos services.",
     },
     gagnerMaintenant: {
-      title: "Gagner maintenant",
-      lead: "",
+      title: "",
+      lead: "Ces entreprises ne sont pas affiliées à OPC / Open Community. Elles permettent toutefois de travailler depuis son téléphone et de gagner de l’argent.",
     },
     sondages: {
       title: "Répondre à des sondages et gagner de l’argent",
