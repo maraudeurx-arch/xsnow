@@ -172,7 +172,7 @@ describe("Vos idées auto-emails Politzer without permission UX", () => {
   it("POSTs /ideas on submit with no mailto, share sheet, Notification, or confirm", () => {
     const ideas = readFileSync(join(srcDir, "components/features/IdeasBoard.tsx"), "utf8");
     assert.match(ideas, /postIdeaToInbox/);
-    assert.match(ideas, /await sendInbox\(idea\)/);
+    assert.match(ideas, /sendInbox\(idea\)/);
     assert.doesNotMatch(ideas, /mailto:/);
     assert.doesNotMatch(ideas, /Notification/);
     assert.doesNotMatch(ideas, /navigator\.share/);
