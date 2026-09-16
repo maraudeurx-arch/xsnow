@@ -835,6 +835,7 @@ export const en: Messages = {
     invalidEmail: "Enter a valid email.",
     invalidPhone: "Enter a valid phone number.",
     localOnly: "This stays on this device. It is not published, and email/phone never appear in the header.",
+    share: "Share",
     shareTitle: "Invite someone",
     shareHint: "Edit the text, then copy it. The link does not include your email or phone.",
     shareEdit: "Edit",

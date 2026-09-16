@@ -136,6 +136,9 @@ describe("vos idees copy", () => {
     assert.equal(en.features.monProfil.lead, "");
     assert.equal(es.features.monProfil.lead, "");
     assert.match(fr.register.memberNumberHint, /OPC-XXXX/);
+    assert.equal(fr.register.share, "Partager");
+    assert.equal(en.register.share, "Share");
+    assert.equal(es.register.share, "Compartir");
     assert.equal(fr.register.shareEdit, "Modifier");
     assert.equal(fr.register.shareCopy, "Copier");
     assert.match(fr.legal.privacy.sections[1].body, /OPC-XXXX/);

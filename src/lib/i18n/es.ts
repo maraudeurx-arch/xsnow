@@ -837,6 +837,7 @@ export const es: Messages = {
     invalidEmail: "Indica un correo válido.",
     invalidPhone: "Indica un teléfono válido.",
     localOnly: "Estos datos se quedan en este aparato. No se publican, y el correo/teléfono no aparecen en el encabezado.",
+    share: "Compartir",
     shareTitle: "Invitar a alguien",
     shareHint: "Edita el texto y luego cópialo. El enlace no incluye tu correo ni tu teléfono.",
     shareEdit: "Editar",
