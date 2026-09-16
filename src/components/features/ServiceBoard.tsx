@@ -1,6 +1,7 @@
 "use client";
 
-import { FormEvent, useEffect, useMemo, useState } from "react";
+import { FormEvent, Suspense, useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { interpolate } from "@/lib/i18n";
 import { useI18n } from "@/lib/i18n/locale";
 import { isInjectedSeedId } from "@/lib/offers";
@@ -23,13 +24,30 @@ type Filter = "tous" | ListingSide;
 const fieldClass =
   "tap rounded-2xl border border-white/15 bg-white/5 px-3 text-sm font-normal text-snow outline-none focus:border-gold";
 
+function parseSideParam(value: string | null): ListingSide | null {
+  if (value === "offre" || value === "demande") return value;
+  return null;
+}
+
 export function ServiceBoard({ kind }: { kind: ServiceKind }) {
+  return (
+    <Suspense fallback={null}>
+      <ServiceBoardInner kind={kind} />
+    </Suspense>
+  );
+}
+
+function ServiceBoardInner({ kind }: { kind: ServiceKind }) {
   const { locale, m } = useI18n();
   const moneyLocale = locale === "fr" ? "fr-CA" : locale === "es" ? "es" : "en-CA";
   const def = SERVICES[kind];
+  const searchParams = useSearchParams();
+  const sideFromQuery = parseSideParam(searchParams.get("side"));
+  const titleFromQuery = (searchParams.get("title") || "").slice(0, 120);
+  const objectFromQuery = (searchParams.get("object") || "").slice(0, 120);
   const catalog = usePublicCatalog();
   const [stored, setItems] = useStoredList<ServiceListing>(def.storageKey);
-  const [filter, setFilter] = useState<Filter>("tous");
+  const [filter, setFilter] = useState<Filter>(() => sideFromQuery ?? "tous");
   const [saved, setSaved] = useState(false);
 
   useEffect(() => {
@@ -89,19 +107,31 @@ export function ServiceBoard({ kind }: { kind: ServiceKind }) {
           <legend className="text-sm font-semibold">{m.services.listingType}</legend>
           <div className="grid grid-cols-2 gap-2">
             <label className="tap flex items-center justify-center gap-2 rounded-2xl border border-white/15 bg-white/5 text-sm font-semibold">
-              <input type="radio" name="side" value="offre" defaultChecked className="accent-gold" />
+              <input
+                type="radio"
+                name="side"
+                value="offre"
+                defaultChecked={sideFromQuery !== "demande"}
+                className="accent-gold"
+              />
               {m.services.offer}
             </label>
             <label className="tap flex items-center justify-center gap-2 rounded-2xl border border-white/15 bg-white/5 text-sm font-semibold">
-              <input type="radio" name="side" value="demande" className="accent-gold" />
+              <input
+                type="radio"
+                name="side"
+                value="demande"
+                defaultChecked={sideFromQuery === "demande"}
+                className="accent-gold"
+              />
               {m.services.request}
             </label>
           </div>
         </fieldset>
 
-        <Field name="title" label={m.services.title} required placeholder={m.services.titlePh} />
+        <Field name="title" label={m.services.title} required placeholder={m.services.titlePh} defaultValue={titleFromQuery} />
         {def.hasCollateral ? (
-          <Field name="objectName" label={m.services.object} required placeholder={m.services.objectPh} />
+          <Field name="objectName" label={m.services.object} required placeholder={m.services.objectPh} defaultValue={objectFromQuery} />
         ) : null}
         <label className="grid gap-1 text-sm font-semibold">
           {m.services.description}
@@ -275,6 +305,7 @@ function Field({
   type = "text",
   min,
   step,
+  defaultValue,
 }: {
   name: string;
   label: string;
@@ -283,6 +314,7 @@ function Field({
   type?: string;
   min?: string;
   step?: string;
+  defaultValue?: string;
 }) {
   return (
     <label className="grid gap-1 text-sm font-semibold">
@@ -294,6 +326,7 @@ function Field({
         placeholder={placeholder}
         min={min}
         step={step}
+        defaultValue={defaultValue}
         className={fieldClass}
       />
     </label>

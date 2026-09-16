@@ -137,6 +137,37 @@ export function readOrCreateShareCode(
   return created;
 }
 
+/** Map `OPC-7K3M` → `opc-7k3m` for `?invite=` attribution. */
+export function inviteCodeFromMemberId(memberId: string) {
+  return sanitizeInviteCode(memberId);
+}
+
+/**
+ * Prefer the stable member number as the outbound invite/share code so
+ * referrals can later attribute growth au prorata.
+ */
+export function bindShareCodeToMemberId(
+  memberId: string,
+  store: Storage | undefined = typeof window === "undefined" ? undefined : window.localStorage,
+) {
+  const code = inviteCodeFromMemberId(memberId);
+  if (!code) return readOrCreateShareCode(store);
+  storageSet(store, SHARE_CODE_KEY, code);
+  return code;
+}
+
+/** Share code for Partager: member id when registered, else device code. */
+export function resolveShareCode(
+  memberId: string | null | undefined,
+  store: Storage | undefined = typeof window === "undefined" ? undefined : window.localStorage,
+) {
+  if (memberId) {
+    const bound = bindShareCodeToMemberId(memberId, store);
+    if (bound) return bound;
+  }
+  return readOrCreateShareCode(store);
+}
+
 export function inviteOpenFingerprint(touch: InviteTouch) {
   return touch.src ? `${touch.code}|${touch.src}` : touch.code;
 }

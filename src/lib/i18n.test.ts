@@ -129,7 +129,12 @@ describe("vos idees copy", () => {
     assert.deepEqual(Object.keys(es.shareOpc), Object.keys(fr.shareOpc));
     assert.deepEqual(Object.keys(en.register), Object.keys(fr.register));
     assert.deepEqual(Object.keys(es.register), Object.keys(fr.register));
-    assert.equal(fr.register.cta, "Inviter à s’inscrire");
+    assert.equal(fr.register.cta, "S’inscrire");
+    assert.equal(en.register.cta, "Sign up");
+    assert.equal(es.register.cta, "Inscribirse");
+    assert.equal(fr.features.monProfil.lead, "");
+    assert.equal(en.features.monProfil.lead, "");
+    assert.equal(es.features.monProfil.lead, "");
     assert.match(fr.register.memberNumberHint, /OPC-XXXX/);
     assert.equal(fr.register.shareEdit, "Modifier");
     assert.equal(fr.register.shareCopy, "Copier");
@@ -166,6 +171,26 @@ describe("gagner maintenant copy", () => {
     assert.match(fr.systemPrompt, /Gagner maintenant/);
     assert.match(en.systemPrompt, /Earn now/);
     assert.match(es.systemPrompt, /Ganar ahora/);
+  });
+});
+
+
+describe("mes services / en demande four buttons", () => {
+  it("clears board leads and keeps four FR/EN/ES CTA labels", () => {
+    assert.equal(fr.features.mesServices.title, "Mes services");
+    assert.equal(fr.features.mesServices.lead, "");
+    assert.equal(en.features.mesServices.lead, "");
+    assert.equal(es.features.mesServices.lead, "");
+    assert.equal(fr.features.enDemande.title, "En demande");
+    assert.equal(fr.features.enDemande.lead, "");
+    assert.equal(en.features.enDemande.lead, "");
+    assert.equal(es.features.enDemande.lead, "");
+    assert.equal(fr.mesServicesButtons.lendCar, "Prêter ma voiture");
+    assert.equal(fr.mesServicesButtons.babysitting, "Baby-sitting");
+    assert.equal(fr.enDemandeButtons.diy, "Aide au bricolage");
+    assert.equal(fr.enDemandeButtons.carpool, "Co-voiturage");
+    assert.deepEqual(Object.keys(en.mesServicesButtons), Object.keys(fr.mesServicesButtons));
+    assert.deepEqual(Object.keys(es.enDemandeButtons), Object.keys(fr.enDemandeButtons));
   });
 });
 

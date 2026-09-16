@@ -92,17 +92,17 @@ describe("OPC member id", () => {
 });
 
 describe("display name and initials", () => {
-  it("prefers a short first name next to the logo", () => {
+  it("shows initials next to the logo", () => {
     assert.equal(
       headerDisplayName({ firstName: "Marie", lastName: "Tremblay", email: "marie@opc.test", phone: "819-555-0100" }),
-      "Marie",
+      "M.T.",
     );
     assert.equal(profileInitials("Marie", "Tremblay"), "M.T.");
     assert.equal(profileInitials("politzer", "estigene"), "P.E.");
     assert.ok("Marie".length <= HEADER_FIRST_NAME_MAX);
   });
 
-  it("falls back to initials when the first name is long", () => {
+  it("keeps initials for long first names", () => {
     assert.equal(
       headerDisplayName({
         firstName: "Marie-Antoinette",
@@ -143,7 +143,7 @@ describe("display name and initials", () => {
       email: "paul.emile@example.com",
       phone: "+1 819 555 0100",
     });
-    assert.equal(label, "Paul");
+    assert.equal(label, "P.É.");
     assert.doesNotMatch(label, /@/);
     assert.doesNotMatch(label, /819/);
   });

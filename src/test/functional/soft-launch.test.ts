@@ -42,6 +42,7 @@ import {
   readLocalProfile,
   writeLocalProfile,
 } from "../../lib/local-profile.ts";
+import { publicInviteUrl, resolveShareCode } from "../../lib/invite.ts";
 import { readList, writeList } from "../../lib/storage.ts";
 
 function memoryWindow() {
@@ -267,8 +268,11 @@ describe("local registration profile", () => {
       const stored = readLocalProfile();
       assert.equal(stored?.id, "OPC-7K3M");
       assert.equal(stored?.email, "marie@voisin.test");
-      assert.equal(headerDisplayName(stored!), "Marie");
+      assert.equal(headerDisplayName(stored!), "M.T.");
       assert.doesNotMatch(headerDisplayName(stored!), /@|555/);
+      const inviteCode = resolveShareCode(stored!.id);
+      assert.equal(inviteCode, "opc-7k3m");
+      assert.match(publicInviteUrl(inviteCode), /invite=opc-7k3m/);
       assert.equal(mock.data[LOCAL_PROFILE_KEY]?.includes("marie@voisin.test"), true);
     } finally {
       mock.restore();

@@ -4,6 +4,7 @@ import { FormEvent, Suspense, useMemo, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { noteRequestCreated } from "@/lib/analytics";
+import { EN_DEMANDE_SHORTCUTS } from "@/lib/board-shortcuts";
 import { interpolate } from "@/lib/i18n";
 import { useI18n } from "@/lib/i18n/locale";
 import {
@@ -34,6 +35,9 @@ import { useStoredList } from "@/lib/useStoredList";
 
 const fieldClass =
   "tap rounded-2xl border border-white/15 bg-white/5 px-3 text-sm font-normal text-snow outline-none focus:border-gold";
+
+const ctaClass =
+  "tap inline-flex min-h-11 w-full items-center justify-center rounded-full border border-gold/65 bg-cobalt px-3 text-center text-sm font-extrabold text-snow";
 
 function kindLabel(
   kind: OfferKind,
@@ -100,10 +104,14 @@ function DemandBoardInner() {
   }, []);
 
   const queryKind = parseOfferKindQuery(searchParams.get("kind"));
+  const visibleOffers = useMemo(
+    () => (queryKind ? offers.filter((item) => item.kind === queryKind) : offers),
+    [offers, queryKind],
+  );
   const queryTarget =
     fromUrl?.id ??
     (queryKind
-      ? (offers.find((item) => item.kind === queryKind)?.id ?? null)
+      ? (visibleOffers.find((item) => item.kind === queryKind)?.id ?? null)
       : null);
   const activeId = pickedId === false ? null : (pickedId ?? queryTarget);
   const paid = offers.find((item) => item.id === paidId) ?? null;
@@ -156,24 +164,26 @@ function DemandBoardInner() {
     if (ok) setCopied(label);
   }
 
+  const buttonLabel = {
+    moving: m.enDemandeButtons.moving,
+    diy: m.enDemandeButtons.diy,
+    carpool: m.enDemandeButtons.carpool,
+    equipment: m.enDemandeButtons.equipment,
+  } as const;
+
   return (
     <div className="space-y-6">
-      <p className="text-sm leading-relaxed text-ice/85">{copy.terms}</p>
-      <p className="text-xs leading-relaxed text-snow/65">{copy.deviceHint}</p>
+      <div className="grid gap-2">
+        {EN_DEMANDE_SHORTCUTS.map((item) => (
+          <Link key={item.id} href={item.href} className={ctaClass}>
+            {buttonLabel[item.id]}
+          </Link>
+        ))}
+      </div>
 
-      {offers.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-white/15 bg-white/[0.03] p-3">
-          <p className="text-sm leading-relaxed text-snow/75">{copy.browseEmpty}</p>
-          <p className="mt-2 text-center text-xs">
-            <Link href="/mes-services" className="font-bold text-gold underline decoration-gold/50 underline-offset-2">
-              {m.nav.mesServices}
-            </Link>
-          </p>
-        </div>
-      ) : null}
-
+      {visibleOffers.length > 0 ? (
       <ul className="space-y-3">
-        {offers.map((offer) => {
+        {visibleOffers.map((offer) => {
           const open = activeId === offer.id;
           const showPay = paidId === offer.id;
           return (
@@ -263,18 +273,15 @@ function DemandBoardInner() {
           );
         })}
       </ul>
+      ) : null}
 
       {paid && requests[0] ? (
         <ConfirmLinks offer={paid} request={requests[0]} />
       ) : null}
 
+      {requests.length > 0 ? (
       <section className="space-y-2">
         <h3 className="text-base font-extrabold">{copy.yourRequests}</h3>
-        {requests.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-white/15 bg-white/[0.03] p-3">
-            <p className="text-sm leading-relaxed text-snow/75">{copy.emptyRequests}</p>
-          </div>
-        ) : (
           <ul className="space-y-2">
             {requests.map((item) => (
               <li key={item.id} className="rounded-2xl border border-white/10 bg-white/5 p-3 text-sm">
@@ -286,14 +293,8 @@ function DemandBoardInner() {
               </li>
             ))}
           </ul>
-        )}
       </section>
-
-      <p className="text-center text-xs text-snow/55">
-        <Link href="/mes-services" className="underline decoration-gold/50 underline-offset-2">
-          {m.nav.mesServices}
-        </Link>
-      </p>
+      ) : null}
     </div>
   );
 }

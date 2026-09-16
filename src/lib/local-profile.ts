@@ -9,7 +9,7 @@
  * Member number format: `OPC-` + 4 characters from
  * `ABCDEFGHJKLMNPQRSTUVWXYZ23456789` (Crockford-like: no I, O, 0, 1).
  * Example: `OPC-7K3M`. Generated once with `crypto.getRandomValues`.
- * Header display: short first name, otherwise initials (`P.E.`). Never
+ * Header display: initials (`P.E.`) next to the logo. Never
  * email or phone in the chrome.
  */
 
@@ -153,8 +153,8 @@ export function profileInitials(firstName: string, lastName: string): string {
 }
 
 /**
- * Name shown next to the Open Community logo.
- * Prefer a short first name; otherwise initials. Never email or phone.
+ * Initials shown next to the Open Community logo (e.g. `P.E.`).
+ * Never email, phone, or a full first name in the chrome.
  */
 export function headerDisplayName(profile: Pick<LocalProfile, "firstName" | "lastName" | "email" | "phone">): string {
   const first = sanitizePersonName(profile.firstName);
@@ -162,12 +162,7 @@ export function headerDisplayName(profile: Pick<LocalProfile, "firstName" | "las
   if (looksLikeEmail(first) || looksLikePhone(first)) {
     return profileInitials("", last) || "";
   }
-  if (first && first.length <= HEADER_FIRST_NAME_MAX && !looksLikeEmail(first) && !looksLikePhone(first)) {
-    return first;
-  }
-  const initials = profileInitials(first, last);
-  if (initials) return initials;
-  return "";
+  return profileInitials(first, last);
 }
 
 export function emptyProfileInput(): LocalProfileInput {
@@ -283,19 +278,28 @@ export function defaultRegisterShareBlurb(
   url: string,
   firstName: string,
   locale: "fr" | "en" | "es" = "fr",
+  memberId = "",
 ) {
   const name = sanitizePersonName(firstName);
   const safeName = name && !looksLikeEmail(name) && !looksLikePhone(name) ? name : "";
+  const codeLine =
+    memberId && isOpcMemberId(memberId)
+      ? locale === "en"
+        ? `\nMember code: ${memberId}`
+        : locale === "es"
+          ? `\nCódigo de miembro: ${memberId}`
+          : `\nNuméro membre : ${memberId}`
+      : "";
   if (locale === "en") {
     const who = safeName ? `${safeName} invites you to Open Community.` : "You're invited to Open Community.";
-    return `${who}\nRegister on your device (no password): ${url}`;
+    return `${who}\nRegister on your device (no password): ${url}${codeLine}`;
   }
   if (locale === "es") {
     const who = safeName
       ? `${safeName} te invita a Open Community.`
       : "Te invitan a Open Community.";
-    return `${who}\nInscríbete en tu aparato (sin contraseña): ${url}`;
+    return `${who}\nInscríbete en tu aparato (sin contraseña): ${url}${codeLine}`;
   }
   const who = safeName ? `${safeName} t’invite sur Open Community.` : "On t’invite sur Open Community.";
-  return `${who}\nInscris-toi sur ton appareil (sans mot de passe) : ${url}`;
+  return `${who}\nInscris-toi sur ton appareil (sans mot de passe) : ${url}${codeLine}`;
 }

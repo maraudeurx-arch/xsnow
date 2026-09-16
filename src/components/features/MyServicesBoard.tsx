@@ -7,6 +7,7 @@ import { noteOfferCreated } from "@/lib/analytics";
 import { interpolate } from "@/lib/i18n";
 import { useI18n } from "@/lib/i18n/locale";
 import type { Messages } from "@/lib/i18n";
+import { MES_SERVICE_SHORTCUTS } from "@/lib/board-shortcuts";
 import {
   DRAFT_HOTSPOT_ID,
   DRAFT_UX_SESSION_ID,
@@ -38,6 +39,9 @@ import { useStoredList } from "@/lib/useStoredList";
 
 const fieldClass =
   "tap rounded-2xl border border-white/15 bg-white/5 px-3 text-sm font-normal text-snow outline-none focus:border-gold";
+
+const ctaClass =
+  "tap inline-flex min-h-11 w-full items-center justify-center rounded-full border border-gold/65 bg-cobalt px-3 text-center text-sm font-extrabold text-snow";
 
 function kindLabel(kind: OfferKind, copy: Messages["offers"]) {
   if (kind === "hotspot") return copy.typeHotspot;
@@ -107,6 +111,7 @@ function MyServicesBoardInner() {
   const [shareOfferId, setShareOfferId] = useState<string | null>(null);
   const [shareStatus, setShareStatus] = useState<"ok" | "fail" | "">("");
   const [firstPublish, setFirstPublish] = useState(false);
+  const [showForm, setShowForm] = useState(() => Boolean(initialTemplate));
   const shareBox = useRef<HTMLElement | null>(null);
   const shareArea = useRef<HTMLTextAreaElement | null>(null);
 
@@ -137,6 +142,7 @@ function MyServicesBoardInner() {
       setSaved(false);
       setDraftSaved(false);
       setError("");
+      setShowForm(true);
       return;
     }
     const id = draftTemplateId(nextKind);
@@ -162,6 +168,7 @@ function MyServicesBoardInner() {
     }
     setSaved(false);
     setError("");
+    setShowForm(true);
   }
 
   function openShare(offer: CommunityOffer) {
@@ -228,6 +235,7 @@ function MyServicesBoardInner() {
     setError("");
     setEditingId(null);
     setForm(carMorningDefaults());
+    setShowForm(false);
     setFirstPublish(isFirstPublish);
     void openShare(next);
     if (!existed) noteOfferCreated(next.kind);
@@ -248,28 +256,35 @@ function MyServicesBoardInner() {
     setError("");
   }
 
+  const buttonLabel = {
+    "lend-car": m.mesServicesButtons.lendCar,
+    moving: m.mesServicesButtons.moving,
+    babysitting: m.mesServicesButtons.babysitting,
+    tools: m.mesServicesButtons.tools,
+  } as const;
+
   return (
     <div className="space-y-6">
       <div className="grid gap-2">
-        <p className="text-xs font-extrabold tracking-wide text-gold uppercase">{copy.templatesLabel}</p>
-        <div className="grid grid-cols-2 gap-2">
-          <button
-            type="button"
-            className="tap rounded-full border border-gold/40 bg-gold/10 px-3 text-xs font-extrabold text-gold"
-            onClick={() => applyTemplate("hotspot", true)}
-          >
-            {copy.templateHotspot}
-          </button>
-          <button
-            type="button"
-            className="tap rounded-full border border-gold/40 bg-gold/10 px-3 text-xs font-extrabold text-gold"
-            onClick={() => applyTemplate("ux_session", true)}
-          >
-            {copy.templateUx}
-          </button>
-        </div>
+        {MES_SERVICE_SHORTCUTS.map((item) =>
+          item.action === "car_morning" ? (
+            <button
+              key={item.id}
+              type="button"
+              className={ctaClass}
+              onClick={() => applyTemplate("car_morning", false)}
+            >
+              {buttonLabel[item.id]}
+            </button>
+          ) : (
+            <Link key={item.id} href={item.href} className={ctaClass}>
+              {buttonLabel[item.id]}
+            </Link>
+          ),
+        )}
       </div>
 
+      {showForm ? (
       <form onSubmit={onSubmit} className="grid gap-3">
         <h3 className="text-base font-extrabold text-gold">
           {editing ? copy.formTitleEdit : copy.formTitleNew}
@@ -451,6 +466,7 @@ function MyServicesBoardInner() {
                 setSaved(false);
                 setDraftSaved(false);
                 setError("");
+                setShowForm(Boolean(initialTemplate));
               }}
             >
               {copy.cancelEdit}
@@ -460,6 +476,7 @@ function MyServicesBoardInner() {
         {saved ? <p className="text-sm text-gold">{m.services.saved}</p> : null}
         {draftSaved ? <p className="text-sm text-gold">{copy.draftSaved}</p> : null}
       </form>
+      ) : null}
 
       {shareText ? (
         <section
@@ -511,14 +528,9 @@ function MyServicesBoardInner() {
         </section>
       ) : null}
 
+      {items.length > 0 ? (
       <section className="space-y-3">
         <h3 className="text-base font-extrabold">{copy.listTitle}</h3>
-        <p className="text-xs leading-relaxed text-snow/65">{copy.deviceHint}</p>
-        {items.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-white/15 bg-white/[0.03] p-3">
-            <p className="text-sm leading-relaxed text-snow/75">{copy.emptyList}</p>
-          </div>
-        ) : (
           <ul className="space-y-3">
             {items.map((item) => (
               <li key={item.id} className="rounded-2xl border border-white/10 bg-white/5 p-3">
@@ -559,6 +571,7 @@ function MyServicesBoardInner() {
                       setSaved(false);
                       setDraftSaved(false);
                       setShareStatus("");
+                      setShowForm(true);
                     }}
                   >
                     {copy.edit}
@@ -574,8 +587,8 @@ function MyServicesBoardInner() {
               </li>
             ))}
           </ul>
-        )}
       </section>
+      ) : null}
     </div>
   );
 }
