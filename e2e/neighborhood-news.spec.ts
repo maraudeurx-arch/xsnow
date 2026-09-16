@@ -58,21 +58,54 @@ test.describe("Accueil neighbourhood news + partner slots", () => {
     await expect(page.getByText(/ferme à clics/).first()).toBeVisible();
     await expect(page.getByText(/Grok et Cursor/).first()).toBeVisible();
 
+    const title = page.getByRole("heading", { name: "Open Community", level: 1 });
+    const navCard = page.locator(".chrome-panel").first();
     const card = page.locator("#home-guide .home-stage");
     const footer = page.locator("footer");
+    const chat = page.locator("#avatar-chat");
+    const chatInput = page.locator("#avatar-chat-input");
+    const titleBox = await title.boundingBox();
+    const navBox = await navCard.boundingBox();
     const cardBox = await card.boundingBox();
     const footerBox = await footer.boundingBox();
     const newsBox = await news.boundingBox();
-    const chatBox = await page.locator("#avatar-chat").boundingBox();
+    const chatBox = await chat.boundingBox();
+    const inputBox = await chatInput.boundingBox();
+    const adBox = await page.locator("[data-partner-slot]").first().boundingBox();
+    expect(titleBox).toBeTruthy();
+    expect(navBox).toBeTruthy();
     expect(cardBox).toBeTruthy();
     expect(footerBox).toBeTruthy();
     expect(newsBox).toBeTruthy();
     expect(chatBox).toBeTruthy();
+    expect(inputBox).toBeTruthy();
+    expect(adBox).toBeTruthy();
 
-    const gap = footerBox!.y - (cardBox!.y + cardBox!.height);
-    expect(gap).toBeGreaterThanOrEqual(0);
-    expect(gap).toBeLessThan(56);
+    // Title sits under the safe-area floor (2px when inset is 0 in Playwright).
+    expect(titleBox!.y).toBeGreaterThanOrEqual(0);
+    expect(titleBox!.y).toBeLessThan(24);
+
+    const navToCard = cardBox!.y - (navBox!.y + navBox!.height);
+    expect(navToCard).toBeGreaterThanOrEqual(0);
+    expect(navToCard).toBeLessThan(14);
+
+    const newsToChat = chatBox!.y - (newsBox!.y + newsBox!.height);
+    expect(newsToChat).toBeGreaterThanOrEqual(0);
+    expect(newsToChat).toBeLessThan(10);
+
+    const cardToFooter = footerBox!.y - (cardBox!.y + cardBox!.height);
+    expect(cardToFooter).toBeGreaterThanOrEqual(0);
+    expect(cardToFooter).toBeLessThan(40);
     expect(newsBox!.height).toBeGreaterThan(chatBox!.height);
+    expect(newsBox!.height).toBeGreaterThan(180);
+
+    // Partner inventory stays under headlines and labeled — never in-feed news.
+    expect(adBox!.y).toBeGreaterThan((fibreBox?.y ?? 0) + (fibreBox?.height ?? 0));
+    expect(footerBox!.height).toBeLessThan(48);
+    const footerSize = await footer.locator("p").first().evaluate((el) => getComputedStyle(el).fontSize);
+    expect(parseFloat(footerSize)).toBeLessThanOrEqual(9);
+    expect(inputBox!.height).toBeGreaterThanOrEqual(32);
+    await expect(chatInput).toBeVisible();
   });
 
   test("Worker 405 still shows real headlines via the JSON RSS fallback", async ({ page }) => {

@@ -124,7 +124,7 @@ export function NeighborhoodNews({ onNewsChange }: Props) {
       className="flex min-h-0 flex-1 flex-col gap-1 overflow-hidden rounded-xl border border-gold/30 bg-[rgba(8,8,12,0.88)] px-2 py-1.5"
     >
       <div className="flex shrink-0 items-baseline justify-between gap-2 px-0.5">
-        <h2 className="text-[10px] font-extrabold tracking-wide text-gold">{copy.title}</h2>
+        <h2 className="text-[11px] font-extrabold tracking-wide text-gold">{copy.title}</h2>
         {fromCache && status === "ready" ? (
           <span className="text-[8px] font-semibold text-ice/60">{copy.cached}</span>
         ) : null}
@@ -166,7 +166,7 @@ export function NeighborhoodNews({ onNewsChange }: Props) {
 
       <div className="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto">
         {status === "ready" && items.length > 0 ? (
-          <ul className="flex min-h-[6rem] flex-1 flex-col gap-1 overflow-y-auto">
+          <ul className="flex min-h-[7.5rem] flex-1 flex-col gap-1 overflow-y-auto">
             {items.map((item) => (
               <li key={item.id}>
                 <a

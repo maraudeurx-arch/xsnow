@@ -168,16 +168,18 @@ export function Guide() {
             </Link>
             <ShareHomeButton />
           </nav>
-          <NeighborhoodNews onNewsChange={onNewsChange} />
-          <div className="flex shrink-0 flex-col">
-            {needsPrompt && !unanswered && Boolean(avatarId) && welcomeGateOpen ? (
-              <LocationPrompt />
-            ) : (
-              <AvatarChat
-                avatar={chosen}
-                newsHeadlines={resolved ? newsHeadlines : ""}
-              />
-            )}
+          <div className="flex min-h-0 flex-1 flex-col gap-[var(--home-news-chat-gap)] overflow-hidden">
+            <NeighborhoodNews onNewsChange={onNewsChange} />
+            <div className="flex shrink-0 flex-col">
+              {needsPrompt && !unanswered && Boolean(avatarId) && welcomeGateOpen ? (
+                <LocationPrompt />
+              ) : (
+                <AvatarChat
+                  avatar={chosen}
+                  newsHeadlines={resolved ? newsHeadlines : ""}
+                />
+              )}
+            </div>
           </div>
         </div>
       ) : null}

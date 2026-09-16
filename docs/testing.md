@@ -58,7 +58,7 @@ Playwright against a **production-like static export**, one iPhone viewport (`39
 
 Critical paths:
 
-- Accueil: Nouvelles du Quartier settles (not infinite loading); labeled Espace partenaire slots; home card almost reaches the footer
+- Accueil: title packed under the iPhone safe area; Nouvelles du Quartier settles (not infinite loading) and almost touches chat; labeled Espace partenaire slots; compact footer; home card almost reaches the footer
 - Fresh storage: Mes services / En demande empty (no bundled Gatineau car offer)
 - Fresh storage: `/services/{kind}` boards empty (no demo seed titles)
 - Regional ambiance: autumn before geo; Caribbean for `?city=Port-au-Prince`; CA stays seasonal

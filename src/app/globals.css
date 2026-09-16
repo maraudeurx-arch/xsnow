@@ -18,17 +18,19 @@
   --home-chip-h: 2.2rem;
   --home-avatar: min(12vw, 6.2dvh, 2.85rem);
   --home-gap: 0.4rem;
-  /* Space between the header card and the avatar/chat card on home only. */
-  --home-block-gap: 1.25rem;
-  /* Gaps inside the avatar/chat card — larger than --home-gap so rows don’t collide. */
-  --home-stack-gap: 0.85rem;
+  /* Space between the header/nav card and the Accueil card. Keep tight. */
+  --home-block-gap: 0.32rem;
+  /* Gaps inside the avatar/chat card (avatar row → shortcuts). */
+  --home-stack-gap: 0.5rem;
+  /* News panel should almost touch the chat/input block. */
+  --home-news-chat-gap: 0.2rem;
   --home-nav-gap: 0.4rem;
-  --home-chip-gap: 0.55rem;
-  --home-card-pad-x: 0.65rem;
-  --home-card-pad-y: 0.65rem;
+  --home-chip-gap: 0.45rem;
+  --home-card-pad-x: 0.6rem;
+  --home-card-pad-y: 0.42rem;
   --home-avatar-ring: 0.32rem;
   --brand-title: clamp(1.5rem, 7.4vw, 3rem);
-  --brand-slogan: clamp(0.9rem, 3.8vw, 1.2rem);
+  --brand-slogan: clamp(0.85rem, 3.6vw, 1.15rem);
 }
 
 @media (min-width: 640px) {
@@ -38,12 +40,13 @@
     --home-chip-h: 2.6rem;
     --home-avatar: min(16vw, 10dvh, 4.5rem);
     --home-gap: 0.55rem;
-    --home-block-gap: 1.4rem;
-    --home-stack-gap: 1rem;
+    --home-block-gap: 0.4rem;
+    --home-stack-gap: 0.6rem;
+    --home-news-chat-gap: 0.24rem;
     --home-nav-gap: 0.5rem;
-    --home-chip-gap: 0.65rem;
+    --home-chip-gap: 0.55rem;
     --home-card-pad-x: 0.85rem;
-    --home-card-pad-y: 0.75rem;
+    --home-card-pad-y: 0.5rem;
   }
 }
 
@@ -55,12 +58,13 @@
     --home-chip-h: 1.95rem;
     --home-avatar: min(11vw, 5.5dvh, 2.45rem);
     --home-gap: 0.3rem;
-    --home-block-gap: 0.95rem;
-    --home-stack-gap: 0.55rem;
+    --home-block-gap: 0.24rem;
+    --home-stack-gap: 0.38rem;
+    --home-news-chat-gap: 0.16rem;
     --home-nav-gap: 0.34rem;
-    --home-chip-gap: 0.42rem;
+    --home-chip-gap: 0.36rem;
     --home-card-pad-x: 0.55rem;
-    --home-card-pad-y: 0.45rem;
+    --home-card-pad-y: 0.32rem;
     --home-avatar-ring: 0.28rem;
   }
 }
@@ -72,12 +76,13 @@
     --home-chip-h: 1.85rem;
     --home-avatar: min(10vw, 4.9dvh, 2.25rem);
     --home-gap: 0.25rem;
-    --home-block-gap: 0.78rem;
-    --home-stack-gap: 0.45rem;
+    --home-block-gap: 0.2rem;
+    --home-stack-gap: 0.32rem;
+    --home-news-chat-gap: 0.14rem;
     --home-nav-gap: 0.3rem;
-    --home-chip-gap: 0.36rem;
+    --home-chip-gap: 0.3rem;
     --home-card-pad-x: 0.5rem;
-    --home-card-pad-y: 0.36rem;
+    --home-card-pad-y: 0.28rem;
     --home-avatar-ring: 0.24rem;
   }
 }
@@ -127,16 +132,14 @@ body {
 }
 
 /*
- * Open Community + slogan sit above the wordmark/nav card.
- * On home, the banner is vertically centered in the leftover band between
- * the viewport top and the first chrome card (balanced by a matching 1fr
- * below the stack so the cards stay in the middle of the screen).
+ * Open Community + slogan sit above the wordmark/nav card, packed under
+ * the iPhone safe-area inset (see .safe-frame padding-top).
  */
 .brand-banner {
   position: relative;
   z-index: 30;
   flex-shrink: 0;
-  padding: 0.15rem 0.25rem 0.25rem;
+  padding: 0.05rem 0.25rem 0.1rem;
   text-align: center;
 }
 
@@ -170,26 +173,23 @@ body {
 .app-stage:has(#home-guide) {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  /* Modest banner band; the Accueil card stretches almost to the footer. */
-  grid-template-rows: minmax(min-content, 0.42fr) auto minmax(0, 1fr) minmax(0.12rem, 0.08fr);
+  /* Title hugs the safe-area top; leftover height goes to the Accueil card
+     so Nouvelles du Quartier (headlines + partner slots) can grow. */
+  grid-template-rows: min-content min-content minmax(0, 1fr);
   align-items: stretch;
   justify-content: stretch;
   overflow: visible;
   gap: 0;
 }
 
-.app-stage:has(#home-guide)::after {
-  content: "";
-}
-
 .app-stage:has(#home-guide) > .brand-banner {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   min-height: 0;
-  padding-top: 0.45rem;
-  padding-bottom: 0.45rem;
+  padding-top: 0;
+  padding-bottom: 0.08rem;
 }
 
 .app-stage-main {
