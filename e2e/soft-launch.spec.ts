@@ -51,7 +51,7 @@ test.describe("Open Community soft-launch smoke", () => {
   }) => {
     await page.goto("./gagner-maintenant/");
     await expect(page.getByRole("heading", { name: "Gagner maintenant", level: 2 })).toHaveCount(0);
-    await expect(page.getByRole("link", { name: /Retour à l’accueil/ })).toBeVisible();
+    await expect(page.locator("[data-home-back]")).toBeVisible();
     await expect(page.getByText(/pas affiliées à OPC \/ Open Community/)).toBeVisible();
     await expect(page.getByText(/travailler depuis son téléphone/)).toBeVisible();
 
@@ -82,7 +82,7 @@ test.describe("Open Community soft-launch smoke", () => {
     await expect(page.getByRole("button", { name: "Vos idées" })).toHaveCount(0);
     await expect(page.getByText("S’impliquer : Tête, Cœur, Mains")).toHaveCount(0);
     await expect(page.getByRole("heading", { name: "Vos idées", level: 2 })).toHaveCount(0);
-    await expect(page.getByRole("link", { name: /Retour à l’accueil/ })).toBeVisible();
+    await expect(page.locator("[data-home-back]")).toBeVisible();
 
     await page.getByLabel("Ton idée").fill(idea);
     await page.getByRole("button", { name: "Envoyer l’idée" }).click();
