@@ -15,6 +15,7 @@ Covers pure lib helpers:
 - Versioned public catalog / publish gate
 - Client-side stats event shaping
 - Owner idea inbox payload sanitization (`src/lib/idea-inbox.ts`, `workers/xsnow-chat/src/ideas.ts`)
+- Worker CORS allowlist (`workers/xsnow-chat/src/cors.ts`) — GitHub Pages + opencommunity.app, never `*`
 - Neighbourhood news fetch timeouts (Worker + JSON RSS fallback) and Accueil partner-slot config (`src/lib/neighborhood-news.ts`, `src/lib/partner-ads.ts`)
 
 ```bash

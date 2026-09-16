@@ -47,9 +47,11 @@ GitHub Pages **cannot** set CSP HTTP headers. The app ships a `<meta http-equiv=
 
 ## Worker deploy
 
-Sanitize + Content-Type checks live in `workers/xsnow-chat`. After merging, redeploy:
+Sanitize + Content-Type checks live in `workers/xsnow-chat`. CORS is an allowlist (GitHub Pages + `opencommunity.app` / `www` + local test hosts — never `*`). After merging, redeploy (and set the Resend secret if ideas email is not live yet):
 
 ```bash
 cd workers/xsnow-chat
+npx wrangler secret put RESEND_API_KEY
+# optional: npx wrangler secret put IDEAS_FROM_EMAIL
 npx wrangler deploy
 ```

@@ -2,7 +2,7 @@
  * Keyless public chat proxy for Xsnow / Open Community.
  * Deploy: npx wrangler login && npx wrangler deploy
  *
- * Visitors never log in. GitHub Pages origin is allowed via CORS.
+ * Visitors never log in. CORS allowlist: GitHub Pages, opencommunity.app (+ www), localhost.
  * `POST /` = chat
  * `GET|POST /geo` = reverse geocode {lat,lon}
  * `GET /news` = local headlines via Google News RSS (no invented stories)
@@ -16,6 +16,7 @@
  * and `npx wrangler d1 migrations apply xsnow-stats --remote`.
  */
 
+import { corsHeaders } from "./cors";
 import { parseLatLon, reverseGeocode } from "./geo";
 import { handleIdeasGet, handleIdeasPost, handleRegisterPost, isIdeasPath, isRegisterPath } from "./ideas";
 import { fetchCityNews, parseCityParam, parseLangParam } from "./news";
@@ -50,12 +51,6 @@ const RATE_WINDOW_MS = 60_000;
 const RATE_MAX = 16;
 const RATE_MAP_CAP = 2_000;
 
-const ALLOWED_ORIGINS = new Set([
-  "https://maraudeurx-arch.github.io",
-  "http://localhost:3000",
-  "http://127.0.0.1:3000",
-]);
-
 const hitsByIp = new Map<string, number[]>();
 
 type ChatRole = "user" | "assistant";
@@ -64,19 +59,6 @@ type ChatTurn = {
   role: ChatRole;
   content: string;
 };
-
-function corsHeaders(origin: string | null): Record<string, string> {
-  const headers: Record<string, string> = {
-    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type, Authorization",
-    "Access-Control-Max-Age": "86400",
-    Vary: "Origin",
-  };
-  if (origin && ALLOWED_ORIGINS.has(origin)) {
-    headers["Access-Control-Allow-Origin"] = origin;
-  }
-  return headers;
-}
 
 function json(data: unknown, status: number, origin: string | null): Response {
   return new Response(JSON.stringify(data), {

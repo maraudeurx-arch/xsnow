@@ -15,6 +15,7 @@ binding = "AI"
 #   npx wrangler secret put IDEAS_FROM_EMAIL
 # Optional compile page:
 #   npx wrangler secret put IDEAS_OWNER_SECRET
+# CORS allowlist lives in src/cors.ts (GitHub Pages + opencommunity.app, never *).
 # Do not put secrets in this file.
 [[d1_databases]]
 binding = "DB"

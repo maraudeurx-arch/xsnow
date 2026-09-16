@@ -107,7 +107,7 @@ Voir [`.env.example`](.env.example). `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID` est 
 
 Le chat n’utilise **pas** Puter. Les visiteurs n’ont **aucun compte** à créer. Le navigateur envoie `POST` JSON `{ "system", "messages": [{ "role", "content" }] }` vers le Worker ; la réponse attendue est `{ "reply": "…" }` (le front accepte aussi un format type OpenAI `choices`).
 
-CORS autorise `https://maraudeurx-arch.github.io` (et `localhost` en dev).
+CORS (liste blanche, jamais `*`) : `https://maraudeurx-arch.github.io`, `https://opencommunity.app`, `https://www.opencommunity.app`, et `localhost` / `127.0.0.1` en dev (`:3000` et `:4173`). Un autre Origin (ex. ub.io) ne reçoit pas `Access-Control-Allow-Origin` — le navigateur bloque le POST.
 
 Déployer le Worker (compte Cloudflare + Workers AI) :
 
@@ -123,7 +123,7 @@ Le Worker déployé est `https://xsnow-chat.xsnowopc.workers.dev`. Pour un autre
 
 Les idées restent **sur l’appareil du visiteur**. La vraie boîte de Politzer, c’est **opencommunity.opc@gmail.com**.
 
-1. Le visiteur envoie depuis **Vos idées**. L’app enregistre en local **puis** `POST` une copie assainie (phrase, ville, date, numéro OPC si inscrit — pas de nom de famille ni téléphone) vers `https://xsnow-chat.xsnowopc.workers.dev/ideas`. Hors ligne : l’idée reste ici ; message honnête si l’e-mail n’est pas parti.
+1. Le visiteur envoie depuis **Vos idées**. L’app enregistre en local **puis** `POST` automatiquement une copie assainie (phrase, ville, date, numéro OPC si inscrit — pas de nom de famille ni téléphone) vers `https://xsnow-chat.xsnowopc.workers.dev/ideas` — **sans** `mailto:`, feuille de partage, Notification API, ni dialogue de permission. Hors ligne : l’idée reste ici ; message honnête si l’e-mail n’est pas parti. Le Worker doit autoriser l’Origin du site (`github.io` et `opencommunity.app`) sinon le navigateur bloque le POST (erreur « réseau »).
 2. Une inscription locale (`Mon profil`) envoie aussi un avis (prénom, OPC-XXXX, e-mail visiteur, ville) via `POST /register`.
 3. Secrets Worker (jamais dans git) :
 
@@ -190,7 +190,7 @@ npm run test:e2e
 
 ### Avatar chat (Cloudflare Workers AI, no login)
 
-Puter is gone. Visitors do not sign in. The browser `POST`s `{ "system", "messages" }` to the Worker in `workers/xsnow-chat` and reads `{ "reply" }` (OpenAI-style `choices` also work). CORS allows `https://maraudeurx-arch.github.io`.
+Puter is gone. Visitors do not sign in. The browser `POST`s `{ "system", "messages" }` to the Worker in `workers/xsnow-chat` and reads `{ "reply" }` (OpenAI-style `choices` also work). CORS is an allowlist (never `*`): `https://maraudeurx-arch.github.io`, `https://opencommunity.app`, `https://www.opencommunity.app`, and local `localhost` / `127.0.0.1` (`:3000` and `:4173`). Other Origins get no `Access-Control-Allow-Origin`.
 
 ```bash
 cd workers/xsnow-chat
@@ -204,7 +204,7 @@ Deployed Worker: `https://xsnow-chat.xsnowopc.workers.dev`. Override with `NEXT_
 
 Visitor ideas stay **on that device**. Politzer’s real inbox is **opencommunity.opc@gmail.com**.
 
-1. Visitors submit **Your ideas**. The app stores locally **then** `POST`s a sanitized copy (sentence, city, date, OPC number if registered — no last name or phone) to `https://xsnow-chat.xsnowopc.workers.dev/ideas`. Offline: the idea stays here; the UI is honest if email did not go out.
+1. Visitors submit **Your ideas**. The app stores locally **then** automatically `POST`s a sanitized copy (sentence, city, date, OPC number if registered — no last name or phone) to `https://xsnow-chat.xsnowopc.workers.dev/ideas` — **no** `mailto:`, share sheet, Notification API, or permission dialog. Offline: the idea stays here; the UI is honest if email did not go out. The Worker must allow the site Origin (`github.io` and `opencommunity.app`) or the browser blocks the POST as a network error.
 2. Local registration (`My profile`) also `POST`s a notice (first name, OPC-XXXX, visitor email, city) to `/register`.
 3. Worker secrets (never commit):
 
