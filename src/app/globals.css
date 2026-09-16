@@ -17,17 +17,17 @@
   --home-nav-h: 2.15rem;
   --home-chip-h: 2.05rem;
   --home-avatar: min(11.5vw, 5.8dvh, 2.65rem);
-  --home-gap: 0.18rem;
-  /* Accueil: keep header→card gap tiny so leftover height feeds Nouvelles. */
-  --home-block-gap: 0.04rem;
+  --home-gap: 0.14rem;
+  /* Accueil: no header→card air — leftover height feeds Nouvelles. */
+  --home-block-gap: 0;
   /* Gaps inside the avatar/chat card — keep compact so news flex-grows hard. */
-  --home-stack-gap: 0.28rem;
+  --home-stack-gap: 0.24rem;
   /* Hairline between Nouvelles and the chat composer (not full stack gap). */
-  --home-news-chat-gap: 0.1rem;
-  --home-nav-gap: 0.22rem;
-  --home-chip-gap: 0.28rem;
-  --home-card-pad-x: 0.44rem;
-  --home-card-pad-y: 0.18rem;
+  --home-news-chat-gap: 0.08rem;
+  --home-nav-gap: 0.2rem;
+  --home-chip-gap: 0.26rem;
+  --home-card-pad-x: 0.4rem;
+  --home-card-pad-y: 0.14rem;
   --home-avatar-ring: 0.28rem;
   --brand-title: clamp(1.5rem, 7.4vw, 3rem);
   --brand-slogan: clamp(0.9rem, 3.8vw, 1.2rem);
@@ -53,37 +53,37 @@
 /* Safari / Chrome toolbars shrink dvh well below 844. */
 @media (max-height: 700px) {
   :root {
-    --home-logo: 2.15rem;
-    --home-nav-h: 2.05rem;
-    --home-chip-h: 1.95rem;
-    --home-avatar: min(11vw, 5.5dvh, 2.45rem);
-    --home-gap: 0.16rem;
-    --home-block-gap: 0.06rem;
-    --home-stack-gap: 0.26rem;
-    --home-news-chat-gap: 0.12rem;
-    --home-nav-gap: 0.2rem;
-    --home-chip-gap: 0.26rem;
-    --home-card-pad-x: 0.42rem;
-    --home-card-pad-y: 0.2rem;
-    --home-avatar-ring: 0.24rem;
+    --home-logo: 2.05rem;
+    --home-nav-h: 2rem;
+    --home-chip-h: 1.9rem;
+    --home-avatar: min(11vw, 5.3dvh, 2.4rem);
+    --home-gap: 0.12rem;
+    --home-block-gap: 0;
+    --home-stack-gap: 0.2rem;
+    --home-news-chat-gap: 0.08rem;
+    --home-nav-gap: 0.16rem;
+    --home-chip-gap: 0.22rem;
+    --home-card-pad-x: 0.36rem;
+    --home-card-pad-y: 0.12rem;
+    --home-avatar-ring: 0.2rem;
   }
 }
 
 @media (max-height: 620px) {
   :root {
-    --home-logo: 1.95rem;
-    --home-nav-h: 1.95rem;
-    --home-chip-h: 1.85rem;
-    --home-avatar: min(10vw, 4.9dvh, 2.25rem);
-    --home-gap: 0.12rem;
-    --home-block-gap: 0.04rem;
-    --home-stack-gap: 0.2rem;
-    --home-news-chat-gap: 0.1rem;
-    --home-nav-gap: 0.16rem;
-    --home-chip-gap: 0.2rem;
-    --home-card-pad-x: 0.36rem;
-    --home-card-pad-y: 0.14rem;
-    --home-avatar-ring: 0.2rem;
+    --home-logo: 1.85rem;
+    --home-nav-h: 1.85rem;
+    --home-chip-h: 1.8rem;
+    --home-avatar: min(10vw, 4.7dvh, 2.2rem);
+    --home-gap: 0.1rem;
+    --home-block-gap: 0;
+    --home-stack-gap: 0.16rem;
+    --home-news-chat-gap: 0.06rem;
+    --home-nav-gap: 0.14rem;
+    --home-chip-gap: 0.18rem;
+    --home-card-pad-x: 0.32rem;
+    --home-card-pad-y: 0.1rem;
+    --home-avatar-ring: 0.16rem;
   }
 }
 
@@ -140,7 +140,7 @@ body {
   position: relative;
   z-index: 30;
   flex-shrink: 0;
-  padding: 0.15rem 0.25rem 0.25rem;
+  padding: 0.05rem 0.25rem 0.12rem;
   text-align: center;
 }
 
@@ -211,6 +211,11 @@ body {
 }
 
 .app-stage:has(#home-guide) > .app-stage-main {
+  /* Nested 1fr grid (not only height:100%) so the Accueil card reliably
+     stretches to the sticky footer across Safari/Chrome mobile. */
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
   flex: none;
   align-self: stretch;
   height: 100%;
@@ -218,18 +223,21 @@ body {
   margin-top: 0;
   margin-bottom: 0;
   align-items: stretch;
-  justify-content: flex-start;
+  justify-content: stretch;
   /* Accueil menu lives in the header card; clip here so the two home cards
      cannot spill into each other or the footer. */
   overflow: hidden;
 }
 
 .app-stage:has(#home-guide) > .app-stage-main > #home-guide {
-  flex: 1 1 0%;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
   width: 100%;
   height: 100%;
   min-height: 0;
   max-height: 100%;
+  align-self: stretch;
 }
 
 /*
@@ -240,8 +248,10 @@ body {
 .app-stage:has(#home-guide) > .app-stage-main > #home-guide > .home-stage:has([data-neighborhood-news]) {
   display: grid;
   grid-template-rows: auto minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr);
   height: 100%;
   min-height: 0;
+  align-self: stretch;
   align-content: stretch;
 }
 
@@ -505,92 +515,111 @@ body {
  * partner slots). Compact top chrome; chat stays row 3; footer stays usable.
  */
 @media (max-width: 639px) {
+  .app-stage:has(#home-guide) {
+    gap: 0;
+  }
+
+  .app-stage:has(#home-guide) > .brand-banner {
+    padding: 0 0.2rem;
+  }
+
   .app-stage:has(#home-guide) > .brand-banner h1 {
-    font-size: clamp(1.12rem, 5.6vw, 2.25rem);
+    font-size: clamp(1.05rem, 5.3vw, 2.05rem);
+    line-height: 0.9;
   }
 
   .app-stage:has(#home-guide) > .brand-banner p {
     margin-top: 0;
-    font-size: clamp(0.7rem, 2.9vw, 0.94rem);
+    line-height: 1;
+    font-size: clamp(0.64rem, 2.7vw, 0.88rem);
   }
 
   .app-stage:has(#home-guide) .chrome-panel {
-    padding-top: 0.04rem;
-    padding-bottom: 0.04rem;
+    padding-top: 0;
+    padding-bottom: 0;
   }
 
   .app-stage:has(#home-guide) .chrome-panel nav {
-    margin-top: 0.08rem;
+    margin-top: 0.04rem;
   }
 
   .app-stage:has(#home-guide) > .app-stage-main > #home-guide > .home-stage:has([data-neighborhood-news]) {
     flex: none;
     height: 100%;
     min-height: 0;
+    /* Card itself claims the stage row — kills autumn-photo void above footer. */
+    align-self: stretch;
   }
 
   .app-stage:has(#home-guide) [data-neighborhood-news] {
     flex: 1 1 0%;
     align-self: stretch;
-    /* Clearly taller than #72 floors — leftover still flex-grows to the chat. */
-    min-height: max(22rem, 48dvh);
+    /* Clearer inventory than #74 — leftover still flex-grows to the chat. */
+    min-height: max(24rem, 52dvh);
   }
 
   .app-stage:has(#home-guide) [data-neighborhood-news] [data-news-body] {
     flex: 1 1 0%;
-    min-height: max(16rem, 34dvh);
+    min-height: max(18rem, 38dvh);
   }
 
   /* Headline list / loading spacer is the flex-grow inventory inside the green card. */
   .app-stage:has(#home-guide) [data-neighborhood-news] [data-news-list],
   .app-stage:has(#home-guide) [data-neighborhood-news] [data-news-spacer] {
     flex: 1 1 0%;
-    min-height: max(14rem, 28dvh);
+    min-height: max(16rem, 32dvh);
   }
 
   /* Same specificity as the grid child rule so floors beat base height fill. */
   .app-stage:has(#home-guide) > .app-stage-main > #home-guide > .home-stage:has([data-neighborhood-news]) > [data-neighborhood-news] {
-    min-height: max(22rem, 48dvh);
+    min-height: max(24rem, 52dvh);
+  }
+
+  /* Keep footer usable but snug so the card can hang down to it. */
+  .safe-frame:has(#home-guide) > footer {
+    margin-top: 0;
+    padding-top: 0;
+    padding-bottom: 0;
   }
 }
 
 /* Tall mobile: push Nouvelles harder into the card→footer inventory. */
 @media (max-width: 639px) and (min-height: 740px) {
   .app-stage:has(#home-guide) [data-neighborhood-news] {
-    min-height: max(25rem, 55dvh);
+    min-height: max(28rem, 60dvh);
   }
 
   .app-stage:has(#home-guide) [data-neighborhood-news] [data-news-body] {
-    min-height: max(18rem, 38dvh);
+    min-height: max(20rem, 42dvh);
   }
 
   .app-stage:has(#home-guide) [data-neighborhood-news] [data-news-list],
   .app-stage:has(#home-guide) [data-neighborhood-news] [data-news-spacer] {
-    min-height: max(16rem, 32dvh);
+    min-height: max(18rem, 36dvh);
   }
 
   .app-stage:has(#home-guide) > .app-stage-main > #home-guide > .home-stage:has([data-neighborhood-news]) > [data-neighborhood-news] {
-    min-height: max(25rem, 55dvh);
+    min-height: max(28rem, 60dvh);
   }
 }
 
 /* Short Safari/Chrome dvh: drop rem floors so chat + footer links stay on-screen. */
 @media (max-width: 639px) and (max-height: 660px) {
   .app-stage:has(#home-guide) [data-neighborhood-news] {
-    min-height: max(15rem, 38dvh);
+    min-height: max(14rem, 36dvh);
   }
 
   .app-stage:has(#home-guide) [data-neighborhood-news] [data-news-body] {
-    min-height: max(10rem, 22dvh);
+    min-height: max(9rem, 20dvh);
   }
 
   .app-stage:has(#home-guide) [data-neighborhood-news] [data-news-list],
   .app-stage:has(#home-guide) [data-neighborhood-news] [data-news-spacer] {
-    min-height: max(7rem, 14dvh);
+    min-height: max(6rem, 12dvh);
   }
 
   .app-stage:has(#home-guide) > .app-stage-main > #home-guide > .home-stage:has([data-neighborhood-news]) > [data-neighborhood-news] {
-    min-height: max(15rem, 38dvh);
+    min-height: max(14rem, 36dvh);
   }
 }
 

@@ -75,12 +75,12 @@ test.describe("Accueil neighbourhood news + partner slots", () => {
     expect(gap).toBeGreaterThanOrEqual(0);
     expect(gap).toBeLessThan(2);
     expect(newsBox!.height).toBeGreaterThan(chatBox!.height);
-    expect(newsBox!.height).toBeGreaterThan(420);
+    expect(newsBox!.height).toBeGreaterThan(450);
 
     const newsList = page.locator("[data-news-list], [data-news-spacer]");
     const listBox = await newsList.first().boundingBox();
     expect(listBox).toBeTruthy();
-    expect(listBox!.height).toBeGreaterThan(220);
+    expect(listBox!.height).toBeGreaterThan(250);
 
     const newsChatGap = chatBox!.y - (newsBox!.y + newsBox!.height);
     expect(newsChatGap).toBeGreaterThanOrEqual(-1);
@@ -175,11 +175,11 @@ test.describe("Accueil neighbourhood news + partner slots", () => {
     const gap = footerBox!.y - (cardBox!.y + cardBox!.height);
     expect(gap).toBeGreaterThanOrEqual(0);
     expect(gap).toBeLessThan(3);
-    expect(newsBox!.height).toBeGreaterThan(280);
+    expect(newsBox!.height).toBeGreaterThan(300);
     const spacer = page.locator("[data-news-spacer]");
     await expect(spacer).toBeVisible();
     const spacerBox = await spacer.boundingBox();
-    expect(spacerBox!.height).toBeGreaterThan(180);
+    expect(spacerBox!.height).toBeGreaterThan(200);
     await expect(page.getByRole("link", { name: "Gagner maintenant" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Partager" })).toBeVisible();
     await expect(page.locator("#avatar-chat")).toBeVisible();
