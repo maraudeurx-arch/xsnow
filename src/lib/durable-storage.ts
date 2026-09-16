@@ -1,27 +1,37 @@
 /**
- * Durable on-device key/value store for avatar, profile, ideas, and the
- * other `xsnow.*` facts.
+ * Durable on-device key/value store for avatar, profile, ideas, settings,
+ * and the other `xsnow.*` facts.
  *
- * Primary: localStorage (sync, same keys as today).
- * Backup: IndexedDB, because iOS standalone WebView (Add to Home Screen)
- * and some Android TWA/PWA launches can present an empty localStorage on
- * the first tick of a cold start, then recover — or, in older WKWebView,
- * drop localStorage while IndexedDB survives.
+ * Layers (best → fallback):
+ * 1. In-memory map (sync; survives until the document is torn down)
+ * 2. localStorage (sync, same `xsnow.*` keys as today)
+ * 3. sessionStorage (sync; same-tab refresh when localStorage is empty)
+ * 4. IndexedDB (async backup). iOS standalone WebView (Add to Home Screen)
+ *    and some Android TWA/PWA launches can present an empty localStorage on
+ *    the first tick of a cold start, then recover — or, in older WKWebView,
+ *    drop localStorage while IndexedDB survives.
  *
- * Never uses sessionStorage. Never deletes `xsnow.*` keys on boot.
+ * Reads prefer a non-empty local/session value, then the memory/IDB copy.
+ * Writes go to every layer. Empty/null values never overwrite a populated
+ * IndexedDB backup (boot-time empty localStorage must not wipe the profile).
+ *
+ * Never deletes `xsnow.*` keys on boot.
  */
 
-const IDB_NAME = "xsnow-device-memory";
-const IDB_STORE = "kv";
+export const DURABLE_IDB_NAME = "xsnow-device-memory";
+export const DURABLE_IDB_STORE = "kv";
 
-type AsyncKv = {
-  get(key: string): Promise<string | null>;
-  set(key: string, value: string): Promise<void>;
-};
+const IDB_NAME = DURABLE_IDB_NAME;
+const IDB_STORE = DURABLE_IDB_STORE;
 
 const listeners = new Set<() => void>();
+const hydrateListeners = new Set<() => void>();
+const memory = new Map<string, string>();
+
 let testBackup: Map<string, string> | null = null;
 let idbQueue: Promise<void> = Promise.resolve();
+let dbPromise: Promise<IDBDatabase> | null = null;
+let hydrated = false;
 
 export function subscribeDurableStorage(onChange: () => void) {
   listeners.add(onChange);
@@ -34,9 +44,32 @@ export function emitDurableStorage() {
   listeners.forEach((listener) => listener());
 }
 
+export function subscribeDurableHydrated(onChange: () => void) {
+  hydrateListeners.add(onChange);
+  return () => {
+    hydrateListeners.delete(onChange);
+  };
+}
+
+export function isDurableHydrated() {
+  return hydrated;
+}
+
+export function markDurableHydrated() {
+  if (hydrated) return;
+  hydrated = true;
+  hydrateListeners.forEach((listener) => listener());
+}
+
 /** Test helper — swap IndexedDB for an in-memory map. */
 export function setDurableBackupForTests(backup: Map<string, string> | null) {
   testBackup = backup;
+}
+
+/** Test helper — drop the in-memory cache / hydrated flag between cases. */
+export function resetDurableMemoryForTests() {
+  memory.clear();
+  hydrated = false;
 }
 
 function localStore(store?: Storage): Storage | undefined {
@@ -49,8 +82,17 @@ function localStore(store?: Storage): Storage | undefined {
   }
 }
 
-export function durableGet(key: string, store?: Storage): string | null {
-  const storage = localStore(store);
+function sessionStore(store?: Storage): Storage | undefined {
+  if (store) return undefined;
+  if (typeof window === "undefined") return undefined;
+  try {
+    return window.sessionStorage;
+  } catch {
+    return undefined;
+  }
+}
+
+function readSlot(storage: Storage | undefined, key: string): string | null {
   if (!storage) return null;
   try {
     return storage.getItem(key);
@@ -59,91 +101,24 @@ export function durableGet(key: string, store?: Storage): string | null {
   }
 }
 
-export function durableSet(key: string, value: string, store?: Storage) {
-  const storage = localStore(store);
-  if (storage) {
-    try {
-      storage.setItem(key, value);
-    } catch {
-      // Private mode / quota — still try the backup.
-    }
-  }
-  void mirrorToBackup(key, value);
-}
-
-function mirrorToBackup(key: string, value: string) {
-  if (testBackup) {
-    testBackup.set(key, value);
-    return Promise.resolve();
-  }
-  if (typeof indexedDB === "undefined") return Promise.resolve();
-  idbQueue = idbQueue
-    .then(() => idbSet(key, value))
-    .catch(() => {
-      // Backup is best-effort.
-    });
-  return idbQueue;
-}
-
-function idbApi(): AsyncKv {
-  return {
-    async get(key) {
-      const db = await openIdb();
-      return new Promise((resolve, reject) => {
-        const req = db.transaction(IDB_STORE, "readonly").objectStore(IDB_STORE).get(key);
-        req.onsuccess = () => {
-          const value = req.result;
-          resolve(typeof value === "string" ? value : null);
-        };
-        req.onerror = () => reject(req.error);
-      });
-    },
-    async set(key, value) {
-      const db = await openIdb();
-      return new Promise((resolve, reject) => {
-        const req = db.transaction(IDB_STORE, "readwrite").objectStore(IDB_STORE).put(value, key);
-        req.onsuccess = () => resolve();
-        req.onerror = () => reject(req.error);
-      });
-    },
-  };
-}
-
-function openIdb(): Promise<IDBDatabase> {
-  return new Promise((resolve, reject) => {
-    const req = indexedDB.open(IDB_NAME, 1);
-    req.onupgradeneeded = () => {
-      const db = req.result;
-      if (!db.objectStoreNames.contains(IDB_STORE)) db.createObjectStore(IDB_STORE);
-    };
-    req.onsuccess = () => resolve(req.result);
-    req.onerror = () => reject(req.error);
-  });
-}
-
-async function idbSet(key: string, value: string) {
-  await idbApi().set(key, value);
-}
-
-async function idbGet(key: string): Promise<string | null> {
+function writeSlot(storage: Storage | undefined, key: string, value: string) {
+  if (!storage) return false;
   try {
-    return await idbApi().get(key);
+    storage.setItem(key, value);
+    return true;
   } catch {
-    return null;
+    return false;
   }
 }
 
-async function backupGet(key: string): Promise<string | null> {
-  if (testBackup) return testBackup.get(key) ?? null;
-  if (typeof indexedDB === "undefined") return null;
-  return idbGet(key);
+export function isEmptyDurableValue(value: string | null | undefined) {
+  return value == null || value === "" || value === "null";
 }
 
 /** True when local is missing/blank and backup has a real value, or local is [] while backup has items. */
 export function shouldRestoreFromBackup(local: string | null, backup: string | null) {
-  if (!backup) return false;
-  if (local == null || local === "") return true;
-  if (local === "null") return true;
+  if (isEmptyDurableValue(backup) || backup == null) return false;
+  if (isEmptyDurableValue(local)) return true;
   if (local === "[]") {
     try {
       const parsed = JSON.parse(backup) as unknown;
@@ -155,29 +130,196 @@ export function shouldRestoreFromBackup(local: string | null, backup: string | n
   return false;
 }
 
+export function durableGet(key: string, store?: Storage): string | null {
+  const local = readSlot(localStore(store), key);
+  if (store) return local;
+
+  const cached = memory.get(key) ?? null;
+  if (shouldRestoreFromBackup(local, cached)) return cached;
+
+  if (!isEmptyDurableValue(local) && local != null) {
+    memory.set(key, local);
+    return local;
+  }
+
+  const session = readSlot(sessionStore(store), key);
+  if (shouldRestoreFromBackup(local, session) && session != null) {
+    memory.set(key, session);
+    return session;
+  }
+  if (!isEmptyDurableValue(session) && session != null) {
+    memory.set(key, session);
+    return session;
+  }
+
+  return local ?? cached ?? session ?? null;
+}
+
+export function durableSet(key: string, value: string, store?: Storage) {
+  if (!store) {
+    if (isEmptyDurableValue(value)) memory.delete(key);
+    else memory.set(key, value);
+  }
+  writeSlot(localStore(store), key, value);
+  writeSlot(sessionStore(store), key, value);
+  void mirrorToBackup(key, value);
+}
+
+function mirrorToBackup(key: string, value: string) {
+  if (isEmptyDurableValue(value)) return Promise.resolve();
+  if (testBackup) {
+    const existing = testBackup.get(key) ?? null;
+    if (!shouldRestoreFromBackup(value, existing)) testBackup.set(key, value);
+    return Promise.resolve();
+  }
+  if (typeof indexedDB === "undefined") return Promise.resolve();
+  idbQueue = idbQueue
+    .then(async () => {
+      const existing = await idbGet(key);
+      if (shouldRestoreFromBackup(value, existing)) return;
+      await idbSet(key, value);
+    })
+    .catch(() => {
+      // Backup is best-effort.
+    });
+  return idbQueue;
+}
+
+function openIdb(): Promise<IDBDatabase> {
+  if (dbPromise) return dbPromise;
+  dbPromise = new Promise((resolve, reject) => {
+    const req = indexedDB.open(IDB_NAME, 1);
+    req.onupgradeneeded = () => {
+      const db = req.result;
+      if (!db.objectStoreNames.contains(IDB_STORE)) db.createObjectStore(IDB_STORE);
+    };
+    req.onsuccess = () => {
+      const db = req.result;
+      db.onclose = () => {
+        dbPromise = null;
+      };
+      db.onversionchange = () => {
+        db.close();
+        dbPromise = null;
+      };
+      resolve(db);
+    };
+    req.onblocked = () => {
+      dbPromise = null;
+      reject(req.error ?? new Error("IndexedDB blocked"));
+    };
+    req.onerror = () => {
+      dbPromise = null;
+      reject(req.error);
+    };
+  });
+  return dbPromise;
+}
+
+async function idbSet(key: string, value: string) {
+  const db = await openIdb();
+  await new Promise<void>((resolve, reject) => {
+    const req = db.transaction(IDB_STORE, "readwrite").objectStore(IDB_STORE).put(value, key);
+    req.onsuccess = () => resolve();
+    req.onerror = () => reject(req.error);
+  });
+}
+
+async function idbGet(key: string): Promise<string | null> {
+  try {
+    const db = await openIdb();
+    return await new Promise((resolve, reject) => {
+      const req = db.transaction(IDB_STORE, "readonly").objectStore(IDB_STORE).get(key);
+      req.onsuccess = () => {
+        const value = req.result;
+        resolve(typeof value === "string" ? value : null);
+      };
+      req.onerror = () => reject(req.error);
+    });
+  } catch {
+    return null;
+  }
+}
+
+async function idbGetAll(): Promise<Map<string, string>> {
+  const out = new Map<string, string>();
+  try {
+    const db = await openIdb();
+    await new Promise<void>((resolve, reject) => {
+      const req = db.transaction(IDB_STORE, "readonly").objectStore(IDB_STORE).openCursor();
+      req.onsuccess = () => {
+        const cursor = req.result;
+        if (!cursor) {
+          resolve();
+          return;
+        }
+        if (typeof cursor.key === "string" && typeof cursor.value === "string") {
+          out.set(cursor.key, cursor.value);
+        }
+        cursor.continue();
+      };
+      req.onerror = () => reject(req.error);
+    });
+  } catch {
+    // Backup is best-effort.
+  }
+  return out;
+}
+
+async function backupGet(key: string): Promise<string | null> {
+  if (testBackup) return testBackup.get(key) ?? null;
+  if (typeof indexedDB === "undefined") return null;
+  return idbGet(key);
+}
+
+async function backupGetAll(): Promise<Map<string, string>> {
+  if (testBackup) return new Map(testBackup);
+  if (typeof indexedDB === "undefined") return new Map();
+  return idbGetAll();
+}
+
 /**
- * Copy backup → localStorage for any missing `xsnow.*` key.
+ * Copy backup → memory/localStorage/session for any missing `xsnow.*` key.
+ * Also backfills IndexedDB from local values that were never mirrored.
  * Does not delete keys. Returns the number of keys restored.
  */
 export async function hydrateDurableFromBackup(
-  keys: readonly string[],
+  keys: readonly string[] = [],
   store?: Storage,
 ): Promise<number> {
+  const backupMap = await backupGetAll();
+  const allKeys = new Set<string>([...keys, ...backupMap.keys()]);
   let restored = 0;
-  for (const key of keys) {
-    const local = durableGet(key, store);
-    const backup = await backupGet(key);
-    if (!shouldRestoreFromBackup(local, backup) || backup == null) continue;
-    const storage = localStore(store);
-    if (!storage) continue;
-    try {
-      storage.setItem(key, backup);
+  for (const key of allKeys) {
+    const local = readSlot(localStore(store), key);
+    const backup = backupMap.get(key) ?? (await backupGet(key));
+    if (shouldRestoreFromBackup(local, backup) && backup != null) {
+      if (!store) memory.set(key, backup);
+      writeSlot(localStore(store), key, backup);
+      writeSlot(sessionStore(store), key, backup);
       restored += 1;
-    } catch {
-      // Private mode
+      continue;
+    }
+    if (!isEmptyDurableValue(local) && local != null) {
+      if (!store) memory.set(key, local);
+      writeSlot(sessionStore(store), key, local);
+      if (isEmptyDurableValue(backup)) void mirrorToBackup(key, local);
     }
   }
   return restored;
+}
+
+export function flushDurableBackup() {
+  return idbQueue;
+}
+
+export function requestPersistentStorage() {
+  if (typeof navigator === "undefined") return;
+  const storage = navigator.storage;
+  if (!storage || typeof storage.persist !== "function") return;
+  void storage.persist().catch(() => {
+    // Safari often returns false — ignore.
+  });
 }
 
 /** Re-read storage after iOS/Android standalone resume (pageshow / visible / focus). */
@@ -188,13 +330,18 @@ export function listenForAppResume(onResume: () => void) {
   const onVisibility = () => {
     if (document.visibilityState === "visible") onResume();
   };
+  const onPageHide = () => {
+    void flushDurableBackup();
+  };
   window.addEventListener("pageshow", onPageShow);
   window.addEventListener("focus", onFocus);
   document.addEventListener("visibilitychange", onVisibility);
+  window.addEventListener("pagehide", onPageHide);
   return () => {
     window.removeEventListener("pageshow", onPageShow);
     window.removeEventListener("focus", onFocus);
     document.removeEventListener("visibilitychange", onVisibility);
+    window.removeEventListener("pagehide", onPageHide);
   };
 }
 

@@ -14,6 +14,7 @@ import {
 } from "react";
 import { useSearchParams } from "next/navigation";
 import { useI18n } from "@/lib/i18n/locale";
+import { subscribeDurableStorage } from "@/lib/durable-storage";
 import {
   brandingForPlace,
   coordsOnlyPlace,
@@ -120,8 +121,13 @@ function PlaceProviderInner({ children }: { children: ReactNode }) {
 
   const subscribe = useCallback((onStoreChange: () => void) => {
     listeners.add(onStoreChange);
+    const stopDurable = subscribeDurableStorage(() => {
+      cached = undefined;
+      onStoreChange();
+    });
     return () => {
       listeners.delete(onStoreChange);
+      stopDurable();
     };
   }, []);
 

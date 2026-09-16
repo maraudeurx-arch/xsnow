@@ -1,5 +1,11 @@
 /** Must match `basePath` in next.config.ts (GitHub Pages project site). */
 export const BASE_PATH = "/xsnow";
+/**
+ * PWA identity / Home Screen launch URL.
+ * Next 16 `output: "export"` leaves MetadataRoute.Manifest paths unprefixed,
+ * so this must already include `basePath`. `/` opens github.io, not the app.
+ */
+export const PWA_SCOPE = `${BASE_PATH}/`;
 export const PRIVACY_HREF = "/vie-privee";
 export const TERMS_HREF = "/conditions";
 export const ABOUT_HREF = "/about";

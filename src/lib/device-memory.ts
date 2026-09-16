@@ -1,13 +1,14 @@
 /**
- * Durable on-device memory (localStorage). Soft-launch privacy: nothing here
- * is a remote account. A fresh browser starts empty.
+ * Durable on-device memory (localStorage + IndexedDB backup). Soft-launch
+ * privacy: nothing here is a remote account. A fresh browser starts empty.
  *
  * Keys keep their existing names (`xsnow.*`). DEVICE_MEMORY_VERSION is stored
  * so a later rename can migrate without wiping visitor data.
  *
  * Welcome-played used to live in sessionStorage (`xsnow.welcomePlayed`), which
- * made returning visits replay the spoken welcome. It now lives in localStorage;
- * a one-shot copy from sessionStorage preserves the current tab.
+ * made returning visits replay the spoken welcome. It now lives in localStorage
+ * (and the IndexedDB mirror); a one-shot copy from sessionStorage preserves the
+ * current tab.
  */
 
 import { AVATAR_STORAGE_KEY, isAvatarId, type AvatarId } from "./avatars.ts";

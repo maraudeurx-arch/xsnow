@@ -20,6 +20,7 @@ import {
 import {
   setDurableBackupForTests,
   shouldRestoreFromBackup,
+  resetDurableMemoryForTests,
 } from "./durable-storage.ts";
 import { profileFromForm, readLocalProfile, writeLocalProfile } from "./local-profile.ts";
 
@@ -206,6 +207,7 @@ describe("standalone cold-start restore", () => {
       assert.equal(memory.ideas[0]?.text, "Prêter une perceuse");
     } finally {
       setDurableBackupForTests(null);
+      resetDurableMemoryForTests();
     }
   });
 
@@ -234,6 +236,30 @@ describe("standalone cold-start restore", () => {
       assert.equal(readStoredIdeas(local)[0]?.text, "Ancienne idée");
     } finally {
       setDurableBackupForTests(null);
+      resetDurableMemoryForTests();
+    }
+  });
+
+  it("restores language and consents from backup with the profile", async () => {
+    const local = memoryStore();
+    const backup = new Map<string, string>();
+    setDurableBackupForTests(backup);
+    resetDurableMemoryForTests();
+    try {
+      local.setItem(DEVICE_KEYS.lang, JSON.stringify("en"));
+      local.setItem(DEVICE_KEYS.geoConsent, JSON.stringify("granted"));
+      local.setItem(DEVICE_KEYS.analyticsConsent, JSON.stringify("denied"));
+      writeStoredAvatar("homme-blanc", local);
+      await restoreDeviceMemoryFromBackup(local);
+      local.clear();
+      await restoreDeviceMemoryFromBackup(local);
+      assert.equal(local.getItem(DEVICE_KEYS.lang), JSON.stringify("en"));
+      assert.equal(local.getItem(DEVICE_KEYS.geoConsent), JSON.stringify("granted"));
+      assert.equal(local.getItem(DEVICE_KEYS.analyticsConsent), JSON.stringify("denied"));
+      assert.equal(readStoredAvatar(local), "homme-blanc");
+    } finally {
+      setDurableBackupForTests(null);
+      resetDurableMemoryForTests();
     }
   });
 });
