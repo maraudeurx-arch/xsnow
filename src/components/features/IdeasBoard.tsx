@@ -48,10 +48,11 @@ export function IdeasBoard() {
   const [items, setStored] = useStoredList<CommunityIdea>(IDEAS_KEY);
   const [form, setForm] = useState<IdeaFormInput>(emptyIdeaForm);
   const [error, setError] = useState(false);
-  const [thanks, setThanks] = useState(false);
+  const [received, setReceived] = useState(false);
   const [busy, setBusy] = useState(false);
   const formRef = useRef<HTMLFormElement | null>(null);
   const textArea = useRef<HTMLTextAreaElement | null>(null);
+  const focusAfterReset = useRef(false);
 
   useEffect(() => {
     const draft = readIdeaDraft();
@@ -70,6 +71,12 @@ export function IdeasBoard() {
       }, 50);
     }
   }, []);
+
+  useEffect(() => {
+    if (received || !focusAfterReset.current) return;
+    focusAfterReset.current = false;
+    textArea.current?.focus();
+  }, [received]);
 
   function patchList(next: CommunityIdea[]) {
     setStored(next);
@@ -105,13 +112,36 @@ export function IdeasBoard() {
     noteIdeaSubmit(idea.involvement.join("+") || "text");
     setForm(emptyIdeaForm());
     setError(false);
-    setThanks(true);
+    setReceived(true);
     setBusy(true);
     try {
       await sendInbox(idea);
     } finally {
       setBusy(false);
     }
+  }
+
+  function addAnother() {
+    focusAfterReset.current = true;
+    setReceived(false);
+    setForm(emptyIdeaForm());
+    setError(false);
+  }
+
+  if (received) {
+    return (
+      <div className="space-y-3" data-idea-receipt>
+        <div role="status" aria-live="polite" className="space-y-3">
+          <h3 className="font-[family-name:var(--font-fraunces)] text-xl font-extrabold text-balance text-snow">
+            {copy.thankYou}
+          </h3>
+          <p className="text-sm leading-relaxed text-pretty text-ice/85">{copy.thankYouBody}</p>
+        </div>
+        <button type="button" className={ctaClass} onClick={addAnother} disabled={busy}>
+          {copy.newIdea}
+        </button>
+      </div>
+    );
   }
 
   return (
@@ -155,13 +185,6 @@ export function IdeasBoard() {
           {copy.submit}
         </button>
       </form>
-
-      {thanks ? (
-        <div className="space-y-1 rounded-2xl border border-gold/35 bg-gold/10 p-3" role="status" data-idea-thanks>
-          <p className="text-sm font-extrabold text-gold">{copy.thankYou}</p>
-          <p className="text-xs leading-relaxed text-snow/85">{copy.thankYouBody}</p>
-        </div>
-      ) : null}
 
       <section className="space-y-2" data-idea-wall>
         <h3 className="text-sm font-extrabold text-snow">{copy.wallTitle}</h3>

@@ -41,19 +41,22 @@ export const es: Messages = {
     offres: "Ofertas",
   },
   install: {
-    tip: "En iPhone (Safari): Compartir → Añadir a pantalla de inicio. Luego la app se abre como un icono.",
+    tip: "En iPhone (Safari): abre https://maraudeurx-arch.github.io/xsnow/ y luego Compartir → Añadir a pantalla de inicio.",
     tipAndroid:
-      "En Android (Chrome): menú ⋮ → Instalar la app, o Añadir a pantalla de inicio. Luego la app se abre como un icono.",
+      "En Android (Chrome): abre https://maraudeurx-arch.github.io/xsnow/ y luego menú ⋮ → Instalar la app, o Añadir a pantalla de inicio.",
     dismiss: "Entendido",
     profileTitle: "Poner OPC en la pantalla de inicio",
     profileLead:
-      "Open Community es una app web, no está en el App Store. En iPhone, abre el enlace en Safari y añádela a la pantalla de inicio para abrirla como un icono.",
+      "Open Community es una app web, no está en el App Store. En iPhone, abre primero https://maraudeurx-arch.github.io/xsnow/ en Safari y luego añádela a la pantalla de inicio.",
+    siteUrlLabel: "Dirección exacta para abrir en Safari",
     iphoneHeading: "iPhone (Safari)",
     iphoneSteps: [
-      "Abre Open Community en Safari (el navegador de Apple — no Chrome).",
+      "Abre exactamente https://maraudeurx-arch.github.io/xsnow/ en Safari (el navegador de Apple — no Chrome).",
       "Toca Compartir — el cuadrado con la flecha hacia arriba, abajo en la pantalla.",
       "Desplázate y elige Añadir a pantalla de inicio, luego Añadir.",
     ],
+    wrongShortcut:
+      "Si el icono abre « There isn’t a GitHub Pages site here », no es OPC: el acceso apunta a maraudeurx-arch.github.io sin /xsnow/. Borra el icono, abre la dirección de arriba en Safari y añádela de nuevo.",
   },
   guide: {
     pickAvatar: "Elige tu avatar",
@@ -501,6 +504,8 @@ export const es: Messages = {
   },
   notFound: {
     title: "Página no encontrada",
+    githubPagesHint:
+      "Si ves « There isn’t a GitHub Pages site here », abre https://maraudeurx-arch.github.io/xsnow/ — OPC no está en la raíz de github.io.",
     back: "Volver a Inicio",
   },
   logoAria: "Open Community",
@@ -920,9 +925,9 @@ export const es: Messages = {
     registerHint: "La inscripción local (número OPC) se queda en este aparato:",
     registerLink: "Inscribirse",
     registeredHint: "Número local de este aparato:",
-    thankYou: "Gracias — formas parte de aquí.",
+    thankYou: "Idea bien recibida",
     thankYouBody:
-      "Tu idea está en el muro de este aparato. Otros teléfonos no la ven hasta que GOV + el propietario la aprueben en una versión numerada. Una copia saneada va a la bandeja del propietario. Añade otra si quieres.",
+      "Gracias. Tu idea está guardada en este aparato. Otros teléfonos no la ven hasta que GOV + el propietario la aprueben en una versión numerada. Una copia saneada (frase, ciudad, fecha) va a la bandeja del propietario.",
     wallTitle: "Muro de ideas (este aparato)",
     wallHint:
       "Tus ideas se quedan aquí. No aparecen en otro teléfono. El propietario compila las copias recibidas aparte, para decidir qué construir.",
@@ -938,7 +943,7 @@ export const es: Messages = {
     shareCopied: "Copiado.",
     shareFailed: "No se pudo copiar. El texto está abajo: selecciónalo.",
     hoursLine: "{hours} h / semana",
-    newIdea: "Otra idea",
+    newIdea: "Añadir otra idea",
     shareHeading: "Idea Open Community",
     catalogBadge: "Catálogo",
   },

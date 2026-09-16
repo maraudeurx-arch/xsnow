@@ -39,19 +39,22 @@ export const fr = {
     offres: "Offres",
   },
   install: {
-    tip: "Sur iPhone (Safari) : Partager → Sur l’écran d’accueil. L’app s’ouvre ensuite comme une icône.",
+    tip: "Sur iPhone (Safari) : ouvre https://maraudeurx-arch.github.io/xsnow/ puis Partager → Sur l’écran d’accueil.",
     tipAndroid:
-      "Sur Android (Chrome) : menu ⋮ → Installer l’app, ou Ajouter à l’écran d’accueil. L’app s’ouvre ensuite comme une icône.",
+      "Sur Android (Chrome) : ouvre https://maraudeurx-arch.github.io/xsnow/ puis menu ⋮ → Installer l’app, ou Ajouter à l’écran d’accueil.",
     dismiss: "Compris",
     profileTitle: "Mettre OPC sur l’écran d’accueil",
     profileLead:
-      "Open Community est une app web, pas une app de l’App Store. Sur iPhone, ouvre le lien dans Safari et ajoute-la à l’écran d’accueil pour l’ouvrir comme une icône.",
+      "Open Community est une app web, pas une app de l’App Store. Sur iPhone, ouvre d’abord https://maraudeurx-arch.github.io/xsnow/ dans Safari, puis ajoute-la à l’écran d’accueil.",
+    siteUrlLabel: "Adresse exacte à ouvrir dans Safari",
     iphoneHeading: "iPhone (Safari)",
     iphoneSteps: [
-      "Ouvre Open Community dans Safari (le navigateur d’Apple — pas Chrome).",
+      "Ouvre exactement https://maraudeurx-arch.github.io/xsnow/ dans Safari (le navigateur d’Apple — pas Chrome).",
       "Touche Partager — le carré avec la flèche vers le haut, en bas de l’écran.",
       "Fais défiler et choisis Sur l’écran d’accueil, puis Ajouter.",
     ],
+    wrongShortcut:
+      "Si l’icône ouvre « There isn’t a GitHub Pages site here », ce n’est pas OPC : le raccourci pointe vers maraudeurx-arch.github.io sans /xsnow/. Supprime l’icône, ouvre l’adresse ci-dessus dans Safari, puis ajoute-la de nouveau.",
   },
   guide: {
     pickAvatar: "Choisis ton avatar",
@@ -499,6 +502,8 @@ export const fr = {
   },
   notFound: {
     title: "Page introuvable",
+    githubPagesHint:
+      "Si tu vois « There isn’t a GitHub Pages site here », ouvre https://maraudeurx-arch.github.io/xsnow/ — OPC n’est pas à la racine github.io.",
     back: "Retour à Accueil",
   },
   logoAria: "Open Community",
@@ -909,9 +914,9 @@ export const fr = {
     registerHint: "L’inscription locale (numéro OPC) reste sur cet appareil :",
     registerLink: "S’inscrire",
     registeredHint: "Numéro local de cet appareil :",
-    thankYou: "Merci — tu fais partie d’ici.",
+    thankYou: "Idée bien reçue",
     thankYouBody:
-      "Ton idée est sur le mur de cet appareil. Les autres téléphones ne la voient pas tant que GOV + propriétaire ne l’approuvent pas dans une version numérotée. Une copie assainie va dans la boîte du propriétaire. Ajoute-en une autre si tu veux.",
+      "Merci. Ton idée est enregistrée sur cet appareil. Les autres téléphones ne la voient pas tant que GOV + propriétaire ne l’approuvent pas dans une version numérotée. Une copie assainie (phrase, ville, date) va dans la boîte du propriétaire.",
     wallTitle: "Mur d’idées (cet appareil)",
     wallHint:
       "Tes idées restent ici. Elles n’apparaissent pas sur un autre téléphone. Le propriétaire compile les copies reçues à part, pour décider quoi construire.",
@@ -927,7 +932,7 @@ export const fr = {
     shareCopied: "Texte copié.",
     shareFailed: "Copie impossible. Le texte est affiché : sélectionnez-le.",
     hoursLine: "{hours} h / semaine",
-    newIdea: "Autre idée",
+    newIdea: "Ajouter une autre idée",
     shareHeading: "Idée Open Community",
     catalogBadge: "Catalogue",
   },
