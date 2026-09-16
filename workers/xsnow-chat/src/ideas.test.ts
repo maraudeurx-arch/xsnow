@@ -5,13 +5,16 @@ import {
   escapeHtml,
   handleIdeasGet,
   handleIdeasPost,
+  handleRegisterPost,
   insertInboxIdea,
   isIdeasPath,
+  isRegisterPath,
   listInboxIdeas,
   ownerAuthorized,
   renderOwnerHtml,
   secretsEqual,
   type IdeasEnv,
+  type OwnerMailer,
 } from "./ideas.ts";
 import type { D1Bound, D1Like } from "./stats.ts";
 
@@ -88,11 +91,17 @@ function memoryD1(seed: EventRow[] = []): D1Like & { rows: EventRow[] } {
   };
 }
 
+const sentMailer: OwnerMailer = async () => ({ sent: true });
+const failedMailer: OwnerMailer = async () => ({ sent: false, reason: "network" });
+
 describe("ideas path", () => {
-  it("matches /ideas with or without a trailing slash", () => {
+  it("matches /ideas and /register with or without a trailing slash", () => {
     assert.equal(isIdeasPath("/ideas"), true);
     assert.equal(isIdeasPath("/ideas/"), true);
     assert.equal(isIdeasPath("/stats"), false);
+    assert.equal(isRegisterPath("/register"), true);
+    assert.equal(isRegisterPath("/register/"), true);
+    assert.equal(isRegisterPath("/ideas"), false);
   });
 });
 
@@ -131,9 +140,11 @@ describe("handleIdeasPost", () => {
       { id: "idea-1", text: "<b>Déneiger les allées</b>", city: "Gatineau" },
       { DB: db },
       now,
+      sentMailer,
     );
     assert.equal(result.status, 200);
     assert.equal((result.data as { ok?: boolean }).ok, true);
+    assert.equal((result.data as { emailed?: boolean }).emailed, true);
     assert.equal(db.rows.length, 1);
     assert.equal(db.rows[0]?.type, IDEA_EVENT_TYPE);
     assert.equal(db.rows[0]?.suggestion?.includes("<"), false);
@@ -145,17 +156,56 @@ describe("handleIdeasPost", () => {
   it("rejects short or empty text and reports unpersisted when D1 is missing", async () => {
     const bad = await handleIdeasPost({ text: "no" }, {});
     assert.equal(bad.status, 400);
-    const noDb = await handleIdeasPost({ text: "Une vraie idée de quartier" }, {});
+    const noDb = await handleIdeasPost({ text: "Une vraie idée de quartier" }, {}, Date.now(), sentMailer);
     assert.equal(noDb.status, 200);
     assert.equal((noDb.data as { persisted?: boolean }).persisted, false);
+    assert.equal((noDb.data as { emailed?: boolean }).emailed, true);
+  });
+
+  it("still returns 200 and keeps D1 when mail fails", async () => {
+    const db = memoryD1();
+    const result = await handleIdeasPost(
+      { text: "Une vraie idée de quartier", city: "Hull" },
+      { DB: db },
+      30,
+      failedMailer,
+    );
+    assert.equal(result.status, 200);
+    assert.equal((result.data as { persisted?: boolean }).persisted, true);
+    assert.equal((result.data as { emailed?: boolean }).emailed, false);
+    assert.equal(db.rows.length, 1);
   });
 
   it("is idempotent on the same id", async () => {
     const db = memoryD1();
     const body = { id: "same-id", text: "Partager une perceuse le samedi", city: "Hull" };
-    await handleIdeasPost(body, { DB: db }, 10);
-    await handleIdeasPost(body, { DB: db }, 20);
+    await handleIdeasPost(body, { DB: db }, 10, sentMailer);
+    await handleIdeasPost(body, { DB: db }, 20, sentMailer);
     assert.equal(db.rows.length, 1);
+  });
+});
+
+describe("handleRegisterPost", () => {
+  it("emails a sanitized notice and rejects junk", async () => {
+    const mails: unknown[] = [];
+    const mailer: OwnerMailer = async (_env, mail) => {
+      mails.push(mail);
+      return { sent: true };
+    };
+    const ok = await handleRegisterPost(
+      { firstName: "Marie", opcId: "OPC-7K3M", email: "marie@voisin.test", city: "Hull", phone: "819" },
+      {},
+      40,
+      mailer,
+    );
+    assert.equal(ok.status, 200);
+    assert.deepEqual(ok.data, { ok: true, emailed: true });
+    const text = String((mails[0] as { text?: string })?.text || "");
+    assert.match(text, /Marie/);
+    assert.match(text, /OPC-7K3M/);
+    assert.doesNotMatch(text, /819/);
+    const bad = await handleRegisterPost({ firstName: "Marie" }, {});
+    assert.equal(bad.status, 400);
   });
 });
 

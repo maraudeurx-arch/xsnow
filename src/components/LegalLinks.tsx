@@ -14,7 +14,7 @@ export function LegalLinks({ className = "" }: { className?: string }) {
           {index > 0 ? <span className="px-0.5 text-snow/50"> · </span> : null}
           <Link
             href={hrefWithLang(item.href, locale, source)}
-            className="inline-block px-0.5 font-extrabold text-gold hover:underline"
+            className="inline-block px-0.5 py-px font-extrabold text-gold hover:underline"
           >
             {m.footer[item.footerKey]}
           </Link>

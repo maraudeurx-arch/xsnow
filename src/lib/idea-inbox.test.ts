@@ -8,6 +8,8 @@ import {
   ownerIdeasExportName,
   parseIdeaInboxInput,
   postIdeaToInbox,
+  postRegisterNotice,
+  registerNoticeEndpoint,
 } from "./idea-inbox.ts";
 
 describe("parseIdeaInboxInput", () => {
@@ -29,6 +31,13 @@ describe("parseIdeaInboxInput", () => {
     assert.equal(xss?.text.includes("javascript:"), false);
     assert.match(xss?.text ?? "", /Partager une perceuse/);
     assert.equal(xss?.city.includes("<"), false);
+    const withOpc = parseIdeaInboxInput({
+      text: "Partager une perceuse",
+      city: "Hull",
+      opcId: "OPC-7K3M",
+    });
+    assert.equal(withOpc?.opcId, "OPC-7K3M");
+    assert.equal(parseIdeaInboxInput({ text: "Partager une perceuse", opcId: "nope" })?.opcId, "");
   });
 
   it("does not keep emails in city or text", () => {
@@ -79,17 +88,17 @@ describe("ideasInboxEndpoint", () => {
 });
 
 describe("postIdeaToInbox / fetchOwnerIdeaInbox", () => {
-  it("POSTs sanitized JSON and treats ok as sent", async () => {
+  it("POSTs sanitized JSON and treats emailed as sent", async () => {
     const calls: Array<{ url: string; init: RequestInit }> = [];
     const fakeFetch: typeof fetch = async (input, init) => {
       calls.push({ url: String(input), init: init || {} });
-      return new Response(JSON.stringify({ ok: true, persisted: true }), {
+      return new Response(JSON.stringify({ ok: true, persisted: true, emailed: true }), {
         status: 200,
         headers: { "Content-Type": "application/json" },
       });
     };
     const result = await postIdeaToInbox(
-      { id: "idea-1", text: "Un café de réparation vélo", city: "Aylmer" },
+      { id: "idea-1", text: "Un café de réparation vélo", city: "Aylmer", opcId: "OPC-7K3M" },
       fakeFetch,
     );
     assert.equal(result, "sent");
@@ -98,7 +107,20 @@ describe("postIdeaToInbox / fetchOwnerIdeaInbox", () => {
     const body = JSON.parse(String(calls[0]?.init.body));
     assert.equal(body.text, "Un café de réparation vélo");
     assert.equal(body.city, "Aylmer");
+    assert.equal(body.opcId, "OPC-7K3M");
     assert.equal(body.text.includes("<"), false);
+  });
+
+  it("treats ok without emailed as failed (honest if Resend is unset)", async () => {
+    const fakeFetch: typeof fetch = async () =>
+      new Response(JSON.stringify({ ok: true, persisted: true }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      });
+    assert.equal(
+      await postIdeaToInbox({ id: "x", text: "Déneiger les allées", city: "" }, fakeFetch),
+      "failed",
+    );
   });
 
   it("returns failed on network errors without throwing", async () => {
@@ -106,6 +128,39 @@ describe("postIdeaToInbox / fetchOwnerIdeaInbox", () => {
       throw new Error("offline");
     };
     assert.equal(await postIdeaToInbox({ id: "x", text: "Déneiger", city: "" }, fakeFetch), "failed");
+  });
+
+  it("POSTs a registration notice to /register and soft-fails offline", async () => {
+    const calls: Array<{ url: string; init: RequestInit }> = [];
+    const fakeFetch: typeof fetch = async (input, init) => {
+      calls.push({ url: String(input), init: init || {} });
+      return new Response(JSON.stringify({ ok: true, emailed: true }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      });
+    };
+    assert.equal(
+      registerNoticeEndpoint("https://xsnow-chat.xsnowopc.workers.dev"),
+      "https://xsnow-chat.xsnowopc.workers.dev/register",
+    );
+    assert.equal(
+      await postRegisterNotice(
+        { firstName: "Marie", opcId: "OPC-7K3M", email: "marie@voisin.test", city: "Hull" },
+        fakeFetch,
+      ),
+      "sent",
+    );
+    assert.match(calls[0]?.url ?? "", /\/register$/);
+    const offline: typeof fetch = async () => {
+      throw new Error("offline");
+    };
+    assert.equal(
+      await postRegisterNotice(
+        { firstName: "Marie", opcId: "OPC-7K3M", email: "marie@voisin.test", city: "" },
+        offline,
+      ),
+      "failed",
+    );
   });
 
   it("GETs the owner list with a bearer secret and rejects empty secret", async () => {

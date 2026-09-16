@@ -119,18 +119,30 @@ npx wrangler deploy
 
 Le Worker déployé est `https://xsnow-chat.xsnowopc.workers.dev`. Pour un autre compte, coller la nouvelle URL dans `NEXT_PUBLIC_CHAT_API_URL` (variable Actions du même nom) ou dans `CHAT_API_FALLBACK_URL`. Après un changement de Worker (`/geo`, `/news`, `/ideas` inclus), `npx wrangler deploy` depuis `workers/xsnow-chat`.
 
-### Boîte d’idées (propriétaire)
+### Boîte d’idées (propriétaire) — e-mail requis
 
-Les idées restent **sur l’appareil du visiteur**. Il n’y a pas de compte serveur. Pour que Politzer puisse **compiler** ce que les gens proposent :
+Les idées restent **sur l’appareil du visiteur**. La vraie boîte de Politzer, c’est **opencommunity.opc@gmail.com**.
 
-1. Le visiteur envoie depuis **Vos idées**. L’app enregistre en local **et** `POST` une copie assainie (phrase, ville, date — pas de nom, e-mail, téléphone, ni OPC-XXXX) vers `https://xsnow-chat.xsnowopc.workers.dev/ideas`.
-2. Configurer le secret (une fois) : `cd workers/xsnow-chat && npx wrangler secret put IDEAS_OWNER_SECRET` puis `npx wrangler deploy`.
-3. Ouvrir la boîte :
+1. Le visiteur envoie depuis **Vos idées**. L’app enregistre en local **puis** `POST` une copie assainie (phrase, ville, date, numéro OPC si inscrit — pas de nom de famille ni téléphone) vers `https://xsnow-chat.xsnowopc.workers.dev/ideas`. Hors ligne : l’idée reste ici ; message honnête si l’e-mail n’est pas parti.
+2. Une inscription locale (`Mon profil`) envoie aussi un avis (prénom, OPC-XXXX, e-mail visiteur, ville) via `POST /register`.
+3. Secrets Worker (jamais dans git) :
+
+```bash
+cd workers/xsnow-chat
+npx wrangler secret put RESEND_API_KEY      # obligatoire pour l’e-mail
+npx wrangler secret put IDEAS_FROM_EMAIL    # optionnel ; From vérifié chez Resend. Défaut : beth.t@example.com
+npx wrangler secret put IDEAS_OWNER_SECRET  # optionnel ; page de compilation
+npx wrangler deploy
+```
+
+Le `To:` est **codé en dur** (`opencommunity.opc@gmail.com`) — un visiteur ne peut pas le rediriger. Resend exige un domaine d’envoi vérifié pour livrer vers Gmail (le From `beth.t@example.com` ne sert qu’aux tests Resend).
+
+4. Compilation optionnelle (D1), si `IDEAS_OWNER_SECRET` est posé :
    - HTML : `https://xsnow-chat.xsnowopc.workers.dev/ideas?secret=…`
    - JSON : la même URL avec `&format=json`
-   - Page app (non listée dans le menu) : `/xsnow/proprietaire/idees/?secret=…`
+   - Page app (non listée) : `/xsnow/proprietaire/idees/?secret=…`
 
-Sans secret, GET renvoie 401. La page vide n’invente **aucune** idée. Les autres téléphones ne voient toujours pas le mur local d’un visiteur.
+Sans `RESEND_API_KEY`, `POST /ideas` répond `{ ok: true, emailed: false }` — le client affiche l’échec e-mail et garde la copie locale. La page vide n’invente **aucune** idée.
 
 ### Ville du visiteur (géolocalisation)
 
@@ -186,20 +198,32 @@ npx wrangler login
 npx wrangler deploy
 ```
 
-Deployed Worker: `https://xsnow-chat.xsnowopc.workers.dev`. Override with `NEXT_PUBLIC_CHAT_API_URL` (GitHub Actions variable of the same name) or `CHAT_API_FALLBACK_URL` in `src/lib/llm.ts`. Redeploy after adding `/geo`, `/news`, or `/ideas`.
+Deployed Worker: `https://xsnow-chat.xsnowopc.workers.dev`. Override with `NEXT_PUBLIC_CHAT_API_URL` (GitHub Actions variable of the same name) or `CHAT_API_FALLBACK_URL` in `src/lib/llm.ts`. Redeploy after adding `/geo`, `/news`, `/ideas`, or `/register`.
 
-### Owner idea inbox
+### Owner idea inbox (email required)
 
-Visitor ideas stay **on that device**. There is no server account. To compile what people propose:
+Visitor ideas stay **on that device**. Politzer’s real inbox is **opencommunity.opc@gmail.com**.
 
-1. Visitors submit **Your ideas**. The app stores locally **and** `POST`s a sanitized copy (sentence, city, date — no name, email, phone, or OPC-XXXX) to `https://xsnow-chat.xsnowopc.workers.dev/ideas`.
-2. Set the secret once: `cd workers/xsnow-chat && npx wrangler secret put IDEAS_OWNER_SECRET` then `npx wrangler deploy`.
-3. Open the inbox:
+1. Visitors submit **Your ideas**. The app stores locally **then** `POST`s a sanitized copy (sentence, city, date, OPC number if registered — no last name or phone) to `https://xsnow-chat.xsnowopc.workers.dev/ideas`. Offline: the idea stays here; the UI is honest if email did not go out.
+2. Local registration (`My profile`) also `POST`s a notice (first name, OPC-XXXX, visitor email, city) to `/register`.
+3. Worker secrets (never commit):
+
+```bash
+cd workers/xsnow-chat
+npx wrangler secret put RESEND_API_KEY      # required to send mail
+npx wrangler secret put IDEAS_FROM_EMAIL    # optional verified Resend From. Default: beth.t@example.com
+npx wrangler secret put IDEAS_OWNER_SECRET  # optional compile page
+npx wrangler deploy
+```
+
+`To:` is **hardcoded** (`opencommunity.opc@gmail.com`) — visitors cannot redirect it. Resend needs a verified sending domain to deliver to Gmail (`beth.t@example.com` is test-only).
+
+4. Optional D1 compile page if `IDEAS_OWNER_SECRET` is set:
    - HTML: `https://xsnow-chat.xsnowopc.workers.dev/ideas?secret=…`
    - JSON: same URL with `&format=json`
    - Unlisted app page: `/xsnow/proprietaire/idees/?secret=…`
 
-GET without the secret returns 401. The empty inbox does **not** invent ideas. Other phones still do not see a visitor’s local wall.
+Without `RESEND_API_KEY`, `POST /ideas` returns `{ ok: true, emailed: false }` — the client shows email failed and keeps the local copy. The empty inbox does **not** invent ideas.
 
 ### Visitor city
 

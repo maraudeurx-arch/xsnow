@@ -50,6 +50,8 @@ export function IdeasBoard() {
   const [error, setError] = useState(false);
   const [received, setReceived] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [inbox, setInbox] = useState<CommunityIdea["inbox"]>("local");
+  const [lastIdea, setLastIdea] = useState<CommunityIdea | null>(null);
   const formRef = useRef<HTMLFormElement | null>(null);
   const textArea = useRef<HTMLTextAreaElement | null>(null);
   const focusAfterReset = useRef(false);
@@ -82,9 +84,10 @@ export function IdeasBoard() {
     setStored(next);
   }
 
-  function patchInbox(id: string, inbox: CommunityIdea["inbox"]) {
+  function patchInbox(id: string, nextInbox: CommunityIdea["inbox"]) {
     const latest = readStoredIdeas();
-    patchList(latest.map((item) => (item.id === id ? { ...item, inbox } : item)));
+    patchList(latest.map((item) => (item.id === id ? { ...item, inbox: nextInbox } : item)));
+    setInbox(nextInbox);
   }
 
   function patchText(value: string) {
@@ -93,7 +96,12 @@ export function IdeasBoard() {
   }
 
   async function sendInbox(idea: CommunityIdea) {
-    const result = await postIdeaToInbox({ id: idea.id, text: idea.text, city: city || "" });
+    const result = await postIdeaToInbox({
+      id: idea.id,
+      text: idea.text,
+      city: city || "",
+      opcId: profile?.id || "",
+    });
     patchInbox(idea.id, result);
   }
 
@@ -112,6 +120,8 @@ export function IdeasBoard() {
     noteIdeaSubmit(idea.involvement.join("+") || "text");
     setForm(emptyIdeaForm());
     setError(false);
+    setLastIdea(idea);
+    setInbox("local");
     setReceived(true);
     setBusy(true);
     try {
@@ -126,6 +136,8 @@ export function IdeasBoard() {
     setReceived(false);
     setForm(emptyIdeaForm());
     setError(false);
+    setInbox("local");
+    setLastIdea(null);
   }
 
   if (received) {
@@ -136,8 +148,28 @@ export function IdeasBoard() {
             {copy.thankYou}
           </h3>
           <p className="text-sm leading-relaxed text-pretty text-ice/85">{copy.thankYouBody}</p>
+          {inbox === "sent" ? (
+            <p className="text-sm font-semibold text-gold" data-idea-inbox="sent">
+              {copy.inboxSent}
+            </p>
+          ) : null}
+          {inbox === "failed" ? (
+            <div className="flex flex-wrap items-center gap-2" data-idea-inbox="failed">
+              <p className="text-sm font-semibold text-gold">{copy.inboxFailed}</p>
+              {lastIdea ? (
+                <button
+                  type="button"
+                  className="tap rounded-full border border-white/20 px-3 py-1 text-xs font-bold text-snow"
+                  onClick={() => void sendInbox(lastIdea)}
+                  disabled={busy}
+                >
+                  {copy.retryInbox}
+                </button>
+              ) : null}
+            </div>
+          ) : null}
         </div>
-        <button type="button" className={ctaClass} onClick={addAnother} disabled={busy}>
+        <button type="button" className={ctaClass} onClick={addAnother}>
           {copy.newIdea}
         </button>
       </div>
