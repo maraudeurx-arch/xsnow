@@ -171,7 +171,7 @@ export function NeighborhoodNews({ onNewsChange }: Props) {
         </div>
       ) : null}
 
-      <div data-news-body className="flex min-h-0 flex-1 grow flex-col gap-1.5 overflow-hidden">
+      <div data-news-body className="flex min-h-0 flex-1 grow flex-col gap-1 overflow-hidden">
         {status === "ready" && items.length > 0 ? (
           <ul
             data-news-list

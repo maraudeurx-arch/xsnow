@@ -512,8 +512,8 @@ body {
 /*
  * Mobile Accueil: pin branding to the top, grow the middle card toward the
  * footer, and pour leftover height into Nouvelles du Quartier. Headlines keep
- * the #77 flex-grow floors; the bottom partner slot also grows so ads fit
- * toward the chat. Chat stays row 3; footer stays usable.
+ * the #77 card floors; list + ads share leftover inside the card (no overflow).
+ * The bottom partner slot grows toward the chat. Chat stays row 3; footer stays usable.
  */
 @media (max-width: 639px) {
   .app-stage:has(#home-guide) {
@@ -560,21 +560,38 @@ body {
   }
 
   .app-stage:has(#home-guide) [data-neighborhood-news] [data-news-body] {
+    display: flex;
+    flex-direction: column;
     flex: 1 1 0%;
-    min-height: max(18rem, 38dvh);
+    /* Body floor stays below the card floor so title + ads can still fit. */
+    min-height: max(16rem, 32dvh);
+    overflow: hidden;
   }
 
-  /* Headline list / loading spacer is the flex-grow inventory inside the green card. */
+  /* Headline list / loading spacer grows, but MUST shrink (min-height:0).
+     Stacked rem floors on list + both ads overflowed the news card. */
   .app-stage:has(#home-guide) [data-neighborhood-news] [data-news-list],
   .app-stage:has(#home-guide) [data-neighborhood-news] [data-news-spacer] {
     flex: 1 1 0%;
-    min-height: max(16rem, 32dvh);
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
   }
 
-  /* Leftover after headlines feeds the bottom partner unit toward the chat. */
+  .app-stage:has(#home-guide) [data-partner-slot="news-mid"] {
+    flex: 0 0 auto;
+    overflow: hidden;
+  }
+
+  /* Leftover after headlines feeds the bottom partner unit toward the chat.
+     min-height:0 so the slot stays INSIDE the news card; flex 0.55 still
+     grows it when the card has leftover height. */
   .app-stage:has(#home-guide) [data-partner-slot="news-bottom"] {
     flex: 0.55 1 0%;
-    min-height: max(7.2rem, 14dvh);
+    min-height: 0;
+    max-height: 100%;
+    overflow: hidden;
+    align-self: stretch;
   }
 
   /* Same specificity as the grid child rule so floors beat base height fill. */
@@ -597,16 +614,16 @@ body {
   }
 
   .app-stage:has(#home-guide) [data-neighborhood-news] [data-news-body] {
-    min-height: max(20rem, 42dvh);
+    min-height: max(18rem, 36dvh);
   }
 
   .app-stage:has(#home-guide) [data-neighborhood-news] [data-news-list],
   .app-stage:has(#home-guide) [data-neighborhood-news] [data-news-spacer] {
-    min-height: max(18rem, 36dvh);
+    min-height: 0;
   }
 
   .app-stage:has(#home-guide) [data-partner-slot="news-bottom"] {
-    min-height: max(8rem, 16dvh);
+    min-height: 0;
   }
 
   .app-stage:has(#home-guide) > .app-stage-main > #home-guide > .home-stage:has([data-neighborhood-news]) > [data-neighborhood-news] {
@@ -626,11 +643,11 @@ body {
 
   .app-stage:has(#home-guide) [data-neighborhood-news] [data-news-list],
   .app-stage:has(#home-guide) [data-neighborhood-news] [data-news-spacer] {
-    min-height: max(6rem, 12dvh);
+    min-height: 0;
   }
 
   .app-stage:has(#home-guide) [data-partner-slot="news-bottom"] {
-    min-height: max(5.2rem, 12dvh);
+    min-height: 0;
   }
 
   .app-stage:has(#home-guide) > .app-stage-main > #home-guide > .home-stage:has([data-neighborhood-news]) > [data-neighborhood-news] {

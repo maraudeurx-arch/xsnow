@@ -34,6 +34,10 @@ describe("Accueil Nouvelles layout fills toward the footer", () => {
     assert.match(css, /min-height:\s*max\(24rem,\s*52dvh\)/);
     assert.match(css, /min-height:\s*max\(16rem,\s*32dvh\)/);
     assert.match(css, /min-height:\s*max\(28rem,\s*60dvh\)/);
+    assert.doesNotMatch(
+      css,
+      /\[data-partner-slot="news-bottom"\][^}]*min-height:\s*max\(7\.2rem/,
+    );
     // Specific grid-child floors must not be zeroed (would beat media queries).
     assert.doesNotMatch(
       css,
@@ -55,7 +59,19 @@ describe("Accueil Nouvelles layout fills toward the footer", () => {
     assert.match(news, /showMid \? <PartnerAdSlot slot="news-mid"/);
     assert.doesNotMatch(news, /index === 0 && showMid/);
     assert.match(css, /\[data-partner-slot="news-bottom"\][\s\S]*flex:\s*0\.55 1 0%/);
-    assert.match(css, /\[data-partner-slot="news-bottom"\][\s\S]*min-height:\s*max\(7\.2rem,\s*14dvh\)/);
+    // Bottom slot must shrink (min-height:0) so it stays inside the news card.
+    assert.match(
+      css,
+      /\[data-partner-slot="news-bottom"\] \{[^}]*min-height:\s*0;/,
+    );
+    assert.match(
+      css,
+      /\[data-neighborhood-news\] \[data-news-list\][\s\S]*min-height:\s*0/,
+    );
+    assert.match(
+      css,
+      /\[data-news-body\][\s\S]*overflow:\s*hidden/,
+    );
   });
 
   it("keeps chat and footer outside the news flex-grow so they are not crushed", () => {

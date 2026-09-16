@@ -21,8 +21,8 @@ import {
 } from "@/lib/partner-ads";
 
 const SLOT_MIN_H: Record<PartnerSlotId, string> = {
-  "news-mid": "min-h-[4.6rem]",
-  "news-bottom": "min-h-[7.2rem]",
+  "news-mid": "min-h-[3.2rem]",
+  "news-bottom": "min-h-0",
 };
 
 function isExternalHref(href: string): boolean {
@@ -63,6 +63,10 @@ export function PartnerAdSlot({ slot }: { slot: PartnerSlotId }) {
   const imageUrl = partnerCreativeImageUrl(creative);
   const external = isExternalHref(display.href);
   const href = external ? display.href : hrefWithLang(display.href, locale, source);
+  const isBottom = slot === "news-bottom";
+  const linkClass = isBottom
+    ? "flex h-full min-h-0 flex-1 flex-col overflow-hidden rounded-md border border-white/10 bg-night/40 hover:border-cobalt/45"
+    : "flex h-full min-h-0 flex-1 flex-row overflow-hidden rounded-md border border-white/10 bg-night/40 hover:border-cobalt/45";
 
   return (
     <aside
@@ -72,17 +76,19 @@ export function PartnerAdSlot({ slot }: { slot: PartnerSlotId }) {
       data-partner-rotation={rotation}
       aria-label={`${copy.partnerSponsored} — ${copy.partnerSlot} — ${display.name}`}
       className={`${
-        slot === "news-bottom" ? "flex min-h-[7.2rem] flex-1 flex-col" : "shrink-0"
-      } rounded-lg border border-dashed border-gold/35 bg-white/[0.03] px-2 py-1.5 text-left`}
+        isBottom
+          ? "flex min-h-0 flex-col overflow-hidden"
+          : "flex shrink-0 flex-col overflow-hidden"
+      } rounded-lg border border-dashed border-gold/35 bg-white/[0.03] px-2 py-1 text-left`}
     >
-      <p className="text-[8px] font-extrabold uppercase tracking-wide text-ice/70">
+      <p className="shrink-0 text-[8px] font-extrabold leading-none uppercase tracking-wide text-ice/70">
         {copy.partnerSponsored}
         <span aria-hidden> · </span>
         {copy.partnerSlot}
       </p>
       {adsense ? (
         <ins
-          className={`adsbygoogle mt-1 block ${SLOT_MIN_H[slot]}`}
+          className={`adsbygoogle mt-0.5 block ${SLOT_MIN_H[slot]}`}
           style={{ display: "block" }}
           data-ad-client={client}
           data-ad-slot={unit}
@@ -91,8 +97,8 @@ export function PartnerAdSlot({ slot }: { slot: PartnerSlotId }) {
         />
       ) : (
         <div
-          className={`mt-1 flex flex-col ${SLOT_MIN_H[slot]} ${
-            slot === "news-bottom" ? "min-h-0 flex-1" : ""
+          className={`mt-0.5 flex min-h-0 ${SLOT_MIN_H[slot]} ${
+            isBottom ? "flex-1 flex-col" : "flex-row"
           }`}
         >
           {external ? (
@@ -102,7 +108,7 @@ export function PartnerAdSlot({ slot }: { slot: PartnerSlotId }) {
               rel="noopener noreferrer sponsored"
               data-partner-link
               data-partner-cta={display.ctaKind}
-              className="flex h-full min-h-[inherit] flex-1 flex-col overflow-hidden rounded-md border border-white/10 bg-night/40 hover:border-cobalt/45"
+              className={linkClass}
             >
               <CreativeBody
                 name={display.name}
@@ -110,7 +116,8 @@ export function PartnerAdSlot({ slot }: { slot: PartnerSlotId }) {
                 cta={display.cta}
                 imageUrl={imageUrl}
                 funding={copy.partnerFunding}
-                grow={slot === "news-bottom"}
+                grow={isBottom}
+                layout={isBottom ? "stack" : "row"}
               />
             </a>
           ) : (
@@ -118,7 +125,7 @@ export function PartnerAdSlot({ slot }: { slot: PartnerSlotId }) {
               href={href}
               data-partner-link
               data-partner-cta={display.ctaKind}
-              className="flex h-full min-h-[inherit] flex-1 flex-col overflow-hidden rounded-md border border-white/10 bg-night/40 hover:border-cobalt/45"
+              className={linkClass}
             >
               <CreativeBody
                 name={display.name}
@@ -126,7 +133,8 @@ export function PartnerAdSlot({ slot }: { slot: PartnerSlotId }) {
                 cta={display.cta}
                 imageUrl={imageUrl}
                 funding={copy.partnerFunding}
-                grow={slot === "news-bottom"}
+                grow={isBottom}
+                layout={isBottom ? "stack" : "row"}
               />
             </Link>
           )}
@@ -143,6 +151,7 @@ function CreativeBody({
   imageUrl,
   funding,
   grow,
+  layout,
 }: {
   name: string;
   tagline: string;
@@ -150,7 +159,9 @@ function CreativeBody({
   imageUrl: string | null;
   funding: string;
   grow: boolean;
+  layout: "row" | "stack";
 }) {
+  const row = layout === "row";
   return (
     <>
       {imageUrl ? (
@@ -158,17 +169,27 @@ function CreativeBody({
         <img
           src={imageUrl}
           alt=""
-          className={`w-full object-cover object-left ${
-            grow ? "min-h-[2.4rem] flex-1" : "h-[2.4rem]"
-          }`}
+          className={
+            row
+              ? "h-full w-[3.4rem] shrink-0 object-cover object-center"
+              : `w-full object-cover object-left ${
+                  grow ? "min-h-0 flex-1" : "h-[2.4rem]"
+                }`
+          }
           loading="lazy"
           decoding="async"
         />
       ) : null}
-      <div className="flex shrink-0 flex-col justify-center gap-0.5 px-2 py-1.5 text-left">
+      <div
+        className={`flex min-w-0 ${
+          row
+            ? "flex-1 flex-col justify-center gap-px px-1.5 py-0.5"
+            : "shrink-0 flex-col justify-center gap-0.5 px-2 py-1"
+        } text-left`}
+      >
         <p className="text-[10px] font-extrabold leading-snug text-snow">{name}</p>
         <p className="text-[8px] leading-snug text-snow/75">{tagline}</p>
-        <span className="mt-0.5 inline-flex w-fit max-w-full items-center rounded-full bg-cobalt px-1.5 py-0.5 text-[8px] font-extrabold leading-none text-snow">
+        <span className="mt-px inline-flex w-fit max-w-full items-center rounded-full bg-cobalt px-1.5 py-0.5 text-[8px] font-extrabold leading-none text-snow">
           {cta}
         </span>
         <p className="text-[8px] leading-snug text-ice/60">{funding}</p>
