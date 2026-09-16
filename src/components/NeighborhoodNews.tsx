@@ -131,7 +131,7 @@ export function NeighborhoodNews({ onNewsChange }: Props) {
       className="flex min-h-0 flex-1 grow flex-col gap-1 self-stretch overflow-hidden rounded-xl border border-gold/30 bg-[rgba(8,8,12,0.88)] px-2 py-1 sm:min-h-[24rem]"
     >
       <div className="flex shrink-0 items-baseline justify-between gap-2 px-0.5">
-        <h2 className="text-[10px] font-extrabold tracking-wide text-gold">{copy.title}</h2>
+        <h2 className="text-[12px] font-extrabold tracking-wide text-gold">{copy.title}</h2>
         {fromCache && status === "ready" ? (
           <span className="text-[8px] font-semibold text-ice/60">{copy.cached}</span>
         ) : null}
@@ -177,7 +177,7 @@ export function NeighborhoodNews({ onNewsChange }: Props) {
             data-news-list
             className="flex min-h-0 flex-1 grow flex-col gap-1 overflow-y-auto"
           >
-            {items.map((item, index) => (
+            {items.map((item) => (
               <li key={item.id}>
                 <a
                   href={item.link}
@@ -198,21 +198,14 @@ export function NeighborhoodNews({ onNewsChange }: Props) {
                     <span>{item.source}</span>
                   </span>
                 </a>
-                {index === 0 && showMid ? (
-                  <div className="mt-1.5">
-                    <PartnerAdSlot slot="news-mid" />
-                  </div>
-                ) : null}
               </li>
             ))}
           </ul>
         ) : (
-          <>
-            <div data-news-spacer className="min-h-0 flex-1 grow" aria-hidden />
-            {showMid ? <PartnerAdSlot slot="news-mid" /> : null}
-          </>
+          <div data-news-spacer className="min-h-0 flex-1 grow" aria-hidden />
         )}
 
+        {showMid ? <PartnerAdSlot slot="news-mid" /> : null}
         {showBottom ? <PartnerAdSlot slot="news-bottom" /> : null}
       </div>
     </section>
