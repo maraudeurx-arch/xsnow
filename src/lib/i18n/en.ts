@@ -851,7 +851,6 @@ export const en: Messages = {
     localOnly: "Without stats, this stays on this device.",
   },
   ideas: {
-    openCta: "Your ideas",
     textLabel: "Your idea",
     textPh: "e.g. Shovel neighbourhood driveways on Saturday",
     textRequired: "Write your idea in one sentence.",
@@ -870,7 +869,7 @@ export const en: Messages = {
     neighborhoodLabel: "Neighbourhood (optional)",
     neighborhoodShare: "Neighbourhood",
     neighborhoodPh: "Hull, Aylmer, Plateau…",
-    submit: "Submit",
+    submit: "Send the idea",
     thankYou: "Thank you — you belong here.",
     thankYouBody:
       "Your idea is on this device’s wall. Other phones do not see it until GOV + owner approve it in a numbered release. Head, Heart, Hands: that’s how Open Community moves. Share it if you want, or add another.",

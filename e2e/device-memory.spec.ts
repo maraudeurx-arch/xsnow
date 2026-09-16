@@ -63,13 +63,14 @@ test.describe("durable on-device memory", () => {
     await expect(page.locator("[data-header-profile]")).toHaveText("M.T.");
 
     await page.goto("./vos-idees/");
-    await page.getByRole("button", { name: "Vos idées" }).click();
     await page.getByLabel("Ton idée").fill(idea);
-    await page.getByRole("button", { name: "Soumettre" }).click();
-    await expect(page.getByText(idea).first()).toBeVisible();
+    await page.getByRole("button", { name: "Envoyer l’idée" }).click();
+    const ideasStored = await page.evaluate(() => window.localStorage.getItem("xsnow.ideas"));
+    expect(ideasStored).toContain(idea);
 
     await page.reload();
-    await expect(page.getByText(idea).first()).toBeVisible();
+    const ideasAfterReload = await page.evaluate(() => window.localStorage.getItem("xsnow.ideas"));
+    expect(ideasAfterReload).toContain(idea);
     await expect(page.locator("[data-header-profile]")).toHaveText("M.T.");
 
     await page.goto("./mon-profil/");

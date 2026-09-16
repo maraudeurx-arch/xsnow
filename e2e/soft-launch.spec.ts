@@ -59,29 +59,33 @@ test.describe("Open Community soft-launch smoke", () => {
   test("Vos idées stay on this device and do not come back from the empty catalog", async ({ page }) => {
     const idea = `Déneiger les allées OPC-e2e ${Date.now()}`;
     await page.goto("./vos-idees/");
-    await expect(page.getByRole("button", { name: "Vos idées" })).toBeVisible();
+    await expect(page.getByLabel("Ton idée")).toBeVisible();
+    await expect(page.getByRole("button", { name: "Envoyer l’idée" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Vos idées" })).toHaveCount(0);
     await expect(page.getByText("S’impliquer : Tête, Cœur, Mains")).toHaveCount(0);
     await expect(page.getByRole("heading", { name: "Vos idées", level: 2 })).toHaveCount(0);
+    await expect(page.getByRole("link", { name: /Retour à l’accueil/ })).toBeVisible();
 
-    await page.getByRole("button", { name: "Vos idées" }).click();
     await page.getByLabel("Ton idée").fill(idea);
-    await page.getByRole("button", { name: "Soumettre" }).click();
-
-    await expect(page.getByText(idea).first()).toBeVisible();
-    await expect(page.getByRole("button", { name: "Vos idées" })).toBeVisible();
+    await page.getByRole("button", { name: "Envoyer l’idée" }).click();
 
     const stored = await page.evaluate(() => window.localStorage.getItem("xsnow.ideas"));
     expect(stored).toContain(idea);
+    await expect(page.getByLabel("Ton idée")).toHaveValue("");
 
     await page.reload();
-    await expect(page.getByText(idea).first()).toBeVisible();
+    const storedAfterReload = await page.evaluate(() => window.localStorage.getItem("xsnow.ideas"));
+    expect(storedAfterReload).toContain(idea);
+    await expect(page.getByLabel("Ton idée")).toBeVisible();
+    await expect(page.getByRole("button", { name: "Envoyer l’idée" })).toBeVisible();
 
     await page.evaluate(() => {
       window.localStorage.removeItem("xsnow.ideas");
     });
     await page.reload();
-    await expect(page.getByRole("button", { name: "Vos idées" })).toBeVisible();
-    await expect(page.getByText(idea)).toHaveCount(0);
+    const cleared = await page.evaluate(() => window.localStorage.getItem("xsnow.ideas"));
+    expect(cleared).toBeNull();
+    await expect(page.getByLabel("Ton idée")).toBeVisible();
   });
 
   test("transparency pages are reachable from the footer", async ({ page }) => {

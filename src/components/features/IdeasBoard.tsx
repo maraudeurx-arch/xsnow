@@ -15,7 +15,6 @@ import {
   type CommunityIdea,
   type IdeaFormInput,
 } from "@/lib/ideas";
-import { usePublicCatalog } from "@/lib/usePublicCatalog";
 import { useStoredList } from "@/lib/useStoredList";
 
 const fieldClass =
@@ -27,17 +26,11 @@ const ctaClass =
 export function IdeasBoard() {
   const { m } = useI18n();
   const copy = m.ideas;
-  const catalog = usePublicCatalog();
   const [stored, setStored] = useStoredList<CommunityIdea>(IDEAS_KEY);
   const items = useMemo(
     () => stored.map(parseStoredIdea).filter((item): item is CommunityIdea => Boolean(item)),
     [stored],
   );
-  const catalogIdeas = useMemo(
-    () => catalog.ideas.filter((idea) => !items.some((item) => item.id === idea.id)),
-    [catalog.ideas, items],
-  );
-  const [open, setOpen] = useState(false);
   const [form, setForm] = useState<IdeaFormInput>(emptyIdeaForm);
   const [error, setError] = useState(false);
   const formRef = useRef<HTMLFormElement | null>(null);
@@ -46,7 +39,6 @@ export function IdeasBoard() {
   useEffect(() => {
     const draft = readIdeaDraft();
     if (!draft) return;
-    setOpen(true);
     setForm((prev) => ({ ...prev, text: prev.text || draft }));
     clearIdeaDraft();
     window.setTimeout(() => textArea.current?.focus(), 50);
@@ -55,7 +47,6 @@ export function IdeasBoard() {
   useEffect(() => {
     if (typeof window === "undefined") return;
     if (window.location.hash === "#form") {
-      setOpen(true);
       window.setTimeout(() => {
         formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
         textArea.current?.focus();
@@ -81,46 +72,16 @@ export function IdeasBoard() {
     noteIdeaSubmit(idea.involvement.join("+") || "text");
     setForm(emptyIdeaForm());
     setError(false);
-    setOpen(false);
-  }
-
-  if (!open) {
-    return (
-      <div className="space-y-3">
-        <button type="button" className={ctaClass} onClick={() => setOpen(true)}>
-          {copy.openCta}
-        </button>
-        {items.length || catalogIdeas.length ? (
-          <ul className="space-y-2">
-            {items.map((idea) => (
-              <li
-                key={idea.id}
-                className="rounded-2xl border border-white/10 bg-white/[0.04] p-3 text-left"
-              >
-                <p className="text-sm leading-relaxed text-snow">{idea.text}</p>
-              </li>
-            ))}
-            {catalogIdeas.map((idea) => (
-              <li
-                key={idea.id}
-                className="rounded-2xl border border-white/10 bg-white/[0.04] p-3 text-left"
-              >
-                <span className="rounded-full bg-ice/20 px-2 py-0.5 text-[11px] font-extrabold uppercase tracking-wide text-ice">
-                  {copy.catalogBadge}
-                </span>
-                <p className="mt-2 text-sm leading-relaxed text-snow">{idea.text}</p>
-              </li>
-            ))}
-          </ul>
-        ) : null}
-      </div>
-    );
   }
 
   return (
-    <div className="space-y-3">
-      <form id="form" ref={formRef} className="space-y-3" onSubmit={onSubmit}>
+    <form id="form" ref={formRef} className="space-y-3" onSubmit={onSubmit}>
+      <div className="space-y-1.5">
+        <label htmlFor="idea-text" className="block text-sm font-semibold text-snow">
+          {copy.textLabel}
+        </label>
         <textarea
+          id="idea-text"
           ref={textArea}
           value={form.text}
           onChange={(event) => patchText(event.target.value)}
@@ -128,42 +89,17 @@ export function IdeasBoard() {
           rows={3}
           maxLength={500}
           required
-          aria-label={copy.textLabel}
           className={`${fieldClass} min-h-[72px] py-2 leading-relaxed`}
         />
-        {error ? (
-          <p className="text-xs font-semibold text-gold" role="status">
-            {copy.textRequired}
-          </p>
-        ) : null}
-        <button type="submit" className={ctaClass}>
-          {copy.submit}
-        </button>
-      </form>
-
-      {items.length || catalogIdeas.length ? (
-        <ul className="space-y-2">
-          {items.map((idea) => (
-            <li
-              key={idea.id}
-              className="rounded-2xl border border-white/10 bg-white/[0.04] p-3 text-left"
-            >
-              <p className="text-sm leading-relaxed text-snow">{idea.text}</p>
-            </li>
-          ))}
-          {catalogIdeas.map((idea) => (
-            <li
-              key={idea.id}
-              className="rounded-2xl border border-white/10 bg-white/[0.04] p-3 text-left"
-            >
-              <span className="rounded-full bg-ice/20 px-2 py-0.5 text-[11px] font-extrabold uppercase tracking-wide text-ice">
-                {copy.catalogBadge}
-              </span>
-              <p className="mt-2 text-sm leading-relaxed text-snow">{idea.text}</p>
-            </li>
-          ))}
-        </ul>
+      </div>
+      {error ? (
+        <p className="text-xs font-semibold text-gold" role="status">
+          {copy.textRequired}
+        </p>
       ) : null}
-    </div>
+      <button type="submit" className={ctaClass}>
+        {copy.submit}
+      </button>
+    </form>
   );
 }
