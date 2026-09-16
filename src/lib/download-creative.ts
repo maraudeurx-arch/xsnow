@@ -137,7 +137,11 @@ export async function downloadCreativeImage(
       title: opts.shareTitle || filename,
       text: opts.shareTitle || filename,
     };
-    const share = deps.share ?? (typeof navigator !== "undefined" && navigator.share ? defaultShare : undefined);
+    const share =
+      deps.share ??
+      (typeof navigator !== "undefined" && typeof navigator.share === "function"
+        ? defaultShare
+        : undefined);
 
     if (share && canShareFiles(shareData, deps.canShare)) {
       try {
