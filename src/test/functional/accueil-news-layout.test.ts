@@ -21,7 +21,10 @@ describe("Accueil Nouvelles layout fills toward the footer", () => {
     assert.match(guide, /vos-idees/);
     assert.match(guide, /ShareHomeButton/);
     assert.match(guide, /AvatarChat/);
-    assert.match(css, /home-stage:has\(\[data-neighborhood-news\]\)[\s\S]*grid-template-rows:\s*auto minmax\(0,\s*1fr\) auto/);
+    assert.match(
+      css,
+      /home-stage:has\(\[data-neighborhood-news\]\)[\s\S]*grid-template-rows:\s*auto minmax\(0,\s*1fr\) auto/,
+    );
     assert.match(news, /data-neighborhood-news/);
     assert.match(news, /min-h-0 flex-1 grow flex-col gap-1 self-stretch/);
     assert.match(news, /sm:min-h-\[22rem\]/);
@@ -31,6 +34,15 @@ describe("Accueil Nouvelles layout fills toward the footer", () => {
     assert.match(css, /min-height:\s*max\(22rem,\s*48dvh\)/);
     assert.match(css, /min-height:\s*max\(14rem,\s*28dvh\)/);
     assert.match(css, /min-height:\s*max\(25rem,\s*55dvh\)/);
+    // Specific grid-child floors must not be zeroed (would beat media queries).
+    assert.doesNotMatch(
+      css,
+      /home-stage:has\(\[data-neighborhood-news\]\) > \[data-neighborhood-news\] \{[^}]*min-height:\s*0;/,
+    );
+    assert.match(
+      css,
+      /home-stage:has\(\[data-neighborhood-news\]\) > \[data-neighborhood-news\] \{[^}]*min-height:\s*max\(22rem,\s*48dvh\)/,
+    );
     assert.doesNotMatch(css, /0\.42fr/);
     assert.doesNotMatch(news, /lorem ipsum/i);
     assert.doesNotMatch(news, /fake headline/i);
@@ -47,6 +59,9 @@ describe("Accueil Nouvelles layout fills toward the footer", () => {
     assert.match(chat, /shrink-0/);
     assert.match(footer, /<footer/);
     assert.match(footer, /LegalLinks/);
-    assert.match(css, /max-height:\s*660px[\s\S]*\[data-neighborhood-news\][\s\S]*min-height:\s*max\(15rem,\s*38dvh\)/);
+    assert.match(
+      css,
+      /max-height:\s*660px[\s\S]*\[data-neighborhood-news\][\s\S]*min-height:\s*max\(15rem,\s*38dvh\)/,
+    );
   });
 });

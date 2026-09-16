@@ -246,7 +246,7 @@ body {
 }
 
 .app-stage:has(#home-guide) > .app-stage-main > #home-guide > .home-stage:has([data-neighborhood-news]) > [data-neighborhood-news] {
-  min-height: 0;
+  /* Mobile floors live in @media below; do not zero here (specificity). */
   max-height: 100%;
   height: 100%;
   overflow: hidden;
@@ -547,6 +547,11 @@ body {
     flex: 1 1 0%;
     min-height: max(14rem, 28dvh);
   }
+
+  /* Same specificity as the grid child rule so floors beat base height fill. */
+  .app-stage:has(#home-guide) > .app-stage-main > #home-guide > .home-stage:has([data-neighborhood-news]) > [data-neighborhood-news] {
+    min-height: max(22rem, 48dvh);
+  }
 }
 
 /* Tall mobile: push Nouvelles harder into the card→footer inventory. */
@@ -563,6 +568,10 @@ body {
   .app-stage:has(#home-guide) [data-neighborhood-news] [data-news-spacer] {
     min-height: max(16rem, 32dvh);
   }
+
+  .app-stage:has(#home-guide) > .app-stage-main > #home-guide > .home-stage:has([data-neighborhood-news]) > [data-neighborhood-news] {
+    min-height: max(25rem, 55dvh);
+  }
 }
 
 /* Short Safari/Chrome dvh: drop rem floors so chat + footer links stay on-screen. */
@@ -578,6 +587,10 @@ body {
   .app-stage:has(#home-guide) [data-neighborhood-news] [data-news-list],
   .app-stage:has(#home-guide) [data-neighborhood-news] [data-news-spacer] {
     min-height: max(7rem, 14dvh);
+  }
+
+  .app-stage:has(#home-guide) > .app-stage-main > #home-guide > .home-stage:has([data-neighborhood-news]) > [data-neighborhood-news] {
+    min-height: max(15rem, 38dvh);
   }
 }
 
