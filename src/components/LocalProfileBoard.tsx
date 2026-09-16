@@ -128,6 +128,9 @@ export function LocalProfileBoard() {
         <form className="grid gap-2" onSubmit={onSubmit} data-register-form>
           <p className="text-sm font-extrabold text-snow">{copy.title}</p>
           <p className="text-[11px] leading-snug text-snow/80">{copy.hint}</p>
+          <p className="text-[11px] leading-snug text-gold/90" data-infos-privacy-inline>
+            {m.profile.infosPrivacy}
+          </p>
           <label className="grid gap-1 text-xs font-semibold">
             {copy.firstName}
             <input

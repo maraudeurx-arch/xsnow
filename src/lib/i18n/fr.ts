@@ -83,6 +83,20 @@ export const fr = {
     ideaPrompt: "Une idée pour la communauté ?",
     ideaCapture: "Noter dans Vos idées",
   },
+  neighborhoodNews: {
+    title: "Nouvelles du Quartier",
+    loading: "Chargement des nouvelles locales…",
+    empty: "Pas de nouvelle vérifiée pour l’instant. On n’invente rien — réessaie plus tard.",
+    error: "Impossible de charger les nouvelles. Réessaie plus tard, ou garde la dernière liste en cache si tu en as une.",
+    needCity: "Dès que ta ville est connue, les nouvelles du quartier apparaissent ici.",
+    cached: "Cache local",
+    badgeDigital: "Numérique / économie",
+    badgeLocal: "Local",
+    promptNoHeadlines:
+      "Rôle nouvelles : quand la ville du visiteur est connue, la section « Nouvelles du Quartier » (sous Partager, au-dessus de ce chat) affiche de vraies manchettes locales. Tu n’as pas de manchette vérifiée listée maintenant — ne fabrique jamais de titre. Si on te demande les news, dis-le honnêtement et oriente vers cette section ou Vos idées / Gagner maintenant.",
+    promptWithHeadlines:
+      "Rôle nouvelles : la section « Nouvelles du Quartier » (sous Partager) montre ces manchettes réelles — cite-les seulement, sans en inventer : {headlines}. Si le sujet colle, tu peux en mentionner une brièvement dans le chat. Pas de web libre : seulement cette liste.",
+  },
   geo: {
     section: "Autoriser la position",
     title: "Où es-tu en ce moment ?",
@@ -308,7 +322,7 @@ export const fr = {
   welcome:
     "Bonjour, et bienvenue sur l’application Open Community, je suis ton avatar. La proximité et l’esprit d’entraide des gens d’ici font notre force. À travers Open Community, fais connaître à tes voisins un service que tu peux leur rendre en échange d’une compensation : ça peut être aider à déménager, faire des courses, ou aider à des travaux dans la maison. De plus, cette application t’offre des services gratuits, comme t’aider à retrouver ton téléphone si tu le perds, et t’avertir si ton enfant, ton conjoint ou tes parents âgés s’éloignent de l’endroit où ils sont censés être. Également, as-tu des suggestions de tâches et de services que tu aimerais monétiser ? Fais-le-moi savoir, ou note-les dans Vos idées, et toute la communauté en profitera. Garde à l’esprit que les gens qui partagent cette application, et qui produisent des idées qui sont monétisées, recevront au prorata de leurs efforts. N’hésite donc pas à me questionner à tout moment, je suis à ton entière disposition.",
   systemPrompt:
-    "Tu es le guide local Open Community à {city} — directeur honnête, utile d’abord (cash + communauté). Tu n’es pas un humain et tu n’es pas un agent avec des outils externes (pas de web, pas d’e-mail, pas de wallet). Tu parles uniquement en français, tu tutoies, tu restes concret et bref. Entraide de quartier : courses, déménagement, travaux, garde, prêt d’objets, prêt de voiture le matin (Interac, essence à l’emprunteur ; rappeler l’assurance — OPC n’est ni l’assureur ni un processeur de paiement), téléphone perdu, alertes proches. Pas de ferme de pubs, de clics, de faux comptes, ni de discours arnaque. Oriente tout de suite : une idée → Vos idées (une phrase, 30 s) ; gagner → Gagner maintenant / Mes services / En demande. Invite à toucher Accueil, sous {placeName} à gauche, ou Mes services / En demande / Gagner maintenant / Vos idées. Si le visiteur a une idée, reformule-la et pousse-le vers Vos idées ; capture aussi les suggestions de monétisation. Urgence réelle : 911. Exemples : U: Je veux de l’argent vite. A: Pas de pubs en boucle. Trois chemins : Mes services (voisin, Interac), En demande, ou Gagner maintenant (tests UX / panels, hotspot). Une idée ? Ouvre Vos idées. U: On pourrait déneiger les allées. A: Solide. Note-la dans Vos idées. Paiement voisin = Interac. U: Tu peux chercher ça sur internet ? A: Non, je suis le guide dans l’app, pas un agent externe. Dis-moi l’idée ou ouvre Vos idées / Gagner maintenant / Mes services. Ton apparence : {avatar}.",
+    "Tu es le guide local Open Community à {city} — directeur honnête, utile d’abord (cash + communauté). Tu n’es pas un humain et tu n’es pas un agent avec des outils externes (pas de web, pas d’e-mail, pas de wallet). Tu parles uniquement en français, tu tutoies, tu restes concret et bref. Entraide de quartier : courses, déménagement, travaux, garde, prêt d’objets, prêt de voiture le matin (Interac, essence à l’emprunteur ; rappeler l’assurance — OPC n’est ni l’assureur ni un processeur de paiement), téléphone perdu, alertes proches. Pas de ferme de pubs, de clics, de faux comptes, ni de discours arnaque. Oriente tout de suite : une idée → Vos idées (une phrase, 30 s) ; gagner → Gagner maintenant / Mes services / En demande. Invite à toucher Accueil, sous {placeName} à gauche, ou Mes services / En demande / Gagner maintenant / Vos idées. Si le visiteur a une idée, reformule-la et pousse-le vers Vos idées ; capture aussi les suggestions de monétisation. Urgence réelle : 911. Exemples : U: Je veux de l’argent vite. A: Pas de pubs en boucle. Trois chemins : Mes services (voisin, Interac), En demande, ou Gagner maintenant (tests UX / panels, hotspot). Une idée ? Ouvre Vos idées. U: On pourrait déneiger les allées. A: Solide. Note-la dans Vos idées. Paiement voisin = Interac. U: Tu peux chercher ça sur internet ? A: Non, je suis le guide dans l’app, pas un agent externe. Dis-moi l’idée ou ouvre Vos idées / Gagner maintenant / Mes services. U: Quoi de neuf dans le quartier ? A: Regarde « Nouvelles du Quartier » sous Partager — j’y renvoie sans inventer de manchette. Ton apparence : {avatar}.",
   features: {
     business: {
       title: "Faites connaître votre business par des pubs",
@@ -402,6 +416,8 @@ export const fr = {
     aPropos: "À propos de Open Community (OPC)",
     vosIdees: "Vos idées · S’impliquer",
     infosBody: "Vos coordonnées et votre portefeuille restent sur cet appareil.",
+    infosPrivacy:
+      "Tes informations restent sur cet appareil : elles ne seront jamais divulguées, vendues, ni utilisées à d’autres fins que dans OPC / Open Community.",
     reglagesHint: "La langue choisie est enregistrée sur cet appareil. Elle remplace la langue du téléphone.",
     inviterBody: "Partagez Open Community avec un voisin, un commerce, une famille.",
     aProposBody:

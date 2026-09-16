@@ -170,6 +170,13 @@ describe("vos idees copy", () => {
     assert.match(en.systemPrompt, /Your ideas/);
     assert.match(es.systemPrompt, /Tus ideas/);
     assert.match(fr.welcome, /Vos idées/);
+    assert.equal(fr.neighborhoodNews.title, "Nouvelles du Quartier");
+    assert.equal(en.neighborhoodNews.title, "Neighbourhood News");
+    assert.equal(es.neighborhoodNews.title, "Noticias del Barrio");
+    assert.deepEqual(Object.keys(en.neighborhoodNews), Object.keys(fr.neighborhoodNews));
+    assert.deepEqual(Object.keys(es.neighborhoodNews), Object.keys(fr.neighborhoodNews));
+    assert.match(fr.systemPrompt, /Nouvelles du Quartier/);
+    assert.match(fr.neighborhoodNews.promptNoHeadlines, /ne fabrique jamais/);
   });
 });
 
@@ -350,6 +357,13 @@ describe("legal copy is present in FR/EN/ES", () => {
     assert.match(en.legal.about.sections[4].body, /public catalog/i);
     assert.match(es.legal.about.sections[4].body, /catálogo público/);
     assert.match(fr.profile.deviceLocalNote, /cet appareil/);
+    assert.match(fr.profile.infosPrivacy, /jamais divulguées/);
+    assert.match(fr.profile.infosPrivacy, /vendues/);
+    assert.match(fr.profile.infosPrivacy, /OPC/);
+    assert.match(en.profile.infosPrivacy, /never be disclosed/);
+    assert.match(en.profile.infosPrivacy, /sold/);
+    assert.match(es.profile.infosPrivacy, /nunca se divulgará/);
+    assert.match(es.profile.infosPrivacy, /venderá/);
     assert.match(en.profile.releaseNotesBody, /0\.3\.2/);
     assert.deepEqual(Object.keys(en.profile), Object.keys(fr.profile));
     assert.deepEqual(Object.keys(es.profile), Object.keys(fr.profile));

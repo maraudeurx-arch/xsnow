@@ -5,6 +5,7 @@
  * Visitors never log in. GitHub Pages origin is allowed via CORS.
  * `POST /` = chat
  * `GET|POST /geo` = reverse geocode {lat,lon}
+ * `GET /news` = local headlines via Google News RSS (no invented stories)
  * `POST /stats` = anonymous usage events (no PII)
  * `GET /stats/summary` = aggregate counts
  *
@@ -13,6 +14,7 @@
  */
 
 import { parseLatLon, reverseGeocode } from "./geo";
+import { fetchCityNews, parseCityParam, parseLangParam } from "./news";
 import { CHAT_TEXT_MAX, isJsonContentType, sanitizeUntrustedText } from "../../../src/lib/sanitize.ts";
 import {
   EMPTY_SUMMARY,
@@ -268,6 +270,38 @@ async function handleStatsSummary(request: Request, env: Env, origin: string | n
   }
 }
 
+
+function isNewsPath(pathname: string) {
+  const value = pathname.replace(/\/+$/, "") || "/";
+  return value === "/news" || value.endsWith("/news");
+}
+
+async function handleNews(request: Request, origin: string | null): Promise<Response> {
+  if (request.method !== "GET") {
+    return json({ error: "method_not_allowed" }, 405, origin);
+  }
+  if (tooMany(clientIp(request))) {
+    return json({ error: "rate_limited" }, 429, origin);
+  }
+
+  const url = new URL(request.url);
+  const city = parseCityParam(url.searchParams.get("city"));
+  if (!city) return json({ error: "bad_request" }, 400, origin);
+  const lang = parseLangParam(url.searchParams.get("lang"));
+  const countryRaw = url.searchParams.get("country");
+  const country =
+    typeof countryRaw === "string" && countryRaw.trim()
+      ? countryRaw.trim().slice(0, 8).toUpperCase()
+      : undefined;
+
+  try {
+    const payload = await fetchCityNews({ city, lang, country });
+    return json(payload, 200, origin);
+  } catch {
+    return json({ error: "news_failed" }, 502, origin);
+  }
+}
+
 async function handleGeo(request: Request, origin: string | null): Promise<Response> {
   if (request.method !== "GET" && request.method !== "POST") {
     return json({ error: "method_not_allowed" }, 405, origin);
@@ -315,6 +349,10 @@ export default {
 
     if (isGeoPath(pathname)) {
       return handleGeo(request, origin);
+    }
+
+    if (isNewsPath(pathname)) {
+      return handleNews(request, origin);
     }
 
     if (isStatsSummaryPath(pathname)) {

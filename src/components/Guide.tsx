@@ -4,6 +4,10 @@ import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { AvatarChat } from "@/components/AvatarChat";
+import {
+  NeighborhoodNews,
+  type NeighborhoodNewsState,
+} from "@/components/NeighborhoodNews";
 import { AvatarDisc } from "@/components/AvatarDisc";
 import { LocationPrompt } from "@/components/LocationPrompt";
 import {
@@ -39,8 +43,12 @@ const shortcutClass =
 export function Guide() {
   const [avatarId, setAvatarId] = useStoredAvatar();
   const [picking, setPicking] = useState(false);
+  const [newsHeadlines, setNewsHeadlines] = useState("");
+  const onNewsChange = useCallback((state: NeighborhoodNewsState) => {
+    setNewsHeadlines(state.headlineLine);
+  }, []);
   const { speak, prime } = useSpeech();
-  const { city, needsPrompt } = usePlace();
+  const { city, needsPrompt, resolved } = usePlace();
   const { locale, m } = useI18n();
   const unanswered = useConsentUnanswered();
   const welcomeGateOpen = useWelcomeGate();
@@ -160,11 +168,15 @@ export function Guide() {
             </Link>
             <ShareHomeButton />
           </nav>
+          <NeighborhoodNews onNewsChange={onNewsChange} />
           <div className="flex min-h-0 flex-1 flex-col">
             {needsPrompt && !unanswered && Boolean(avatarId) && welcomeGateOpen ? (
               <LocationPrompt />
             ) : (
-              <AvatarChat avatar={chosen} />
+              <AvatarChat
+                avatar={chosen}
+                newsHeadlines={resolved ? newsHeadlines : ""}
+              />
             )}
           </div>
         </div>
