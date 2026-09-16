@@ -17,13 +17,13 @@ export function InstallGuide() {
         {copy.profileTitle}
       </h3>
       <p className="mt-1 text-xs leading-relaxed text-snow/85">{copy.profileLead}</p>
-      <p className="mt-2 text-[11px] font-extrabold uppercase tracking-wide text-gold">
+      <p className="mt-2 text-xs font-extrabold leading-snug text-gold">
         {copy.siteUrlLabel}
       </p>
       <a
         href={PUBLIC_SITE_URL}
         data-install-url
-        className="mt-1 block break-all rounded-lg border border-gold/40 bg-black/25 px-2 py-1.5 font-mono text-[11px] font-bold leading-snug text-gold underline-offset-2 hover:underline"
+        className="mt-1.5 block break-all rounded-lg border border-gold/40 bg-black/25 px-2 py-1.5 font-mono text-[11px] font-bold leading-snug text-gold underline-offset-2 hover:underline"
       >
         {PUBLIC_SITE_URL}
       </a>
