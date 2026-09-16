@@ -27,6 +27,8 @@
   --home-card-pad-x: 0.65rem;
   --home-card-pad-y: 0.65rem;
   --home-avatar-ring: 0.32rem;
+  /* Hairline between Nouvelles and the chat composer. */
+  --home-news-chat-gap: 0.22rem;
   --brand-title: clamp(1.5rem, 7.4vw, 3rem);
   --brand-slogan: clamp(0.9rem, 3.8vw, 1.2rem);
 }
@@ -40,6 +42,7 @@
     --home-gap: 0.55rem;
     --home-block-gap: 0.36rem;
     --home-stack-gap: 1rem;
+    --home-news-chat-gap: 0.32rem;
     --home-nav-gap: 0.5rem;
     --home-chip-gap: 0.65rem;
     --home-card-pad-x: 0.85rem;
@@ -57,6 +60,7 @@
     --home-gap: 0.3rem;
     --home-block-gap: 0.22rem;
     --home-stack-gap: 0.55rem;
+    --home-news-chat-gap: 0.16rem;
     --home-nav-gap: 0.34rem;
     --home-chip-gap: 0.42rem;
     --home-card-pad-x: 0.55rem;
@@ -74,6 +78,7 @@
     --home-gap: 0.25rem;
     --home-block-gap: 0.18rem;
     --home-stack-gap: 0.45rem;
+    --home-news-chat-gap: 0.12rem;
     --home-nav-gap: 0.3rem;
     --home-chip-gap: 0.36rem;
     --home-card-pad-x: 0.5rem;

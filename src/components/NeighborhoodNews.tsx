@@ -128,7 +128,7 @@ export function NeighborhoodNews({ onNewsChange }: Props) {
       data-neighborhood-news
       data-news-status={status}
       aria-label={copy.title}
-      className="flex min-h-[15rem] flex-1 flex-col gap-1 overflow-hidden rounded-xl border border-gold/30 bg-[rgba(8,8,12,0.88)] px-2 py-1.5 sm:min-h-[16.5rem]"
+      className="mt-[var(--home-stack-gap)] flex min-h-[15rem] flex-1 flex-col gap-1 overflow-hidden rounded-xl border border-gold/30 bg-[rgba(8,8,12,0.88)] px-2 py-1.5 sm:min-h-[16.5rem]"
     >
       <div className="flex shrink-0 items-baseline justify-between gap-2 px-0.5">
         <h2 className="text-[10px] font-extrabold tracking-wide text-gold">{copy.title}</h2>

@@ -77,6 +77,15 @@ test.describe("Accueil neighbourhood news + partner slots", () => {
     expect(newsBox!.height).toBeGreaterThan(chatBox!.height);
     expect(newsBox!.height).toBeGreaterThan(220);
 
+    const titleBox = await page.getByRole("heading", { name: "Open Community", level: 1 }).boundingBox();
+    expect(titleBox).toBeTruthy();
+    expect(titleBox!.y).toBeGreaterThanOrEqual(0);
+    expect(titleBox!.y).toBeLessThan(28);
+
+    const newsChatGap = chatBox!.y - (newsBox!.y + newsBox!.height);
+    expect(newsChatGap).toBeGreaterThanOrEqual(0);
+    expect(newsChatGap).toBeLessThan(16);
+
     const privacy = page.getByRole("contentinfo").getByRole("link", { name: "Vie privée" });
     await expect(privacy).toBeVisible();
     const privacyBox = await privacy.boundingBox();
