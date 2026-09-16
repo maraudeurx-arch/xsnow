@@ -41,19 +41,22 @@ export const es: Messages = {
     offres: "Ofertas",
   },
   install: {
-    tip: "En iPhone (Safari): Compartir → Añadir a pantalla de inicio. Luego la app se abre como un icono.",
+    tip: "En iPhone (Safari): abre https://maraudeurx-arch.github.io/xsnow/ y luego Compartir → Añadir a pantalla de inicio.",
     tipAndroid:
-      "En Android (Chrome): menú ⋮ → Instalar la app, o Añadir a pantalla de inicio. Luego la app se abre como un icono.",
+      "En Android (Chrome): abre https://maraudeurx-arch.github.io/xsnow/ y luego menú ⋮ → Instalar la app, o Añadir a pantalla de inicio.",
     dismiss: "Entendido",
     profileTitle: "Poner OPC en la pantalla de inicio",
     profileLead:
-      "Open Community es una app web, no está en el App Store. En iPhone, abre el enlace en Safari y añádela a la pantalla de inicio para abrirla como un icono.",
+      "Open Community es una app web, no está en el App Store. En iPhone, abre primero https://maraudeurx-arch.github.io/xsnow/ en Safari y luego añádela a la pantalla de inicio.",
+    siteUrlLabel: "Dirección exacta para abrir en Safari",
     iphoneHeading: "iPhone (Safari)",
     iphoneSteps: [
-      "Abre Open Community en Safari (el navegador de Apple — no Chrome).",
+      "Abre exactamente https://maraudeurx-arch.github.io/xsnow/ en Safari (el navegador de Apple — no Chrome).",
       "Toca Compartir — el cuadrado con la flecha hacia arriba, abajo en la pantalla.",
       "Desplázate y elige Añadir a pantalla de inicio, luego Añadir.",
     ],
+    wrongShortcut:
+      "Si el icono abre « There isn’t a GitHub Pages site here », no es OPC: el acceso apunta a maraudeurx-arch.github.io sin /xsnow/. Borra el icono, abre la dirección de arriba en Safari y añádela de nuevo.",
   },
   guide: {
     pickAvatar: "Elige tu avatar",
@@ -501,6 +504,8 @@ export const es: Messages = {
   },
   notFound: {
     title: "Página no encontrada",
+    githubPagesHint:
+      "Si ves « There isn’t a GitHub Pages site here », abre https://maraudeurx-arch.github.io/xsnow/ — OPC no está en la raíz de github.io.",
     back: "Volver a Inicio",
   },
   logoAria: "Open Community",
