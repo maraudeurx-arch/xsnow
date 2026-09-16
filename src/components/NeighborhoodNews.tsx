@@ -173,9 +173,9 @@ export function NeighborhoodNews({ onNewsChange }: Props) {
 
       <div className="flex min-h-0 flex-1 flex-col gap-1.5 overflow-y-auto">
         {status === "ready" && items.length > 0 ? (
-          <ul className="flex min-h-[9rem] flex-1 flex-col gap-1">
+          <ul className="flex min-h-[6.5rem] shrink-0 flex-col gap-1">
             {items.map((item, index) => (
-              <li key={item.id}>
+              <li key={item.id} className="relative z-10">
                 <a
                   href={item.link}
                   target="_blank"
@@ -194,7 +194,7 @@ export function NeighborhoodNews({ onNewsChange }: Props) {
                   </span>
                 </a>
                 {index === 0 && showMid ? (
-                  <div className="mt-1.5">
+                  <div className="relative z-0 mt-1.5">
                     <PartnerAdSlot slot="news-mid" />
                   </div>
                 ) : null}
@@ -203,12 +203,16 @@ export function NeighborhoodNews({ onNewsChange }: Props) {
           </ul>
         ) : (
           <>
-            <div className="min-h-[9rem] flex-1" aria-hidden />
+            <div className="min-h-[6.5rem] shrink-0" aria-hidden />
             {showMid ? <PartnerAdSlot slot="news-mid" /> : null}
           </>
         )}
 
-        {showBottom ? <PartnerAdSlot slot="news-bottom" /> : null}
+        {showBottom ? (
+          <div className="relative z-0 flex min-h-[5.5rem] flex-1 flex-col">
+            <PartnerAdSlot slot="news-bottom" />
+          </div>
+        ) : null}
       </div>
     </section>
   );

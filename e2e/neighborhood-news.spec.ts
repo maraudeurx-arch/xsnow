@@ -86,6 +86,17 @@ test.describe("Accueil neighbourhood news + partner slots", () => {
     expect(newsChatGap).toBeGreaterThanOrEqual(0);
     expect(newsChatGap).toBeLessThan(16);
 
+    const tourBox = await page.getByText("Tour de Gatineau dimanche").boundingBox();
+    expect(tourBox).toBeTruthy();
+    for (const slot of await page.locator("[data-partner-slot]").all()) {
+      const adBox = await slot.boundingBox();
+      expect(adBox).toBeTruthy();
+      const headlineBottom = tourBox!.y + tourBox!.height;
+      const overlaps =
+        tourBox!.y < adBox!.y + adBox!.height - 1 && headlineBottom > adBox!.y + 1;
+      expect(overlaps).toBeFalsy();
+    }
+
     const privacy = page.getByRole("contentinfo").getByRole("link", { name: "Vie privée" });
     await expect(privacy).toBeVisible();
     const privacyBox = await privacy.boundingBox();

@@ -66,7 +66,7 @@ export function PartnerAdSlot({ slot }: { slot: PartnerSlotId }) {
       data-partner-creative={creative.id}
       data-partner-rotation={rotation}
       aria-label={`${copy.partnerSponsored} — ${creative.name}`}
-      className="shrink-0 rounded-lg border border-dashed border-gold/35 bg-white/[0.03] px-2 py-1.5 text-left"
+      className="flex h-full min-h-0 flex-1 flex-col rounded-lg border border-dashed border-gold/35 bg-white/[0.03] px-2 py-1.5 text-left"
     >
       <p className="text-[8px] font-extrabold uppercase tracking-wide text-ice/70">
         {copy.partnerSponsored}
