@@ -72,6 +72,8 @@ describe("transparency version and contact markers", () => {
     assert.match(aboutUi, /AppVersionNote/);
     const profileAbout = readFileSync(join(srcDir, "components/LocalizedAbout.tsx"), "utf8");
     assert.match(profileAbout, /AppVersionNote/);
+    assert.match(profileAbout, /InfosPrivacyNote/);
+    assert.match(aboutUi, /InfosPrivacyNote/);
   });
 
   it("pins GitHub and the public OPC email through path constants", () => {
