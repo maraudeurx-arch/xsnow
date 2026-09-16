@@ -123,6 +123,12 @@ export const en: Messages = {
     partnerGrowLocalName: "Neighbourhood co-op (example)",
     partnerGrowLocalTagline:
       "Partner space coming soon. Meanwhile: sign up and invite a neighbour. No click farms.",
+    partnerGrowGarderieName: "Neighbourhood daycare spot",
+    partnerGrowGarderieTagline:
+      "Community advertisement — a neighbourhood daycare place. No fake headlines, no click farms.",
+    partnerGrowChambreName: "Room in Gatineau Centre",
+    partnerGrowChambreTagline:
+      "Community advertisement — lease transfer. Download the flyer. No fake headlines, no click farms.",
     partnerDownload: "Download",
     partnerDownloadAria: "Download the advertisement image",
     partnerDownloadFail:
@@ -583,8 +589,17 @@ export const en: Messages = {
     city: "City or neighbourhood",
     cityPh: "Plateau, Rosemont…",
     description: "Description",
+    photo: "Advertisement photo",
+    photoHint: "Max. {kb} KB. Compressed on this device — no CDN, no huge original.",
+    photoTooBig: "This image is still over {kb} KB after compression. Pick a lighter photo.",
+    photoNotImage: "Choose a photo (JPEG, PNG, or WebP).",
+    photoUndecodable: "Couldn’t read that image. Try a JPEG or PNG.",
+    photoBusy: "Compressing the photo…",
+    photoReady: "Photo ready ({kb} KB).",
+    photoPublishedTagline: "Advertisement saved on this device — not a news headline. Max. {kb} KB.",
     publish: "Publish in Open Community",
-    saved: "Saved on this device. The public showcase is coming soon.",
+    saved:
+      "Saved on this device. With a photo (max. {kb} KB), it rotates in Advertisement on Home.",
     fallbackCategory: "Business",
     fallbackCity: "Neighbourhood",
   },

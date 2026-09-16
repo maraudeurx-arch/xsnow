@@ -8,13 +8,15 @@
  * claim of live ad revenue.
  */
 
+import { dataUrlByteLength, isSafeImageDataUrl } from "./compress-ad-image.ts";
 import { durableGet, durableSet } from "./durable-storage.ts";
 import { assetUrl } from "./paths.ts";
+import { sanitizeUntrustedText, TITLE_TEXT_MAX } from "./sanitize.ts";
 
 export type AdProvider = "placeholder" | "adsense" | "none";
 export type PartnerSlotId = "news-mid" | "news-bottom";
 /** House-ad intent until a real sold partner is swapped in. */
-export type PartnerGrowthKind = "register" | "share" | "local";
+export type PartnerGrowthKind = "register" | "share" | "local" | "garderie" | "chambre";
 
 export const PARTNER_REGISTER_HREF = "/mon-profil";
 export const PARTNER_SHARE_HREF = "/mon-profil/inviter";
@@ -27,6 +29,8 @@ export type PartnerCreative = {
   href: string;
   /** Optional creative art (served under basePath via assetUrl). */
   imagePath?: string;
+  /** Visitor-uploaded photo (data URL, already capped in KB). */
+  imageDataUrl?: string;
   /** Override display name for a real sold partner. */
   name?: string;
   /** Override blurb for a real sold partner — never a news headline. */
@@ -45,6 +49,10 @@ export type PartnerSlotCopy = {
   partnerGrowShareTagline: string;
   partnerGrowLocalName: string;
   partnerGrowLocalTagline: string;
+  partnerGrowGarderieName: string;
+  partnerGrowGarderieTagline: string;
+  partnerGrowChambreName: string;
+  partnerGrowChambreTagline: string;
 };
 
 export const NEWS_PARTNER_SLOTS: readonly PartnerSlotId[] = ["news-mid", "news-bottom"];
@@ -54,6 +62,9 @@ export const PARTNER_ROTATION_MS = 9_000;
 
 /** localStorage key for the shared rotation cursor (safe / durable). */
 export const PARTNER_ROTATION_KEY = "xsnow.partnerAdRotation";
+
+/** One device-local visitor photo ad (Publicité), never a CDN object. */
+export const VISITOR_ADS_KEY = "xsnow.visitorPartnerAds";
 
 /**
  * Soft-launch partner creatives. Replace name / imagePath / href when real
@@ -77,6 +88,18 @@ export const PLACEHOLDER_PARTNERS: readonly PartnerCreative[] = [
     kind: "local",
     href: PARTNER_REGISTER_HREF,
     imagePath: "/partners/marche.svg",
+  },
+  {
+    id: "placeholder-garderie",
+    kind: "garderie",
+    href: PARTNER_REGISTER_HREF,
+    imagePath: "/partners/garderie.svg",
+  },
+  {
+    id: "placeholder-chambre",
+    kind: "chambre",
+    href: PARTNER_REGISTER_HREF,
+    imagePath: "/partners/chambre-gatineau-centre.png",
   },
 ];
 
@@ -169,17 +192,29 @@ export function visiblePartnerSlots(
 
 export function listPartnerCreatives(
   creatives: readonly PartnerCreative[] = PLACEHOLDER_PARTNERS,
+  visitor: readonly PartnerCreative[] = [],
 ): readonly PartnerCreative[] {
-  return creatives.length ? creatives : PLACEHOLDER_PARTNERS;
+  const house = creatives.length ? creatives : PLACEHOLDER_PARTNERS;
+  const extra = visitor.filter((item) => partnerCreativeImageUrl(item));
+  return extra.length ? [...extra, ...house] : house;
 }
 
 export function partnerCreativeImageUrl(creative: PartnerCreative): string | null {
-  if (!creative.imagePath) return null;
-  return assetUrl(creative.imagePath);
+  const data = (creative.imageDataUrl || "").trim();
+  if (data && isSafeImageDataUrl(data)) return data;
+  const path = (creative.imagePath || "").trim();
+  if (!path) return null;
+  if (isSafeImageDataUrl(path)) return path;
+  if (path.startsWith("data:")) return null;
+  return assetUrl(path);
 }
 
 /** Safe download filename for a published creative (never a news headline). */
 export function partnerCreativeDownloadName(creative: PartnerCreative): string {
+  if (creative.imageDataUrl || (creative.imagePath || "").startsWith("data:")) {
+    const id = creative.id.replace(/[^\w.-]+/g, "-").replace(/^-+|-+$/g, "") || "visite";
+    return `publicite-${id}.jpg`;
+  }
   const fromPath = filenameFromImagePath(creative.imagePath || "");
   if (fromPath) return fromPath;
   const id = creative.id.replace(/[^\w.-]+/g, "-").replace(/^-+|-+$/g, "") || "creative";
@@ -215,9 +250,13 @@ export function resolvePartnerCreative(
   const byKind =
     creative.kind === "share"
       ? { name: copy.partnerGrowShareName, tagline: copy.partnerGrowShareTagline }
-      : creative.kind === "local"
-        ? { name: copy.partnerGrowLocalName, tagline: copy.partnerGrowLocalTagline }
-        : { name: copy.partnerGrowRegisterName, tagline: copy.partnerGrowRegisterTagline };
+      : creative.kind === "chambre"
+        ? { name: copy.partnerGrowChambreName, tagline: copy.partnerGrowChambreTagline }
+        : creative.kind === "garderie"
+          ? { name: copy.partnerGrowGarderieName, tagline: copy.partnerGrowGarderieTagline }
+          : creative.kind === "local"
+            ? { name: copy.partnerGrowLocalName, tagline: copy.partnerGrowLocalTagline }
+            : { name: copy.partnerGrowRegisterName, tagline: copy.partnerGrowRegisterTagline };
   return {
     name: (creative.name || byKind.name).trim() || byKind.name,
     tagline: (creative.tagline || byKind.tagline).trim() || byKind.tagline,
@@ -264,4 +303,79 @@ export function creativeForSlot(
   const offset = SLOT_OFFSET[slot] ?? 0;
   const index = ((rotationIndex + offset) % list.length + list.length) % list.length;
   return list[index]!;
+}
+
+export type VisitorPartnerAd = {
+  id: string;
+  name: string;
+  tagline: string;
+  imageDataUrl: string;
+  bytes: number;
+  createdAt: string;
+};
+
+function clipAdText(value: string, max = TITLE_TEXT_MAX): string {
+  return sanitizeUntrustedText(value, { max });
+}
+
+export function visitorAdToCreative(ad: VisitorPartnerAd): PartnerCreative {
+  return {
+    id: ad.id,
+    kind: "local",
+    href: "/business",
+    imageDataUrl: ad.imageDataUrl,
+    name: ad.name,
+    tagline: ad.tagline,
+  };
+}
+
+export function parseVisitorAds(raw: string | null | undefined): VisitorPartnerAd[] {
+  if (!raw) return [];
+  try {
+    const parsed = JSON.parse(raw) as unknown;
+    if (!Array.isArray(parsed)) return [];
+    const ads: VisitorPartnerAd[] = [];
+    for (const row of parsed) {
+      if (!row || typeof row !== "object") continue;
+      const item = row as Partial<VisitorPartnerAd>;
+      const imageDataUrl = typeof item.imageDataUrl === "string" ? item.imageDataUrl.trim() : "";
+      if (!isSafeImageDataUrl(imageDataUrl)) continue;
+      const id = clipAdText(String(item.id || "visite"), 40) || "visite";
+      const name = clipAdText(String(item.name || ""), TITLE_TEXT_MAX);
+      if (!name) continue;
+      const tagline = clipAdText(String(item.tagline || ""), 180);
+      const bytes = Number(item.bytes);
+      ads.push({
+        id: id.startsWith("visitor-") ? id : `visitor-${id}`,
+        name,
+        tagline,
+        imageDataUrl,
+        bytes: Number.isFinite(bytes) && bytes > 0 ? bytes : dataUrlByteLength(imageDataUrl),
+        createdAt: typeof item.createdAt === "string" ? item.createdAt : "",
+      });
+    }
+    return ads.slice(0, 1);
+  } catch {
+    return [];
+  }
+}
+
+export function readVisitorPartnerCreatives(store?: Storage): PartnerCreative[] {
+  return parseVisitorAds(durableGet(VISITOR_ADS_KEY, store)).map(visitorAdToCreative);
+}
+
+export function writeVisitorPartnerAd(ad: VisitorPartnerAd) {
+  if (!isSafeImageDataUrl(ad.imageDataUrl)) return false;
+  const name = clipAdText(ad.name, TITLE_TEXT_MAX);
+  if (!name) return false;
+  const record: VisitorPartnerAd = {
+    id: ad.id.startsWith("visitor-") ? ad.id : `visitor-${ad.id}`,
+    name,
+    tagline: clipAdText(ad.tagline, 180),
+    imageDataUrl: ad.imageDataUrl.trim(),
+    bytes: ad.bytes,
+    createdAt: ad.createdAt || new Date().toISOString(),
+  };
+  durableSet(VISITOR_ADS_KEY, JSON.stringify([record]));
+  return true;
 }

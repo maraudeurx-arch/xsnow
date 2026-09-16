@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState, type MouseEvent } from "react";
+import { useEffect, useMemo, useState, type MouseEvent } from "react";
+import { subscribeDurableStorage } from "@/lib/durable-storage";
+import { downloadCreativeImage } from "@/lib/download-creative";
 import { hrefWithLang } from "@/lib/i18n";
 import { useI18n } from "@/lib/i18n/locale";
-import { downloadCreativeImage } from "@/lib/download-creative";
 import {
   adsenseClientId,
   adsenseSlotId,
@@ -14,7 +15,9 @@ import {
   partnerCreativeDownloadName,
   partnerCreativeImageUrl,
   PARTNER_ROTATION_MS,
+  PLACEHOLDER_PARTNERS,
   readRotationIndex,
+  readVisitorPartnerCreatives,
   resolvePartnerCreative,
   usesAdsense,
   writeRotationIndex,
@@ -37,12 +40,22 @@ export function PartnerAdSlot({ slot }: { slot: PartnerSlotId }) {
   const adsense = usesAdsense(slot);
   const client = adsenseClientId();
   const unit = adsenseSlotId(slot);
-  const creatives = listPartnerCreatives();
+  const [visitorAds, setVisitorAds] = useState<PartnerCreative[]>([]);
+  const creatives = useMemo(
+    () => listPartnerCreatives(PLACEHOLDER_PARTNERS, visitorAds),
+    [visitorAds],
+  );
   const [rotation, setRotation] = useState(0);
   const [creative, setCreative] = useState<PartnerCreative>(() =>
-    creativeForSlot(slot, 0, creatives),
+    creativeForSlot(slot, 0, PLACEHOLDER_PARTNERS),
   );
   const grow = slot === "news-bottom";
+
+  useEffect(() => {
+    const sync = () => setVisitorAds(readVisitorPartnerCreatives());
+    sync();
+    return subscribeDurableStorage(sync);
+  }, []);
 
   useEffect(() => {
     if (adsense || creatives.length === 0) return;
@@ -80,24 +93,12 @@ export function PartnerAdSlot({ slot }: { slot: PartnerSlotId }) {
         grow
           ? "flex h-full min-h-0 flex-col overflow-hidden"
           : "shrink-0"
-      } rounded-lg border border-dashed border-gold/35 bg-white/[0.03] px-2 py-1 text-left relative`}
+      } relative rounded-lg border border-dashed border-gold/35 bg-white/[0.03] px-2 py-1 text-left`}
     >
-      <p className="flex shrink-0 items-center justify-between gap-1 text-[8px] font-extrabold uppercase tracking-wide text-ice/70">
-        <span className="min-w-0 truncate">
-          {copy.partnerSponsored}
-          <span aria-hidden> · </span>
-          {copy.partnerSlot}
-        </span>
-        {showDownload && imageUrl ? (
-          <CreativeDownload
-            url={imageUrl}
-            filename={downloadName}
-            label={copy.partnerDownload}
-            ariaLabel={copy.partnerDownloadAria}
-            hint={copy.partnerDownloadIosHint}
-            failLabel={copy.partnerDownloadFail}
-          />
-        ) : null}
+      <p className="shrink-0 text-[8px] font-extrabold uppercase tracking-wide text-ice/70">
+        {copy.partnerSponsored}
+        <span aria-hidden> · </span>
+        {copy.partnerSlot}
       </p>
       {adsense ? (
         <ins
@@ -110,7 +111,7 @@ export function PartnerAdSlot({ slot }: { slot: PartnerSlotId }) {
         />
       ) : (
         <div
-          className={`mt-1 flex min-h-0 flex-col ${
+          className={`relative mt-1 flex min-h-0 flex-col ${
             grow ? "flex-1 overflow-hidden" : SLOT_MIN_H[slot]
           }`}
         >
@@ -149,6 +150,18 @@ export function PartnerAdSlot({ slot }: { slot: PartnerSlotId }) {
               />
             </Link>
           )}
+          {showDownload && imageUrl ? (
+            <div className="absolute right-1 top-1 z-10">
+              <CreativeDownload
+                url={imageUrl}
+                filename={downloadName}
+                label={copy.partnerDownload}
+                ariaLabel={copy.partnerDownloadAria}
+                hint={copy.partnerDownloadIosHint}
+                failLabel={copy.partnerDownloadFail}
+              />
+            </div>
+          ) : null}
         </div>
       )}
     </aside>
@@ -173,7 +186,7 @@ function CreativeBody({
   return (
     <>
       {imageUrl ? (
-        // eslint-disable-next-line @next/next/no-img-element -- static export SVG placeholders
+        // eslint-disable-next-line @next/next/no-img-element -- static export SVG/PNG house ads + visitor data URLs
         <img
           src={imageUrl}
           alt=""
@@ -223,10 +236,7 @@ function CreativeDownload({
         filename,
         shareTitle: ariaLabel,
       });
-      if (result === "opened") {
-        // iOS opened the image for long-press save — keep the Accueil slot as-is.
-        setFailed(false);
-      }
+      if (result === "opened") setFailed(false);
     } catch (error) {
       if (error instanceof DOMException && error.name === "AbortError") return;
       setFailed(true);

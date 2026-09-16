@@ -121,6 +121,12 @@ export const fr = {
     partnerGrowLocalName: "Coop du quartier (exemple)",
     partnerGrowLocalTagline:
       "Emplacement partenaire à venir. En attendant : inscris-toi et invite un voisin. Pas de ferme à clics.",
+    partnerGrowGarderieName: "Place en garderie du quartier",
+    partnerGrowGarderieTagline:
+      "Publicité communautaire — une place en garderie près de chez vous. Pas de fausse manchette, pas de ferme à clics.",
+    partnerGrowChambreName: "Chambre à Gatineau Centre",
+    partnerGrowChambreTagline:
+      "Publicité communautaire — cession de bail. Télécharge l’affiche. Pas de fausse manchette, pas de ferme à clics.",
     partnerDownload: "Télécharger",
     partnerDownloadAria: "Télécharger l’image de la publicité",
     partnerDownloadFail:
@@ -582,8 +588,20 @@ export const fr = {
     city: "Ville ou quartier",
     cityPh: "Plateau, Rosemont…",
     description: "Description",
+    photo: "Photo de la publicité",
+    photoHint:
+      "Max. {kb} Ko. On compresse sur cet appareil — pas de CDN, pas d’original énorme.",
+    photoTooBig:
+      "Cette image dépasse {kb} Ko même compressée. Choisis une photo plus légère.",
+    photoNotImage: "Choisis une photo (JPEG, PNG ou WebP).",
+    photoUndecodable: "Impossible de lire cette image. Essaie un JPEG ou un PNG.",
+    photoBusy: "Compression de la photo…",
+    photoReady: "Photo prête ({kb} Ko).",
+    photoPublishedTagline:
+      "Publicité publiée sur cet appareil — pas une manchette. Max. {kb} Ko.",
     publish: "Publier dans Open Community",
-    saved: "Enregistré sur cet appareil. La vitrine publique arrive bientôt.",
+    saved:
+      "Enregistré sur cet appareil. Avec une photo (max. {kb} Ko), elle tourne dans Publicité sur Accueil.",
     fallbackCategory: "Commerce",
     fallbackCity: "Quartier",
   },

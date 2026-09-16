@@ -222,6 +222,18 @@ describe("vos idees copy", () => {
     assert.match(es.neighborhoodNews.partnerGrowShareName, /ejemplo/i);
     assert.match(fr.neighborhoodNews.partnerGrowRegisterTagline, /fausse manchette/);
     assert.match(fr.neighborhoodNews.partnerGrowShareTagline, /Invite un voisin/);
+    assert.equal(fr.neighborhoodNews.partnerGrowGarderieName, "Place en garderie du quartier");
+    assert.equal(en.neighborhoodNews.partnerGrowGarderieName, "Neighbourhood daycare spot");
+    assert.match(es.neighborhoodNews.partnerGrowGarderieName, /guardería/i);
+    assert.equal(fr.neighborhoodNews.partnerGrowChambreName, "Chambre à Gatineau Centre");
+    assert.match(en.neighborhoodNews.partnerGrowChambreName, /Gatineau Centre/);
+    assert.doesNotMatch(fr.neighborhoodNews.partnerGrowChambreTagline, /438|869-4520/);
+    assert.doesNotMatch(en.neighborhoodNews.partnerGrowChambreTagline, /438|869-4520/);
+    assert.equal(fr.business.photo, "Photo de la publicité");
+    assert.match(fr.business.photoHint, /\{kb\} Ko/);
+    assert.match(en.business.photoTooBig, /\{kb\} KB/);
+    assert.deepEqual(Object.keys(en.business), Object.keys(fr.business));
+    assert.deepEqual(Object.keys(es.business), Object.keys(fr.business));
     assert.equal(fr.neighborhoodNews.retry, "Réessayer");
   });
 });

@@ -1,5 +1,9 @@
 import assert from "node:assert/strict";
+import { existsSync } from "node:fs";
+import { dirname, join } from "node:path";
 import { describe, it } from "node:test";
+import { fileURLToPath } from "node:url";
+import { AD_IMAGE_MAX_BYTES } from "./compress-ad-image.ts";
 import { en } from "./i18n/en.ts";
 import { es } from "./i18n/es.ts";
 import { fr } from "./i18n/fr.ts";
@@ -13,6 +17,7 @@ import {
   parseAdProvider,
   parseAdsEnabled,
   parseRotationIndex,
+  parseVisitorAds,
   partnerCtaKind,
   partnerCreativeDownloadName,
   partnerCreativeImageUrl,
@@ -22,7 +27,10 @@ import {
   resolvePartnerCreative,
   usesAdsense,
   visiblePartnerSlots,
+  visitorAdToCreative,
 } from "./partner-ads.ts";
+
+const publicDir = join(dirname(fileURLToPath(import.meta.url)), "../../public");
 
 describe("partner ad config", () => {
   it("defaults to labeled placeholder inventory", () => {
@@ -86,7 +94,7 @@ describe("partner ad config", () => {
     assert.ok(list.length >= 2);
     assert.deepEqual(
       list.map((creative) => creative.kind),
-      ["register", "share", "local"],
+      ["register", "share", "local", "garderie", "chambre"],
     );
     assert.equal(list[0]?.href, PARTNER_REGISTER_HREF);
     assert.equal(list[1]?.href, PARTNER_SHARE_HREF);
@@ -94,23 +102,43 @@ describe("partner ad config", () => {
     for (const creative of list) {
       assert.ok(creative.id);
       assert.ok(partnerCreativeImageUrl(creative)?.includes("/partners/"));
-      assert.ok(partnerCreativeDownloadName(creative).endsWith(".svg"));
+      assert.match(partnerCreativeDownloadName(creative), /\.(svg|png)$/);
       assert.equal(creative.href === PARTNER_REGISTER_HREF || creative.href === PARTNER_SHARE_HREF, true);
       const resolved = resolvePartnerCreative(creative, fr.neighborhoodNews);
       assert.doesNotMatch(resolved.name, /Chargement des nouvelles/);
       assert.doesNotMatch(resolved.tagline, /Chargement des nouvelles/);
-      assert.match(resolved.tagline, /ferme à clics/);
+      assert.doesNotMatch(resolved.name, /438\s*869|869-4520/);
+      assert.doesNotMatch(resolved.tagline, /438\s*869|869-4520/);
       if (creative.kind === "share") {
         assert.equal(resolved.ctaKind, "share");
         assert.equal(resolved.cta, fr.neighborhoodNews.partnerCtaShare);
         assert.match(resolved.name, /exemple/);
         assert.match(resolved.tagline, /voisin/);
+      } else if (creative.kind === "garderie") {
+        assert.equal(resolved.ctaKind, "register");
+        assert.equal(resolved.name, "Place en garderie du quartier");
+        assert.match(resolved.tagline, /Publicité/);
+        assert.match(resolved.tagline, /ferme à clics/);
+      } else if (creative.kind === "chambre") {
+        assert.equal(resolved.ctaKind, "register");
+        assert.equal(resolved.name, "Chambre à Gatineau Centre");
+        assert.equal(partnerCreativeDownloadName(creative), "chambre-gatineau-centre.png");
+        assert.match(resolved.tagline, /Publicité/);
+        assert.match(resolved.tagline, /ferme à clics/);
       } else {
         assert.equal(resolved.ctaKind, "register");
         assert.equal(resolved.cta, fr.neighborhoodNews.partnerCtaRegister);
         assert.match(resolved.name, /exemple/);
+        assert.match(resolved.tagline, /ferme à clics/);
       }
     }
+    const enGarderie = resolvePartnerCreative(list[3]!, en.neighborhoodNews);
+    assert.match(enGarderie.name, /daycare/i);
+    const enChambre = resolvePartnerCreative(list[4]!, en.neighborhoodNews);
+    assert.match(enChambre.name, /Gatineau Centre/);
+    assert.doesNotMatch(enChambre.tagline, /438/);
+    const esChambre = resolvePartnerCreative(list[4]!, es.neighborhoodNews);
+    assert.match(esChambre.name, /Gatineau Centre/);
     const enShare = resolvePartnerCreative(list[1]!, en.neighborhoodNews);
     assert.match(enShare.name, /example/i);
     assert.equal(enShare.cta, "Share / invite");
@@ -148,5 +176,44 @@ describe("partner ad config", () => {
     assert.equal(bottom0.kind, "share");
     assert.notEqual(mid0.id, bottom0.id);
     assert.equal(creativeForSlot("news-mid", 1).id, bottom0.id);
+  });
+
+  it("ships garderie and chambre flyers as labeled house ads", () => {
+    assert.equal(existsSync(join(publicDir, "partners/garderie.svg")), true);
+    assert.equal(existsSync(join(publicDir, "partners/chambre-gatineau-centre.png")), true);
+    assert.equal(partnerCtaKind("garderie"), "register");
+    assert.equal(partnerCtaKind("chambre"), "register");
+    const chambre = PLACEHOLDER_PARTNERS.find((item) => item.id === "placeholder-chambre");
+    assert.equal(chambre?.imagePath, "/partners/chambre-gatineau-centre.png");
+  });
+
+  it("prepends a KB-capped visitor photo without mixing it into news copy", () => {
+    const tiny = "data:image/jpeg;base64,/9j/4AAQSkZJRg==";
+    const parsed = parseVisitorAds(
+      JSON.stringify([
+        {
+          id: "visitor-atelier",
+          name: "Atelier photo",
+          tagline: "Publicité sur cet appareil.",
+          imageDataUrl: tiny,
+          bytes: 12,
+        },
+      ]),
+    );
+    assert.equal(parsed.length, 1);
+    assert.equal(parsed[0]?.name, "Atelier photo");
+    const extra = parsed.map(visitorAdToCreative);
+    const merged = listPartnerCreatives(PLACEHOLDER_PARTNERS, extra);
+    assert.equal(merged[0]?.id, "visitor-atelier");
+    assert.ok(partnerCreativeImageUrl(merged[0]!)?.startsWith("data:image/jpeg"));
+    assert.match(partnerCreativeDownloadName(merged[0]!), /publicite-visitor-atelier\.jpg/);
+    const huge = `data:image/jpeg;base64,${"A".repeat(AD_IMAGE_MAX_BYTES * 2)}`;
+    assert.equal(parseVisitorAds(JSON.stringify([{ id: "x", name: "Big", imageDataUrl: huge }])).length, 0);
+    assert.equal(
+      parseVisitorAds(
+        JSON.stringify([{ id: "x", name: "Script", imageDataUrl: "data:text/html;base64,PHNjcmlwdD4=" }]),
+      ).length,
+      0,
+    );
   });
 });
