@@ -27,13 +27,13 @@ describe("Accueil Nouvelles layout fills toward the footer", () => {
     );
     assert.match(news, /data-neighborhood-news/);
     assert.match(news, /min-h-0 flex-1 grow flex-col gap-1 self-stretch/);
-    assert.match(news, /sm:min-h-\[22rem\]/);
+    assert.match(news, /sm:min-h-\[24rem\]/);
     assert.match(news, /data-news-list[\s\S]*min-h-0[\s\S]*flex-1 grow/);
     assert.match(news, /data-news-spacer[\s\S]*min-h-0[\s\S]*flex-1 grow/);
     assert.match(css, /\[data-news-list\][\s\S]*flex:\s*1 1 0%/);
-    assert.match(css, /min-height:\s*max\(22rem,\s*48dvh\)/);
-    assert.match(css, /min-height:\s*max\(14rem,\s*28dvh\)/);
-    assert.match(css, /min-height:\s*max\(25rem,\s*55dvh\)/);
+    assert.match(css, /min-height:\s*max\(24rem,\s*52dvh\)/);
+    assert.match(css, /min-height:\s*max\(16rem,\s*32dvh\)/);
+    assert.match(css, /min-height:\s*max\(28rem,\s*60dvh\)/);
     // Specific grid-child floors must not be zeroed (would beat media queries).
     assert.doesNotMatch(
       css,
@@ -41,9 +41,14 @@ describe("Accueil Nouvelles layout fills toward the footer", () => {
     );
     assert.match(
       css,
-      /home-stage:has\(\[data-neighborhood-news\]\) > \[data-neighborhood-news\] \{[^}]*min-height:\s*max\(22rem,\s*48dvh\)/,
+      /home-stage:has\(\[data-neighborhood-news\]\) > \[data-neighborhood-news\] \{[^}]*min-height:\s*max\(24rem,\s*52dvh\)/,
     );
     assert.doesNotMatch(css, /0\.42fr/);
+    assert.match(css, /--home-block-gap:\s*0;/);
+    assert.match(
+      css,
+      /app-stage-main \{[\s\S]*grid-template-rows:\s*minmax\(0,\s*1fr\)/,
+    );
     assert.doesNotMatch(news, /lorem ipsum/i);
     assert.doesNotMatch(news, /fake headline/i);
   });
@@ -61,7 +66,7 @@ describe("Accueil Nouvelles layout fills toward the footer", () => {
     assert.match(footer, /LegalLinks/);
     assert.match(
       css,
-      /max-height:\s*660px[\s\S]*\[data-neighborhood-news\][\s\S]*min-height:\s*max\(15rem,\s*38dvh\)/,
+      /max-height:\s*660px[\s\S]*\[data-neighborhood-news\][\s\S]*min-height:\s*max\(14rem,\s*36dvh\)/,
     );
   });
 });
