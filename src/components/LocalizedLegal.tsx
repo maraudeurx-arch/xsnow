@@ -2,6 +2,7 @@
 
 import { AppVersionNote } from "@/components/AppVersionNote";
 import { FeaturePanel } from "@/components/FeaturePanel";
+import { InfosPrivacyNote } from "@/components/InfosPrivacyNote";
 import { LegalLinks } from "@/components/LegalLinks";
 import { TrustContact } from "@/components/TrustContact";
 import { useI18n } from "@/lib/i18n/locale";
@@ -33,6 +34,11 @@ export function LocalizedLegal({ kind }: { kind: LegalKind }) {
 
   return (
     <FeaturePanel title={copy.title} lead={copy.lead}>
+      {kind === "about" ? (
+        <div className="mb-3">
+          <InfosPrivacyNote />
+        </div>
+      ) : null}
       <p className="rounded-xl border border-gold/25 bg-gold/10 px-3 py-2 text-[12px] leading-snug text-snow/90">
         {copy.draft}
       </p>
