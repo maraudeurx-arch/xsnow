@@ -220,8 +220,19 @@ const PROFILE_JSON = JSON.stringify({
 });
 
 test.describe("iOS empty-localStorage cold start", () => {
-  test("IndexedDB backup restores avatar and profile when localStorage is empty", async ({ page }) => {
+  test("IndexedDB backup restores avatar, Mes infos, and ideas when localStorage is empty", async ({ page }) => {
     await page.addInitScript(async (profile) => {
+      const ideas = JSON.stringify([
+        {
+          id: "idea-1",
+          text: "Déneiger le stationnement",
+          involvement: ["mains"],
+          hoursPerWeek: "1",
+          neighborhood: "Hull",
+          createdAt: "2026-09-16T00:00:00.000Z",
+          updatedAt: "2026-09-16T00:00:00.000Z",
+        },
+      ]);
       await new Promise<void>((resolve, reject) => {
         const req = indexedDB.open("xsnow-device-memory", 1);
         req.onupgradeneeded = () => {
@@ -236,6 +247,7 @@ test.describe("iOS empty-localStorage cold start", () => {
           store.put(JSON.stringify("homme-blanc"), "xsnow.avatar");
           store.put(JSON.stringify(["homme-blanc"]), "xsnow.welcomePlayed");
           store.put(profile, "xsnow.localProfile");
+          store.put(ideas, "xsnow.ideas");
           store.put(JSON.stringify("skipped"), "xsnow.geoConsent");
           store.put(JSON.stringify("denied"), "xsnow.analyticsConsent");
           tx.oncomplete = () => resolve();
@@ -245,9 +257,23 @@ test.describe("iOS empty-localStorage cold start", () => {
     }, PROFILE_JSON);
 
     await page.goto("./");
+    await expect(page.locator("html")).toHaveAttribute("data-device-memory", "ready");
     await expect(page.getByText("Choisis ton avatar")).toHaveCount(0);
     await expect(page.locator("[data-header-profile]")).toHaveText("M.T.");
     await expect(page.getByRole("button", { name: "Réécouter" })).toBeVisible();
+
+    const restored = await page.evaluate(() => ({
+      avatar: window.localStorage.getItem("xsnow.avatar"),
+      profile: window.localStorage.getItem("xsnow.localProfile"),
+      ideas: window.localStorage.getItem("xsnow.ideas"),
+      geo: window.localStorage.getItem("xsnow.geoConsent"),
+      analytics: window.localStorage.getItem("xsnow.analyticsConsent"),
+    }));
+    expect(restored.avatar).toContain("homme-blanc");
+    expect(restored.profile).toContain("marie@voisin.test");
+    expect(restored.ideas).toContain("Déneiger le stationnement");
+    expect(restored.geo).toContain("skipped");
+    expect(restored.analytics).toContain("denied");
 
     await page.goto("./mon-profil/");
     await expect(page.locator("[data-member-id]")).toHaveText(/Numéro OPC/);
@@ -298,6 +324,7 @@ test.describe("iOS empty-localStorage cold start", () => {
     });
 
     await page.reload();
+    await expect(page.locator("html")).toHaveAttribute("data-device-memory", "ready");
     await expect(page.locator("[data-header-profile]")).toHaveText("M.T.");
     await expect(page.locator("[data-member-id]")).toHaveText(/Numéro OPC-/);
     await expect(page.getByText("Marie Tremblay")).toBeVisible();

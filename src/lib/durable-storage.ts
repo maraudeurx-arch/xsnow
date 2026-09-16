@@ -56,6 +56,11 @@ export function subscribeDurableHydrated(onChange: () => void) {
   };
 }
 
+/** Alias kept for PR #75 naming. */
+export function subscribeDurableBoot(onChange: () => void) {
+  return subscribeDurableHydrated(onChange);
+}
+
 export function isDurableHydrated() {
   return hydrated;
 }
@@ -132,7 +137,18 @@ function writeSlot(storage: Storage | undefined, key: string, value: string) {
 }
 
 export function isEmptyDurableValue(value: string | null | undefined) {
-  return value == null || value === "" || value === "null";
+  if (value == null) return true;
+  const trimmed = value.trim();
+  return trimmed === "" || trimmed === "null" || trimmed === "undefined";
+}
+
+/** Alias kept for PR #75 naming. */
+export function isBlankDurableValue(value: string | null | undefined) {
+  return isEmptyDurableValue(value);
+}
+
+function isXsnowKey(key: string) {
+  return key.startsWith("xsnow.");
 }
 
 /** True when local is missing/blank and backup has a real value, or local is [] while backup has items. */
@@ -312,7 +328,9 @@ export async function hydrateDurableFromBackup(
   store?: Storage,
 ): Promise<number> {
   const backupMap = await backupGetAll();
-  const allKeys = new Set<string>([...keys, ...backupMap.keys()]);
+  const allKeys = new Set<string>(
+    [...keys, ...backupMap.keys()].filter((key) => isXsnowKey(key)),
+  );
   let restored = 0;
   for (const key of allKeys) {
     const local = readSlot(localStore(store), key);

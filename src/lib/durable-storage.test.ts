@@ -42,10 +42,13 @@ describe("durable restore rules", () => {
     assert.equal(isEmptyDurableValue(null), true);
     assert.equal(isEmptyDurableValue(""), true);
     assert.equal(isEmptyDurableValue("null"), true);
+    assert.equal(isEmptyDurableValue("undefined"), true);
+    assert.equal(isEmptyDurableValue("  undefined  "), true);
     assert.equal(isEmptyDurableValue("[]"), false);
     assert.equal(shouldRestoreFromBackup(null, JSON.stringify("homme-blanc")), true);
     assert.equal(shouldRestoreFromBackup("", '{"id":"OPC-7K3M"}'), true);
     assert.equal(shouldRestoreFromBackup("null", '{"id":"OPC-7K3M"}'), true);
+    assert.equal(shouldRestoreFromBackup("undefined", '{"id":"OPC-7K3M"}'), true);
     assert.equal(shouldRestoreFromBackup(JSON.stringify("femme-noire"), JSON.stringify("homme-blanc")), false);
   });
 
@@ -223,5 +226,26 @@ describe("boot restore race", () => {
       resetDurableMemoryForTests();
     }
   });
+
+  it("hydrates every xsnow.* backup key, not only the list passed in", async () => {
+    const local = memoryStore();
+    const backup = new Map<string, string>([
+      ["xsnow.localProfile", JSON.stringify({ id: "OPC-7K3M" })],
+      ["xsnow.offers", JSON.stringify([{ id: "offer-1" }])],
+      ["ignored", "nope"],
+    ]);
+    setDurableBackupForTests(backup);
+    resetDurableMemoryForTests();
+    try {
+      await hydrateDurableFromBackup([], local);
+      assert.match(local.getItem("xsnow.localProfile") ?? "", /OPC-7K3M/);
+      assert.match(local.getItem("xsnow.offers") ?? "", /offer-1/);
+      assert.equal(local.getItem("ignored"), null);
+    } finally {
+      setDurableBackupForTests(null);
+      resetDurableMemoryForTests();
+    }
+  });
+
 });
 

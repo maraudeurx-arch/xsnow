@@ -57,6 +57,8 @@ export function Guide() {
   const unanswered = useConsentUnanswered();
   const welcomeGateOpen = useWelcomeGate();
 
+  // Wait for IndexedDB restore before treating empty as a new visitor (PR #75).
+  const waitingForMemory = !memoryReady && !avatarId;
   const showPicker = picking || (memoryReady && !avatarId);
   const chosen = avatarId ? avatarById(avatarId) : null;
 
@@ -107,12 +109,18 @@ export function Guide() {
     <section
       id="home-guide"
       className={`flex min-h-0 w-full flex-col ${
-        showPicker
+        waitingForMemory || showPicker
           ? "items-center justify-center gap-3"
           : "min-h-0 flex-1 items-stretch justify-start gap-0 self-stretch"
       }`}
     >
-      {showPicker ? (
+      {waitingForMemory ? (
+        <div
+          data-device-memory-pending
+          aria-busy="true"
+          className="home-stage flex min-h-0 w-full flex-col items-center justify-center gap-1.5 rounded-2xl px-3 py-3"
+        />
+      ) : showPicker ? (
         <div
           role="group"
           aria-label={m.guide.pickAvatar}
