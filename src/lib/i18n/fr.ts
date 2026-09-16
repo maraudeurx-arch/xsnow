@@ -128,7 +128,7 @@ export const fr = {
         },
         {
           heading: "Ce que nous collectons",
-          body: "Sur cet appareil (localStorage) : langue, avatar, tes annonces, tes consentements, et si tu acceptes la position : ville + coordonnées pour le nom de ville — pas de suivi continu. Si tu acceptes les stats : événements anonymes vers un Worker Cloudflare (D1) : session, langue, ville/pays si la position est aussi acceptée, extraits d’idées de monétisation (texte court ; e-mails et GPS retirés). Le chat de l’avatar envoie tes messages au Worker pour une réponse. Pas de pub tierce.",
+          body: "Sur cet appareil (localStorage) : langue, avatar, tes annonces, tes consentements, et si tu t’inscris : prénom, nom, e-mail, téléphone et un numéro local OPC-XXXX — rien n’est envoyé à un serveur de profils. Si tu acceptes la position : ville + coordonnées pour le nom de ville — pas de suivi continu. Si tu acceptes les stats : événements anonymes vers un Worker Cloudflare (D1) : session, langue, ville/pays si la position est aussi acceptée, extraits d’idées de monétisation (texte court ; e-mails et GPS retirés). Le chat de l’avatar envoie tes messages au Worker pour une réponse. Pas de pub tierce.",
         },
         {
           heading: "Pourquoi",
@@ -372,7 +372,7 @@ export const fr = {
     },
     monProfil: {
       title: "Mon profil",
-      lead: "Votre fiche locale : infos, réglages, invitations.",
+      lead: "Votre fiche locale : inscription, infos, réglages, invitations.",
     },
     mesInfos: {
       title: "Mes infos",
@@ -408,10 +408,10 @@ export const fr = {
       "{placeName} / {community} — {slogan} Notre proximité et notre esprit d’entraide est le gage de notre succès.",
     versionLabel: "Version",
     deviceLocalNote:
-      "Tes offres, demandes, idées, textes de partage et coordonnées Interac/PayPal restent sur cet appareil. Rien de personnel n’apparaît chez un autre visiteur tant que GOV + propriétaire n’approuvent pas une publication dans une version numérotée (catalogue public).",
+      "Tes offres, demandes, idées, textes de partage, inscription (prénom, nom, e-mail, téléphone, numéro OPC-XXXX) et coordonnées Interac/PayPal restent sur cet appareil. Rien de personnel n’apparaît chez un autre visiteur tant que GOV + propriétaire n’approuvent pas une publication dans une version numérotée (catalogue public).",
     releaseNotesTitle: "Notes de version",
     releaseNotesBody:
-      "0.3.1 — Ambiance régionale après la position (Caraïbes, Afrique, Europe, Asie, Amérique du Sud). Le Canada et les USA gardent les quatre saisons. Avant la position, le fond d’automne reste. Le catalogue public est toujours vide.",
+      "0.3.2 — Inscription locale sur Mon profil (prénom, nom, e-mail, téléphone, numéro OPC-XXXX). Avatar, profil et idées restent sur cet appareil au rechargement (accueil sans rejouer le message d’accueil). Le catalogue public est toujours vide.",
     language: "Langue",
     comingSoon: "Notifications et saison d’affichage arriveront ici.",
     locationConsent: "Position",
@@ -426,7 +426,7 @@ export const fr = {
   },
   stubs: {
     mesInfos:
-      "Nom, quartier et attributs s’afficheront ici. En attendant, vous pouvez connecter un portefeuille — ce n’est pas obligatoire.",
+      "Inscris-toi sur cet appareil (prénom, nom, e-mail, téléphone). Un numéro OPC-XXXX reste ici. Le portefeuille est optionnel.",
     inviter:
       "Un lien d’invitation et un QR apparaîtront ici. Pour l’instant, parlez d’Open Community à un voisin.",
     monetise:
@@ -824,6 +824,39 @@ export const fr = {
     copy: "Copier",
     copied: "Texte copié.",
     failed: "Copie impossible. Le texte est affiché : sélectionnez-le.",
+  },
+  register: {
+    cta: "Inviter à s’inscrire",
+    ctaAria: "Ouvrir le formulaire d’inscription",
+    title: "S’inscrire sur cet appareil",
+    hint: "Prénom, nom, e-mail et téléphone restent sur cet appareil. Pas de mot de passe. Rien n’est envoyé à un serveur de profils.",
+    firstName: "Prénom",
+    lastName: "Nom",
+    email: "E-mail",
+    phone: "Téléphone",
+    firstNamePh: "Marie",
+    lastNamePh: "Tremblay",
+    emailPh: "marie@exemple.ca",
+    phonePh: "819-…",
+    save: "Enregistrer",
+    cancel: "Fermer",
+    edit: "Modifier le profil",
+    saved: "Profil enregistré sur cet appareil.",
+    memberNumber: "Numéro",
+    memberNumberHint:
+      "Identifiant local stable, format OPC-XXXX (4 caractères parmi A–Z / 2–9, sans I, O, 0, 1).",
+    needFirstName: "Indique ton prénom.",
+    needLastName: "Indique ton nom.",
+    invalidEmail: "Indique un e-mail valide.",
+    invalidPhone: "Indique un téléphone valide.",
+    localOnly: "Ces données restent sur cet appareil. Elles ne sont pas publiées, ni e-mail ni téléphone dans l’en-tête.",
+    shareTitle: "Inviter quelqu’un",
+    shareHint: "Modifiez le texte, puis copiez-le. Le lien n’inclut pas ton e-mail ni ton téléphone.",
+    shareEdit: "Modifier",
+    shareCopy: "Copier",
+    shareCopied: "Texte copié.",
+    shareFailed: "Copie impossible. Le texte est affiché : sélectionnez-le.",
+    headerAria: "Profil inscrit : {name}",
   },
   feedback: {
     prompt: "Utile ?",

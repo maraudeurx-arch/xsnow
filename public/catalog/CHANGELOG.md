@@ -2,7 +2,14 @@
 
 Community-wide offers and ideas appear here **only after GOV + owner approval**, then ship in a numbered app release (`public/catalog/<version>.json`).
 
-Personal Mes services offers, En demande requests, Interac/PayPal, chat, and Vos idées stay on the visitor’s device until that happens.
+Personal Mes services offers, En demande requests, Interac/PayPal, chat, Vos idées, and the local registration profile stay on the visitor’s device until that happens.
+
+## 0.3.2 — 2026-09-16
+
+- Device-local registration on Mon profil (first name, last name, email, phone) with a stable `OPC-XXXX` member number.
+- Header shows a short first name or initials next to the logo. Email and phone stay off the chrome and off any server.
+- Returning visits restore avatar, profile, and Vos idées from localStorage. Home skips the picker and does not auto-replay welcome speech.
+- Public catalog remains empty.
 
 ## 0.3.1 — 2026-09-15
 

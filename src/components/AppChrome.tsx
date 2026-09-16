@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Suspense, type ReactNode } from "react";
 import { BrandLogo } from "@/components/BrandLogo";
 import { HeaderNav } from "@/components/HeaderNav";
+import { HeaderProfileLabel } from "@/components/HeaderProfileLabel";
 import { PlaceWordmark, PlaceDocumentTitle } from "@/components/PlaceWordmark";
 import { SeasonalBackdrop, SeasonScene } from "@/components/SeasonalBackdrop";
 import { SiteFooter } from "@/components/SiteFooter";
@@ -34,7 +35,10 @@ export function AppChrome({ children }: { children: ReactNode }) {
               >
                 <PlaceWordmark />
               </Link>
-              <BrandLogo />
+              <div className="inline-flex min-w-0 items-center gap-1.5">
+                <HeaderProfileLabel />
+                <BrandLogo />
+              </div>
             </div>
 
             <HeaderNav />

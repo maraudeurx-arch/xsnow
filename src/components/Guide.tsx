@@ -16,12 +16,8 @@ import { welcomeSpeechFor } from "@/lib/content";
 import { useI18n } from "@/lib/i18n/locale";
 import { PUBLIC_SITE_URL } from "@/lib/paths";
 import { usePlace } from "@/lib/place";
-import {
-  hasPlayedWelcomeFor,
-  markWelcomePlayed,
-  useSpeech,
-  type SpeakOptions,
-} from "@/lib/speech";
+import { hasPlayedWelcomeFor, markWelcomePlayed } from "@/lib/device-memory";
+import { useSpeech, type SpeakOptions } from "@/lib/speech";
 import {
   beginWelcomeIntent,
   isWelcomeInFlight,
@@ -91,13 +87,10 @@ export function Guide() {
     if (!chosen) return;
     if (!welcomeSpeechReady({ hasAvatar: true })) return;
     if (readWelcomeGate() || isWelcomeInFlight()) return;
-    if (hasPlayedWelcomeFor(chosen.id)) {
-      openWelcomeGate();
-      return;
-    }
-    markWelcomePlayed(chosen.id);
-    playWelcome(chosen.gender);
-  }, [chosen, playWelcome]);
+    // Returning visitor: avatar already on this device. Do not auto-play
+    // welcome on reload — Réécouter is there if they want it again.
+    openWelcomeGate();
+  }, [chosen]);
 
   return (
     <section

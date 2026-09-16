@@ -127,6 +127,16 @@ describe("vos idees copy", () => {
     assert.deepEqual(Object.keys(es.chat), Object.keys(fr.chat));
     assert.deepEqual(Object.keys(en.shareOpc), Object.keys(fr.shareOpc));
     assert.deepEqual(Object.keys(es.shareOpc), Object.keys(fr.shareOpc));
+    assert.deepEqual(Object.keys(en.register), Object.keys(fr.register));
+    assert.deepEqual(Object.keys(es.register), Object.keys(fr.register));
+    assert.equal(fr.register.cta, "Inviter à s’inscrire");
+    assert.match(fr.register.memberNumberHint, /OPC-XXXX/);
+    assert.equal(fr.register.shareEdit, "Modifier");
+    assert.equal(fr.register.shareCopy, "Copier");
+    assert.match(fr.legal.privacy.sections[1].body, /OPC-XXXX/);
+    assert.match(fr.legal.privacy.sections[1].body, /serveur de profils/);
+    assert.match(en.legal.privacy.sections[1].body, /profile server/);
+    assert.match(es.legal.privacy.sections[1].body, /servidor de perfiles/);
     assert.deepEqual(Object.keys(en.feedback), Object.keys(fr.feedback));
     assert.deepEqual(Object.keys(es.feedback), Object.keys(fr.feedback));
     assert.equal(fr.shareOpc.title, "Partager OPC");
@@ -308,7 +318,7 @@ describe("legal copy is present in FR/EN/ES", () => {
     assert.match(en.legal.about.sections[4].body, /public catalog/i);
     assert.match(es.legal.about.sections[4].body, /catálogo público/);
     assert.match(fr.profile.deviceLocalNote, /cet appareil/);
-    assert.match(en.profile.releaseNotesBody, /0\.3\.1/);
+    assert.match(en.profile.releaseNotesBody, /0\.3\.2/);
     assert.deepEqual(Object.keys(en.profile), Object.keys(fr.profile));
     assert.deepEqual(Object.keys(es.profile), Object.keys(fr.profile));
   });

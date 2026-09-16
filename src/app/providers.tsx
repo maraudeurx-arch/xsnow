@@ -18,6 +18,7 @@ import { type ReactNode } from "react";
 import { WagmiProvider } from "wagmi";
 import { AnalyticsRoot } from "@/components/AnalyticsRoot";
 import { ConsentSheet } from "@/components/ConsentSheet";
+import { DeviceMemoryBoot } from "@/components/DeviceMemoryBoot";
 import type { Locale } from "@/lib/i18n";
 import { LocaleProvider, useI18n } from "@/lib/i18n/locale";
 import { PlaceProvider } from "@/lib/place";
@@ -92,6 +93,7 @@ export function Providers({ children }: { children: ReactNode }) {
     <LocaleProvider>
       <PlaceProvider>
         <AnalyticsRoot />
+        <DeviceMemoryBoot />
         <ConsentSheet />
         <SpeechProvider>
           {walletConfig ? (

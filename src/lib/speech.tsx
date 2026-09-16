@@ -10,12 +10,8 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import {
-  AVATAR_STORAGE_KEY,
-  avatarById,
-  isAvatarId,
-  type VoiceGender,
-} from "@/lib/avatars";
+import { avatarById, type VoiceGender } from "@/lib/avatars";
+import { readStoredAvatar } from "@/lib/device-memory";
 import { welcomeSpeechFor } from "@/lib/content";
 import { useI18n } from "@/lib/i18n/locale";
 import { usePlace } from "@/lib/place";
@@ -38,15 +34,8 @@ type SpeechContextValue = {
 const SpeechContext = createContext<SpeechContextValue | null>(null);
 
 function genderFromStoredAvatar(): VoiceGender | null {
-  if (typeof window === "undefined") return null;
-  try {
-    const raw = window.localStorage.getItem(AVATAR_STORAGE_KEY);
-    if (!raw) return null;
-    const parsed = JSON.parse(raw) as unknown;
-    return isAvatarId(parsed) ? avatarById(parsed).gender : null;
-  } catch {
-    return null;
-  }
+  const id = readStoredAvatar();
+  return id ? avatarById(id).gender : null;
 }
 
 function prefersReducedMotion() {
@@ -238,56 +227,8 @@ export function useSpeech() {
   return ctx;
 }
 
-const WELCOME_PLAYED_KEY = "xsnow.welcomePlayed";
-
-function readPlayedIds(): string[] {
-  if (typeof window === "undefined") return [];
-  try {
-    const raw = window.sessionStorage.getItem(WELCOME_PLAYED_KEY);
-    if (!raw) return [];
-    const parsed = JSON.parse(raw) as unknown;
-    return Array.isArray(parsed)
-      ? parsed.filter((item): item is string => typeof item === "string")
-      : [];
-  } catch {
-    return [];
-  }
-}
-
-const WELCOME_CITY_KEY = "xsnow.welcomeSpokenCity";
-
-function readSpokenCities(): Record<string, string> {
-  if (typeof window === "undefined") return {};
-  try {
-    const raw = window.sessionStorage.getItem(WELCOME_CITY_KEY);
-    if (!raw) return {};
-    const parsed = JSON.parse(raw) as unknown;
-    if (!parsed || typeof parsed !== "object") return {};
-    const out: Record<string, string> = {};
-    for (const [key, value] of Object.entries(parsed as Record<string, unknown>)) {
-      if (typeof value === "string" && value.trim()) out[key] = value;
-    }
-    return out;
-  } catch {
-    return {};
-  }
-}
-
-export function hasPlayedWelcomeFor(avatarId: string) {
-  return readPlayedIds().includes(avatarId);
-}
-
-export function readWelcomeSpokenCity(avatarId: string): string | null {
-  return readSpokenCities()[avatarId] ?? null;
-}
-
-export function markWelcomePlayed(avatarId: string, city?: string) {
-  if (typeof window === "undefined") return;
-  const next = new Set(readPlayedIds());
-  next.add(avatarId);
-  window.sessionStorage.setItem(WELCOME_PLAYED_KEY, JSON.stringify([...next]));
-  if (!city?.trim()) return;
-  const cities = readSpokenCities();
-  cities[avatarId] = city.trim();
-  window.sessionStorage.setItem(WELCOME_CITY_KEY, JSON.stringify(cities));
-}
+export {
+  hasPlayedWelcomeFor,
+  markWelcomePlayed,
+  readWelcomeSpokenCity,
+} from "@/lib/device-memory";
