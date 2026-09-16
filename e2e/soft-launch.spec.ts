@@ -108,28 +108,15 @@ test.describe("Open Community soft-launch smoke", () => {
     await expect(page.getByLabel("Ton idée")).toBeVisible();
     await expect(page.getByRole("button", { name: "Envoyer l’idée" })).toBeVisible();
 
-    // Leave the app so IndexedDB connections close, then wipe every durable layer.
-    // Proves the empty public catalog does not refill ideas (localStorage alone is not enough).
-    await page.goto("about:blank");
-    await page.evaluate(async () => {
-      for (const key of Object.keys(window.localStorage)) {
-        if (key.startsWith("xsnow.")) window.localStorage.removeItem(key);
-      }
-      try {
-        window.sessionStorage.clear();
-      } catch {
-        /* private mode */
-      }
-      await new Promise<void>((resolve, reject) => {
-        const req = indexedDB.deleteDatabase("xsnow-device-memory");
-        req.onsuccess = () => resolve();
-        req.onerror = () => reject(req.error ?? new Error("idb delete"));
-        req.onblocked = () => {
-          window.setTimeout(() => resolve(), 50);
-        };
-      });
+    // Wipe durable layers via CDP so IndexedDB cannot restore after reload.
+    // Proves the empty public catalog does not refill ideas.
+    const origin = new URL(page.url()).origin;
+    const session = await page.context().newCDPSession(page);
+    await session.send("Storage.clearDataForOrigin", {
+      origin,
+      storageTypes: "local_storage,session_storage,indexeddb",
     });
-    await page.goto("./vos-idees/");
+    await page.reload();
     await expect(page.getByLabel("Ton idée")).toBeVisible();
     await expect(page.locator("[data-idea-wall]")).toContainText("Pas encore d’idée ici");
     await expect(page.locator("[data-idea-wall]")).not.toContainText(idea);
