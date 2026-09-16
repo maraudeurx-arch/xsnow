@@ -13,22 +13,22 @@
   --safe-right: env(safe-area-inset-right, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --safe-left: env(safe-area-inset-left, 0px);
-  --home-logo: 2.35rem;
-  --home-nav-h: 2.15rem;
-  --home-chip-h: 2.05rem;
-  --home-avatar: min(11.5vw, 5.8dvh, 2.65rem);
-  --home-gap: 0.22rem;
-  /* Accueil: keep header→card gap tiny so leftover height feeds Nouvelles. */
-  --home-block-gap: 0.08rem;
+  --home-logo: 2.05rem;
+  --home-nav-h: 2rem;
+  --home-chip-h: 1.95rem;
+  --home-avatar: min(11vw, 5.4dvh, 2.5rem);
+  --home-gap: 0.12rem;
+  /* Accueil: no header→card air — leftover height feeds Nouvelles. */
+  --home-block-gap: 0;
   /* Gaps inside the avatar/chat card — keep compact so news flex-grows hard. */
-  --home-stack-gap: 0.36rem;
+  --home-stack-gap: 0.28rem;
   /* Hairline between Nouvelles and the chat composer (not full stack gap). */
-  --home-news-chat-gap: 0.18rem;
-  --home-nav-gap: 0.24rem;
-  --home-chip-gap: 0.32rem;
-  --home-card-pad-x: 0.48rem;
-  --home-card-pad-y: 0.26rem;
-  --home-avatar-ring: 0.28rem;
+  --home-news-chat-gap: 0.12rem;
+  --home-nav-gap: 0.2rem;
+  --home-chip-gap: 0.28rem;
+  --home-card-pad-x: 0.42rem;
+  --home-card-pad-y: 0.18rem;
+  --home-avatar-ring: 0.24rem;
   --brand-title: clamp(1.5rem, 7.4vw, 3rem);
   --brand-slogan: clamp(0.9rem, 3.8vw, 1.2rem);
 }
@@ -53,37 +53,37 @@
 /* Safari / Chrome toolbars shrink dvh well below 844. */
 @media (max-height: 700px) {
   :root {
-    --home-logo: 2.15rem;
-    --home-nav-h: 2.05rem;
-    --home-chip-h: 1.95rem;
-    --home-avatar: min(11vw, 5.5dvh, 2.45rem);
-    --home-gap: 0.16rem;
-    --home-block-gap: 0.06rem;
-    --home-stack-gap: 0.26rem;
-    --home-news-chat-gap: 0.12rem;
-    --home-nav-gap: 0.2rem;
-    --home-chip-gap: 0.26rem;
-    --home-card-pad-x: 0.42rem;
-    --home-card-pad-y: 0.2rem;
-    --home-avatar-ring: 0.24rem;
+    --home-logo: 1.9rem;
+    --home-nav-h: 1.9rem;
+    --home-chip-h: 1.85rem;
+    --home-avatar: min(11vw, 5.2dvh, 2.3rem);
+    --home-gap: 0.1rem;
+    --home-block-gap: 0;
+    --home-stack-gap: 0.2rem;
+    --home-news-chat-gap: 0.08rem;
+    --home-nav-gap: 0.16rem;
+    --home-chip-gap: 0.22rem;
+    --home-card-pad-x: 0.36rem;
+    --home-card-pad-y: 0.12rem;
+    --home-avatar-ring: 0.2rem;
   }
 }
 
 @media (max-height: 620px) {
   :root {
-    --home-logo: 1.95rem;
-    --home-nav-h: 1.95rem;
-    --home-chip-h: 1.85rem;
-    --home-avatar: min(10vw, 4.9dvh, 2.25rem);
-    --home-gap: 0.12rem;
-    --home-block-gap: 0.04rem;
-    --home-stack-gap: 0.2rem;
-    --home-news-chat-gap: 0.1rem;
-    --home-nav-gap: 0.16rem;
-    --home-chip-gap: 0.2rem;
-    --home-card-pad-x: 0.36rem;
-    --home-card-pad-y: 0.14rem;
-    --home-avatar-ring: 0.2rem;
+    --home-logo: 1.75rem;
+    --home-nav-h: 1.8rem;
+    --home-chip-h: 1.75rem;
+    --home-avatar: min(10vw, 4.6dvh, 2.15rem);
+    --home-gap: 0.08rem;
+    --home-block-gap: 0;
+    --home-stack-gap: 0.16rem;
+    --home-news-chat-gap: 0.06rem;
+    --home-nav-gap: 0.12rem;
+    --home-chip-gap: 0.16rem;
+    --home-card-pad-x: 0.3rem;
+    --home-card-pad-y: 0.08rem;
+    --home-avatar-ring: 0.16rem;
   }
 }
 
@@ -133,14 +133,14 @@ body {
 
 /*
  * Open Community + slogan sit above the wordmark/nav card.
- * On home, the banner stays content-sized so leftover height can drop into
- * the Accueil card (Nouvelles du Quartier), not an empty photo band.
+ * On home, the banner hugs the top of the safe area so GATINEAU + Accueil
+ * can sit as high as possible; leftover height drops into Nouvelles.
  */
 .brand-banner {
   position: relative;
   z-index: 30;
   flex-shrink: 0;
-  padding: 0.15rem 0.25rem 0.25rem;
+  padding: 0 0.25rem 0.1rem;
   text-align: center;
 }
 
@@ -190,8 +190,7 @@ body {
   align-items: center;
   justify-content: flex-start;
   min-height: 0;
-  padding-top: 0;
-  padding-bottom: 0;
+  padding: 0;
 }
 
 .app-stage-main {
@@ -482,22 +481,29 @@ body {
  * top chrome; chat stays shrink-0; footer links stay tappable outside the card.
  */
 @media (max-width: 639px) {
+  /* Cap-height of the title sits on the safe-area edge (not a padded band). */
   .app-stage:has(#home-guide) > .brand-banner h1 {
-    font-size: clamp(1.18rem, 5.8vw, 2.35rem);
+    font-size: clamp(1.05rem, 5.2vw, 1.9rem);
+    line-height: 0.84;
+    margin-top: 0;
+    padding-top: 0;
+    text-box-trim: trim-start;
+    text-box-edge: cap alphabetic;
   }
 
   .app-stage:has(#home-guide) > .brand-banner p {
     margin-top: 0;
-    font-size: clamp(0.72rem, 3vw, 0.98rem);
+    line-height: 1;
+    font-size: clamp(0.62rem, 2.7vw, 0.82rem);
   }
 
   .app-stage:has(#home-guide) .chrome-panel {
-    padding-top: 0.06rem;
-    padding-bottom: 0.06rem;
+    padding-top: 0;
+    padding-bottom: 0;
   }
 
   .app-stage:has(#home-guide) .chrome-panel nav {
-    margin-top: 0.1rem;
+    margin-top: 0.04rem;
   }
 
   .app-stage:has(#home-guide) > .app-stage-main > #home-guide > .home-stage {
@@ -507,35 +513,53 @@ body {
   .app-stage:has(#home-guide) [data-neighborhood-news] {
     flex: 1 1 0%;
     /* Soft floor for short Safari toolbars; flex:1 fills leftover on taller phones. */
-    min-height: max(17.5rem, 40dvh);
+    min-height: max(18.5rem, 44dvh);
   }
 
   .app-stage:has(#home-guide) [data-neighborhood-news] [data-news-body] {
     flex: 1 1 0%;
-    min-height: max(12rem, 24dvh);
+    min-height: max(13rem, 26dvh);
   }
 
   /* Headline list / loading spacer claims leftover body height (scroll inside). */
   .app-stage:has(#home-guide) [data-neighborhood-news] [data-news-list],
   .app-stage:has(#home-guide) [data-neighborhood-news] [data-news-spacer] {
     flex: 1 1 0%;
-    min-height: max(9rem, 16dvh);
+    min-height: max(10rem, 18dvh);
+  }
+
+  /* Compact footer copy so the Accueil card can hang down to it. */
+  .safe-frame:has(#home-guide) > footer {
+    margin-top: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    line-height: 1.05;
+  }
+
+  .safe-frame:has(#home-guide) > footer p {
+    font-size: 8px;
+    line-height: 1.05;
+  }
+
+  .safe-frame:has(#home-guide) > footer a {
+    font-size: 8px;
+    line-height: 1.05;
   }
 }
 
 /* Tall mobile: push Nouvelles harder into the card→footer inventory. */
 @media (max-width: 639px) and (min-height: 740px) {
   .app-stage:has(#home-guide) [data-neighborhood-news] {
-    min-height: max(19.5rem, 46dvh);
+    min-height: max(20.5rem, 50dvh);
   }
 
   .app-stage:has(#home-guide) [data-neighborhood-news] [data-news-body] {
-    min-height: max(13.5rem, 28dvh);
+    min-height: max(14.5rem, 30dvh);
   }
 
   .app-stage:has(#home-guide) [data-neighborhood-news] [data-news-list],
   .app-stage:has(#home-guide) [data-neighborhood-news] [data-news-spacer] {
-    min-height: max(10rem, 20dvh);
+    min-height: max(11rem, 22dvh);
   }
 }
 
