@@ -574,8 +574,17 @@ export const en: Messages = {
     city: "City or neighbourhood",
     cityPh: "Plateau, Rosemont…",
     description: "Description",
+    photo: "Ad photo",
+    photoHint:
+      "Like the Bogo cat: upload a photo (max. {kb} KB). It then rotates on Home. Compressed on this device.",
+    photoTooBig: "This image still exceeds {kb} KB after compression. Pick a lighter photo.",
+    photoNotImage: "Choose a photo (JPEG, PNG, or WebP).",
+    photoUndecodable: "Could not read this image. Try a JPEG or PNG.",
+    photoBusy: "Compressing photo…",
+    photoReady: "Photo ready ({kb} KB) — it will rotate on Home after you publish.",
     publish: "Publish in Open Community",
-    saved: "Saved on this device. The public showcase is coming soon.",
+    saved:
+      "Saved on this device. With a photo (max. {kb} KB), it rotates in the Home ad space.",
     fallbackCategory: "Business",
     fallbackCity: "Neighbourhood",
   },

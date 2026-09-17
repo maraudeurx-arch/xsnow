@@ -574,8 +574,18 @@ export const fr = {
     city: "Ville ou quartier",
     cityPh: "Plateau, Rosemont…",
     description: "Description",
+    photo: "Photo de la publicité",
+    photoHint:
+      "Comme le chat Bogo : uploade une photo (max. {kb} Ko). Elle tourne ensuite sur Accueil. Compression sur cet appareil.",
+    photoTooBig:
+      "Cette image dépasse {kb} Ko même compressée. Choisis une photo plus légère.",
+    photoNotImage: "Choisis une photo (JPEG, PNG ou WebP).",
+    photoUndecodable: "Impossible de lire cette image. Essaie un JPEG ou un PNG.",
+    photoBusy: "Compression de la photo…",
+    photoReady: "Photo prête ({kb} Ko) — elle tournera sur Accueil après publication.",
     publish: "Publier dans Open Community",
-    saved: "Enregistré sur cet appareil. La vitrine publique arrive bientôt.",
+    saved:
+      "Enregistré sur cet appareil. Avec une photo (max. {kb} Ko), elle tourne dans l’espace pub Accueil.",
     fallbackCategory: "Commerce",
     fallbackCity: "Quartier",
   },
