@@ -354,7 +354,7 @@ export const fr = {
   features: {
     business: {
       title: "Faites connaître votre business par des pubs",
-      lead: "Envoie ta photo. On vérifie, puis on te propose un tarif compétitif — ton avatar peut comparer Facebook / WhatsApp / sites locaux.",
+      lead: "Envoie-nous ta publicité (photo ou vidéo). Nous en vérifierons la légitimité et te reviendrons avec une proposition de paiement compétitive.",
     },
     proximite: {
       title: "Voyez qui est à proximité",
@@ -585,8 +585,7 @@ export const fr = {
     photoBusy: "Compression de la photo…",
     photoReady: "Photo prête ({kb} Ko).",
     photoRequired: "Ajoute une photo pour envoyer ta pub en vérification.",
-    reviewLead:
-      "Ta pub photo nous parvient d’abord (opencommunity.opc@gmail.com). On vérifie la légitimité, puis on te revient avec une proposition monétaire compétitive. Ton avatar pourra t’aider à comparer ce que les gens du quartier paient sur Facebook, WhatsApp ou les sites locaux, et à faire une proposition.",
+    reviewLead: "",
     publish: "Envoyer pour vérification",
     sending: "Envoi…",
     savedSent:
