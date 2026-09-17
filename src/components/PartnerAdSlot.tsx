@@ -1,7 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState, type MouseEvent } from "react";
+import { subscribeDurableStorage } from "@/lib/durable-storage";
+import { downloadCreativeImage } from "@/lib/download-creative";
 import { hrefWithLang } from "@/lib/i18n";
 import { useI18n } from "@/lib/i18n/locale";
 import {
@@ -10,9 +12,12 @@ import {
   creativeForSlot,
   listPartnerCreatives,
   nextRotationIndex,
+  partnerCreativeDownloadName,
   partnerCreativeImageUrl,
   PARTNER_ROTATION_MS,
+  PLACEHOLDER_PARTNERS,
   readRotationIndex,
+  readVisitorPartnerCreatives,
   resolvePartnerCreative,
   usesAdsense,
   writeRotationIndex,
@@ -35,12 +40,22 @@ export function PartnerAdSlot({ slot }: { slot: PartnerSlotId }) {
   const adsense = usesAdsense(slot);
   const client = adsenseClientId();
   const unit = adsenseSlotId(slot);
-  const creatives = listPartnerCreatives();
+  const [visitorAds, setVisitorAds] = useState<PartnerCreative[]>([]);
+  const creatives = useMemo(
+    () => listPartnerCreatives(PLACEHOLDER_PARTNERS, visitorAds),
+    [visitorAds],
+  );
   const [rotation, setRotation] = useState(0);
   const [creative, setCreative] = useState<PartnerCreative>(() =>
-    creativeForSlot(slot, 0, creatives),
+    creativeForSlot(slot, 0, PLACEHOLDER_PARTNERS),
   );
   const grow = slot === "news-bottom";
+
+  useEffect(() => {
+    const sync = () => setVisitorAds(readVisitorPartnerCreatives());
+    sync();
+    return subscribeDurableStorage(sync);
+  }, []);
 
   useEffect(() => {
     if (adsense || creatives.length === 0) return;
@@ -62,8 +77,10 @@ export function PartnerAdSlot({ slot }: { slot: PartnerSlotId }) {
 
   const display = resolvePartnerCreative(creative, copy);
   const imageUrl = partnerCreativeImageUrl(creative);
+  const downloadName = partnerCreativeDownloadName(creative);
   const external = isExternalHref(display.href);
   const href = external ? display.href : hrefWithLang(display.href, locale, source);
+  const showDownload = Boolean(imageUrl) && !adsense;
 
   return (
     <aside
@@ -76,7 +93,7 @@ export function PartnerAdSlot({ slot }: { slot: PartnerSlotId }) {
         grow
           ? "flex h-full min-h-0 flex-col overflow-hidden"
           : "shrink-0"
-      } rounded-lg border border-dashed border-gold/35 bg-white/[0.03] px-2 py-1 text-left`}
+      } relative rounded-lg border border-dashed border-gold/35 bg-white/[0.03] px-2 py-1 text-left`}
     >
       <p className="shrink-0 text-[8px] font-extrabold uppercase tracking-wide text-ice/70">
         {copy.partnerSponsored}
@@ -94,7 +111,7 @@ export function PartnerAdSlot({ slot }: { slot: PartnerSlotId }) {
         />
       ) : (
         <div
-          className={`mt-1 flex min-h-0 flex-col ${
+          className={`relative mt-1 flex min-h-0 flex-col ${
             grow ? "flex-1 overflow-hidden" : SLOT_MIN_H[slot]
           }`}
         >
@@ -133,6 +150,18 @@ export function PartnerAdSlot({ slot }: { slot: PartnerSlotId }) {
               />
             </Link>
           )}
+          {showDownload && imageUrl ? (
+            <div className="absolute right-1 top-1 z-10">
+              <CreativeDownload
+                url={imageUrl}
+                filename={downloadName}
+                label={copy.partnerDownload}
+                ariaLabel={copy.partnerDownloadAria}
+                hint={copy.partnerDownloadIosHint}
+                failLabel={copy.partnerDownloadFail}
+              />
+            </div>
+          ) : null}
         </div>
       )}
     </aside>
@@ -157,7 +186,7 @@ function CreativeBody({
   return (
     <>
       {imageUrl ? (
-        // eslint-disable-next-line @next/next/no-img-element -- static export SVG placeholders
+        // eslint-disable-next-line @next/next/no-img-element -- static export SVG/PNG house ads + visitor data URLs
         <img
           src={imageUrl}
           alt=""
@@ -177,5 +206,66 @@ function CreativeBody({
         <p className="line-clamp-1 text-[8px] leading-tight text-ice/60">{funding}</p>
       </div>
     </>
+  );
+}
+
+function CreativeDownload({
+  url,
+  filename,
+  label,
+  ariaLabel,
+  hint,
+  failLabel,
+}: {
+  url: string;
+  filename: string;
+  label: string;
+  ariaLabel: string;
+  hint: string;
+  failLabel: string;
+}) {
+  const [failed, setFailed] = useState(false);
+
+  async function onClick(event: MouseEvent<HTMLAnchorElement>) {
+    event.preventDefault();
+    event.stopPropagation();
+    setFailed(false);
+    try {
+      const result = await downloadCreativeImage({
+        url,
+        filename,
+        shareTitle: ariaLabel,
+      });
+      if (result === "opened") setFailed(false);
+    } catch (error) {
+      if (error instanceof DOMException && error.name === "AbortError") return;
+      setFailed(true);
+    }
+  }
+
+  return (
+    <span className="relative inline-flex shrink-0 items-center">
+      <a
+        data-partner-download
+        href={url}
+        download={filename}
+        rel="noopener"
+        onClick={(event) => void onClick(event)}
+        aria-label={ariaLabel}
+        title={hint}
+        className="tap inline-flex shrink-0 items-center whitespace-nowrap rounded-full border border-gold/55 bg-gold/15 px-1.5 py-0.5 text-[8px] font-extrabold normal-case tracking-wide text-gold hover:border-gold hover:bg-gold/25"
+      >
+        {label}
+      </a>
+      {failed ? (
+        <span
+          role="status"
+          data-partner-download-fail
+          className="absolute right-0 top-[calc(100%+2px)] z-20 w-max max-w-[11.5rem] rounded-md border border-gold/40 bg-night px-1.5 py-1 text-left text-[8px] font-semibold normal-case leading-tight tracking-normal text-gold"
+        >
+          {failLabel}
+        </span>
+      ) : null}
+    </span>
   );
 }

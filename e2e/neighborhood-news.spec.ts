@@ -264,4 +264,145 @@ test.describe("Accueil neighbourhood news + partner slots", () => {
     await expect(page).toHaveURL(/\/mon-profil\/?$/);
     await expect(page.getByRole("button", { name: "S’inscrire" })).toBeVisible();
   });
+
+  test("published image ads offer Télécharger without replacing growth CTAs", async ({
+    page,
+  }) => {
+    await seedReturningVisitor(page);
+    await page.route(/xsnow-chat\.xsnowopc\.workers\.dev\/news/, async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify(SAMPLE_NEWS),
+      });
+    });
+
+    await page.goto("./?city=Gatineau");
+    await expect(page.locator("[data-neighborhood-news]")).toHaveAttribute(
+      "data-news-status",
+      "ready",
+    );
+
+    const downloads = page.locator("[data-partner-download]");
+    await expect(downloads).toHaveCount(2);
+    const first = downloads.first();
+    await expect(first).toBeVisible();
+    await expect(first).toHaveText("Télécharger");
+    await expect(first).toHaveAttribute("download", /\.svg$/);
+    const href = await first.getAttribute("href");
+    expect(href).toMatch(/\/partners\/.+\.svg$/);
+    const image = await page.request.get(new URL(href!, page.url()).href);
+    expect(image.ok()).toBeTruthy();
+    expect(image.headers()["content-type"]).toMatch(/image\/(svg\+xml|png|jpeg|webp)/);
+
+    const [file] = await Promise.all([
+      page.waitForEvent("download"),
+      first.click(),
+    ]);
+    expect(file.suggestedFilename()).toMatch(/\.svg$/);
+    expect(await file.failure()).toBeNull();
+
+    await expect(page).toHaveURL(/city=Gatineau/);
+    await expect(page.getByText("Publicité").first()).toBeVisible();
+    await expect(page.locator('[data-partner-cta="register"]').first()).toBeVisible();
+    await expect(page.locator('[data-partner-cta="share"]').first()).toBeVisible();
+    await expect(page.getByText("S’inscrire / Mes infos").first()).toBeVisible();
+    await expect(page.getByText("Partager / inviter").first()).toBeVisible();
+
+    await page.goto("./?city=Gatineau&lang=en");
+    await expect(page.locator("[data-partner-download]").first()).toHaveText("Download");
+    await page.goto("./?city=Gatineau&lang=es");
+    await expect(page.locator("[data-partner-download]").first()).toHaveText("Descargar");
+  });
+
+  test("rotating house ads include garderie and the Gatineau Centre room flyer", async ({
+    page,
+  }) => {
+    await seedReturningVisitor(page);
+    await page.addInitScript(() => {
+      window.localStorage.setItem("xsnow.partnerAdRotation", "3");
+    });
+    await page.route(/xsnow-chat\.xsnowopc\.workers\.dev\/news/, async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify(SAMPLE_NEWS),
+      });
+    });
+
+    await page.goto("./?city=Gatineau");
+    await expect(page.locator("[data-neighborhood-news]")).toHaveAttribute("data-news-status", "ready");
+    const mid = page.locator('[data-partner-slot="news-mid"]');
+    await expect(mid).toHaveAttribute("data-partner-creative", "placeholder-garderie");
+    await expect(mid).toHaveAttribute("data-partner-kind", "garderie");
+    await expect(mid.getByText("Place en garderie du quartier")).toBeVisible();
+    await expect(mid.getByText("Publicité · Espace partenaire")).toBeVisible();
+    await expect(mid.locator("[data-partner-download]")).toBeVisible();
+    await expect(mid.locator('[data-partner-cta="register"]')).toBeVisible();
+
+    const bottom = page.locator('[data-partner-slot="news-bottom"]');
+    await expect(bottom).toHaveAttribute("data-partner-creative", "placeholder-chambre");
+    await expect(bottom.getByText("Chambre à Gatineau Centre")).toBeVisible();
+    await expect(bottom).not.toContainText("438 869-4520");
+    await expect(bottom.locator("[data-partner-download]")).toHaveAttribute(
+      "download",
+      "chambre-gatineau-centre.png",
+    );
+    const href = await bottom.locator("[data-partner-download]").getAttribute("href");
+    expect(href).toMatch(/chambre-gatineau-centre\.png$/);
+    const image = await page.request.get(new URL(href!, page.url()).href);
+    expect(image.ok()).toBeTruthy();
+    expect(image.headers()["content-type"]).toMatch(/image\/png/);
+  });
+
+  test("visitor publicité photo is capped in KB and becomes a downloadable Accueil ad", async ({
+    page,
+  }) => {
+    await seedReturningVisitor(page);
+    await page.route(/xsnow-chat\.xsnowopc\.workers\.dev\/news/, async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify(SAMPLE_NEWS),
+      });
+    });
+
+    const png = Buffer.from(
+      "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==",
+      "base64",
+    );
+
+    await page.goto("./business/");
+    await expect(page.getByText(/Max\. 400 Ko/)).toBeVisible();
+    await page.locator("[data-ad-photo-input]").setInputFiles({
+      name: "notes.txt",
+      mimeType: "text/plain",
+      buffer: Buffer.from("not a photo"),
+    });
+    await expect(page.locator("[data-ad-photo-error]")).toContainText(/photo/i);
+
+    await page.locator("[data-ad-photo-input]").setInputFiles({
+      name: "pub.png",
+      mimeType: "image/png",
+      buffer: png,
+    });
+    await expect(page.locator("[data-ad-photo-ready]")).toBeVisible();
+    await page.getByLabel("Nom du commerce").fill("Atelier photo");
+    await page.getByRole("button", { name: "Publier dans Open Community" }).click();
+    await expect(page.getByText(/Enregistré sur cet appareil/)).toBeVisible();
+
+    await page.goto("./?city=Gatineau");
+    await expect(page.locator("[data-neighborhood-news]")).toHaveAttribute("data-news-status", "ready");
+    const mid = page.locator('[data-partner-slot="news-mid"]');
+    await expect(mid).toHaveAttribute("data-partner-creative", /visitor-/);
+    await expect(mid.getByText("Atelier photo")).toBeVisible();
+    await expect(mid.getByText("Publicité · Espace partenaire")).toBeVisible();
+    const download = mid.locator("[data-partner-download]");
+    await expect(download).toBeVisible();
+    await expect(download).toHaveAttribute("href", /^data:image\//);
+    const [file] = await Promise.all([page.waitForEvent("download"), download.click()]);
+    expect(file.suggestedFilename()).toMatch(/publicite-visitor-.+\.jpg$/);
+    expect(await file.failure()).toBeNull();
+    await expect(mid.locator('[data-partner-cta="register"]')).toBeVisible();
+  });
 });

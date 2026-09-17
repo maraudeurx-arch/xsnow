@@ -1,8 +1,15 @@
 "use client";
 
 import { FormEvent, useState } from "react";
+import {
+  AD_IMAGE_MAX_KB,
+  prepareAdImage,
+  type PreparedAdImage,
+} from "@/lib/compress-ad-image";
+import { interpolate } from "@/lib/i18n";
 import { useI18n } from "@/lib/i18n/locale";
 import { uid } from "@/lib/storage";
+import { writeVisitorPartnerAd } from "@/lib/partner-ads";
 import { useStoredList } from "@/lib/useStoredList";
 
 type Business = {
@@ -11,6 +18,8 @@ type Business = {
   category: string;
   city: string;
   description: string;
+  imageDataUrl?: string;
+  imageBytes?: number;
 };
 
 const KEY = "xsnow.businesses";
@@ -18,7 +27,28 @@ const KEY = "xsnow.businesses";
 export function BusinessBoard() {
   const [items, setItems] = useStoredList<Business>(KEY);
   const [saved, setSaved] = useState(false);
+  const [photo, setPhoto] = useState<PreparedAdImage | null>(null);
+  const [photoError, setPhotoError] = useState("");
+  const [photoBusy, setPhotoBusy] = useState(false);
   const { m } = useI18n();
+  const copy = m.business;
+  const kb = String(AD_IMAGE_MAX_KB);
+
+  async function onPhotoChange(file: File | undefined) {
+    setPhotoError("");
+    setPhoto(null);
+    if (!file) return;
+    setPhotoBusy(true);
+    const result = await prepareAdImage(file);
+    setPhotoBusy(false);
+    if (result.ok) {
+      setPhoto(result.value);
+      return;
+    }
+    if (result.reason === "too_large") setPhotoError(interpolate(copy.photoTooBig, { kb }));
+    else if (result.reason === "undecodable") setPhotoError(copy.photoUndecodable);
+    else setPhotoError(copy.photoNotImage);
+  }
 
   function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -31,30 +61,65 @@ export function BusinessBoard() {
       description: String(data.get("description") || "").trim(),
     };
     if (!next.name) return;
+    if (photo) {
+      next.imageDataUrl = photo.dataUrl;
+      next.imageBytes = photo.bytes;
+      writeVisitorPartnerAd({
+        id: `visitor-${next.id}`,
+        name: next.name,
+        tagline: next.description || interpolate(copy.photoPublishedTagline, { kb }),
+        imageDataUrl: photo.dataUrl,
+        bytes: photo.bytes,
+        createdAt: new Date().toISOString(),
+      });
+    }
     setItems([next, ...items]);
     setSaved(true);
+    setPhoto(null);
     event.currentTarget.reset();
   }
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-5" data-business-board>
       <form onSubmit={onSubmit} className="grid gap-3">
-        <Field name="name" label={m.business.name} required />
-        <Field name="category" label={m.business.category} placeholder={m.business.categoryPh} />
-        <Field name="city" label={m.business.city} placeholder={m.business.cityPh} />
+        <Field name="name" label={copy.name} required />
+        <Field name="category" label={copy.category} placeholder={copy.categoryPh} />
+        <Field name="city" label={copy.city} placeholder={copy.cityPh} />
         <label className="grid gap-1 text-sm font-semibold">
-          {m.business.description}
+          {copy.description}
           <textarea
             name="description"
             rows={3}
             className="min-h-[88px] rounded-2xl border border-white/15 bg-white/5 px-3 py-2 text-sm font-normal text-snow outline-none focus:border-gold"
           />
         </label>
+        <label className="grid gap-1 text-sm font-semibold">
+          {copy.photo}
+          <span className="text-xs font-normal text-ice/80">{interpolate(copy.photoHint, { kb })}</span>
+          <input
+            data-ad-photo-input
+            type="file"
+            accept="image/jpeg,image/png,image/webp,image/gif"
+            onChange={(event) => void onPhotoChange(event.currentTarget.files?.[0])}
+            className="tap max-w-full text-xs font-normal text-snow file:mr-2 file:rounded-full file:border-0 file:bg-cobalt file:px-3 file:py-1 file:text-xs file:font-extrabold file:text-snow"
+          />
+        </label>
+        {photoBusy ? <p className="text-xs text-ice/80">{copy.photoBusy}</p> : null}
+        {photo ? (
+          <p className="text-xs font-semibold text-gold" data-ad-photo-ready>
+            {interpolate(copy.photoReady, { kb: String(Math.ceil(photo.bytes / 1024)) })}
+          </p>
+        ) : null}
+        {photoError ? (
+          <p className="text-xs font-semibold text-gold" data-ad-photo-error role="alert">
+            {photoError}
+          </p>
+        ) : null}
         <button type="submit" className="tap rounded-full bg-cobalt font-extrabold text-snow">
-          {m.business.publish}
+          {copy.publish}
         </button>
         {saved ? (
-          <p className="text-sm text-gold">{m.business.saved}</p>
+          <p className="text-sm text-gold">{interpolate(copy.saved, { kb })}</p>
         ) : null}
       </form>
 
@@ -63,9 +128,27 @@ export function BusinessBoard() {
           <li key={item.id} className="rounded-2xl border border-white/10 bg-white/5 p-3">
             <p className="font-bold">{item.name}</p>
             <p className="text-xs text-ice/80">
-              {item.category || m.business.fallbackCategory} · {item.city || m.business.fallbackCity}
+              {item.category || copy.fallbackCategory} · {item.city || copy.fallbackCity}
             </p>
             {item.description ? <p className="mt-1 text-sm text-snow/80">{item.description}</p> : null}
+            {item.imageDataUrl ? (
+              <div className="mt-2 space-y-2">
+                {/* eslint-disable-next-line @next/next/no-img-element -- visitor data-URL preview */}
+                <img
+                  src={item.imageDataUrl}
+                  alt=""
+                  className="max-h-40 w-full rounded-xl object-cover object-top"
+                />
+                <a
+                  data-partner-download
+                  href={item.imageDataUrl}
+                  download={`publicite-${item.id}.jpg`}
+                  className="tap inline-flex items-center rounded-full border border-gold/55 bg-gold/15 px-3 py-1 text-xs font-extrabold text-gold"
+                >
+                  {m.neighborhoodNews.partnerDownload}
+                </a>
+              </div>
+            ) : null}
           </li>
         ))}
       </ul>

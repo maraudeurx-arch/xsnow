@@ -2,7 +2,7 @@
 
 **Status:** UI placeholders only on Accueil (**Nouvelles du Quartier**). No signed contracts, no claim of live ad revenue. Creatives are data in `src/lib/partner-ads.ts` (`PLACEHOLDER_PARTNERS`: `{ id, kind, href, imagePath? }` plus optional `name` / `tagline` / `cta` overrides). Soft-launch house ads push **S’inscrire / Mes infos** (`/mon-profil`) and **Partager / inviter** (`/mon-profil/inviter`). Swap in real partners without rewriting layout.
 
-**Inventory today:** labeled **Publicité · Espace partenaire** mid + bottom slots, rotating house ads (register / share / local). Env: `NEXT_PUBLIC_ADS_*` / AdSense slot IDs in `.env.example`.
+**Inventory today:** labeled **Publicité · Espace partenaire** mid + bottom slots, rotating house ads (register / share / local / **Place en garderie du quartier** / **Chambre à Gatineau Centre** flyer). Each published first-party image offers **Télécharger** (blob download; iOS Share / long-press fallback). Visitors can publish a photo from **Faites connaître votre business par des pubs** (`/business`): hard cap **400 Ko**, client-side compress, stored only on-device (`xsnow.visitorPartnerAds`). Env: `NEXT_PUBLIC_ADS_*` / AdSense slot IDs in `.env.example`. AdSense units are third-party and have no download control.
 
 This note is public research for the owner. Contact only after the product owner decides; do not invent agreements.
 
@@ -12,8 +12,12 @@ This note is public research for the owner. Contact only after the product owner
 
 1. Add or replace an entry in `PLACEHOLDER_PARTNERS` (keep `id` stable if possible).
 2. Drop art under `public/partners/` and set `imagePath` (e.g. `/partners/coop.svg`).
-3. Set `href` to the partner landing URL (https or in-app path). House-ad kinds `register` / `share` / `local` resolve FR/EN/ES copy automatically.
+3. Set `href` to the partner landing URL (https or in-app path). House-ad kinds `register` / `share` / `local` / `garderie` / `chambre` resolve FR/EN/ES copy automatically.
 4. Optional: set `NEXT_PUBLIC_ADS_PROVIDER=adsense` + client/slot env when an AdSense/Ad Manager unit is approved.
+
+Visitors save the creative with **Télécharger** on Accueil. Same-origin files use `<a download>` plus a blob fetch. iOS Safari often ignores `download`: the app uses the share sheet (Enregistrer l’image) when `canShare({ files })` is true, otherwise opens the image for a long-press save. Growth CTAs (S’inscrire / Partager) stay on the creative itself.
+
+Visitor photos: max **400 KB** after on-device JPEG compress/resize. Oversize or non-image files are rejected in French (and EN/ES). Nothing is uploaded to a CDN.
 
 ---
 
