@@ -1,6 +1,6 @@
 # Partner / ad outreach shortlist (soft-launch)
 
-**Status:** UI placeholders only on Accueil (**Nouvelles du Quartier**). No signed contracts, no claim of live ad revenue. Creatives are data in `src/lib/partner-ads.ts` (`PLACEHOLDER_PARTNERS`: `{ id, kind, href, imagePath? }` plus optional `name` / `tagline` / `cta` overrides). Soft-launch house ads push **S’inscrire / Mes infos** (`/mon-profil`) and **Partager / inviter** (`/mon-profil/inviter`). Swap in real partners without rewriting layout.
+**Status:** UI placeholders on Accueil (**Nouvelles du Quartier**) plus a full-height neighbourhood reel at **`/pubs`**. No signed contracts, no claim of live ad revenue. Accueil creatives stay in `src/lib/partner-ads.ts`. Seeded reel creatives live in `src/lib/community-ads.ts` (Bogo cat photo, daycare flyer, Gatineau room summary ~533 $/month from 1 October). Soft-launch house ads on Accueil still push **S’inscrire / Mes infos** (`/mon-profil`) and **Partager / inviter** (`/mon-profil/inviter`). Swap in real partners without rewriting layout.
 
 **Inventory today:** labeled **Publicité · Espace partenaire** mid + bottom slots, rotating house ads (register / share / local). Env: `NEXT_PUBLIC_ADS_*` / AdSense slot IDs in `.env.example`.
 

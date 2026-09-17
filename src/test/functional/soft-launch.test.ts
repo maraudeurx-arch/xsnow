@@ -291,7 +291,7 @@ describe("catalog publish gate", () => {
 
 describe("About version copy", () => {
   it("shows the shipped app version on the About page strings", () => {
-    assert.equal(APP_VERSION, "0.3.5");
+    assert.equal(APP_VERSION, "0.3.6");
     assert.match(fr.profile.versionLabel, /Version/);
     assert.match(fr.profile.releaseNotesBody, new RegExp(APP_VERSION.replace(".", "\\.")));
     assert.match(fr.legal.about.sections[4].body, /version/i);

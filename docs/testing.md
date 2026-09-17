@@ -18,6 +18,7 @@ Covers pure lib helpers:
 - Worker CORS allowlist (`workers/xsnow-chat/src/cors.ts`) — GitHub Pages + opencommunity.app, never `*`
 - Consent-based proximity alerts: weekly schedule, 5/10/20 km, invite token, geofence, Twilio SMS soft-fail (`src/lib/proximity-alerts.ts`, `src/lib/alert-sms.ts`, `workers/xsnow-chat/src/alerts.ts`)
 - Neighbourhood news fetch timeouts (Worker + JSON RSS fallback) and Accueil partner-slot config (`src/lib/neighborhood-news.ts`, `src/lib/partner-ads.ts`)
+- Full-height ads reel seeds, avatar coach paths (no income promise), business AI draft without Facebook scrape (`src/lib/community-ads.ts`, `src/lib/coach.ts`, `src/lib/business-draft.ts`)
 
 ```bash
 npm test          # unit + functional
@@ -62,6 +63,9 @@ Playwright against a **production-like static export**, one iPhone viewport (`39
 Critical paths:
 
 - Accueil: Nouvelles du Quartier settles (not infinite loading); labeled Espace partenaire slots; home card almost reaches the footer
+- `/pubs`: full-height ads reel with Bogo (download), daycare flyer, Gatineau ~533 $/month 1 Oct summary
+- `/coach`: questions then 3–5 paths; copy never promises income
+- `/business`: Workers AI draft assist; Facebook URLs are refused
 - Fresh storage: Mes services / En demande empty (no bundled Gatineau car offer)
 - Fresh storage: `/services/{kind}` boards empty (no demo seed titles)
 - Regional ambiance: autumn before geo; Caribbean for `?city=Port-au-Prince`; CA stays seasonal

@@ -15,11 +15,13 @@
  * `GET /alerts?token=` = invite preview for the proche (no phone)
  * `POST /alerts/consent` = proche grants location sharing themselves
  * `POST /alerts/ping` = consented GPS ping; optional Twilio SMS / Resend email
+ * `POST /ads/draft` = Workers AI business-ad copy from typed fields (no Facebook scrape)
  *
  * D1: `npx wrangler d1 create xsnow-stats` then set database_id in wrangler.toml
  * and `npx wrangler d1 migrations apply xsnow-stats --remote`.
  */
 
+import { handleAdsDraft, isAdsDraftPath } from "./ads-draft";
 import {
   handleAlertsConsent,
   handleAlertsGet,
@@ -467,6 +469,19 @@ export default {
 
     if (isRegisterPath(pathname)) {
       return handleRegister(request, env, origin);
+    }
+
+    if (isAdsDraftPath(pathname)) {
+      if (request.method !== "POST") {
+        return json({ error: "method_not_allowed" }, 405, origin);
+      }
+      if (tooMany(clientIp(request))) {
+        return json({ error: "rate_limited" }, 429, origin);
+      }
+      const draftBody = await readJsonBody(request, origin);
+      if (!draftBody.ok) return draftBody.response;
+      const result = await handleAdsDraft(draftBody.value, env);
+      return json(result.data, result.status, origin);
     }
 
     if (request.method !== "POST") {

@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="360" height="640" viewBox="0 0 360 640" role="img" aria-label="Place en garderie du quartier">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1d4ed8"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+  </defs>
+  <rect width="360" height="640" fill="url(#g)"/>
+  <rect x="22" y="36" width="316" height="568" rx="28" fill="rgba(244,246,251,0.08)" stroke="rgba(61,255,138,0.45)"/>
+  <circle cx="180" cy="168" r="58" fill="rgba(37,99,235,0.85)"/>
+  <text x="180" y="178" text-anchor="middle" font-family="system-ui,sans-serif" font-size="42" fill="#f4f6fb"></text>
+  <text x="180" y="268" text-anchor="middle" font-family="system-ui,sans-serif" font-size="22" font-weight="700" fill="#f4f6fb">Place en garderie</text>
+  <text x="180" y="300" text-anchor="middle" font-family="system-ui,sans-serif" font-size="18" fill="#3dff8a">du quartier</text>
+  <text x="180" y="360" text-anchor="middle" font-family="system-ui,sans-serif" font-size="16" fill="rgba(244,246,251,0.88)">Gatineau · Open Community</text>
+  <text x="180" y="430" text-anchor="middle" font-family="system-ui,sans-serif" font-size="14" fill="rgba(184,166,255,0.95)">Flyer communautaire</text>
+  <text x="180" y="458" text-anchor="middle" font-family="system-ui,sans-serif" font-size="13" fill="rgba(244,246,251,0.75)">Pas une manchette · Pas de ferme à clics</text>
+  <text x="180" y="540" text-anchor="middle" font-family="system-ui,sans-serif" font-size="13" fill="#f4f6fb">Publicité · Espace partenaire</text>
+</svg>

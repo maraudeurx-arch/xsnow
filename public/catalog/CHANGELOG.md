@@ -4,6 +4,13 @@ Community-wide offers and ideas appear here **only after development-team approv
 
 Personal Mes services offers, En demande requests, Interac/PayPal, chat, Vos idées, and the local registration profile stay on the visitor’s device until that happens. A sanitized copy of a submitted idea (text, city, timestamp, optional OPC id — no last name or phone) is emailed to opencommunity.opc@gmail.com. That inbox is not a public catalog.
 
+## 0.3.6 — 2026-09-17
+
+- Full-height neighbourhood ads reel (`/pubs`): Bogo cat photo + download, daycare flyer, Gatineau room summary ~533 $/month from 1 October.
+- Avatar coach: two questions, then 3–5 in-app paths. Copy never promises income.
+- Business ad form: Cloudflare Workers AI draft (`POST /ads/draft`). No Facebook scrape.
+- Public catalog remains empty.
+
 ## 0.3.5 — 2026-09-17
 
 - Mes compétences: sign-up first (Mon profil), then skills + availability; publish into En demande on this device. Replaces Prêt d’outils.
