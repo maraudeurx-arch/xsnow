@@ -575,8 +575,17 @@ export const es: Messages = {
     city: "Ciudad o barrio",
     cityPh: "Plateau, Rosemont…",
     description: "Descripción",
+    photo: "Foto del anuncio",
+    photoHint:
+      "Como el gato Bogo: sube una foto (máx. {kb} Ko). Luego gira en Inicio. Se comprime en este aparato.",
+    photoTooBig: "Esta imagen sigue superando {kb} Ko tras comprimir. Elige una más ligera.",
+    photoNotImage: "Elige una foto (JPEG, PNG o WebP).",
+    photoUndecodable: "No se pudo leer esta imagen. Prueba JPEG o PNG.",
+    photoBusy: "Comprimiendo la foto…",
+    photoReady: "Foto lista ({kb} Ko) — girará en Inicio tras publicar.",
     publish: "Publicar en Open Community",
-    saved: "Guardado en este aparato. El escaparate público llega pronto.",
+    saved:
+      "Guardado en este aparato. Con una foto (máx. {kb} Ko), gira en el espacio publicitario de Inicio.",
     fallbackCategory: "Comercio",
     fallbackCity: "Barrio",
   },

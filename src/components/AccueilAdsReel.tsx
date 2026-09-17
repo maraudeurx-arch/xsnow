@@ -1,22 +1,34 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   ACCUEIL_ADS_REEL_MS,
   accueilAdImageUrl,
   listAccueilAds,
   nextAccueilAdIndex,
 } from "@/lib/accueil-ads";
+
 /**
- * Accueil ad surface: one full-bleed image at a time (fills the whole news card),
- * rotates every 5s. News headlines are hidden — this slot is ads-only.
+ * Accueil ad surface: one full-bleed image at a time, rotates every 5s.
+ * Includes device-local visitor business photos when present.
  */
 export function AccueilAdsReel() {
-  const ads = listAccueilAds();
+  const [tick, setTick] = useState(0);
+  const ads = useMemo(() => listAccueilAds().filter((ad) => accueilAdImageUrl(ad)), [tick]);
   const [index, setIndex] = useState(0);
-  const ad = ads[index] ?? ads[0]!;
-  const src = accueilAdImageUrl(ad);
+  const ad = ads[index] ?? ads[0];
+  const src = ad ? accueilAdImageUrl(ad) : "";
+
+  useEffect(() => {
+    const onStorage = () => setTick((value) => value + 1);
+    window.addEventListener("storage", onStorage);
+    window.addEventListener("xsnow-accueil-ads", onStorage);
+    return () => {
+      window.removeEventListener("storage", onStorage);
+      window.removeEventListener("xsnow-accueil-ads", onStorage);
+    };
+  }, []);
 
   useEffect(() => {
     if (ads.length < 2) return;
@@ -26,13 +38,29 @@ export function AccueilAdsReel() {
     return () => window.clearInterval(timer);
   }, [ads.length]);
 
-  // Warm the next frames so rotation does not flash a broken icon on slow links.
+  useEffect(() => {
+    setIndex(0);
+  }, [ads.length, tick]);
+
   useEffect(() => {
     for (const item of ads) {
+      const url = accueilAdImageUrl(item);
+      if (!url || url.startsWith("data:")) continue;
       const img = new window.Image();
-      img.src = accueilAdImageUrl(item);
+      img.src = url;
     }
   }, [ads]);
+
+  if (!ad || !src) {
+    return (
+      <aside
+        data-accueil-ads-reel
+        className="relative flex h-full min-h-0 w-full flex-1 items-center justify-center overflow-hidden rounded-xl border border-gold/35 bg-night text-sm text-snow/70"
+      >
+        Aucune publicité pour l’instant.
+      </aside>
+    );
+  }
 
   return (
     <aside
@@ -71,7 +99,7 @@ export function AccueilAdsReel() {
         data-accueil-ad-link={ad.id}
         className="relative flex min-h-0 flex-1 flex-col overflow-hidden"
       >
-        {/* eslint-disable-next-line @next/next/no-img-element -- static export house ads */}
+        {/* eslint-disable-next-line @next/next/no-img-element -- house + visitor data-URL ads */}
         <img
           key={ad.id}
           src={src}
