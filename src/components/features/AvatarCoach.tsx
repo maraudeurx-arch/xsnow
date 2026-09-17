@@ -25,7 +25,10 @@ export function AvatarCoach() {
   return (
     <div className="space-y-4" data-avatar-coach>
       <p className="text-sm leading-relaxed text-snow/90">{copy.lead}</p>
-      <p className="rounded-xl border border-gold/35 bg-gold/10 px-3 py-2 text-xs font-semibold text-gold">
+      <p
+        className="rounded-xl border border-gold/35 bg-gold/10 px-3 py-2 text-xs font-semibold text-gold"
+        data-coach-no-income
+      >
         {copy.noIncome}
       </p>
 

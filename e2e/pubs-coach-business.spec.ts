@@ -22,9 +22,9 @@ test.describe("pubs reel, avatar coach, business AI draft", () => {
 
     await page.getByRole("button", { name: "Suivant" }).click();
     await expect(screen).toHaveAttribute("data-ad-id", "apartment-gatineau");
-    await expect(page.getByText(/533/)).toBeVisible();
+    await expect(page.getByText(/Environ 533/)).toBeVisible();
     await expect(page.getByText(/1er octobre/)).toBeVisible();
-    await expect(page.getByText(/Gatineau/)).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Chambre à Gatineau" })).toBeVisible();
   });
 
   test("avatar coach asks questions then shows 3–5 paths without promising income", async ({
@@ -32,7 +32,7 @@ test.describe("pubs reel, avatar coach, business AI draft", () => {
   }) => {
     await page.goto("./coach/");
     await expect(page.getByRole("heading", { name: "Coach avatar" })).toBeVisible();
-    await expect(page.getByText(/Aucune promesse de revenu/)).toBeVisible();
+    await expect(page.locator("[data-coach-no-income]")).toContainText("Aucune promesse de revenu");
     await expect(page.locator("[data-coach-paths]")).toHaveCount(0);
 
     await page.locator("[data-coach-intent=skill]").click();
