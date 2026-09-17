@@ -4,101 +4,32 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#f4f6fb" />
-    <meta
-      name="description"
-      content="Avez-vous un commerce à faire connaître dans le quartier ? Faites-le savoir. Inscription gratuite."
-    />
+    <meta name="description" content="Avez-vous un commerce à faire connaître dans le quartier ? Faites-le savoir. Inscription gratuite." />
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="fr_CA" />
     <meta property="og:title" content="Faites connaître votre commerce" />
-    <meta
-      property="og:description"
-      content="Avez-vous un commerce à faire connaître dans le quartier ? (garderie, restaurant, tutorat sur Zoom) Faites-le savoir."
-    />
-    <meta
-      property="og:url"
-      content="https://opencommunity.app/promo/commerce.html"
-    />
+    <meta property="og:description" content="Avez-vous un commerce à faire connaître dans le quartier ? (garderie, restaurant, tutorat sur Zoom) Faites-le savoir." />
+    <meta property="og:url" content="http://opencommunity.app/promo/commerce.html" />
+    <meta property="og:image" content="http://opencommunity.app/promo/commerce.png" />
     <title>Faites connaître votre commerce · Open Community</title>
     <style>
-      :root {
-        color-scheme: light;
-      }
-      * {
-        box-sizing: border-box;
-      }
-      html,
-      body {
-        margin: 0;
-        min-height: 100%;
-      }
-      body {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        min-height: 100vh;
-        min-height: 100dvh;
-        padding: max(1.5rem, env(safe-area-inset-top, 0px))
-          max(1.25rem, env(safe-area-inset-right, 0px))
-          max(1.75rem, env(safe-area-inset-bottom, 0px))
-          max(1.25rem, env(safe-area-inset-left, 0px));
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-          "Helvetica Neue", Arial, sans-serif;
-        background: #f4f6fb;
-        color: #142033;
-      }
-      main {
-        width: min(38rem, 100%);
-        text-align: center;
-      }
-      .logo {
-        margin: 0 0 1.35rem;
-        font-size: 0.95rem;
-        font-weight: 700;
-        letter-spacing: 0.04em;
-        text-transform: uppercase;
-      }
-      .logo a {
-        color: #1d4ed8;
-        text-decoration: none;
-      }
-      h1 {
-        margin: 0 0 1.85rem;
-        font-size: clamp(1.35rem, 5.6vw, 2rem);
-        line-height: 1.35;
-        font-weight: 650;
-      }
-      a.cta {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        min-height: 3.5rem;
-        min-width: min(100%, 17rem);
-        padding: 0.95rem 1.8rem;
-        border-radius: 999px;
-        background: #2563eb;
-        color: #fff;
-        font-size: 1.25rem;
-        font-weight: 700;
-        text-decoration: none;
-        box-shadow: 0 10px 24px rgba(37, 99, 235, 0.28);
-      }
-      a.cta:hover,
-      a.cta:focus-visible {
-        background: #1d4ed8;
-      }
+      *{box-sizing:border-box} html,body{margin:0;min-height:100%}
+      body{display:flex;align-items:center;justify-content:center;min-height:100vh;min-height:100dvh;padding:1.25rem;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;background:#f4f6fb;color:#142033}
+      main{width:min(28rem,100%);text-align:center}
+      a.card{display:block;text-decoration:none;color:inherit}
+      a.card img{display:block;width:100%;height:auto;border-radius:16px;box-shadow:0 12px 28px rgba(20,32,51,.12)}
+      a.cta{display:inline-flex;align-items:center;justify-content:center;margin-top:1.25rem;min-height:3.25rem;min-width:min(100%,16rem);padding:.9rem 1.6rem;border-radius:999px;background:#2563eb;color:#fff;font-size:1.15rem;font-weight:700;text-decoration:none}
+      .hint{margin-top:.85rem;font-size:.9rem;color:#5b6b7c}
+      .hint a{color:#1d4ed8}
     </style>
   </head>
   <body>
     <main>
-      <p class="logo">
-        <a href="https://opencommunity.app/">Open Community</a>
-      </p>
-      <h1>
-        Avez-vous un commerce à faire connaître dans le quartier ? (garderie,
-        restaurant, tutorat sur Zoom) Faites-le savoir.
-      </h1>
-      <a class="cta" href="https://opencommunity.app/">Cliquez ici</a>
+      <a class="card" href="http://opencommunity.app/">
+        <img src="./commerce.png" width="1200" height="900" alt="Open Community — Faites connaître votre commerce. Cliquez ici." />
+      </a>
+      <a class="cta" href="http://opencommunity.app/">Cliquez ici</a>
+      <p class="hint">Lien direct : <a href="http://opencommunity.app/">opencommunity.app</a></p>
     </main>
   </body>
 </html>
