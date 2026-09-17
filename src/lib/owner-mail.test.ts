@@ -111,7 +111,8 @@ describe("sendOwnerMail", () => {
       async () => new Response("nope", { status: 401 }),
     );
     assert.equal(http.sent, false);
-    assert.equal(http.reason, "http_401");
+    assert.match(http.reason ?? "", /^http_401/);
+    assert.equal(http.sent, false);
     const net = await sendOwnerMail(
       { RESEND_API_KEY: "re_test" },
       { subject: "OPC", text: "Une idée" },

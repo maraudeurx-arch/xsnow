@@ -11,7 +11,7 @@ import { sanitizeUntrustedText, TITLE_TEXT_MAX } from "./sanitize.ts";
 
 export const BUSINESS_AD_INBOX_FALLBACK_URL =
   "https://xsnow-chat.xsnowopc.workers.dev/business-ads";
-export const BUSINESS_AD_POST_TIMEOUT_MS = 20_000;
+export const BUSINESS_AD_POST_TIMEOUT_MS = 45_000;
 export const BUSINESS_AD_DESC_MAX = 500;
 
 export type BusinessAdInboxInput = {
@@ -108,9 +108,12 @@ export async function postBusinessAdToInbox(
       }),
       signal: controller.signal,
     });
-    if (!response.ok) return "failed";
-    const json = (await response.json()) as { ok?: boolean; emailed?: boolean };
-    return json.ok && json.emailed ? "sent" : "failed";
+    const json = (await response.json().catch(() => null)) as {
+      ok?: boolean;
+      emailed?: boolean;
+    } | null;
+    if (json?.ok && json.emailed) return "sent";
+    return "failed";
   } catch {
     return "failed";
   } finally {
