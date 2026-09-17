@@ -145,7 +145,6 @@ export function buildBusinessAdOwnerMail(
     ad.description || "(vide)",
     "",
     "Processus: vérifier la légitimité, puis revenir vers l’auteur avec une proposition monétaire compétitive.",
-    "L’avatar OPC peut aider l’auteur à comparer Facebook / WhatsApp / sites locaux.",
     "",
     "— Ne pas publier sur Accueil tant que l’équipe n’a pas approuvé.",
   ].join("\n");
