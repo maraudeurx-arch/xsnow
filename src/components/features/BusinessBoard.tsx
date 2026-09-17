@@ -134,7 +134,6 @@ export function BusinessBoard() {
             data-ad-photo-input
             type="file"
             accept="image/jpeg,image/png,image/webp,image/gif"
-            capture="environment"
             required
             onChange={(event) => void onPhotoChange(event.currentTarget.files?.[0])}
             className="tap max-w-full text-xs font-normal text-snow file:mr-2 file:rounded-full file:border-0 file:bg-cobalt file:px-3 file:py-1 file:text-xs file:font-extrabold file:text-snow"
