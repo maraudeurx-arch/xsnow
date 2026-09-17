@@ -8,11 +8,33 @@ Application web communautaire (Next.js App Router + TypeScript + Tailwind), expo
 
 ## Site public (iPhone / Safari)
 
-**https://maraudeurx-arch.github.io/xsnow/**
+**https://opencommunity.app/** (aussi **https://www.opencommunity.app/**)
+
+Après DNS, `https://maraudeurx-arch.github.io/xsnow/` redirige vers ce domaine. Ne pas compter sur github.io comme URL principale : l’export Pages a `basePath` vide pour que les assets (`/_next/…`) marchent à la racine du domaine.
+
+Chaque push sur `main` construit `out/` et le publie avec `.github/workflows/deploy-pages.yml` (`CUSTOM_DOMAIN=1`). Aucun serveur Node, aucun Vercel. Fichier `public/CNAME` = `opencommunity.app` (copié dans `out/CNAME`).
+
+### DNS Namecheap (apex `opencommunity.app`)
+
+Le propriétaire pose ces enregistrements sur le compte Namecheap qui a acheté le domaine (aucun identifiant dans ce dépôt) :
+
+| Type | Host | Valeur |
+| --- | --- | --- |
+| A | `@` | `185.199.108.153` |
+| A | `@` | `185.199.109.153` |
+| A | `@` | `185.199.110.153` |
+| A | `@` | `185.199.111.153` |
+| AAAA (optionnel, IPv6 GitHub) | `@` | `2606:50c0:8000::153` |
+| AAAA | `@` | `2606:50c0:8001::153` |
+| AAAA | `@` | `2606:50c0:8002::153` |
+| AAAA | `@` | `2606:50c0:8003::153` |
+| CNAME | `www` | `maraudeurx-arch.github.io` |
+
+Retirer un éventuel parking / URL redirect Namecheap sur `@` et `www`. TTL 5–30 min le temps de la vérif.
+
+Puis GitHub → **Settings → Pages** : Custom domain `opencommunity.app` (le `CNAME` du dépôt devrait le remplir). Attendre le check DNS vert, puis **Enforce HTTPS**. Le certificat peut prendre jusqu’à 24 h. Sans HTTPS, Safari iPhone refusera l’install PWA.
 
 Visitor ideas and chat are untrusted plain text (never HTML, never git). Personal offers stay on-device until an approved numbered release. See **[SECURITY.md](SECURITY.md)** and `public/catalog/CHANGELOG.md`.
-
-Chaque push sur `main` construit `out/` et le publie avec `.github/workflows/deploy-pages.yml`. Aucun serveur Node, aucun Vercel.
 
 Si la page 404 juste après le merge : Settings → Pages → **Source = GitHub Actions**. Ou :
 
@@ -50,7 +72,7 @@ cp .env.example .env.local
 npm run dev
 ```
 
-Ouvrez [http://localhost:3000/xsnow/](http://localhost:3000/xsnow/) (`basePath` GitHub Pages).
+Ouvrez [http://localhost:3000/](http://localhost:3000/) (`basePath` vide, comme le domaine custom). `CUSTOM_DOMAIN=0 npm run dev` remet `/xsnow/` (ancien site projet GitHub Pages).
 
 ```bash
 npm run build
@@ -66,7 +88,7 @@ Pyramide unitaire → fonctionnel → e2e (Playwright). Détail : [`docs/testing
 npm test              # Node, lib + flux (sans navigateur)
 npm run build         # export statique dans out/
 npx playwright install chromium
-npm run test:e2e      # smoke iPhone 390×844 sur out/ via /xsnow/
+npm run test:e2e      # smoke iPhone 390×844 sur out/ à la racine (domaine custom)
 ```
 
 ### Connect / WalletConnect (Reown)
@@ -79,7 +101,7 @@ Pour la prod GitHub Pages, créer un projet **gratuit** puis passer l’id au wo
 2. Créer un compte, **Create** un projet (ex. `xsnow` / Open Community).
 3. Copier le **Project ID** (32 caractères hexadécimaux).
 4. Dans le projet Reown : domaines autorisés au minimum  
-   `https://maraudeurx-arch.github.io` et `http://localhost:3000`.
+   `https://opencommunity.app`, `https://www.opencommunity.app`, `https://maraudeurx-arch.github.io` et `http://localhost:3000`.
 5. Sur GitHub : repo **xsnow** → **Settings → Secrets and variables → Actions → Variables → New repository variable**  
    - Nom : `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID`  
    - Valeur : le Project ID  
@@ -87,7 +109,7 @@ Pour la prod GitHub Pages, créer un projet **gratuit** puis passer l’id au wo
 6. Optionnel : variable `NEXT_PUBLIC_ENABLE_TESTNETS` = `true` (défaut) pour garder **Sepolia** en chaîne extra, sans l’exiger à la connexion. `false` retire Sepolia ; Ethereum principal et Base restent.
 7. Redéployer : **Actions → Deploy GitHub Pages → Run workflow**, ou un push sur `main`.
 
-Vérifier sur **iPhone Safari** : ouvrir https://maraudeurx-arch.github.io/xsnow/ → **Connect** → modal RainbowKit → WalletConnect (ou MetaMask / Rainbow / Trust) → approuver dans l’app (réseau **Ethereum** / Base, pas Sepolia-only) → le bouton affiche l’adresse tronquée. Si le portefeuille est sur un autre réseau, **Changer de réseau** ouvre le sélecteur RainbowKit.
+Vérifier sur **iPhone Safari** : ouvrir https://opencommunity.app/ → **Connect** → modal RainbowKit → WalletConnect (ou MetaMask / Rainbow / Trust) → approuver dans l’app (réseau **Ethereum** / Base, pas Sepolia-only) → le bouton affiche l’adresse tronquée. Si le portefeuille est sur un autre réseau, **Changer de réseau** ouvre le sélecteur RainbowKit.
 
 En local : coller l’id dans `.env.local` (voir [`.env.example`](.env.example)) puis `npm run dev`.
 
@@ -140,7 +162,7 @@ Le `To:` est **codé en dur** (`opencommunity.opc@gmail.com`) — un visiteur ne
 4. Compilation optionnelle (D1), si `IDEAS_OWNER_SECRET` est posé (détail : [`docs/owner-ideas.md`](docs/owner-ideas.md)) :
    - HTML : `https://xsnow-chat.xsnowopc.workers.dev/ideas?secret=…`
    - JSON : la même URL avec `&format=json`
-   - Page app (non listée) : `/xsnow/proprietaire/idees/?secret=…`
+   - Page app (non listée) : `https://opencommunity.app/proprietaire/idees/?secret=…`
 
 Sans `RESEND_API_KEY`, `POST /ideas` répond `{ ok: true, emailed: false }` — le client affiche l’échec e-mail et garde la copie locale. La page vide n’invente **aucune** idée.
 
@@ -160,9 +182,27 @@ QA : `?city=New%20York` force New York (mot-drapeau **NEW YORK**, gentilé **New
 
 ### Public URL
 
-**https://maraudeurx-arch.github.io/xsnow/**
+**https://opencommunity.app/** (and **https://www.opencommunity.app/**)
 
-Static Next.js export (`output: 'export'`, `basePath: '/xsnow'`). GitHub Actions publishes `out/` on every `main` push.
+Static Next.js export (`output: 'export'`, empty `basePath` when `public/CNAME` is present or `CUSTOM_DOMAIN=1`). GitHub Actions publishes `out/` on every `main` push. After DNS, `https://maraudeurx-arch.github.io/xsnow/` redirects here — do not keep `/xsnow` in production asset URLs or `_next` 404s on the custom domain.
+
+### Namecheap DNS (apex)
+
+Set these on the Namecheap account that owns the domain (no credentials in this repo):
+
+| Type | Host | Value |
+| --- | --- | --- |
+| A | `@` | `185.199.108.153` |
+| A | `@` | `185.199.109.153` |
+| A | `@` | `185.199.110.153` |
+| A | `@` | `185.199.111.153` |
+| AAAA (optional GitHub IPv6) | `@` | `2606:50c0:8000::153` |
+| AAAA | `@` | `2606:50c0:8001::153` |
+| AAAA | `@` | `2606:50c0:8002::153` |
+| AAAA | `@` | `2606:50c0:8003::153` |
+| CNAME | `www` | `maraudeurx-arch.github.io` |
+
+Then GitHub **Settings → Pages**: custom domain `opencommunity.app`, wait for the DNS check, **Enforce HTTPS**.
 
 If Pages 404s, set **Settings → Pages → Source = GitHub Actions**, or run the `gh api` command above.
 
@@ -177,7 +217,7 @@ npm install
 npm run dev
 ```
 
-Open http://localhost:3000/xsnow/ then `npm run build` (writes `out/`).
+Open http://localhost:3000/ then `npm run build` (writes `out/`). `CUSTOM_DOMAIN=0` restores `/xsnow/` for a project-Pages layout.
 
 ### Tests
 
@@ -223,7 +263,7 @@ npx wrangler deploy
 4. Optional D1 compile page if `IDEAS_OWNER_SECRET` is set (see [`docs/owner-ideas.md`](docs/owner-ideas.md)):
    - HTML: `https://xsnow-chat.xsnowopc.workers.dev/ideas?secret=…`
    - JSON: same URL with `&format=json`
-   - Unlisted app page: `/xsnow/proprietaire/idees/?secret=…`
+   - Unlisted app page: `https://opencommunity.app/proprietaire/idees/?secret=…`
 
 Without `RESEND_API_KEY`, `POST /ideas` returns `{ ok: true, emailed: false }` — the client shows email failed and keeps the local copy. The empty inbox does **not** invent ideas.
 

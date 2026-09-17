@@ -40,7 +40,7 @@ Base URL: `https://xsnow-chat.xsnowopc.workers.dev`
 | HTML compile page | `GET /ideas?secret=YOUR_SECRET` |
 | JSON | `GET /ideas?secret=YOUR_SECRET&format=json` |
 | Bearer | `Authorization: Bearer YOUR_SECRET` on the same paths (query `secret` optional) |
-| App helper (unlisted) | `/xsnow/proprietaire/idees/?secret=…` on the GitHub Pages site |
+| App helper (unlisted) | `https://opencommunity.app/proprietaire/idees/?secret=…` |
 
 Examples:
 

@@ -61,10 +61,10 @@ describe("invite query params", () => {
 
   it("builds the public share URL and a French paste blurb", () => {
     const url = publicInviteUrl("opc-ab12");
-    assert.equal(url, "https://maraudeurx-arch.github.io/xsnow/?invite=opc-ab12");
+    assert.equal(url, "https://opencommunity.app/?invite=opc-ab12");
     assert.equal(
       publicInviteUrl("ami", "critique"),
-      "https://maraudeurx-arch.github.io/xsnow/?invite=ami&src=critique",
+      "https://opencommunity.app/?invite=ami&src=critique",
     );
     assert.match(defaultShareBlurb(url, "fr"), /Rejoins-nous/);
     assert.match(defaultShareBlurb(url, "fr"), /invite=opc-ab12/);
@@ -91,7 +91,7 @@ describe("invite query params", () => {
       src: "github",
     });
     assert.equal(sanitizeInviteCode("javascript:alert(1)").includes(":"), false);
-    assert.equal(publicInviteUrl("<script>"), "https://maraudeurx-arch.github.io/xsnow/?invite=script");
+    assert.equal(publicInviteUrl("<script>"), "https://opencommunity.app/?invite=script");
   });
 });
 

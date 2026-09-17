@@ -10,7 +10,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: "Open Community",
     short_name: "OPC",
     description: "Open Community — Monétisé Vous! Entraide de quartier.",
-    // Absolute URLs: a path of `/` or `./` can resolve to github.io root 404.
+    // Absolute custom-domain URLs so Home Screen does not pin github.io.
     id: launch.id,
     start_url: launch.start_url,
     scope: launch.scope,

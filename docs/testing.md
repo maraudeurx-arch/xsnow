@@ -51,13 +51,13 @@ Playwright against a **production-like static export**, one iPhone viewport (`39
    npx playwright install chromium
    ```
 
-3. Run the smoke suite (serves `out/` at `/xsnow/`, same `basePath` as GitHub Pages):
+3. Run the smoke suite (serves `out/` at `/`, same empty `basePath` as the custom domain):
 
    ```bash
    npm run test:e2e
    ```
 
-`scripts/serve-e2e.mjs` maps `/xsnow/` → `out/` because `npx serve out` would 404 `_next` assets requested under `/xsnow`. Same command: `npm run serve:static`.
+`scripts/serve-e2e.mjs` serves `out/` at `/` (custom domain). `E2E_BASE_PATH=/xsnow` matches a `CUSTOM_DOMAIN=0` project-Pages export. Same command: `npm run serve:static`.
 
 Critical paths:
 

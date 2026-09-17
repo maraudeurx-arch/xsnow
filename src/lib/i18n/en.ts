@@ -1,3 +1,4 @@
+import { GITHUB_PAGES_SITE_URL, PUBLIC_SITE_URL } from "../paths.ts";
 import type { Messages } from "./messages";
 
 export const en: Messages = {
@@ -41,22 +42,19 @@ export const en: Messages = {
     offres: "Offers",
   },
   install: {
-    tip: "On iPhone (Safari): open https://maraudeurx-arch.github.io/xsnow/ then Share → Add to Home Screen.",
-    tipAndroid:
-      "On Android (Chrome): open https://maraudeurx-arch.github.io/xsnow/ then menu ⋮ → Install app, or Add to Home screen.",
+    tip: `On iPhone (Safari): open ${PUBLIC_SITE_URL} then Share → Add to Home Screen.`,
+    tipAndroid: `On Android (Chrome): open ${PUBLIC_SITE_URL} then menu ⋮ → Install app, or Add to Home screen.`,
     dismiss: "Got it",
     profileTitle: "Put OPC on the Home Screen",
-    profileLead:
-      "Open Community is a web app, not an App Store app. On iPhone, first open https://maraudeurx-arch.github.io/xsnow/ in Safari, then add it to the Home Screen.",
+    profileLead: `Open Community is a web app, not an App Store app. On iPhone, first open ${PUBLIC_SITE_URL} in Safari, then add it to the Home Screen.`,
     siteUrlLabel: "Exact address to open in Safari",
     iphoneHeading: "iPhone (Safari)",
     iphoneSteps: [
-      "Open exactly https://maraudeurx-arch.github.io/xsnow/ in Safari (Apple’s browser — not Chrome).",
+      `Open exactly ${PUBLIC_SITE_URL} in Safari (Apple’s browser — not Chrome).`,
       "Tap Share — the square with the arrow pointing up, at the bottom of the screen.",
       "Scroll and choose Add to Home Screen, then Add.",
     ],
-    wrongShortcut:
-      "If the icon opens “There isn’t a GitHub Pages site here”, that is not OPC: the shortcut points to maraudeurx-arch.github.io without /xsnow/. Delete the icon, open the address above in Safari, then add it again.",
+    wrongShortcut: `If the icon opens “There isn’t a GitHub Pages site here”, that is not OPC: the shortcut points to maraudeurx-arch.github.io instead of ${PUBLIC_SITE_URL}. Delete the icon, open the address above in Safari, then add it again. The old URL ${GITHUB_PAGES_SITE_URL} redirects to opencommunity.app once DNS is in place.`,
   },
   guide: {
     pickAvatar: "Choose your avatar",
@@ -503,8 +501,7 @@ export const en: Messages = {
   },
   notFound: {
     title: "Page not found",
-    githubPagesHint:
-      "If you see “There isn’t a GitHub Pages site here”, open https://maraudeurx-arch.github.io/xsnow/ — OPC is not at the github.io root.",
+    githubPagesHint: `If you see “There isn’t a GitHub Pages site here”, open ${PUBLIC_SITE_URL} — that is OPC’s main address. ${GITHUB_PAGES_SITE_URL} redirects there once DNS is in place.`,
     back: "Back to Home",
   },
   logoAria: "Open Community",

@@ -118,7 +118,7 @@ describe("sharePostFr", () => {
     assert.match(text, /12 h/);
     assert.match(text, /Hull/);
     assert.match(text, /opc@example\.com/);
-    assert.match(text, /https:\/\/maraudeurx-arch\.github\.io\/xsnow\//);
+    assert.match(text, /https:\/\/opencommunity\.app\//);
     assert.match(text, /en-demande/);
     assert.match(text, /Non-fumeur/);
     assert.match(text, /babillard/);
@@ -250,7 +250,7 @@ describe("edited share text persistence", () => {
         insuranceOk: true,
       });
       const generated = draftShareText(offer);
-      assert.match(generated, /github\.io\/xsnow/);
+      assert.match(generated, /opencommunity\.app/);
       writeEditedShareText(offer.id, "Texte Marketplace modifié");
       assert.equal(readEditedShareText(offer.id), "Texte Marketplace modifié");
       assert.equal(draftShareText(offer), "Texte Marketplace modifié");

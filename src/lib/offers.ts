@@ -29,8 +29,9 @@ import {
   type SkillId,
   type Weekday,
 } from "./skills.ts";
+import { PUBLIC_SITE_URL } from "./paths.ts";
 
-export const PUBLIC_OFFER_SITE_URL = "https://maraudeurx-arch.github.io/xsnow/";
+export const PUBLIC_OFFER_SITE_URL = PUBLIC_SITE_URL;
 
 export const OFFERS_KEY = "xsnow.offers";
 export const IMPORTED_OFFERS_KEY = "xsnow.importedOffers";

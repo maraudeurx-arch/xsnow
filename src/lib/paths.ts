@@ -1,11 +1,34 @@
-/** Must match `basePath` in next.config.ts (GitHub Pages project site). */
-export const BASE_PATH = "/xsnow";
+import {
+  CUSTOM_DOMAIN_ORIGIN,
+  GITHUB_PAGES_HOST,
+  GITHUB_PAGES_ORIGIN,
+  PROJECT_PAGES_BASE,
+  resolvePagesBasePath,
+} from "./pages-base.ts";
+
+export {
+  CUSTOM_DOMAIN_HOST,
+  CUSTOM_DOMAIN_ORIGIN,
+  GITHUB_PAGES_HOST,
+  GITHUB_PAGES_ORIGIN,
+  PROJECT_PAGES_BASE,
+  WWW_CUSTOM_DOMAIN_ORIGIN,
+  resolveDomainMode,
+  resolvePagesBasePath,
+  useCustomDomainBasePath,
+} from "./pages-base.ts";
+
 /**
- * Path-only PWA scope (`/xsnow/`).
+ * Next `basePath` for this JS bundle. Empty when Pages is built for
+ * opencommunity.app (`NEXT_PUBLIC_CUSTOM_DOMAIN=1` / CNAME). Default `/xsnow`
+ * matches `next dev` without that flag (unit tests, CUSTOM_DOMAIN=0).
+ */
+export const BASE_PATH = resolvePagesBasePath();
+/**
+ * Path-only PWA scope (`/` on the custom domain, `/xsnow/` on project Pages).
  * Next 16 `output: "export"` leaves MetadataRoute.Manifest paths unprefixed,
- * so this already includes `basePath`. Prefer `PWA_START_URL` in the
- * webmanifest: a path of `/` (or a relative `./`) can resolve to the GitHub
- * user site `https://maraudeurx-arch.github.io/` — that URL 404s.
+ * so prefer `PWA_START_URL` in the webmanifest: a path of `/` (or a relative
+ * `./`) on github.io without a custom domain 404s at the user site root.
  */
 export const PWA_SCOPE = `${BASE_PATH}/`;
 export const PRIVACY_HREF = "/vie-privee";
@@ -15,15 +38,18 @@ export const HOW_IT_WORKS_HREF = "/comment-ca-marche";
 export const SECURITY_HREF = "/securite";
 export const PROOFS_HREF = "/preuves-de-revenus";
 
-/** GitHub Pages host (project site lives under {@link BASE_PATH}, not `/`). */
-export const PUBLIC_SITE_ORIGIN = "https://maraudeurx-arch.github.io";
+/** Canonical public origin (custom domain). */
+export const PUBLIC_SITE_ORIGIN = CUSTOM_DOMAIN_ORIGIN;
 
-/** Canonical public URL (GitHub Pages). Used in share posts and deep links. */
-export const PUBLIC_SITE_URL = `${PUBLIC_SITE_ORIGIN}${PWA_SCOPE}`;
+/** Canonical public URL. Used in share posts, install tips, and deep links. */
+export const PUBLIC_SITE_URL = `${PUBLIC_SITE_ORIGIN}/`;
+
+/** Project Pages URL kept as a fallback note; GitHub redirects it after DNS. */
+export const GITHUB_PAGES_SITE_URL = `${GITHUB_PAGES_ORIGIN}${PROJECT_PAGES_BASE}/`;
 
 /**
- * Absolute Home Screen launch URL. iOS can resolve a relative `start_url`
- * against the origin instead of the project path — use this, never `/`.
+ * Absolute Home Screen launch URL. Always the custom domain so iOS does not
+ * pin a github.io origin that later redirects (or 404s at `/`).
  */
 export const PWA_START_URL = PUBLIC_SITE_URL;
 
@@ -49,9 +75,10 @@ export function assetUrl(path: string) {
   return `${BASE_PATH}${normalized}`;
 }
 
-/** Icon / asset href that cannot resolve to the github.io root. */
+/** Icon / asset href on the canonical custom domain (never github.io root). */
 export function absoluteAssetUrl(path: string) {
-  return `${PUBLIC_SITE_ORIGIN}${assetUrl(path)}`;
+  const normalized = path.startsWith("/") ? path : `/${path}`;
+  return `${PUBLIC_SITE_ORIGIN}${normalized}`;
 }
 
 /** Values written into `manifest.webmanifest` (absolute, never `/`). */
@@ -63,35 +90,28 @@ export function pwaManifestLaunch() {
   } as const;
 }
 
-export function isGithubPagesProjectHost(
-  hostname: string,
-  origin: string = PUBLIC_SITE_ORIGIN,
-) {
-  try {
-    return hostname === new URL(origin).hostname;
-  } catch {
-    return false;
-  }
+export function isGithubPagesProjectHost(hostname: string) {
+  return hostname === GITHUB_PAGES_HOST;
 }
 
-/** True when the path is outside `/xsnow/` (org-root GitHub Pages 404). */
+/** True when the path is outside the project `basePath` (org-root GitHub Pages 404). */
 export function isOutsideAppScope(pathname: string) {
+  if (!BASE_PATH) return false;
   const path = (pathname.split("?")[0] || "/").replace(/\/+$/, "") || "/";
   if (path === BASE_PATH) return false;
   return !path.startsWith(`${BASE_PATH}/`);
 }
 
 /**
- * Home-screen shortcuts that open `https://maraudeurx-arch.github.io/`
- * never load this app (GitHub’s 404). If our JS does boot on that host
- * without `/xsnow/`, send them to the project site.
+ * Home-screen shortcuts that open `https://maraudeurx-arch.github.io/` never
+ * load this app (GitHub’s 404). Canonical origin is opencommunity.app, so any
+ * github.io hit should move there (GitHub also redirects after DNS).
  */
 export function needsGithubPagesScopeRedirect(location: {
   hostname: string;
   pathname: string;
 }) {
-  if (!isGithubPagesProjectHost(location.hostname)) return false;
-  return isOutsideAppScope(location.pathname);
+  return isGithubPagesProjectHost(location.hostname);
 }
 
 /** Compare App Router pathnames when `trailingSlash: true`. */

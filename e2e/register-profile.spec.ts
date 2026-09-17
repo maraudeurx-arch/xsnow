@@ -16,8 +16,8 @@ test.describe("local registration on Mon profil", () => {
     const installGuide = page.locator("[data-install-guide]");
     await expect(installGuide).toBeVisible();
     await expect(installGuide.getByRole("heading", { name: "Mettre OPC sur l’écran d’accueil" })).toBeVisible();
-    await expect(installGuide.getByText(/Ouvre exactement https:\/\/maraudeurx-arch\.github\.io\/xsnow\//)).toBeVisible();
-    await expect(installGuide.getByRole("link", { name: "https://maraudeurx-arch.github.io/xsnow/" })).toBeVisible();
+    await expect(installGuide.getByText(/Ouvre exactement https:\/\/opencommunity\.app\//)).toBeVisible();
+    await expect(installGuide.getByRole("link", { name: "https://opencommunity.app/" })).toBeVisible();
     await expect(installGuide.getByText(/There isn’t a GitHub Pages site here/)).toBeVisible();
     await expect(installGuide.getByText(/Partager/)).toBeVisible();
     await expect(installGuide.getByText(/Sur l’écran d’accueil/)).toBeVisible();
@@ -65,7 +65,8 @@ test.describe("local registration on Mon profil", () => {
     await expect(page.locator("main").getByRole("button", { name: /Connect/ })).toHaveCount(0);
 
     await page.locator("[data-home-back]").click();
-    await expect(page).toHaveURL(/\/xsnow\/?$/);
+    await expect(page).toHaveURL(/\/$/);
+    await expect(page).not.toHaveURL(/mon-profil/);
     await expect(page.locator("[data-header-profile]")).toHaveText("M.T.");
     await expect(page.getByRole("button", { name: /Connect/ })).toBeVisible();
   });
@@ -74,13 +75,13 @@ test.describe("local registration on Mon profil", () => {
     await page.goto("./mon-profil/");
     const guide = page.locator("[data-install-guide]");
     await expect(guide.getByRole("heading", { name: "Mettre OPC sur l’écran d’accueil" })).toBeVisible();
-    await expect(guide.getByText(/https:\/\/maraudeurx-arch\.github\.io\/xsnow\//).first()).toBeVisible();
+    await expect(guide.getByText(/https:\/\/opencommunity\.app\//).first()).toBeVisible();
     await expect(guide.getByText(/Partager/)).toBeVisible();
     await expect(guide.getByText(/Sur l’écran d’accueil/)).toBeVisible();
 
     await page.getByRole("button", { name: "English" }).click();
     await expect(guide.getByRole("heading", { name: "Put OPC on the Home Screen" })).toBeVisible();
-    await expect(guide.getByRole("link", { name: "https://maraudeurx-arch.github.io/xsnow/" })).toBeVisible();
+    await expect(guide.getByRole("link", { name: "https://opencommunity.app/" })).toBeVisible();
     await expect(guide.getByText(/Share/)).toBeVisible();
     await expect(guide.getByText(/Add to Home Screen/)).toBeVisible();
     await expect(guide.getByText(/Install app/)).toBeVisible();

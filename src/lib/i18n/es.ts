@@ -1,3 +1,4 @@
+import { GITHUB_PAGES_SITE_URL, PUBLIC_SITE_URL } from "../paths.ts";
 import type { Messages } from "./messages";
 
 export const es: Messages = {
@@ -41,22 +42,19 @@ export const es: Messages = {
     offres: "Ofertas",
   },
   install: {
-    tip: "En iPhone (Safari): abre https://maraudeurx-arch.github.io/xsnow/ y luego Compartir → Añadir a pantalla de inicio.",
-    tipAndroid:
-      "En Android (Chrome): abre https://maraudeurx-arch.github.io/xsnow/ y luego menú ⋮ → Instalar la app, o Añadir a pantalla de inicio.",
+    tip: `En iPhone (Safari): abre ${PUBLIC_SITE_URL} y luego Compartir → Añadir a pantalla de inicio.`,
+    tipAndroid: `En Android (Chrome): abre ${PUBLIC_SITE_URL} y luego menú ⋮ → Instalar la app, o Añadir a pantalla de inicio.`,
     dismiss: "Entendido",
     profileTitle: "Poner OPC en la pantalla de inicio",
-    profileLead:
-      "Open Community es una app web, no está en el App Store. En iPhone, abre primero https://maraudeurx-arch.github.io/xsnow/ en Safari y luego añádela a la pantalla de inicio.",
+    profileLead: `Open Community es una app web, no está en el App Store. En iPhone, abre primero ${PUBLIC_SITE_URL} en Safari y luego añádela a la pantalla de inicio.`,
     siteUrlLabel: "Dirección exacta para abrir en Safari",
     iphoneHeading: "iPhone (Safari)",
     iphoneSteps: [
-      "Abre exactamente https://maraudeurx-arch.github.io/xsnow/ en Safari (el navegador de Apple — no Chrome).",
+      `Abre exactamente ${PUBLIC_SITE_URL} en Safari (el navegador de Apple — no Chrome).`,
       "Toca Compartir — el cuadrado con la flecha hacia arriba, abajo en la pantalla.",
       "Desplázate y elige Añadir a pantalla de inicio, luego Añadir.",
     ],
-    wrongShortcut:
-      "Si el icono abre « There isn’t a GitHub Pages site here », no es OPC: el acceso apunta a maraudeurx-arch.github.io sin /xsnow/. Borra el icono, abre la dirección de arriba en Safari y añádela de nuevo.",
+    wrongShortcut: `Si el icono abre « There isn’t a GitHub Pages site here », no es OPC: el acceso apunta a maraudeurx-arch.github.io en lugar de ${PUBLIC_SITE_URL}. Borra el icono, abre la dirección de arriba en Safari y añádela de nuevo. La URL antigua ${GITHUB_PAGES_SITE_URL} redirige a opencommunity.app cuando el DNS está listo.`,
   },
   guide: {
     pickAvatar: "Elige tu avatar",
@@ -504,8 +502,7 @@ export const es: Messages = {
   },
   notFound: {
     title: "Página no encontrada",
-    githubPagesHint:
-      "Si ves « There isn’t a GitHub Pages site here », abre https://maraudeurx-arch.github.io/xsnow/ — OPC no está en la raíz de github.io.",
+    githubPagesHint: `Si ves « There isn’t a GitHub Pages site here », abre ${PUBLIC_SITE_URL} — es la dirección principal de OPC. ${GITHUB_PAGES_SITE_URL} redirige a ese dominio cuando el DNS está listo.`,
     back: "Volver a Inicio",
   },
   logoAria: "Open Community",

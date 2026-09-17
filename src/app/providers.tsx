@@ -21,6 +21,7 @@ import { ConsentSheet } from "@/components/ConsentSheet";
 import { DeviceMemoryBoot } from "@/components/DeviceMemoryBoot";
 import type { Locale } from "@/lib/i18n";
 import { LocaleProvider, useI18n } from "@/lib/i18n/locale";
+import { PUBLIC_SITE_URL, absoluteAssetUrl } from "@/lib/paths";
 import { PlaceProvider } from "@/lib/place";
 import { SpeechProvider } from "@/lib/speech";
 import { primaryChain, resolveWalletChains } from "@/lib/wallet-chains";
@@ -46,8 +47,8 @@ const walletConfig = projectId
   ? getDefaultConfig({
       appName: "Open Community",
       appDescription: "Open Community — Monétisé Vous!",
-      appUrl: "https://maraudeurx-arch.github.io/xsnow/",
-      appIcon: "https://maraudeurx-arch.github.io/xsnow/brand/app-icon-192.png",
+      appUrl: PUBLIC_SITE_URL,
+      appIcon: absoluteAssetUrl("/brand/app-icon-192.png"),
       projectId,
       chains: walletChains,
       ssr: true,

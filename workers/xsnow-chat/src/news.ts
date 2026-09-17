@@ -37,7 +37,7 @@ async function fetchRss(url: string): Promise<string> {
       signal: controller.signal,
       headers: {
         Accept: "application/rss+xml, application/xml, text/xml, */*",
-        "User-Agent": "OpenCommunityNews/1.0 (+https://maraudeurx-arch.github.io/xsnow/)",
+        "User-Agent": "OpenCommunityNews/1.0 (+https://opencommunity.app/)",
       },
     });
     if (!response.ok) return "";

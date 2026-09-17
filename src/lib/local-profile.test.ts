@@ -242,7 +242,7 @@ describe("profile form and storage", () => {
   });
 
   it("builds a share blurb without email or phone", () => {
-    const url = "https://maraudeurx-arch.github.io/xsnow/?invite=opc-ab12";
+    const url = "https://opencommunity.app/?invite=opc-ab12";
     const fr = defaultRegisterShareBlurb(url, "Marie", "fr");
     assert.match(fr, /Marie t’invite/);
     assert.match(fr, /invite=opc-ab12/);
