@@ -3,8 +3,8 @@
 import { FormEvent, useRef, useState } from "react";
 import { postBusinessAdToInbox } from "@/lib/business-ad-inbox";
 import {
-  AD_IMAGE_MAX_KB,
-  prepareAdImage,
+  AD_EMAIL_MAX_KB,
+  prepareAdImageForInbox,
   type PreparedAdImage,
 } from "@/lib/compress-ad-image";
 import { interpolate } from "@/lib/i18n";
@@ -39,14 +39,14 @@ export function BusinessBoard() {
   const { m } = useI18n();
   const { city: placeCity } = usePlace();
   const copy = m.business;
-  const kb = String(AD_IMAGE_MAX_KB);
+  const kb = String(AD_EMAIL_MAX_KB);
 
   async function onPhotoChange(file: File | undefined) {
     setPhotoError("");
     setPhoto(null);
     if (!file) return;
     setPhotoBusy(true);
-    const result = await prepareAdImage(file);
+    const result = await prepareAdImageForInbox(file);
     setPhotoBusy(false);
     if (result.ok) {
       setPhoto(result.value);
@@ -82,7 +82,7 @@ export function BusinessBoard() {
         return;
       }
       setPhotoBusy(true);
-      const prepared = await prepareAdImage(file);
+      const prepared = await prepareAdImageForInbox(file);
       setPhotoBusy(false);
       if (!prepared.ok) {
         if (prepared.reason === "too_large") setPhotoError(interpolate(copy.photoTooBig, { kb }));

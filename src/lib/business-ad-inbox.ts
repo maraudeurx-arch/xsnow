@@ -111,6 +111,8 @@ export async function postBusinessAdToInbox(
     const json = (await response.json().catch(() => null)) as {
       ok?: boolean;
       emailed?: boolean;
+      reason?: string;
+      attachmentOmitted?: boolean;
     } | null;
     if (json?.ok && json.emailed) return "sent";
     return "failed";
