@@ -354,7 +354,7 @@ export const fr = {
   features: {
     business: {
       title: "Faites connaître votre business par des pubs",
-      lead: "Publiez une pub locale dans Open Community. Les voisins vous trouvent, vous les servez.",
+      lead: "Envoie ta photo. On vérifie, puis on te propose un tarif compétitif — ton avatar peut comparer Facebook / WhatsApp / sites locaux.",
     },
     proximite: {
       title: "Voyez qui est à proximité",
@@ -574,18 +574,27 @@ export const fr = {
     city: "Ville ou quartier",
     cityPh: "Plateau, Rosemont…",
     description: "Description",
+    contactEmail: "E-mail de contact",
+    contactEmailPh: "pour notre proposition monétaire",
     photo: "Photo de la publicité",
-    photoHint:
-      "Comme le chat Bogo : uploade une photo (max. {kb} Ko). Elle tourne ensuite sur Accueil. Compression sur cet appareil.",
+    photoHint: "upload une photo (400kb max)",
     photoTooBig:
       "Cette image dépasse {kb} Ko même compressée. Choisis une photo plus légère.",
     photoNotImage: "Choisis une photo (JPEG, PNG ou WebP).",
     photoUndecodable: "Impossible de lire cette image. Essaie un JPEG ou un PNG.",
     photoBusy: "Compression de la photo…",
-    photoReady: "Photo prête ({kb} Ko) — elle tournera sur Accueil après publication.",
-    publish: "Publier dans Open Community",
-    saved:
-      "Enregistré sur cet appareil. Avec une photo (max. {kb} Ko), elle tourne dans l’espace pub Accueil.",
+    photoReady: "Photo prête ({kb} Ko).",
+    photoRequired: "Ajoute une photo pour envoyer ta pub en vérification.",
+    reviewLead:
+      "Ta pub photo nous parvient d’abord (opencommunity.opc@gmail.com). On vérifie la légitimité, puis on te revient avec une proposition monétaire compétitive. Ton avatar pourra t’aider à comparer ce que les gens du quartier paient sur Facebook, WhatsApp ou les sites locaux, et à faire une proposition.",
+    publish: "Envoyer pour vérification",
+    sending: "Envoi…",
+    savedSent:
+      "Reçu. On vérifie, puis on te contacte à ton e-mail avec une proposition. Rien n’apparaît encore sur Accueil.",
+    savedLocal:
+      "Enregistré sur cet appareil, mais l’envoi à l’équipe a échoué. Réessaie plus tard ou écris à opencommunity.opc@gmail.com.",
+    statusPending: "en vérification",
+    statusLocal: "envoi équipe échoué",
     fallbackCategory: "Commerce",
     fallbackCity: "Quartier",
   },

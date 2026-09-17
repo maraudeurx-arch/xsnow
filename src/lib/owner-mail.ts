@@ -14,6 +14,8 @@ export const DEFAULT_IDEAS_FROM = "Open Community <beth.t@example.com>";
 export type OwnerMail = {
   subject: string;
   text: string;
+  /** Optional Resend attachments (base64 content, no data: prefix). */
+  attachments?: Array<{ filename: string; content: string; content_type?: string }>;
 };
 
 export type RegisterNoticeInput = {
@@ -98,6 +100,64 @@ export function buildRegisterOwnerMail(notice: RegisterNoticeInput, now = Date.n
   return { subject, text };
 }
 
+
+export type BusinessAdNoticeInput = {
+  name: string;
+  category: string;
+  city: string;
+  description: string;
+  contactEmail: string;
+  opcId: string;
+  imageBase64: string;
+  imageFilename: string;
+  imageBytes: number;
+};
+
+export function buildBusinessAdOwnerMail(
+  ad: BusinessAdNoticeInput,
+  now = Date.now(),
+): OwnerMail {
+  const city = ad.city.trim() || "ville non indiquée";
+  const when = new Date(now).toISOString();
+  const subject = clipSubject(`OPC pub business — ${ad.name || city}`);
+  const text = [
+    "Nouvelle pub business Open Community (à vérifier avant diffusion Accueil).",
+    "",
+    `Date: ${when}`,
+    `Ville: ${city}`,
+    `Commerce: ${ad.name}`,
+    `Catégorie: ${ad.category || "(non fournie)"}`,
+    `Contact auteur (pour proposition monétaire): ${ad.contactEmail}`,
+    `Numéro OPC (appareil): ${ad.opcId || "non inscrit"}`,
+    `Photo: ${ad.imageFilename} (~${Math.ceil(ad.imageBytes / 1024)} Ko)`,
+    "",
+    "Description:",
+    ad.description || "(vide)",
+    "",
+    "Processus: vérifier la légitimité, puis revenir vers l’auteur avec une proposition monétaire compétitive.",
+    "L’avatar OPC peut aider l’auteur à comparer Facebook / WhatsApp / sites locaux.",
+    "",
+    "— Ne pas publier sur Accueil tant que l’équipe n’a pas approuvé.",
+  ].join("\n");
+  const lower = ad.imageFilename.toLowerCase();
+  const contentType = lower.endsWith(".png")
+    ? "image/png"
+    : lower.endsWith(".webp")
+      ? "image/webp"
+      : "image/jpeg";
+  const attachments =
+    ad.imageBase64 && ad.imageFilename
+      ? [
+          {
+            filename: ad.imageFilename,
+            content: ad.imageBase64,
+            content_type: contentType,
+          },
+        ]
+      : undefined;
+  return { subject, text, attachments };
+}
+
 export type ResendSendResult = { sent: boolean; reason?: string };
 
 export type MailEnv = {
@@ -134,6 +194,7 @@ export async function sendOwnerMail(
         to: [OPC_INBOX_TO],
         subject,
         text,
+        ...(mail.attachments?.length ? { attachments: mail.attachments } : {}),
       }),
     });
     if (!response.ok) return { sent: false, reason: `http_${response.status}` };

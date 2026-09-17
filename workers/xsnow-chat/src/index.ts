@@ -9,6 +9,7 @@
  * `POST /stats` = anonymous usage events (no PII)
  * `GET /stats/summary` = aggregate counts
  * `POST /ideas` = sanitized visitor ideas; emails opencommunity.opc@gmail.com
+ * `POST /business-ads` = business photo ad for review; emails opencommunity.opc@gmail.com with attachment
  * `POST /register` = optional registration notice to the same inbox
  * `GET /ideas` = owner list (JSON or HTML) behind `IDEAS_OWNER_SECRET`
  * `POST /alerts` = guardian registers a consented proximity alert (schedule + place)
@@ -32,6 +33,7 @@ import {
 import { corsHeaders } from "./cors";
 import { parseLatLon, reverseGeocode } from "./geo";
 import { handleIdeasGet, handleIdeasPost, handleRegisterPost, isIdeasPath, isRegisterPath } from "./ideas";
+import { handleBusinessAdsPost, isBusinessAdsPath } from "./business-ads";
 import { fetchCityNews, parseCityParam, parseLangParam } from "./news";
 import { CHAT_TEXT_MAX, isJsonContentType, sanitizeUntrustedText } from "../../../src/lib/sanitize.ts";
 import {
@@ -297,6 +299,21 @@ function isNewsPath(pathname: string) {
   return value === "/news" || value.endsWith("/news");
 }
 
+
+async function handleBusinessAds(request: Request, env: Env, origin: string | null): Promise<Response> {
+  if (request.method !== "POST") {
+    return json({ error: "method_not_allowed" }, 405, origin);
+  }
+  if (tooMany(clientIp(request))) {
+    return json({ error: "rate_limited" }, 429, origin);
+  }
+  const body = await readJsonBody(request, origin);
+  if (!body.ok) return body.response;
+  const response = await handleBusinessAdsPost(body.value, env);
+  const data = await response.json();
+  return json(data, response.status, origin);
+}
+
 async function handleIdeas(request: Request, env: Env, origin: string | null): Promise<Response> {
   if (request.method === "POST") {
     if (tooMany(clientIp(request))) {
@@ -455,6 +472,10 @@ export default {
 
     if (isStatsPath(pathname)) {
       return handleStats(request, env, origin);
+    }
+
+    if (isBusinessAdsPath(pathname)) {
+      return handleBusinessAds(request, env, origin);
     }
 
     if (isIdeasPath(pathname)) {
