@@ -585,7 +585,7 @@ export const fr = {
     photoBusy: "Compression de la photo…",
     photoReady: "Photo prête ({kb} Ko).",
     photoRequired: "Ajoute une photo pour envoyer ta pub en vérification.",
-    reviewLead: "",
+    reviewLead: "(Publicité gratuite pour les 2 premières semaines)",
     publish: "Envoyer pour vérification",
     sending: "Envoi…",
     savedSent:
