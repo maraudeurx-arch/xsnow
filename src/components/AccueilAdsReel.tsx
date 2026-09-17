@@ -8,17 +8,12 @@ import {
   listAccueilAds,
   nextAccueilAdIndex,
 } from "@/lib/accueil-ads";
-import { useI18n } from "@/lib/i18n/locale";
-
 /**
  * Accueil ad surface: one full-bleed image at a time (fills the whole news card),
  * rotates every 5s. News headlines are hidden — this slot is ads-only.
  */
 export function AccueilAdsReel() {
   const ads = listAccueilAds();
-  const { m } = useI18n();
-  const label = m.neighborhoodNews?.partnerSponsored ?? "PUBLICITÉ";
-  const slot = m.neighborhoodNews?.partnerSlot ?? "Espace partenaire";
   const [index, setIndex] = useState(0);
   const ad = ads[index] ?? ads[0]!;
   const src = accueilAdImageUrl(ad);
@@ -43,16 +38,10 @@ export function AccueilAdsReel() {
     <aside
       data-accueil-ads-reel
       data-ad-id={ad.id}
-      aria-label={`${label} — ${slot} — ${ad.title}`}
+      aria-label={ad.title}
       className="relative flex h-full min-h-0 w-full flex-1 flex-col overflow-hidden rounded-xl border border-gold/35 bg-night"
     >
-      <p className="pointer-events-none absolute left-2 top-2 z-20 rounded-full bg-black/60 px-2 py-0.5 text-[8px] font-extrabold uppercase tracking-wide text-ice/95">
-        {label}
-        <span aria-hidden> · </span>
-        {slot}
-      </p>
-
-      <div className="pointer-events-none absolute inset-x-2 top-7 z-20 flex gap-1">
+      <div className="pointer-events-none absolute inset-x-2 top-2 z-20 flex gap-1">
         {ads.map((item, slotIndex) => (
           <span
             key={item.id}
