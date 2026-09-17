@@ -87,6 +87,12 @@ export const SAFETY_SERVICES_MENU = [
 
 export const PROFESSIONNELLE_MENU = [
   {
+    href: "/pubs",
+    label: "Pubs du quartier",
+    speech:
+      "Les pubs du quartier, plein écran, comme une vidéo. Photos et flyers à faire défiler.",
+  },
+  {
     href: "/business",
     label: "Faites connaître votre business par des pubs",
     speech:

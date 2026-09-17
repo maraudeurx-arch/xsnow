@@ -31,6 +31,7 @@ export const en: Messages = {
     alertes:
       "Get an alert if your child, partner, or elderly parents leave the place they’re meant to be",
     business: "Promote your business with ads",
+    pubs: "Neighbourhood ads",
     monetise: "Monetize yourself: your image, your voice.",
     vosIdees: "Your ideas · Get involved",
     gagnerMaintenant: "Earn now",
@@ -96,6 +97,7 @@ export const en: Messages = {
     micError: "Can’t listen right now. Type your message.",
     ideaPrompt: "An idea for the community?",
     ideaCapture: "Save in Your ideas",
+    coachLink: "Coach",
   },
   neighborhoodNews: {
     title: "Neighbourhood News",
@@ -352,11 +354,19 @@ export const en: Messages = {
   welcome:
     "Hello, and welcome to the Open Community app — I’m your avatar. The closeness and mutual-aid spirit of the people here are our strength. Through Open Community, let your neighbours know about a service you can offer them in exchange for compensation: that can be helping someone move, running errands, or helping with work around the house. This app also gives you free services, like helping you find your phone if you lose it, and alerting you if your child, your partner, or your elderly parents wander away from where they’re meant to be. Also, do you have suggestions for tasks and services you’d like to monetize? Let me know, or note them in Your ideas, and the whole community will benefit. Keep in mind that people who share this app, and who produce ideas that get monetized, will be rewarded in proportion to their efforts. So don’t hesitate to ask me anything at any time — I’m entirely at your disposal.",
   systemPrompt:
-    "You are the local Open Community guide in {city} — an honest director, useful first (cash + community). You are not a human and you are not an agent with external tools (no web, no email, no wallet). You speak only in English, stay concrete and brief. Neighbourhood mutual aid: errands, moving, housework, sitting, item loans, morning car loans (Interac, borrower pays for gas; mention insurance — OPC is not the insurer and not a payment processor), lost phone, proximity alerts. No ad farms, click farms, fake accounts, or scam talk. Route immediately: an idea → Your ideas (one sentence, 30 s); earn → Earn now / My services / In demand. Invite them to tap Home, under {placeName} on the left, or My services / In demand / Earn now / Your ideas. If they have an idea, rephrase it and push them to Your ideas; also capture monetization suggestions. Real emergency: 911. Examples: U: I want money fast. A: No looping ads. Three paths: My services (neighbour, Interac), In demand, or Earn now (UX tests / panels, hotspot). An idea? Open Your ideas. U: We could shovel driveways. A: Solid. Note it in Your ideas. Neighbour payment = Interac. U: Can you look that up online? A: No, I’m the in-app guide, not an external agent. Tell me the idea or open Your ideas / Earn now / My services. U: What’s new in the neighbourhood? A: Check « Neighbourhood News » below Share — I point there and never invent a headline. Your appearance: {avatar}.",
+    "You are the local Open Community guide in {city} — an honest director, useful first (cash + community). You are not a human and you are not an agent with external tools (no web, no email, no wallet). You speak only in English, stay concrete and brief. Neighbourhood mutual aid: errands, moving, housework, sitting, item loans, morning car loans (Interac, borrower pays for gas; mention insurance — OPC is not the insurer and not a payment processor), lost phone, proximity alerts. No ad farms, click farms, fake accounts, or scam talk. Route immediately: an idea → Your ideas (one sentence, 30 s); earn → Earn now / My services / In demand. Invite them to tap Home, under {placeName} on the left, or My services / In demand / Earn now / Your ideas. If they have an idea, rephrase it and push them to Your ideas; also capture monetization suggestions. Real emergency: 911. Never promise income, salary, or earnings. Earn now = unaffiliated external links. Examples: U: I want money fast. A: No looping ads. Three paths: My services (neighbour, Interac), In demand, or Earn now (UX tests / panels, hotspot). An idea? Open Your ideas. U: We could shovel driveways. A: Solid. Note it in Your ideas. Neighbour payment = Interac. U: Can you look that up online? A: No, I’m the in-app guide, not an external agent. Tell me the idea or open Your ideas / Earn now / My services. U: What’s new in the neighbourhood? A: Check « Neighbourhood News » below Share — I point there and never invent a headline. Your appearance: {avatar}.",
   features: {
     business: {
       title: "Promote your business with ads",
       lead: "Publish a local ad in Open Community. Neighbours find you, you serve them.",
+    },
+    pubs: {
+      title: "Neighbourhood ads",
+      lead: "Full-height video-style screen: neighbourhood photos and flyers, rotating.",
+    },
+    coach: {
+      title: "Avatar coach",
+      lead: "Two questions, then 3 to 5 paths in the app. No income promise.",
     },
     proximite: {
       title: "See who’s nearby",
@@ -457,7 +467,7 @@ export const en: Messages = {
       "Your offers, requests, ideas, share texts, registration (first name, last name, email, phone, OPC-XXXX number), and Interac/PayPal details stay on this device. A sanitized copy of an idea (sentence, city, date, OPC number if registered — not your contact details) may be emailed to opencommunity.opc@gmail.com. Nothing personal appears for another visitor until the development team approves a numbered public release (public catalog).",
     releaseNotesTitle: "Release notes",
     releaseNotesBody:
-      "0.3.5 — My skills (after sign-up): publish skills + availability into In demand. Copy: development team. 0.3.4 — Proximity alerts: Monday–Sunday hours, 5/10/20 km radius, invite and consent from the loved one (browser / PWA GPS). Optional Twilio SMS (Worker secrets). No Apple Find My / iCloud / Messages. 0.3.3 — Your ideas: sanitized email to opencommunity.opc@gmail.com. Public catalog is still empty.",
+      "0.3.6 — Full-height ads (Bogo, daycare, Gatineau room ~533 $/month Oct 1). Avatar coach: questions then 3–5 paths, no income promise. Business form: Workers AI draft, no Facebook scrape. 0.3.5 — My skills (after sign-up): publish skills + availability into In demand. Copy: development team. 0.3.4 — Proximity alerts: Monday–Sunday hours, 5/10/20 km radius, invite and consent from the loved one (browser / PWA GPS). Optional Twilio SMS (Worker secrets). No Apple Find My / iCloud / Messages. 0.3.3 — Your ideas: sanitized email to opencommunity.opc@gmail.com. Public catalog is still empty.",
     language: "Language",
     comingSoon: "Notifications and display season will land here.",
     locationConsent: "Location",
@@ -581,6 +591,86 @@ export const en: Messages = {
     saved: "Saved on this device. The public showcase is coming soon.",
     fallbackCategory: "Business",
     fallbackCity: "Neighbourhood",
+    draftCta: "Draft with AI (Workers AI)",
+    drafting: "Drafting…",
+    draftReady: "Draft pasted into the description — reread it before publishing.",
+    draftError: "AI could not draft. Try again, or write it yourself.",
+    draftNeedName: "Enter at least the business name.",
+    noFacebook: "No Facebook scrape. Describe your business here, without pasting a Facebook link.",
+    aiHint: "AI drafts from the fields you typed. It does not visit Facebook.",
+  },
+  pubs: {
+    sponsored: "Advertising",
+    slot: "Partner space",
+    download: "Download",
+    downloaded: "Saved on this device.",
+    downloadOpened: "Image opened — long-press to save it.",
+    downloadError: "Could not download right now.",
+    prev: "Previous",
+    next: "Next",
+    pause: "Pause",
+    play: "Play",
+    apartmentSummary: "About {rent} $/month · {date} · {city}",
+    octoberFirst: "October 1",
+    ads: {
+      "bogo-cat": {
+        title: "Bogo",
+        tagline: "The neighbourhood cat — photo you can download.",
+      },
+      "daycare-flyer": {
+        title: "Neighbourhood daycare spot",
+        tagline: "Community flyer. Not a news headline.",
+      },
+      "apartment-gatineau": {
+        title: "Room in Gatineau",
+        tagline: "Local summary ~533 $/month, October 1.",
+      },
+    },
+  },
+  coach: {
+    lead: "Your avatar asks two questions, then shows 3 to 5 paths in Open Community.",
+    noIncome:
+      "No promise of income, salary, or earnings. These are doors in the app, not a job offer.",
+    questions: {
+      intent: "What brings you here?",
+      time: "Do you have time this week?",
+    },
+    intents: {
+      help: "I need a hand",
+      skill: "I can offer a skill",
+      business: "I want to promote a business",
+      explore: "I’m just looking around",
+    },
+    times: {
+      yes: "Yes, I have time",
+      little: "A little",
+      later: "Not now",
+    },
+    pathsTitle: "Possible paths",
+    pathsFoot: "Pick a path. The avatar does not guarantee any income.",
+    restart: "Ask the questions again",
+    paths: {
+      skills: {
+        label: "My skills",
+        hint: "Publish what you can do, after sign-up.",
+      },
+      demand: {
+        label: "In demand",
+        hint: "See or post a neighbourhood request.",
+      },
+      ideas: {
+        label: "Your ideas",
+        hint: "One sentence for the development team.",
+      },
+      pubs: {
+        label: "Neighbourhood ads",
+        hint: "Full-screen ads, including Bogo and daycare.",
+      },
+      earn: {
+        label: "Earn now",
+        hint: "External links, unaffiliated, no income promise.",
+      },
+    },
   },
   phone: {
     brand: "Brand / model",

@@ -47,7 +47,7 @@ export async function stubIdeaInbox(
     "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
   };
 
-  await page.route(/\/(ideas|register|alerts(?:\/consent|\/ping)?)(\?|$)/, async (route) => {
+  await page.route(/\/(ideas|register|alerts(?:\/consent|\/ping)?|ads\/draft)(\?|$)/, async (route) => {
     const method = route.request().method();
     const path = new URL(route.request().url()).pathname;
     if (method === "OPTIONS") {
@@ -58,6 +58,7 @@ export async function stubIdeaInbox(
       if (delayMs) await new Promise((resolve) => setTimeout(resolve, delayMs));
       const emailed = inbox === "sent";
       const isAlert = path.includes("/alerts");
+      const isAdsDraft = path.includes("/ads/draft");
       await route.fulfill({
         status: emailed ? 200 : 503,
         contentType: "application/json",
@@ -75,7 +76,9 @@ export async function stubIdeaInbox(
                   email: { sent: false, reason: "not_configured" },
                   consent: "granted",
                 }
-              : { ok: true, persisted: path.endsWith("/ideas"), emailed: true }
+              : isAdsDraft
+                ? { draft: "Café du coin, café de quartier à Gatineau. Voisins bienvenus." }
+                : { ok: true, persisted: path.endsWith("/ideas"), emailed: true }
             : { error: "mail_failed" },
         ),
       });

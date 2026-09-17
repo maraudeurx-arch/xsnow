@@ -117,7 +117,9 @@ npx wrangler login
 npx wrangler deploy
 ```
 
-Le Worker déployé est `https://xsnow-chat.xsnowopc.workers.dev`. Pour un autre compte, coller la nouvelle URL dans `NEXT_PUBLIC_CHAT_API_URL` (variable Actions du même nom) ou dans `CHAT_API_FALLBACK_URL`. Après un changement de Worker (`/geo`, `/news`, `/ideas` inclus), `npx wrangler deploy` depuis `workers/xsnow-chat`.
+Le Worker déployé est `https://xsnow-chat.xsnowopc.workers.dev`. Pour un autre compte, coller la nouvelle URL dans `NEXT_PUBLIC_CHAT_API_URL` (variable Actions du même nom) ou dans `CHAT_API_FALLBACK_URL`. Après un changement de Worker (`/geo`, `/news`, `/ideas`, `/ads/draft` inclus), `npx wrangler deploy` depuis `workers/xsnow-chat`.
+
+`POST /ads/draft` : brouillon de pub locale (Workers AI) à partir des champs tapés dans **Faites connaître votre business par des pubs**. Pas de scrape Facebook : un lien `facebook.com` / `fb.com` est refusé.
 
 ### Boîte d’idées (propriétaire) — e-mail requis
 
@@ -200,7 +202,9 @@ npx wrangler login
 npx wrangler deploy
 ```
 
-Deployed Worker: `https://xsnow-chat.xsnowopc.workers.dev`. Override with `NEXT_PUBLIC_CHAT_API_URL` (GitHub Actions variable of the same name) or `CHAT_API_FALLBACK_URL` in `src/lib/llm.ts`. Redeploy after adding `/geo`, `/news`, `/ideas`, or `/register`.
+Deployed Worker: `https://xsnow-chat.xsnowopc.workers.dev`. Override with `NEXT_PUBLIC_CHAT_API_URL` (GitHub Actions variable of the same name) or `CHAT_API_FALLBACK_URL` in `src/lib/llm.ts`. Redeploy after adding `/geo`, `/news`, `/ideas`, `/register`, or `/ads/draft`.
+
+`POST /ads/draft`: local business-ad draft (Workers AI) from fields typed on **Promote your business with ads**. No Facebook scrape: a `facebook.com` / `fb.com` link is refused.
 
 ### Owner idea inbox (email required)
 

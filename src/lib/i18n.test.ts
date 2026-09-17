@@ -259,6 +259,9 @@ describe("gagner maintenant copy", () => {
     assert.match(fr.systemPrompt, /Gagner maintenant/);
     assert.match(en.systemPrompt, /Earn now/);
     assert.match(es.systemPrompt, /Ganar ahora/);
+    assert.match(fr.systemPrompt, /Ne promets jamais de revenu/);
+    assert.match(en.systemPrompt, /Never promise income/);
+    assert.match(es.systemPrompt, /Nunca prometas ingresos/);
   });
 });
 

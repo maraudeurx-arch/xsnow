@@ -39,6 +39,7 @@ const SAFETY = [
 ];
 const PRO = [
   { href: "/gagner-maintenant", key: "gagnerMaintenant" as const },
+  { href: "/pubs", key: "pubs" as const },
   { href: "/business", key: "business" as const },
   { href: "/monetise", key: "monetise" as const },
   { href: "/sondages", key: "sondages" as const },

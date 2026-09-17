@@ -29,6 +29,7 @@ export const fr = {
     alertes:
       "Sois alerté si ton enfant, ton conjoint ou tes parents âgés s’éloignent de l’endroit où ils sont censés être",
     business: "Faites connaître votre business par des pubs",
+    pubs: "Pubs du quartier",
     monetise: "Monétiser vous : votre image, votre voix.",
     vosIdees: "Vos idées · S’impliquer",
     gagnerMaintenant: "Gagner maintenant",
@@ -94,6 +95,7 @@ export const fr = {
     micError: "Impossible d’écouter pour le moment. Écris ton message.",
     ideaPrompt: "Une idée pour la communauté ?",
     ideaCapture: "Noter dans Vos idées",
+    coachLink: "Coach",
   },
   neighborhoodNews: {
     title: "Nouvelles du Quartier",
@@ -351,11 +353,19 @@ export const fr = {
   welcome:
     "Bonjour, et bienvenue sur l’application Open Community, je suis ton avatar. La proximité et l’esprit d’entraide des gens d’ici font notre force. À travers Open Community, fais connaître à tes voisins un service que tu peux leur rendre en échange d’une compensation : ça peut être aider à déménager, faire des courses, ou aider à des travaux dans la maison. De plus, cette application t’offre des services gratuits, comme t’aider à retrouver ton téléphone si tu le perds, et t’avertir si ton enfant, ton conjoint ou tes parents âgés s’éloignent de l’endroit où ils sont censés être. Également, as-tu des suggestions de tâches et de services que tu aimerais monétiser ? Fais-le-moi savoir, ou note-les dans Vos idées, et toute la communauté en profitera. Garde à l’esprit que les gens qui partagent cette application, et qui produisent des idées qui sont monétisées, recevront au prorata de leurs efforts. N’hésite donc pas à me questionner à tout moment, je suis à ton entière disposition.",
   systemPrompt:
-    "Tu es le guide local Open Community à {city} — directeur honnête, utile d’abord (cash + communauté). Tu n’es pas un humain et tu n’es pas un agent avec des outils externes (pas de web, pas d’e-mail, pas de wallet). Tu parles uniquement en français, tu tutoies, tu restes concret et bref. Entraide de quartier : courses, déménagement, travaux, garde, prêt d’objets, prêt de voiture le matin (Interac, essence à l’emprunteur ; rappeler l’assurance — OPC n’est ni l’assureur ni un processeur de paiement), téléphone perdu, alertes proches. Pas de ferme de pubs, de clics, de faux comptes, ni de discours arnaque. Oriente tout de suite : une idée → Vos idées (une phrase, 30 s) ; gagner → Gagner maintenant / Mes services / En demande. Invite à toucher Accueil, sous {placeName} à gauche, ou Mes services / En demande / Gagner maintenant / Vos idées. Si le visiteur a une idée, reformule-la et pousse-le vers Vos idées ; capture aussi les suggestions de monétisation. Urgence réelle : 911. Exemples : U: Je veux de l’argent vite. A: Pas de pubs en boucle. Trois chemins : Mes services (voisin, Interac), En demande, ou Gagner maintenant (tests UX / panels, hotspot). Une idée ? Ouvre Vos idées. U: On pourrait déneiger les allées. A: Solide. Note-la dans Vos idées. Paiement voisin = Interac. U: Tu peux chercher ça sur internet ? A: Non, je suis le guide dans l’app, pas un agent externe. Dis-moi l’idée ou ouvre Vos idées / Gagner maintenant / Mes services. U: Quoi de neuf dans le quartier ? A: Regarde « Nouvelles du Quartier » sous Partager — j’y renvoie sans inventer de manchette. Ton apparence : {avatar}.",
+    "Tu es le guide local Open Community à {city} — directeur honnête, utile d’abord (cash + communauté). Tu n’es pas un humain et tu n’es pas un agent avec des outils externes (pas de web, pas d’e-mail, pas de wallet). Tu parles uniquement en français, tu tutoies, tu restes concret et bref. Entraide de quartier : courses, déménagement, travaux, garde, prêt d’objets, prêt de voiture le matin (Interac, essence à l’emprunteur ; rappeler l’assurance — OPC n’est ni l’assureur ni un processeur de paiement), téléphone perdu, alertes proches. Pas de ferme de pubs, de clics, de faux comptes, ni de discours arnaque. Oriente tout de suite : une idée → Vos idées (une phrase, 30 s) ; gagner → Gagner maintenant / Mes services / En demande. Invite à toucher Accueil, sous {placeName} à gauche, ou Mes services / En demande / Gagner maintenant / Vos idées. Si le visiteur a une idée, reformule-la et pousse-le vers Vos idées ; capture aussi les suggestions de monétisation. Urgence réelle : 911. Ne promets jamais de revenu, de salaire, ni de gains. Gagner maintenant = liens externes non affiliés. Exemples : U: Je veux de l’argent vite. A: Pas de pubs en boucle. Trois chemins : Mes services (voisin, Interac), En demande, ou Gagner maintenant (tests UX / panels, hotspot). Une idée ? Ouvre Vos idées. U: On pourrait déneiger les allées. A: Solide. Note-la dans Vos idées. Paiement voisin = Interac. U: Tu peux chercher ça sur internet ? A: Non, je suis le guide dans l’app, pas un agent externe. Dis-moi l’idée ou ouvre Vos idées / Gagner maintenant / Mes services. U: Quoi de neuf dans le quartier ? A: Regarde « Nouvelles du Quartier » sous Partager — j’y renvoie sans inventer de manchette. Ton apparence : {avatar}.",
   features: {
     business: {
       title: "Faites connaître votre business par des pubs",
       lead: "Publiez une pub locale dans Open Community. Les voisins vous trouvent, vous les servez.",
+    },
+    pubs: {
+      title: "Pubs du quartier",
+      lead: "Écran plein format, comme une vidéo : photos et flyers du quartier, en rotation.",
+    },
+    coach: {
+      title: "Coach avatar",
+      lead: "Deux questions, puis 3 à 5 chemins dans l’app. Aucune promesse de revenu.",
     },
     proximite: {
       title: "Voyez qui est à proximité",
@@ -456,7 +466,7 @@ export const fr = {
       "Tes offres, demandes, idées, textes de partage, inscription (prénom, nom, e-mail, téléphone, numéro OPC-XXXX) et coordonnées Interac/PayPal restent sur cet appareil. Une copie assainie d’une idée (phrase, ville, date, numéro OPC si inscrit — pas tes coordonnées) peut partir par e-mail vers opencommunity.opc@gmail.com. Rien de personnel n’apparaît chez un autre visiteur tant que l’équipe de développement n’approuve pas une publication dans une version numérotée (catalogue public).",
     releaseNotesTitle: "Notes de version",
     releaseNotesBody:
-      "0.3.5 — Mes compétences (après inscription) : publier compétences + disponibilité dans En demande. Copie : équipe de développement. 0.3.4 — Alertes de proximité : horaire lundi→dimanche, rayon 5/10/20 km, invitation et consentement du proche (GPS du navigateur / PWA). SMS Twilio optionnel (secrets Worker). Pas d’Apple Localiser / iCloud / Messages. 0.3.3 — Vos idées : e-mail assaini vers opencommunity.opc@gmail.com. Catalogue public toujours vide.",
+      "0.3.6 — Pubs plein écran (Bogo, garderie, chambre Gatineau ~533 $/mois 1er oct.). Coach avatar : questions puis 3–5 chemins, sans promesse de revenu. Formulaire business : brouillon Workers AI, pas de scrape Facebook. 0.3.5 — Mes compétences (après inscription) : publier compétences + disponibilité dans En demande. Copie : équipe de développement. 0.3.4 — Alertes de proximité : horaire lundi→dimanche, rayon 5/10/20 km, invitation et consentement du proche (GPS du navigateur / PWA). SMS Twilio optionnel (secrets Worker). Pas d’Apple Localiser / iCloud / Messages. 0.3.3 — Vos idées : e-mail assaini vers opencommunity.opc@gmail.com. Catalogue public toujours vide.",
     language: "Langue",
     comingSoon: "Notifications et saison d’affichage arriveront ici.",
     locationConsent: "Position",
@@ -580,6 +590,86 @@ export const fr = {
     saved: "Enregistré sur cet appareil. La vitrine publique arrive bientôt.",
     fallbackCategory: "Commerce",
     fallbackCity: "Quartier",
+    draftCta: "Rédiger avec l’IA (Workers AI)",
+    drafting: "Rédaction…",
+    draftReady: "Brouillon collé dans la description — relis-le avant de publier.",
+    draftError: "L’IA n’a pas pu rédiger. Réessaie, ou écris toi-même.",
+    draftNeedName: "Indique au moins le nom du commerce.",
+    noFacebook: "Pas de scrape Facebook. Décris ton commerce ici, sans coller un lien Facebook.",
+    aiHint: "L’IA rédige à partir de tes champs. Elle ne visite pas Facebook.",
+  },
+  pubs: {
+    sponsored: "Publicité",
+    slot: "Espace partenaire",
+    download: "Télécharger",
+    downloaded: "Enregistré sur cet appareil.",
+    downloadOpened: "Image ouverte — appuie longtemps pour l’enregistrer.",
+    downloadError: "Impossible de télécharger pour le moment.",
+    prev: "Précédent",
+    next: "Suivant",
+    pause: "Pause",
+    play: "Lecture",
+    apartmentSummary: "Environ {rent} $/mois · {date} · {city}",
+    octoberFirst: "1er octobre",
+    ads: {
+      "bogo-cat": {
+        title: "Bogo",
+        tagline: "Le chat du quartier — photo à télécharger.",
+      },
+      "daycare-flyer": {
+        title: "Place en garderie du quartier",
+        tagline: "Flyer communautaire. Pas une manchette.",
+      },
+      "apartment-gatineau": {
+        title: "Chambre à Gatineau",
+        tagline: "Résumé local ~533 $/mois, 1er octobre.",
+      },
+    },
+  },
+  coach: {
+    lead: "Ton avatar te pose deux questions, puis te montre 3 à 5 chemins dans Open Community.",
+    noIncome:
+      "Aucune promesse de revenu, de salaire, ni de gains. Ce sont des portes dans l’app, pas une offre d’emploi.",
+    questions: {
+      intent: "Qu’est-ce qui t’amène ?",
+      time: "Tu as du temps cette semaine ?",
+    },
+    intents: {
+      help: "J’ai besoin d’un coup de main",
+      skill: "Je peux offrir une compétence",
+      business: "Je veux faire connaître un commerce",
+      explore: "Je regarde ce qui existe",
+    },
+    times: {
+      yes: "Oui, j’ai du temps",
+      little: "Un peu",
+      later: "Pas maintenant",
+    },
+    pathsTitle: "Chemins possibles",
+    pathsFoot: "Choisis un chemin. L’avatar ne garantit aucun revenu.",
+    restart: "Recommencer les questions",
+    paths: {
+      skills: {
+        label: "Mes compétences",
+        hint: "Publier ce que tu sais faire, après inscription.",
+      },
+      demand: {
+        label: "En demande",
+        hint: "Voir ou poser une demande de quartier.",
+      },
+      ideas: {
+        label: "Vos idées",
+        hint: "Une phrase pour l’équipe de développement.",
+      },
+      pubs: {
+        label: "Pubs du quartier",
+        hint: "Voir les pubs plein écran, dont Bogo et la garderie.",
+      },
+      earn: {
+        label: "Gagner maintenant",
+        hint: "Liens externes, sans affiliation ni promesse de revenu.",
+      },
+    },
   },
   phone: {
     brand: "Marque / modèle",

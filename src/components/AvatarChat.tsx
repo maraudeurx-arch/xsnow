@@ -284,12 +284,21 @@ export function AvatarChat({
           {chat.title}
         </h2>
         {messages.length === 0 && !busy ? (
-          <Link
-            href="/vos-idees/#form"
-            className="ml-auto text-[9px] font-extrabold text-gold hover:underline"
-          >
-            {chat.ideaPrompt}
-          </Link>
+          <div className="ml-auto flex min-w-0 items-center gap-2">
+            <Link
+              href="/coach"
+              data-coach-link
+              className="text-[9px] font-extrabold text-gold hover:underline"
+            >
+              {chat.coachLink}
+            </Link>
+            <Link
+              href="/vos-idees/#form"
+              className="text-[9px] font-extrabold text-gold hover:underline"
+            >
+              {chat.ideaPrompt}
+            </Link>
+          </div>
         ) : null}
       </div>
 
