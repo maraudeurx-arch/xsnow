@@ -354,7 +354,7 @@ export const en: Messages = {
   features: {
     business: {
       title: "Promote your business with ads",
-      lead: "Publish a local ad in Open Community. Neighbours find you, you serve them.",
+      lead: "Send your photo. We review, then offer a competitive rate — your avatar can compare Facebook / WhatsApp / local sites.",
     },
     proximite: {
       title: "See who’s nearby",
@@ -574,17 +574,26 @@ export const en: Messages = {
     city: "City or neighbourhood",
     cityPh: "Plateau, Rosemont…",
     description: "Description",
+    contactEmail: "Contact email",
+    contactEmailPh: "for our monetary offer",
     photo: "Ad photo",
-    photoHint:
-      "Like the Bogo cat: upload a photo (max. {kb} KB). It then rotates on Home. Compressed on this device.",
+    photoHint: "upload a photo (400kb max)",
     photoTooBig: "This image still exceeds {kb} KB after compression. Pick a lighter photo.",
     photoNotImage: "Choose a photo (JPEG, PNG, or WebP).",
     photoUndecodable: "Could not read this image. Try a JPEG or PNG.",
     photoBusy: "Compressing photo…",
-    photoReady: "Photo ready ({kb} KB) — it will rotate on Home after you publish.",
-    publish: "Publish in Open Community",
-    saved:
-      "Saved on this device. With a photo (max. {kb} KB), it rotates in the Home ad space.",
+    photoReady: "Photo ready ({kb} KB).",
+    photoRequired: "Add a photo to submit your ad for review.",
+    reviewLead:
+      "Your photo ad reaches us first (opencommunity.opc@gmail.com). We check legitimacy, then come back with a competitive monetary offer. Your avatar can help compare what neighbours pay on Facebook, WhatsApp, or local sites, and shape a proposal.",
+    publish: "Send for review",
+    sending: "Sending…",
+    savedSent:
+      "Received. We will review, then email you an offer. Nothing appears on Home yet.",
+    savedLocal:
+      "Saved on this device, but sending to the team failed. Retry later or write opencommunity.opc@gmail.com.",
+    statusPending: "under review",
+    statusLocal: "team send failed",
     fallbackCategory: "Business",
     fallbackCity: "Neighbourhood",
   },

@@ -354,7 +354,7 @@ export const es: Messages = {
   features: {
     business: {
       title: "Da a conocer tu negocio con anuncios",
-      lead: "Publica un anuncio local en Open Community. Los vecinos te encuentran, tú les sirves.",
+      lead: "Envía tu foto. Revisamos y proponemos una tarifa competitiva — tu avatar puede comparar Facebook / WhatsApp / sitios locales.",
     },
     proximite: {
       title: "Mira quién está cerca",
@@ -575,17 +575,26 @@ export const es: Messages = {
     city: "Ciudad o barrio",
     cityPh: "Plateau, Rosemont…",
     description: "Descripción",
+    contactEmail: "Correo de contacto",
+    contactEmailPh: "para nuestra propuesta monetaria",
     photo: "Foto del anuncio",
-    photoHint:
-      "Como el gato Bogo: sube una foto (máx. {kb} Ko). Luego gira en Inicio. Se comprime en este aparato.",
+    photoHint: "sube una foto (400kb máx)",
     photoTooBig: "Esta imagen sigue superando {kb} Ko tras comprimir. Elige una más ligera.",
     photoNotImage: "Elige una foto (JPEG, PNG o WebP).",
     photoUndecodable: "No se pudo leer esta imagen. Prueba JPEG o PNG.",
     photoBusy: "Comprimiendo la foto…",
-    photoReady: "Foto lista ({kb} Ko) — girará en Inicio tras publicar.",
-    publish: "Publicar en Open Community",
-    saved:
-      "Guardado en este aparato. Con una foto (máx. {kb} Ko), gira en el espacio publicitario de Inicio.",
+    photoReady: "Foto lista ({kb} Ko).",
+    photoRequired: "Añade una foto para enviar el anuncio a revisión.",
+    reviewLead:
+      "Tu anuncio con foto nos llega primero (opencommunity.opc@gmail.com). Verificamos la legitimidad y volvemos con una propuesta monetaria competitiva. Tu avatar puede ayudarte a comparar lo que se paga en el barrio en Facebook, WhatsApp o sitios locales, y a hacer una propuesta.",
+    publish: "Enviar a verificación",
+    sending: "Enviando…",
+    savedSent:
+      "Recibido. Revisamos y te escribimos una oferta. Aún no aparece en Inicio.",
+    savedLocal:
+      "Guardado en este aparato, pero falló el envío al equipo. Reintenta o escribe a opencommunity.opc@gmail.com.",
+    statusPending: "en verificación",
+    statusLocal: "falló envío al equipo",
     fallbackCategory: "Comercio",
     fallbackCity: "Barrio",
   },

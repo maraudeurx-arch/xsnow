@@ -1,7 +1,7 @@
 "use client";
 
 import { FormEvent, useState } from "react";
-import { writeVisitorAccueilAd } from "@/lib/accueil-ads";
+import { postBusinessAdToInbox } from "@/lib/business-ad-inbox";
 import {
   AD_IMAGE_MAX_KB,
   prepareAdImage,
@@ -9,6 +9,8 @@ import {
 } from "@/lib/compress-ad-image";
 import { interpolate } from "@/lib/i18n";
 import { useI18n } from "@/lib/i18n/locale";
+import { readLocalProfile } from "@/lib/local-profile";
+import { usePlace } from "@/lib/place";
 import { uid } from "@/lib/storage";
 import { useStoredList } from "@/lib/useStoredList";
 
@@ -18,8 +20,10 @@ type Business = {
   category: string;
   city: string;
   description: string;
+  contactEmail?: string;
   imageDataUrl?: string;
   imageBytes?: number;
+  reviewStatus?: "pending" | "local_only";
 };
 
 const KEY = "xsnow.businesses";
@@ -27,10 +31,12 @@ const KEY = "xsnow.businesses";
 export function BusinessBoard() {
   const [items, setItems] = useStoredList<Business>(KEY);
   const [saved, setSaved] = useState(false);
+  const [inboxStatus, setInboxStatus] = useState<"idle" | "sending" | "sent" | "failed">("idle");
   const [photo, setPhoto] = useState<PreparedAdImage | null>(null);
   const [photoError, setPhotoError] = useState("");
   const [photoBusy, setPhotoBusy] = useState(false);
   const { m } = useI18n();
+  const { city: placeCity } = usePlace();
   const copy = m.business;
   const kb = String(AD_IMAGE_MAX_KB);
 
@@ -50,31 +56,46 @@ export function BusinessBoard() {
     else setPhotoError(copy.photoNotImage);
   }
 
-  function onSubmit(event: FormEvent<HTMLFormElement>) {
+  async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const next: Business = {
       id: uid(),
       name: String(data.get("name") || "").trim(),
       category: String(data.get("category") || "").trim(),
-      city: String(data.get("city") || "").trim(),
+      city: String(data.get("city") || "").trim() || placeCity || "",
       description: String(data.get("description") || "").trim(),
+      contactEmail: String(data.get("contactEmail") || "").trim(),
     };
     if (!next.name) return;
-    if (photo) {
-      next.imageDataUrl = photo.dataUrl;
-      next.imageBytes = photo.bytes;
-      writeVisitorAccueilAd({
-        id: `visitor-${next.id}`,
-        title: next.name,
-        imageDataUrl: photo.dataUrl,
-        bytes: photo.bytes,
-        createdAt: new Date().toISOString(),
-      });
-      if (typeof window !== "undefined") {
-        window.dispatchEvent(new Event("xsnow-accueil-ads"));
-      }
+    if (!photo) {
+      setPhotoError(copy.photoRequired);
+      return;
     }
+    if (!next.contactEmail) return;
+
+    next.imageDataUrl = photo.dataUrl;
+    next.imageBytes = photo.bytes;
+    next.reviewStatus = "pending";
+
+    setInboxStatus("sending");
+    const profile = readLocalProfile();
+    const result = await postBusinessAdToInbox({
+      id: next.id,
+      name: next.name,
+      category: next.category,
+      city: next.city,
+      description: next.description,
+      contactEmail: next.contactEmail,
+      opcId: profile?.id || "",
+      imageDataUrl: photo.dataUrl,
+      imageBytes: photo.bytes,
+    });
+    setInboxStatus(result === "sent" ? "sent" : "failed");
+    if (result !== "sent") {
+      next.reviewStatus = "local_only";
+    }
+
     setItems([next, ...items]);
     setSaved(true);
     setPhoto(null);
@@ -84,10 +105,18 @@ export function BusinessBoard() {
 
   return (
     <div className="space-y-5" data-business-board>
-      <form onSubmit={onSubmit} className="grid gap-3">
+      <p className="text-sm leading-snug text-snow/85">{copy.reviewLead}</p>
+      <form onSubmit={(event) => void onSubmit(event)} className="grid gap-3">
         <Field name="name" label={copy.name} required />
         <Field name="category" label={copy.category} placeholder={copy.categoryPh} />
         <Field name="city" label={copy.city} placeholder={copy.cityPh} />
+        <Field
+          name="contactEmail"
+          label={copy.contactEmail}
+          placeholder={copy.contactEmailPh}
+          required
+          type="email"
+        />
         <label className="grid gap-1 text-sm font-semibold">
           {copy.description}
           <textarea
@@ -98,14 +127,13 @@ export function BusinessBoard() {
         </label>
         <label className="grid gap-1 text-sm font-semibold">
           {copy.photo}
-          <span className="text-xs font-normal text-ice/80">
-            {interpolate(copy.photoHint, { kb })}
-          </span>
+          <span className="text-xs font-normal text-ice/80">{copy.photoHint}</span>
           <input
             data-ad-photo-input
             type="file"
             accept="image/jpeg,image/png,image/webp,image/gif"
             capture="environment"
+            required
             onChange={(event) => void onPhotoChange(event.currentTarget.files?.[0])}
             className="tap max-w-full text-xs font-normal text-snow file:mr-2 file:rounded-full file:border-0 file:bg-cobalt file:px-3 file:py-1 file:text-xs file:font-extrabold file:text-snow"
           />
@@ -129,11 +157,17 @@ export function BusinessBoard() {
             {photoError}
           </p>
         ) : null}
-        <button type="submit" className="tap rounded-full bg-cobalt font-extrabold text-snow">
-          {copy.publish}
+        <button
+          type="submit"
+          disabled={photoBusy || inboxStatus === "sending"}
+          className="tap rounded-full bg-cobalt font-extrabold text-snow disabled:opacity-60"
+        >
+          {inboxStatus === "sending" ? copy.sending : copy.publish}
         </button>
         {saved ? (
-          <p className="text-sm text-gold">{interpolate(copy.saved, { kb })}</p>
+          <p className="text-sm text-gold" role="status">
+            {inboxStatus === "sent" ? copy.savedSent : copy.savedLocal}
+          </p>
         ) : null}
       </form>
 
@@ -143,6 +177,8 @@ export function BusinessBoard() {
             <p className="font-bold">{item.name}</p>
             <p className="text-xs text-ice/80">
               {item.category || copy.fallbackCategory} · {item.city || copy.fallbackCity}
+              {item.reviewStatus === "pending" ? ` · ${copy.statusPending}` : null}
+              {item.reviewStatus === "local_only" ? ` · ${copy.statusLocal}` : null}
             </p>
             {item.description ? (
               <p className="mt-1 text-sm text-snow/80">{item.description}</p>
@@ -167,17 +203,20 @@ function Field({
   label,
   placeholder,
   required,
+  type = "text",
 }: {
   name: string;
   label: string;
   placeholder?: string;
   required?: boolean;
+  type?: string;
 }) {
   return (
     <label className="grid gap-1 text-sm font-semibold">
       {label}
       <input
         name={name}
+        type={type}
         required={required}
         placeholder={placeholder}
         className="tap rounded-2xl border border-white/15 bg-white/5 px-3 text-sm font-normal text-snow outline-none focus:border-gold"
