@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useRef, useState } from "react";
 import { postBusinessAdToInbox } from "@/lib/business-ad-inbox";
 import {
   AD_IMAGE_MAX_KB,
@@ -35,6 +35,7 @@ export function BusinessBoard() {
   const [photo, setPhoto] = useState<PreparedAdImage | null>(null);
   const [photoError, setPhotoError] = useState("");
   const [photoBusy, setPhotoBusy] = useState(false);
+  const photoInputRef = useRef<HTMLInputElement>(null);
   const { m } = useI18n();
   const { city: placeCity } = usePlace();
   const copy = m.business;
@@ -58,7 +59,10 @@ export function BusinessBoard() {
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
+    setSaved(false);
+    setPhotoError("");
+    const form = event.currentTarget;
+    const data = new FormData(form);
     const next: Business = {
       id: uid(),
       name: String(data.get("name") || "").trim(),
@@ -68,14 +72,30 @@ export function BusinessBoard() {
       contactEmail: String(data.get("contactEmail") || "").trim(),
     };
     if (!next.name) return;
-    if (!photo) {
-      setPhotoError(copy.photoRequired);
-      return;
-    }
     if (!next.contactEmail) return;
 
-    next.imageDataUrl = photo.dataUrl;
-    next.imageBytes = photo.bytes;
+    let ready = photo;
+    if (!ready) {
+      const file = photoInputRef.current?.files?.[0];
+      if (!file) {
+        setPhotoError(copy.photoRequired);
+        return;
+      }
+      setPhotoBusy(true);
+      const prepared = await prepareAdImage(file);
+      setPhotoBusy(false);
+      if (!prepared.ok) {
+        if (prepared.reason === "too_large") setPhotoError(interpolate(copy.photoTooBig, { kb }));
+        else if (prepared.reason === "undecodable") setPhotoError(copy.photoUndecodable);
+        else setPhotoError(copy.photoNotImage);
+        return;
+      }
+      ready = prepared.value;
+      setPhoto(ready);
+    }
+
+    next.imageDataUrl = ready.dataUrl;
+    next.imageBytes = ready.bytes;
     next.reviewStatus = "pending";
 
     setInboxStatus("sending");
@@ -88,19 +108,24 @@ export function BusinessBoard() {
       description: next.description,
       contactEmail: next.contactEmail,
       opcId: profile?.id || "",
-      imageDataUrl: photo.dataUrl,
-      imageBytes: photo.bytes,
+      imageDataUrl: ready.dataUrl,
+      imageBytes: ready.bytes,
     });
     setInboxStatus(result === "sent" ? "sent" : "failed");
     if (result !== "sent") {
       next.reviewStatus = "local_only";
+      setItems([next, ...items]);
+      setSaved(true);
+      // Keep form + photo so the visitor can retry without re-picking the file.
+      return;
     }
 
     setItems([next, ...items]);
     setSaved(true);
     setPhoto(null);
     setPhotoError("");
-    event.currentTarget.reset();
+    if (photoInputRef.current) photoInputRef.current.value = "";
+    form.reset();
   }
 
   return (
@@ -131,6 +156,7 @@ export function BusinessBoard() {
           {copy.photo}
           <span className="text-xs font-normal text-ice/80">{copy.photoHint}</span>
           <input
+            ref={photoInputRef}
             data-ad-photo-input
             type="file"
             accept="image/jpeg,image/png,image/webp,image/gif"
