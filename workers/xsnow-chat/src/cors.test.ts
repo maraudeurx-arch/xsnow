@@ -13,6 +13,8 @@ describe("Worker CORS allowlist", () => {
     assert.equal(isAllowedOrigin("https://maraudeurx-arch.github.io"), true);
     assert.equal(isAllowedOrigin("https://opencommunity.app"), true);
     assert.equal(isAllowedOrigin("https://www.opencommunity.app"), true);
+    assert.equal(isAllowedOrigin("http://opencommunity.app"), true);
+    assert.equal(isAllowedOrigin("http://www.opencommunity.app"), true);
     assert.equal(isAllowedOrigin("http://localhost:3000"), true);
     assert.equal(isAllowedOrigin("http://127.0.0.1:3000"), true);
     assert.equal(isAllowedOrigin("http://localhost:4173"), true);
