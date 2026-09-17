@@ -118,84 +118,17 @@ export function NeighborhoodNews({ onNewsChange }: Props) {
     <section
       data-neighborhood-news
       data-news-status={status}
-      aria-label={copy.title}
-      className="flex min-h-0 flex-1 grow flex-col gap-1 self-stretch overflow-hidden rounded-xl border border-gold/30 bg-[rgba(8,8,12,0.88)] px-2 py-0.5 sm:min-h-[24rem]"
+      data-news-ads-only
+      aria-label={copy.partnerSponsored + " — " + copy.partnerSlot}
+      className="flex min-h-0 flex-1 grow flex-col self-stretch overflow-hidden rounded-xl border border-gold/30 bg-[rgba(8,8,12,0.92)] p-1 sm:min-h-[24rem]"
     >
-      <div className="flex shrink-0 items-baseline justify-between gap-2 px-0.5">
-        <h2 className="text-[12px] font-extrabold tracking-wide text-gold">{copy.title}</h2>
-        {fromCache && status === "ready" ? (
-          <span className="text-[8px] font-semibold text-ice/60">{copy.cached}</span>
-        ) : null}
+      {/* Headlines stay off-screen: space is reserved for full-bleed ads. */}
+      <div className="sr-only" aria-live="polite">
+        {status === "ready" && items.length
+          ? items.map((item) => item.title).join(". ")
+          : copy.title}
       </div>
-
-      {status === "need_city" ? (
-        <p className="shrink-0 px-0.5 text-[10px] leading-snug text-snow/70" role="status">
-          {copy.needCity}
-        </p>
-      ) : null}
-
-      {status === "loading" ? (
-        <p className="shrink-0 px-0.5 text-[10px] leading-snug text-ice/70" role="status">
-          {copy.loading}
-        </p>
-      ) : null}
-
-      {status === "empty" ? (
-        <p className="shrink-0 px-0.5 text-[10px] leading-snug text-snow/70" role="status">
-          {copy.empty}
-        </p>
-      ) : null}
-
-      {status === "error" ? (
-        <div className="flex shrink-0 items-start justify-between gap-2 px-0.5">
-          <p className="text-[10px] leading-snug text-gold" role="status">
-            {copy.error}
-          </p>
-          <button
-            type="button"
-            data-news-retry
-            className="shrink-0 rounded-full border border-gold/50 px-2 py-0.5 text-[9px] font-extrabold text-gold"
-            onClick={() => setAttempt((value) => value + 1)}
-          >
-            {copy.retry}
-          </button>
-        </div>
-      ) : null}
-
-      <div data-news-body className="flex min-h-0 flex-1 grow flex-col gap-1 overflow-hidden">
-        {status === "ready" && items.length > 0 ? (
-          <ul
-            data-news-list
-            className="flex max-h-[28%] min-h-0 shrink grow-0 flex-col gap-1 overflow-y-auto"
-          >
-            {items.map((item) => (
-              <li key={item.id}>
-                <a
-                  href={item.link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block rounded-lg border border-white/10 bg-white/[0.04] px-2 py-1.5 hover:border-gold/40 hover:bg-white/[0.07]"
-                >
-                  <span className="block text-[11px] font-semibold leading-snug text-snow">
-                    {item.title}
-                  </span>
-                  <span className="mt-0.5 flex flex-wrap items-center gap-x-1.5 text-[8px] font-bold uppercase tracking-wide text-ice/65">
-                    <span>
-                      {item.category === "digital_economy"
-                        ? copy.badgeDigital
-                        : copy.badgeLocal}
-                    </span>
-                    <span aria-hidden>·</span>
-                    <span>{item.source}</span>
-                  </span>
-                </a>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <div data-news-spacer className="min-h-0 shrink" aria-hidden />
-        )}
-
+      <div data-news-body className="flex min-h-0 flex-1 grow flex-col overflow-hidden">
         <AccueilAdsReel />
       </div>
     </section>

@@ -11,7 +11,8 @@ import {
 import { useI18n } from "@/lib/i18n/locale";
 
 /**
- * Full-height Accueil ad slot: one image at a time, top-to-bottom, 5s rotate.
+ * Accueil ad surface: one full-bleed image at a time (fills the whole news card),
+ * rotates every 5s. News headlines are hidden — this slot is ads-only.
  */
 export function AccueilAdsReel() {
   const ads = listAccueilAds();
@@ -20,6 +21,7 @@ export function AccueilAdsReel() {
   const slot = m.neighborhoodNews?.partnerSlot ?? "Espace partenaire";
   const [index, setIndex] = useState(0);
   const ad = ads[index] ?? ads[0]!;
+  const src = accueilAdImageUrl(ad);
 
   useEffect(() => {
     if (ads.length < 2) return;
@@ -29,14 +31,22 @@ export function AccueilAdsReel() {
     return () => window.clearInterval(timer);
   }, [ads.length]);
 
+  // Warm the next frames so rotation does not flash a broken icon on slow links.
+  useEffect(() => {
+    for (const item of ads) {
+      const img = new window.Image();
+      img.src = accueilAdImageUrl(item);
+    }
+  }, [ads]);
+
   return (
     <aside
       data-accueil-ads-reel
       data-ad-id={ad.id}
       aria-label={`${label} — ${slot} — ${ad.title}`}
-      className="relative flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-dashed border-gold/40 bg-night/50"
+      className="relative flex h-full min-h-0 w-full flex-1 flex-col overflow-hidden rounded-xl border border-gold/35 bg-night"
     >
-      <p className="pointer-events-none absolute left-2 top-2 z-20 rounded-full bg-black/55 px-2 py-0.5 text-[8px] font-extrabold uppercase tracking-wide text-ice/90">
+      <p className="pointer-events-none absolute left-2 top-2 z-20 rounded-full bg-black/60 px-2 py-0.5 text-[8px] font-extrabold uppercase tracking-wide text-ice/95">
         {label}
         <span aria-hidden> · </span>
         {slot}
@@ -70,17 +80,17 @@ export function AccueilAdsReel() {
       <Link
         href={ad.href}
         data-accueil-ad-link={ad.id}
-        className="relative block min-h-0 flex-1 overflow-hidden"
+        className="relative flex min-h-0 flex-1 flex-col overflow-hidden"
       >
         {/* eslint-disable-next-line @next/next/no-img-element -- static export house ads */}
         <img
           key={ad.id}
-          src={accueilAdImageUrl(ad)}
+          src={src}
           alt={ad.title}
           data-ad-image={ad.id}
-          className="absolute inset-0 h-full w-full object-cover object-center"
+          className="h-full min-h-0 w-full flex-1 object-cover object-center"
           decoding="async"
-          fetchPriority="low"
+          fetchPriority="high"
         />
       </Link>
     </aside>
