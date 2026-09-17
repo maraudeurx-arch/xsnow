@@ -18,13 +18,19 @@ test.describe("pubs reel, avatar coach, business AI draft", () => {
 
     await page.getByRole("button", { name: "Suivant" }).click();
     await expect(screen).toHaveAttribute("data-ad-id", "daycare-flyer");
-    await expect(page.getByRole("heading", { name: "Place en garderie du quartier" })).toBeVisible();
+    const flyer = page.locator("[data-ad-card=flyer]");
+    await expect(flyer).toBeVisible();
+    await expect(flyer.getByRole("heading", { name: "Place en garderie du quartier" })).toBeVisible();
 
     await page.getByRole("button", { name: "Suivant" }).click();
     await expect(screen).toHaveAttribute("data-ad-id", "apartment-gatineau");
+    const summary = page.locator("[data-ad-card=summary]");
+    await expect(summary).toBeVisible();
+    await expect(summary.getByRole("heading", { name: "Chambre à Gatineau" })).toBeVisible();
+    await expect(summary).toContainText("Gatineau");
+    await expect(page.locator("[data-ad-rent]")).toContainText("533");
+    await expect(page.locator("[data-ad-date]")).toHaveText("1er octobre");
     await expect(page.getByText(/Environ 533/)).toBeVisible();
-    await expect(page.getByText(/1er octobre/)).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Chambre à Gatineau" })).toBeVisible();
   });
 
   test("avatar coach asks questions then shows 3–5 paths without promising income", async ({

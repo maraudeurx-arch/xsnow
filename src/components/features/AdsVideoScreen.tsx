@@ -77,31 +77,75 @@ export function AdsVideoScreen() {
         </div>
 
         <figure className="relative min-h-0 flex-1 overflow-hidden">
-          {/* eslint-disable-next-line @next/next/no-img-element -- static export house ads */}
-          <img
-            src={communityAdImageUrl(ad)}
-            alt={copy.ads[ad.id as keyof typeof copy.ads]?.title ?? ad.id}
-            className="ads-kenburns h-full w-full object-cover"
-            data-ad-image={ad.id}
-          />
-          <figcaption className="absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-black/85 via-black/45 to-transparent px-3 pb-3 pt-16 text-left">
+          {ad.kind === "photo" ? (
+            // eslint-disable-next-line @next/next/no-img-element -- static export house ads
+            <img
+              src={communityAdImageUrl(ad)}
+              alt={copy.ads[ad.id as keyof typeof copy.ads]?.title ?? ad.id}
+              className="ads-kenburns h-full w-full object-cover"
+              data-ad-image={ad.id}
+            />
+          ) : (
+            <div
+              data-ad-image={ad.id}
+              data-ad-card={ad.kind}
+              className="flex h-full min-h-0 flex-col items-center justify-center gap-3 bg-[#0f172a] px-5 pb-36 pt-16 text-center"
+            >
+              {ad.kind === "flyer" ? (
+                <div
+                  aria-hidden
+                  className="flex size-20 items-center justify-center rounded-full bg-cobalt text-3xl text-snow"
+                >
+                  ⌂
+                </div>
+              ) : (
+                <p className="text-[11px] font-extrabold tracking-[0.18em] text-ice/90 uppercase">
+                  {formatApartmentSummary(ad).city}
+                </p>
+              )}
+              <h2 className="max-w-[16rem] font-[family-name:var(--font-fraunces)] text-2xl font-extrabold text-snow">
+                {copy.ads[ad.id as keyof typeof copy.ads]?.title}
+              </h2>
+              {ad.id === "apartment-gatineau" ? (
+                <>
+                  <p data-ad-rent className="text-4xl font-black text-gold">
+                    ~{formatApartmentSummary(ad).rentCad}&nbsp;$/mois
+                  </p>
+                  <p data-ad-date className="text-lg font-extrabold text-snow">
+                    {copy.octoberFirst}
+                  </p>
+                </>
+              ) : (
+                <p className="max-w-[16rem] text-sm leading-snug text-snow/85">
+                  {copy.ads[ad.id as keyof typeof copy.ads]?.tagline}
+                </p>
+              )}
+            </div>
+          )}
+          <figcaption className="absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-black/90 via-black/50 to-transparent px-3 pb-3 pt-10 text-left">
             <p className="text-[10px] font-extrabold uppercase tracking-wide text-ice/80">
               {copy.sponsored}
               <span aria-hidden> · </span>
               {copy.slot}
             </p>
-            <h2 className="mt-1 font-[family-name:var(--font-fraunces)] text-xl font-extrabold text-snow">
-              {copy.ads[ad.id as keyof typeof copy.ads]?.title}
-            </h2>
-            <p className="mt-1 text-sm leading-snug text-snow/90">
-              {ad.id === "apartment-gatineau"
-                ? interpolate(copy.apartmentSummary, {
-                    rent: String(formatApartmentSummary(ad).rentCad),
-                    date: copy.octoberFirst,
-                    city: formatApartmentSummary(ad).city,
-                  })
-                : copy.ads[ad.id as keyof typeof copy.ads]?.tagline}
-            </p>
+            {ad.kind === "photo" ? (
+              <>
+                <h2 className="mt-1 font-[family-name:var(--font-fraunces)] text-xl font-extrabold text-snow">
+                  {copy.ads[ad.id as keyof typeof copy.ads]?.title}
+                </h2>
+                <p className="mt-1 text-sm leading-snug text-snow/90">
+                  {copy.ads[ad.id as keyof typeof copy.ads]?.tagline}
+                </p>
+              </>
+            ) : ad.id === "apartment-gatineau" ? (
+              <p className="mt-1 text-sm leading-snug text-snow/90">
+                {interpolate(copy.apartmentSummary, {
+                  rent: String(formatApartmentSummary(ad).rentCad),
+                  date: copy.octoberFirst,
+                  city: formatApartmentSummary(ad).city,
+                })}
+              </p>
+            ) : null}
             {ad.downloadable ? (
               <button
                 type="button"
