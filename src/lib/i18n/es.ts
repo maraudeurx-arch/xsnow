@@ -354,7 +354,7 @@ export const es: Messages = {
   features: {
     business: {
       title: "Da a conocer tu negocio con anuncios",
-      lead: "Envía tu foto. Revisamos y proponemos una tarifa competitiva — tu avatar puede comparar Facebook / WhatsApp / sitios locales.",
+      lead: "Envíanos tu anuncio (foto o vídeo). Verificaremos la legitimidad y te volveremos con una propuesta de pago competitiva.",
     },
     proximite: {
       title: "Mira quién está cerca",
@@ -585,8 +585,7 @@ export const es: Messages = {
     photoBusy: "Comprimiendo la foto…",
     photoReady: "Foto lista ({kb} Ko).",
     photoRequired: "Añade una foto para enviar el anuncio a revisión.",
-    reviewLead:
-      "Tu anuncio con foto nos llega primero (opencommunity.opc@gmail.com). Verificamos la legitimidad y volvemos con una propuesta monetaria competitiva. Tu avatar puede ayudarte a comparar lo que se paga en el barrio en Facebook, WhatsApp o sitios locales, y a hacer una propuesta.",
+    reviewLead: "",
     publish: "Enviar a verificación",
     sending: "Enviando…",
     savedSent:

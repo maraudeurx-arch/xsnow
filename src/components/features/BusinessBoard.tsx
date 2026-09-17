@@ -105,7 +105,9 @@ export function BusinessBoard() {
 
   return (
     <div className="space-y-5" data-business-board>
-      <p className="text-sm leading-snug text-snow/85">{copy.reviewLead}</p>
+      {copy.reviewLead ? (
+        <p className="text-sm leading-snug text-snow/85">{copy.reviewLead}</p>
+      ) : null}
       <form onSubmit={(event) => void onSubmit(event)} className="grid gap-3">
         <Field name="name" label={copy.name} required />
         <Field name="category" label={copy.category} placeholder={copy.categoryPh} />
