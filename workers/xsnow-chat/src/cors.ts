@@ -8,6 +8,9 @@ export const ALLOWED_ORIGINS = new Set([
   "https://maraudeurx-arch.github.io",
   "https://opencommunity.app",
   "https://www.opencommunity.app",
+  // Soft-launch: custom domain may still be HTTP until GitHub Pages TLS is ready.
+  "http://opencommunity.app",
+  "http://www.opencommunity.app",
   "http://localhost:3000",
   "http://127.0.0.1:3000",
   "http://localhost:4173",
