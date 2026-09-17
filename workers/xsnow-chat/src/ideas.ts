@@ -198,7 +198,7 @@ export function renderOwnerHtml(ideas: StoredInboxIdea[]): string {
 </head>
 <body>
   <h1>Boîte d’idées — Open Community</h1>
-  <p class="lead">Compilation pour Politzer. Texte brut uniquement (pas de HTML). Les visiteurs gardent aussi une copie sur leur appareil. Ne partage pas l’URL secrète.</p>
+  <p class="lead">Compilation pour l’équipe de développement. Texte brut uniquement (pas de HTML). Les visiteurs gardent aussi une copie sur leur appareil. Ne partage pas l’URL secrète.</p>
   <p><strong>${payload.count}</strong> idée(s). Pour l’export JSON, ajoute <code>&amp;format=json</code> à cette URL (garde le secret).</p>
   <h2>Par ville</h2>
   ${compiledRows}

@@ -48,6 +48,29 @@ describe("parseIdeaInboxInput", () => {
     assert.equal(parsed?.text.includes("@"), false);
     assert.match(parsed?.text ?? "", /\[redacted\]/);
   });
+
+  it("drops visitor phone, email, and last name even if the POST includes them", () => {
+    const parsed = parseIdeaInboxInput({
+      id: "idea-pii",
+      text: "Un café de réparation vélo",
+      city: "Aylmer",
+      opcId: "OPC-7K3M",
+      email: "marie@voisin.test",
+      phone: "819-555-0100",
+      lastName: "Tremblay",
+    });
+    assert.deepEqual(parsed, {
+      id: "idea-pii",
+      text: "Un café de réparation vélo",
+      city: "Aylmer",
+      opcId: "OPC-7K3M",
+    });
+    const json = JSON.stringify(parsed);
+    assert.equal(json.includes("marie@"), false);
+    assert.equal(json.includes("555-0100"), false);
+    assert.equal(json.includes("Tremblay"), false);
+    assert.deepEqual(Object.keys(parsed ?? {}).sort(), ["city", "id", "opcId", "text"]);
+  });
 });
 
 describe("compileIdeasByCity", () => {
@@ -98,7 +121,15 @@ describe("postIdeaToInbox / fetchOwnerIdeaInbox", () => {
       });
     };
     const result = await postIdeaToInbox(
-      { id: "idea-1", text: "Un café de réparation vélo", city: "Aylmer", opcId: "OPC-7K3M" },
+      {
+        id: "idea-1",
+        text: "Un café de réparation vélo",
+        city: "Aylmer",
+        opcId: "OPC-7K3M",
+        email: "marie@voisin.test",
+        phone: "819-555-0100",
+        lastName: "Tremblay",
+      } as { id: string; text: string; city: string; opcId?: string },
       fakeFetch,
     );
     assert.equal(result, "sent");
@@ -108,6 +139,11 @@ describe("postIdeaToInbox / fetchOwnerIdeaInbox", () => {
     assert.equal(body.text, "Un café de réparation vélo");
     assert.equal(body.city, "Aylmer");
     assert.equal(body.opcId, "OPC-7K3M");
+    assert.equal("email" in body, false);
+    assert.equal("phone" in body, false);
+    assert.equal("lastName" in body, false);
+    assert.equal(JSON.stringify(body).includes("marie@"), false);
+    assert.equal(JSON.stringify(body).includes("Tremblay"), false);
     assert.equal(body.text.includes("<"), false);
     assert.equal(calls[0]?.init.credentials, "omit");
     const headers = new Headers(calls[0]?.init.headers);

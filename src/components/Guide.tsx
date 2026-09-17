@@ -173,6 +173,8 @@ export function Guide() {
               aria-label={m.guide.offerShortcuts}
               className="grid shrink-0 grid-cols-2 gap-[var(--home-chip-gap)]"
             >
+              {welcomeGateOpen ? (
+                <>
               <Link href="/gagner-maintenant" className={shortcutClass}>
                 {m.menu.gagnerMaintenant}
               </Link>
@@ -187,6 +189,8 @@ export function Guide() {
               >
                 {m.register.cta}
               </Link>
+                </>
+              ) : null}
             </nav>
           </div>
           <NeighborhoodNews onNewsChange={onNewsChange} />

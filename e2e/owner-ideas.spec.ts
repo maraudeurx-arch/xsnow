@@ -28,7 +28,7 @@ test.describe("owner idea inbox", () => {
 
     await page.goto("./proprietaire/idees/");
     await expect(page.getByRole("heading", { name: "Boîte d’idées", level: 2 })).toBeVisible();
-    await expect(page.getByText("Compilation pour Politzer. Secret requis. Aucune idée n’est inventée.")).toBeVisible();
+    await expect(page.getByText("Compilation pour l’équipe de développement. Secret requis. Aucune idée n’est inventée.")).toBeVisible();
     await expect(page.getByLabel("Secret propriétaire")).toBeVisible();
     await expect(page.getByText("Déneiger")).toHaveCount(0);
     await expect(page.locator("[data-owner-idea]")).toHaveCount(0);

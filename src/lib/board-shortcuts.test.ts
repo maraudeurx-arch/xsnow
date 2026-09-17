@@ -10,13 +10,14 @@ describe("board shortcuts", () => {
     assert.equal(MES_SERVICE_SHORTCUTS.length, 4);
     assert.deepEqual(
       MES_SERVICE_SHORTCUTS.map((item) => item.id),
-      ["lend-car", "moving", "babysitting", "tools"],
+      ["lend-car", "moving", "babysitting", "skills"],
     );
     assert.equal(MES_SERVICE_SHORTCUTS[0]?.action, "car_morning");
     assert.match(MES_SERVICE_SHORTCUTS[0]?.href ?? "", /template=car-morning/);
     assert.equal(MES_SERVICE_SHORTCUTS[1]?.href, "/services/demenagement");
     assert.equal(MES_SERVICE_SHORTCUTS[2]?.href, "/services/garde");
-    assert.equal(MES_SERVICE_SHORTCUTS[3]?.href, "/services/pret");
+    assert.equal(MES_SERVICE_SHORTCUTS[3]?.action, "skills");
+    assert.match(MES_SERVICE_SHORTCUTS[3]?.href ?? "", /template=skills/);
   });
 
   it("exposes four En demande actions wired to demand / car filters", () => {
@@ -36,7 +37,7 @@ describe("board shortcuts", () => {
     assert.equal(fr.mesServicesButtons.lendCar, "Prêter ma voiture");
     assert.equal(fr.mesServicesButtons.moving, "Aider au déménagement");
     assert.equal(fr.mesServicesButtons.babysitting, "Baby-sitting");
-    assert.equal(fr.mesServicesButtons.tools, "Prêt d’outils");
+    assert.equal(fr.mesServicesButtons.skills, "Mes compétences");
     assert.equal(fr.enDemandeButtons.moving, "Aide au déménagement");
     assert.equal(fr.enDemandeButtons.diy, "Aide au bricolage");
     assert.equal(fr.enDemandeButtons.carpool, "Co-voiturage");
@@ -45,7 +46,15 @@ describe("board shortcuts", () => {
     assert.equal(en.enDemandeButtons.carpool, "Carpool");
     assert.equal(es.mesServicesButtons.babysitting, "Niñera");
     assert.equal(es.enDemandeButtons.diy, "Ayuda de bricolaje");
-    assert.deepEqual(Object.keys(en.mesServicesButtons), Object.keys(fr.mesServicesButtons));
+    assert.equal(en.mesServicesButtons.skills, "My skills");
+    assert.equal(es.mesServicesButtons.skills, "Mis competencias");
+    assert.deepEqual(Object.keys(en.skills), Object.keys(fr.skills));
+    assert.deepEqual(Object.keys(es.skills), Object.keys(fr.skills));
+    assert.equal(fr.skills.mechanic, "Mécanicien");
+    assert.equal(fr.skills.plumber, "Plombier");
+    assert.equal(fr.skills.electrician, "Électricien");
+    assert.equal(fr.skills.driver, "Chauffeur");
+    assert.equal(fr.skills.other, "Autres");
     assert.deepEqual(Object.keys(es.mesServicesButtons), Object.keys(fr.mesServicesButtons));
     assert.deepEqual(Object.keys(en.enDemandeButtons), Object.keys(fr.enDemandeButtons));
     assert.deepEqual(Object.keys(es.enDemandeButtons), Object.keys(fr.enDemandeButtons));

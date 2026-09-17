@@ -121,7 +121,7 @@ Le Worker déployé est `https://xsnow-chat.xsnowopc.workers.dev`. Pour un autre
 
 ### Boîte d’idées (propriétaire) — e-mail requis
 
-Les idées restent **sur l’appareil du visiteur**. La vraie boîte de Politzer, c’est **opencommunity.opc@gmail.com**.
+Les idées restent **sur l’appareil du visiteur**. La vraie boîte de l’équipe de développement, c’est **opencommunity.opc@gmail.com**.
 
 1. Le visiteur envoie depuis **Vos idées**. L’app enregistre en local **puis** `POST` automatiquement une copie assainie (phrase, ville, date, numéro OPC si inscrit — pas de nom de famille ni téléphone) vers `https://xsnow-chat.xsnowopc.workers.dev/ideas` — **sans** `mailto:`, feuille de partage, Notification API, ni dialogue de permission. Hors ligne : l’idée reste ici ; message honnête si l’e-mail n’est pas parti. Le Worker doit autoriser l’Origin du site (`github.io` et `opencommunity.app`) sinon le navigateur bloque le POST (erreur « réseau »).
 2. Une inscription locale (`Mon profil`) envoie aussi un avis (prénom, OPC-XXXX, e-mail visiteur, ville) via `POST /register`.
@@ -143,6 +143,8 @@ Le `To:` est **codé en dur** (`opencommunity.opc@gmail.com`) — un visiteur ne
    - Page app (non listée) : `/xsnow/proprietaire/idees/?secret=…`
 
 Sans `RESEND_API_KEY`, `POST /ideas` répond `{ ok: true, emailed: false }` — le client affiche l’échec e-mail et garde la copie locale. La page vide n’invente **aucune** idée.
+
+WhatsApp Business n’est **pas** dans cette version (coût / complexité). Canal optionnel plus tard, même contenu assaini que l’e-mail — pas à la place de Gmail.
 
 ### Ville du visiteur (géolocalisation)
 
@@ -202,7 +204,7 @@ Deployed Worker: `https://xsnow-chat.xsnowopc.workers.dev`. Override with `NEXT_
 
 ### Owner idea inbox (email required)
 
-Visitor ideas stay **on that device**. Politzer’s real inbox is **opencommunity.opc@gmail.com**.
+Visitor ideas stay **on that device**. The development team’s real inbox is **opencommunity.opc@gmail.com**.
 
 1. Visitors submit **Your ideas**. The app stores locally **then** automatically `POST`s a sanitized copy (sentence, city, date, OPC number if registered — no last name or phone) to `https://xsnow-chat.xsnowopc.workers.dev/ideas` — **no** `mailto:`, share sheet, Notification API, or permission dialog. Offline: the idea stays here; the UI is honest if email did not go out. The Worker must allow the site Origin (`github.io` and `opencommunity.app`) or the browser blocks the POST as a network error.
 2. Local registration (`My profile`) also `POST`s a notice (first name, OPC-XXXX, visitor email, city) to `/register`.
@@ -224,6 +226,8 @@ npx wrangler deploy
    - Unlisted app page: `/xsnow/proprietaire/idees/?secret=…`
 
 Without `RESEND_API_KEY`, `POST /ideas` returns `{ ok: true, emailed: false }` — the client shows email failed and keeps the local copy. The empty inbox does **not** invent ideas.
+
+WhatsApp Business is **not** in this release (cost / complexity). Later optional channel, same sanitized payload as email — not a Gmail replacement.
 
 ### Visitor city
 

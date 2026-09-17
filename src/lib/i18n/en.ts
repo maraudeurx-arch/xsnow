@@ -169,7 +169,7 @@ export const en: Messages = {
       sections: [
         {
           heading: "Who we are",
-          body: "Open Community (OPC) / Xsnow is a neighbourhood mutual-aid app, branded with your city name. Static site on GitHub Pages. No email account required. Public person responsible: Politzer. Independent soft launch — not a registered corporation. Contact: GitHub Issues, or opencommunity.opc@gmail.com. Details: Who is behind OPC.",
+          body: "Open Community (OPC) / Xsnow is a neighbourhood mutual-aid app, branded with your city name. Static site on GitHub Pages. No email account required. The development team is responsible for the project. Independent soft launch — not a registered corporation. Contact: GitHub Issues, or opencommunity.opc@gmail.com. Details: Who is behind OPC.",
         },
         {
           heading: "What we collect",
@@ -193,7 +193,7 @@ export const en: Messages = {
         },
         {
           heading: "Personal listings",
-          body: "Your offers (My services), requests (In demand), ideas (Your ideas) and share texts stay on this device. This is not a global social feed. A sanitized copy of a submitted idea is emailed to opencommunity.opc@gmail.com; other visitors do not see it. A link you copy yourself can show an offer to the person who opens it. For something to appear for everyone, GOV + owner must approve it, then it ships in a numbered release (public catalog).",
+          body: "Your offers (My services), requests (In demand), ideas (Your ideas) and share texts stay on this device. This is not a global social feed. A sanitized copy of a submitted idea is emailed to opencommunity.opc@gmail.com; other visitors do not see it. A link you copy yourself can show an offer to the person who opens it. For something to appear for everyone, the development team must approve it, then it ships in a numbered release (public catalog).",
         },
       ],
     },
@@ -240,7 +240,7 @@ export const en: Messages = {
       sections: [
         {
           heading: "Public person responsible",
-          body: "The public first name of the person responsible is Politzer. Open Community (OPC) / Xsnow is an independent soft launch: it is not a registered corporation, company, or incorporated entity. No legal business name is invented here.",
+          body: "The development team is responsible for the project. Open Community (OPC) / Xsnow is an independent soft launch: it is not a registered corporation, company, or incorporated entity. No legal business name is invented here.",
         },
         {
           heading: "Origin and displayed city",
@@ -248,15 +248,15 @@ export const en: Messages = {
         },
         {
           heading: "Code and review",
-          body: "The code is public on GitHub (account maraudeurx-arch, repository xsnow). Visitor ideas and suggestions are never merged automatically into the code. Product changes land in git after a human review (project governance + owner — “GOV + owner”). No auto-merge.",
+          body: "The code is public on GitHub (account maraudeurx-arch, repository xsnow). Visitor ideas and suggestions are never merged automatically into the code. Product changes land in git after a human review by the development team. No auto-merge.",
         },
         {
           heading: "Contact",
-          body: "Public contact is GitHub Issues on the xsnow repository, and the dedicated email opencommunity.opc@gmail.com. Politzer remains the public person responsible. Do not use a personal address.",
+          body: "Public contact is GitHub Issues on the xsnow repository, and the dedicated email opencommunity.opc@gmail.com. The development team remains the public contact. Do not use a personal address.",
         },
         {
           heading: "On-device data and versions",
-          body: "The app version is shown here. Personal offers, requests and ideas stay on the device until GOV + owner approve a numbered public release. This version’s public catalog is empty for the soft launch.",
+          body: "The app version is shown here. Personal offers, requests and ideas stay on the device until the development team approves a numbered public release. This version’s public catalog is empty for the soft launch.",
         },
       ],
     },
@@ -454,10 +454,10 @@ export const en: Messages = {
       "{placeName} / {community} — {slogan} Our proximity and spirit of mutual aid is the guarantee of our success.",
     versionLabel: "Version",
     deviceLocalNote:
-      "Your offers, requests, ideas, share texts, registration (first name, last name, email, phone, OPC-XXXX number), and Interac/PayPal details stay on this device. A sanitized copy of an idea (sentence, city, date, OPC number if registered — not your contact details) may be emailed to opencommunity.opc@gmail.com. Nothing personal appears for another visitor until GOV + owner approve a numbered public release (public catalog).",
+      "Your offers, requests, ideas, share texts, registration (first name, last name, email, phone, OPC-XXXX number), and Interac/PayPal details stay on this device. A sanitized copy of an idea (sentence, city, date, OPC number if registered — not your contact details) may be emailed to opencommunity.opc@gmail.com. Nothing personal appears for another visitor until the development team approves a numbered public release (public catalog).",
     releaseNotesTitle: "Release notes",
     releaseNotesBody:
-      "0.3.4 — Proximity alerts: Monday–Sunday hours, 5/10/20 km radius, invite and consent from the loved one (browser / PWA GPS). Optional Twilio SMS (Worker secrets). No Apple Find My / iCloud / Messages. 0.3.3 — Your ideas: sanitized email to opencommunity.opc@gmail.com. Public catalog is still empty.",
+      "0.3.5 — My skills (after sign-up): publish skills + availability into In demand. Copy: development team. 0.3.4 — Proximity alerts: Monday–Sunday hours, 5/10/20 km radius, invite and consent from the loved one (browser / PWA GPS). Optional Twilio SMS (Worker secrets). No Apple Find My / iCloud / Messages. 0.3.3 — Your ideas: sanitized email to opencommunity.opc@gmail.com. Public catalog is still empty.",
     language: "Language",
     comingSoon: "Notifications and display season will land here.",
     locationConsent: "Location",
@@ -794,7 +794,7 @@ export const en: Messages = {
     lendCar: "Lend my car",
     moving: "Help with a move",
     babysitting: "Babysitting",
-    tools: "Tool lending",
+    skills: "My skills",
   },
   enDemandeButtons: {
     moving: "Moving help",
@@ -802,12 +802,30 @@ export const en: Messages = {
     carpool: "Carpool",
     equipment: "Equipment loan",
   },
+  skills: {
+    formTitle: "My skills",
+    skillsLabel: "Skills",
+    mechanic: "Mechanic",
+    plumber: "Plumber",
+    electrician: "Electrician",
+    driver: "Driver",
+    other: "Other",
+    otherPh: "Describe your skill",
+    daysLabel: "Available days",
+    hoursLabel: "Hours",
+    needSkill: "Choose at least one skill.",
+    needOther: "Describe the “Other” skill.",
+    needDay: "Choose at least one day.",
+    publish: "Publish to In demand",
+    cancel: "Close",
+  },
 
   offers: {
     typeLabel: "Offer type",
     typeCarMorning: "Car loan — mornings",
     typeHotspot: "Hotspot / shared connection",
     typeUxSession: "User-testing session",
+    typeSkills: "Skills",
     draft: "Draft",
     saveDraft: "Save draft",
     draftSaved: "Draft saved on this device — not published yet.",
@@ -943,6 +961,8 @@ export const en: Messages = {
     invalidEmail: "Enter a valid email.",
     invalidPhone: "Enter a valid phone number.",
     localOnly: "This stays on this device. It is not published, and email/phone never appear in the header.",
+    gateLead:
+      "Sign up first (My profile). Your details stay on this device. An OPC-XXXX number is local.",
     share: "Share",
     shareTitle: "Invite someone",
     shareHint: "Edit the text, then copy it. The link does not include your email or phone.",
@@ -979,17 +999,16 @@ export const en: Messages = {
     neighborhoodShare: "Neighbourhood",
     neighborhoodPh: "Hull, Aylmer, Plateau…",
     submit: "Send the idea",
-    submitHint:
-      "Your idea stays on this device. Send also tries an email (sentence, city, date, OPC number if you signed up — not your phone) to opencommunity.opc@gmail.com, so Politzer can decide what to build. Offline: the idea stays here.",
+    submitHint: "",
     registerHint: "Local sign-up (OPC number) stays on this device:",
     registerLink: "Sign up",
     registeredHint: "Local number on this device:",
     thankYou: "Idea received",
     thankYouBody:
-      "Thank you. Your idea is saved on this device. A sanitized email goes to opencommunity.opc@gmail.com. Other phones do not see it until GOV + owner approve it in a numbered release.",
+      "Thank you. Your idea is saved on this device. A sanitized email goes to opencommunity.opc@gmail.com. Other phones do not see it until the development team approves it in a numbered release.",
     wallTitle: "Idea wall (this device)",
     wallHint:
-      "Your ideas stay here. They do not appear on another phone. Politzer receives them by email to decide what to build.",
+      "The development team receives them at opencommunity.opc@gmail.com (GitHub maraudeurx-arch).",
     wallEmpty: "No idea here yet. The first one is often the most useful.",
     inboxSent: "Email sent to opencommunity.opc@gmail.com.",
     inboxFailed: "Saved here. The owner email could not be sent (network).",
@@ -1007,7 +1026,7 @@ export const en: Messages = {
   },
   ownerIdeas: {
     title: "Idea inbox",
-    lead: "Compilation for Politzer. Secret required. No idea is invented.",
+    lead: "Compilation for the development team. Secret required. No idea is invented.",
     how: "The real inbox is email to opencommunity.opc@gmail.com (Resend, secret RESEND_API_KEY). This page also compiles GET /ideas?secret=… if IDEAS_OWNER_SECRET is set. No idea is invented.",
     secretLabel: "Owner secret",
     secretPh: "Paste IDEAS_OWNER_SECRET",

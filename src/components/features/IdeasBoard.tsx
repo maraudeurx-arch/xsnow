@@ -95,6 +95,7 @@ export function IdeasBoard() {
   }
 
   async function sendInbox(idea: CommunityIdea) {
+    // Never send visitor phone/email on idea mail — even if the local profile has them.
     const result = await postIdeaToInbox({
       id: idea.id,
       text: idea.text,
@@ -180,7 +181,9 @@ export function IdeasBoard() {
             className={`${fieldClass} min-h-[72px] py-2 leading-relaxed`}
           />
         </div>
-        <p className="text-xs leading-relaxed text-ice/80">{copy.submitHint}</p>
+        {copy.submitHint ? (
+          <p className="text-xs leading-relaxed text-ice/80">{copy.submitHint}</p>
+        ) : null}
         {profile ? (
           <p className="text-xs leading-relaxed text-ice/70">
             {copy.registeredHint} {profile.id}

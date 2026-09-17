@@ -172,7 +172,10 @@ describe("vos idees copy", () => {
     assert.equal(fr.ideas.submit, "Envoyer l’idée");
     assert.equal(en.ideas.submit, "Send the idea");
     assert.equal(es.ideas.submit, "Enviar la idea");
-    assert.match(fr.ideas.submitHint, /opencommunity\.opc@gmail\.com/);
+    assert.match(fr.ideas.wallHint, /opencommunity\.opc@gmail\.com/);
+    assert.match(fr.ideas.wallHint, /équipe de développement/);
+    assert.match(fr.ideas.wallHint, /maraudeurx-arch/);
+    assert.equal(fr.ideas.submitHint, "");
     assert.match(fr.ideas.thankYouBody, /opencommunity\.opc@gmail\.com/);
     assert.equal(fr.ownerIdeas.empty.includes("invent"), true);
     assert.equal(fr.ideas.thankYou, "Idée bien reçue");
@@ -270,11 +273,13 @@ describe("mes services / en demande four buttons", () => {
     assert.equal(fr.features.enDemande.lead, "");
     assert.equal(en.features.enDemande.lead, "");
     assert.equal(es.features.enDemande.lead, "");
-    assert.equal(fr.mesServicesButtons.lendCar, "Prêter ma voiture");
+    assert.equal(fr.mesServicesButtons.skills, "Mes compétences");
     assert.equal(fr.mesServicesButtons.babysitting, "Baby-sitting");
     assert.equal(fr.enDemandeButtons.diy, "Aide au bricolage");
     assert.equal(fr.enDemandeButtons.carpool, "Co-voiturage");
     assert.deepEqual(Object.keys(en.mesServicesButtons), Object.keys(fr.mesServicesButtons));
+    assert.deepEqual(Object.keys(en.skills), Object.keys(fr.skills));
+    assert.deepEqual(Object.keys(es.skills), Object.keys(fr.skills));
     assert.deepEqual(Object.keys(es.enDemandeButtons), Object.keys(fr.enDemandeButtons));
   });
 });
@@ -443,7 +448,7 @@ describe("legal copy is present in FR/EN/ES", () => {
     assert.match(en.profile.infosPrivacy, /sold/);
     assert.match(es.profile.infosPrivacy, /nunca se divulgará/);
     assert.match(es.profile.infosPrivacy, /venderá/);
-    assert.match(en.profile.releaseNotesBody, /0\.3\.4/);
+    assert.match(en.profile.releaseNotesBody, /0\.3\.5/);
     assert.deepEqual(Object.keys(en.profile), Object.keys(fr.profile));
     assert.deepEqual(Object.keys(es.profile), Object.keys(fr.profile));
   });
@@ -483,11 +488,13 @@ describe("transparency copy stays honest", () => {
     return parts.join("\n");
   }
 
-  it("names Politzer, GitHub, Issues, and the public OPC email — no personal address", () => {
+  it("names the development team, GitHub, Issues, and the public OPC email — no personal address", () => {
     const publicEmail = /opencommunity\.opc@gmail\.com/;
     for (const pack of [fr, en, es]) {
       const text = flattenTrust(pack);
-      assert.match(text, /Politzer/);
+      assert.doesNotMatch(text, /Politzer/);
+      assert.doesNotMatch(text, /\bGOV\b/);
+      assert.doesNotMatch(text, /\bGov\b/);
       assert.match(text, /maraudeurx-arch/);
       assert.match(text, /GitHub Issues/);
       assert.match(text, publicEmail);
@@ -500,6 +507,9 @@ describe("transparency copy stays honest", () => {
         assert.equal(email.toLowerCase(), "opencommunity.opc@gmail.com");
       }
     }
+    assert.match(fr.legal.about.sections[0].body, /équipe de développement/);
+    assert.match(en.legal.about.sections[0].body, /development team/);
+    assert.match(es.legal.about.sections[0].body, /equipo de desarrollo/);
     assert.match(fr.legal.about.sections[0].body, /pas une société enregistrée/);
     assert.match(en.legal.about.sections[0].body, /not a registered corporation/);
     assert.match(es.legal.about.sections[0].body, /no es una sociedad registrada/);

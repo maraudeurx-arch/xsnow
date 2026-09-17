@@ -41,13 +41,13 @@ describe("clipOpcId / parseRegisterNotice", () => {
 });
 
 describe("owner inbox destination", () => {
-  it("hardcodes Politzer’s Gmail and never a visitor-controlled To", () => {
+  it("hardcodes the development team Gmail and never a visitor-controlled To", () => {
     assert.equal(OPC_INBOX_TO, "opencommunity.opc@gmail.com");
   });
 });
 
 describe("buildIdeaOwnerMail / buildRegisterOwnerMail", () => {
-  it("addresses Politzer and keeps plain text only", () => {
+  it("addresses the development team inbox and keeps plain text only", () => {
     const mail = buildIdeaOwnerMail(
       { text: "Déneiger les allées", city: "Gatineau", opcId: "OPC-7K3M" },
       Date.parse("2026-09-16T12:00:00.000Z"),
@@ -55,6 +55,9 @@ describe("buildIdeaOwnerMail / buildRegisterOwnerMail", () => {
     assert.match(mail.subject, /Gatineau/);
     assert.match(mail.text, /Déneiger les allées/);
     assert.match(mail.text, /OPC-7K3M/);
+    assert.match(mail.text, /2026-09-16T12:00:00.000Z/);
+    assert.match(mail.text, /Profil e-mail \/ téléphone du visiteur non inclus/);
+    assert.doesNotMatch(mail.text, /marie@|819-555|Tremblay/);
     assert.equal(mail.text.includes("<"), false);
     assert.equal(mail.subject.includes("<"), false);
 

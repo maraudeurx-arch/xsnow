@@ -1,5 +1,5 @@
 /**
- * Versioned public catalog for GOV+owner-approved community content.
+ * Versioned public catalog for development-team-approved community content.
  *
  * Soft launch: empty. Do not put a visitor’s (or the owner’s) personal offers,
  * Interac, PayPal, requests, or ideas here until a numbered release.
@@ -38,7 +38,7 @@ export const EMPTY_PUBLIC_CATALOG: PublicCatalog = {
     {
       version: APP_VERSION,
       date: APP_RELEASE_DATE,
-      text: "Soft launch: empty public catalog. Personal offers, requests, and ideas stay on-device until GOV+owner approval ships them in a numbered release.",
+      text: "Soft launch: empty public catalog. Personal offers, requests, and ideas stay on-device until the development team ships them in a numbered release.",
     },
   ],
 };

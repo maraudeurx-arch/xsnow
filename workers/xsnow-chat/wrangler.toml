@@ -9,7 +9,7 @@ binding = "AI"
 # Database already exists; apply schema with
 # `npx wrangler d1 migrations apply xsnow-opc-stats --remote`.
 #
-# Owner inbox email (required for Politzer to receive Vos idées):
+# Owner inbox email (required for the development team to receive Vos idées):
 #   npx wrangler secret put RESEND_API_KEY
 # Optional From (verified Resend domain). Default: beth.t@example.com
 #   npx wrangler secret put IDEAS_FROM_EMAIL

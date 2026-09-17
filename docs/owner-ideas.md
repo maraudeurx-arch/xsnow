@@ -4,6 +4,22 @@ Visitors keep ideas on-device. A sanitized copy is also `POST`ed to the Worker
 inbox (`/ideas`) so you can compile and review. Email to
 `opencommunity.opc@gmail.com` (Resend) is the primary live inbox.
 
+The mail body is idea text, city/place if known, ISO date, and OPC member
+number if the visitor is registered on that device. Visitor phone and email
+are **never** included on this mail (they stay on-device unless the visitor
+opted in via Mon profil, which uses a separate `POST /register` notice).
+
+If Resend or the network fails, the idea still stays in `localStorage` and on
+the device wall. The Worker returns `{ ok: true, emailed: false }`.
+
+## Later: WhatsApp (optional)
+
+WhatsApp Business is **out of scope** for this soft launch (cost and setup).
+Do not add a WhatsApp sender, Cloud API token, or Business number on this
+Worker. A later optional channel could forward the **same** sanitized payload
+(idea text, city, date, OPC id — never visitor phone/email unless they opted
+in) to WhatsApp. It would not replace Gmail.
+
 ## Secret
 
 Set once on the Worker (never commit):

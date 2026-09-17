@@ -1,8 +1,8 @@
 /**
  * Peer-to-peer community offers (MVP = device-local localStorage + optional share URL).
- * Form templates help a visitor write a morning car loan, hotspot, or UX session.
+ * Form templates help a visitor write a morning car loan, hotspot, UX session, or skills listing.
  * They are not live listings. Never inject an owner/demo offer into En demande.
- * Community-wide items load from the versioned public catalog after GOV+owner approval.
+ * Community-wide items load from the versioned public catalog after development-team approval.
  * Visitor-authored fields are plain text only (see sanitize.ts).
  */
 
@@ -15,6 +15,20 @@ import {
   sanitizeRecordId,
   sanitizeUntrustedText,
 } from "./sanitize.ts";
+import {
+  DEFAULT_SKILLS_FROM,
+  DEFAULT_SKILLS_PRICE_CAD,
+  DEFAULT_SKILLS_TITLE,
+  DEFAULT_SKILLS_TO,
+  parseAvailabilityDays,
+  parseSkillIds,
+  sanitizeSkillOther,
+  skillFormIssues,
+  skillsFallbackTitle,
+  skillsNotes,
+  type SkillId,
+  type Weekday,
+} from "./skills.ts";
 
 export const PUBLIC_OFFER_SITE_URL = "https://maraudeurx-arch.github.io/xsnow/";
 
@@ -23,7 +37,7 @@ export const IMPORTED_OFFERS_KEY = "xsnow.importedOffers";
 export const OFFER_REQUESTS_KEY = "xsnow.offerRequests";
 export const SHARE_TEXT_KEY_PREFIX = "opc-share-text:";
 
-export const OFFER_KINDS = ["car_morning", "hotspot", "ux_session"] as const;
+export const OFFER_KINDS = ["car_morning", "hotspot", "ux_session", "skills"] as const;
 export type OfferKind = (typeof OFFER_KINDS)[number];
 
 /** Legacy id from the pre-0.3.0 bundled “featured” car listing — never show or re-seed it. */
@@ -68,6 +82,9 @@ export type CommunityOffer = {
   published: boolean;
   createdAt: string;
   updatedAt: string;
+  skillIds?: SkillId[];
+  skillOther?: string;
+  availabilityDays?: Weekday[];
 };
 
 export type OfferFormInput = {
@@ -82,6 +99,9 @@ export type OfferFormInput = {
   paypalMe: string;
   insuranceOk: boolean;
   notes: string;
+  skillIds?: SkillId[];
+  skillOther?: string;
+  availabilityDays?: Weekday[];
 };
 
 export type OfferRequest = {
@@ -100,7 +120,11 @@ export type PublishIssue =
   | "interac"
   | "insurance"
   | "gas"
-  | "price";
+  | "price"
+  | "skills"
+  | "other"
+  | "days"
+  | "hours";
 
 export type SharePayload = {
   k: OfferKind;
@@ -124,19 +148,26 @@ const PHONE_RE = /^\+?[0-9][0-9\s().-]{5,}$/;
 const PAYPAL_HANDLE_RE = /^[A-Za-z0-9._-]+$/;
 
 export function isOfferKind(value: unknown): value is OfferKind {
-  return value === "car_morning" || value === "hotspot" || value === "ux_session";
+  return (
+    value === "car_morning" ||
+    value === "hotspot" ||
+    value === "ux_session" ||
+    value === "skills"
+  );
 }
 
 export function parseOfferKindQuery(value: string | null | undefined): OfferKind | null {
   if (value === "car-morning" || value === "car_morning") return "car_morning";
   if (value === "hotspot") return "hotspot";
   if (value === "ux-session" || value === "ux_session") return "ux_session";
+  if (value === "skills") return "skills";
   return null;
 }
 
 export function offerKindQuery(kind: OfferKind) {
   if (kind === "hotspot") return "hotspot";
   if (kind === "ux_session") return "ux-session";
+  if (kind === "skills") return "skills";
   return "car-morning";
 }
 
@@ -144,6 +175,7 @@ export function parseOfferTemplateQuery(value: string | null | undefined): Offer
   if (value === "hotspot") return "hotspot";
   if (value === "ux" || value === "ux-session" || value === "ux_session") return "ux_session";
   if (value === "car-morning" || value === "car_morning") return "car_morning";
+  if (value === "skills") return "skills";
   return null;
 }
 
@@ -222,6 +254,9 @@ export function carMorningDefaults(): OfferFormInput {
     paypalMe: "",
     insuranceOk: false,
     notes: "",
+    skillIds: [],
+    skillOther: "",
+    availabilityDays: [],
   };
 }
 
@@ -238,6 +273,9 @@ export function hotspotDefaults(): OfferFormInput {
     paypalMe: "",
     insuranceOk: false,
     notes: DEFAULT_HOTSPOT_NOTES,
+    skillIds: [],
+    skillOther: "",
+    availabilityDays: [],
   };
 }
 
@@ -254,12 +292,35 @@ export function uxSessionDefaults(): OfferFormInput {
     paypalMe: "",
     insuranceOk: false,
     notes: DEFAULT_UX_NOTES,
+    skillIds: [],
+    skillOther: "",
+    availabilityDays: [],
+  };
+}
+
+export function skillsDefaults(): OfferFormInput {
+  return {
+    kind: "skills",
+    title: DEFAULT_SKILLS_TITLE,
+    windowFrom: DEFAULT_SKILLS_FROM,
+    windowTo: DEFAULT_SKILLS_TO,
+    priceCad: DEFAULT_SKILLS_PRICE_CAD,
+    gasBorrowerPays: false,
+    neighborhood: "",
+    interacContact: "",
+    paypalMe: "",
+    insuranceOk: false,
+    notes: "",
+    skillIds: [],
+    skillOther: "",
+    availabilityDays: [],
   };
 }
 
 export function defaultsForKind(kind: OfferKind): OfferFormInput {
   if (kind === "hotspot") return hotspotDefaults();
   if (kind === "ux_session") return uxSessionDefaults();
+  if (kind === "skills") return skillsDefaults();
   return carMorningDefaults();
 }
 
@@ -276,6 +337,9 @@ export function formFromOffer(offer: CommunityOffer): OfferFormInput {
     paypalMe: offer.paypalMe,
     insuranceOk: offer.insuranceOk,
     notes: offer.notes,
+    skillIds: parseSkillIds(offer.skillIds),
+    skillOther: offer.skillOther || "",
+    availabilityDays: parseAvailabilityDays(offer.availabilityDays),
   };
 }
 
@@ -292,6 +356,9 @@ export function formKind(input: Pick<OfferFormInput, "kind"> | OfferKind): Offer
 
 export function publishIssues(input: OfferFormInput): PublishIssue[] {
   const kind = formKind(input);
+  if (kind === "skills") {
+    return skillFormIssues(input) as PublishIssue[];
+  }
   const issues: PublishIssue[] = [];
   if (!String(input.title || "").trim()) issues.push("title");
   if (!String(input.interacContact || "").trim()) issues.push("interac");
@@ -310,6 +377,7 @@ export function canPublish(input: OfferFormInput) {
 export function fallbackTitle(kind: OfferKind) {
   if (kind === "hotspot") return DEFAULT_HOTSPOT_TITLE;
   if (kind === "ux_session") return DEFAULT_UX_TITLE;
+  if (kind === "skills") return DEFAULT_SKILLS_TITLE;
   return DEFAULT_CAR_TITLE;
 }
 
@@ -320,15 +388,35 @@ export function offerFromForm(
 ): CommunityOffer {
   const kind = formKind(input);
   const defaults = defaultsForKind(kind);
-  const price = parsePriceCad(input.priceCad) ?? defaults.priceCad;
+  const skillIds = kind === "skills" ? parseSkillIds(input.skillIds) : [];
+  const skillOther = kind === "skills" ? sanitizeSkillOther(input.skillOther) : "";
+  const availabilityDays = kind === "skills" ? parseAvailabilityDays(input.availabilityDays) : [];
+  const price =
+    kind === "skills"
+      ? DEFAULT_SKILLS_PRICE_CAD
+      : (parsePriceCad(input.priceCad) ?? defaults.priceCad);
+  const title =
+    kind === "skills"
+      ? sanitizeUntrustedText(String(input.title || ""), {
+          max: TITLE_TEXT_MAX,
+          redactEmails: true,
+        }) || skillsFallbackTitle(skillIds, skillOther)
+      : sanitizeUntrustedText(String(input.title || ""), {
+          max: TITLE_TEXT_MAX,
+          redactEmails: false,
+        }) || fallbackTitle(kind);
+  const notes =
+    kind === "skills"
+      ? skillsNotes(availabilityDays, skillOther)
+      : sanitizeUntrustedText(String(input.notes || ""), {
+          max: NOTES_TEXT_MAX,
+          redactEmails: false,
+          allowNewlines: true,
+        });
   return {
     id: sanitizeRecordId(existing?.id) || nextId(),
     kind,
-    title:
-      sanitizeUntrustedText(String(input.title || ""), {
-        max: TITLE_TEXT_MAX,
-        redactEmails: false,
-      }) || fallbackTitle(kind),
+    title,
     windowFrom: String(input.windowFrom || defaults.windowFrom).slice(0, 5),
     windowTo: String(input.windowTo || defaults.windowTo).slice(0, 5),
     earlierOk: true,
@@ -338,20 +426,20 @@ export function offerFromForm(
       max: 80,
       redactEmails: true,
     }),
-    interacContact: sanitizeUntrustedText(String(input.interacContact || ""), {
-      max: CONTACT_TEXT_MAX,
-      redactEmails: false,
-    }),
-    paypalMe: normalizePaypalMe(input.paypalMe || ""),
+    interacContact:
+      kind === "skills"
+        ? ""
+        : sanitizeUntrustedText(String(input.interacContact || ""), {
+            max: CONTACT_TEXT_MAX,
+            redactEmails: false,
+          }),
+    paypalMe: kind === "skills" ? "" : normalizePaypalMe(input.paypalMe || ""),
     insuranceOk: kind === "car_morning" ? Boolean(input.insuranceOk) : false,
-    notes: sanitizeUntrustedText(String(input.notes || ""), {
-      max: NOTES_TEXT_MAX,
-      redactEmails: false,
-      allowNewlines: true,
-    }),
+    notes,
     published: canPublish(input),
     createdAt: existing?.createdAt ?? now,
     updatedAt: now,
+    ...(kind === "skills" ? { skillIds, skillOther, availabilityDays } : {}),
   };
 }
 
@@ -510,14 +598,18 @@ export function sharePostFr(offer: CommunityOffer) {
   const priceLine =
     offer.kind === "car_morning"
       ? `${price} par matin. L’essence est à la charge de l’emprunteur.`
-      : `${price} par session.`;
+      : offer.kind === "skills"
+        ? "Compétences de quartier. Entente privée."
+        : `${price} par session.`;
   const payLine = offer.interacContact
     ? offer.kind === "car_morning"
       ? `Paiement : Interac e-Transfer à ${offer.interacContact} (l’essence en plus).`
       : `Paiement : Interac e-Transfer à ${offer.interacContact}.`
     : offer.kind === "car_morning"
       ? "Paiement : Interac e-Transfer (l’essence en plus). Le prestataire confirme le contact."
-      : "Paiement : Interac e-Transfer. Le prestataire confirme le contact.";
+      : offer.kind === "skills"
+        ? "Contact via En demande. Open Community n’est pas l’employeur."
+        : "Paiement : Interac e-Transfer. Le prestataire confirme le contact.";
   const lines = [area ? `${offer.title} — ${area}` : offer.title, "", windowLine, priceLine];
   if (offer.notes) lines.push(offer.notes);
   lines.push("", `Réserver ici :`, demandPath(toSharePayload(offer)), "", payLine);
@@ -563,7 +655,7 @@ export function parseStoredOffer(raw: unknown): CommunityOffer | null {
     typeof record.priceCad === "number" && Number.isFinite(record.priceCad)
       ? record.priceCad
       : parsePriceCad(String(record.priceCad ?? ""));
-  if (price == null) return null;
+  if (price == null && record.kind !== "skills") return null;
   const createdAt =
     typeof record.createdAt === "string" && record.createdAt ? record.createdAt : new Date().toISOString();
   return {
@@ -573,7 +665,7 @@ export function parseStoredOffer(raw: unknown): CommunityOffer | null {
     windowFrom: String(record.windowFrom || "").slice(0, 5),
     windowTo: String(record.windowTo || "").slice(0, 5),
     earlierOk: true,
-    priceCad: price,
+    priceCad: price ?? 0,
     gasBorrowerPays: Boolean(record.gasBorrowerPays),
     neighborhood: sanitizeUntrustedText(typeof record.neighborhood === "string" ? record.neighborhood : "", {
       max: 80,
@@ -593,6 +685,13 @@ export function parseStoredOffer(raw: unknown): CommunityOffer | null {
     published: record.published === true,
     createdAt,
     updatedAt: typeof record.updatedAt === "string" && record.updatedAt ? record.updatedAt : createdAt,
+    ...(record.kind === "skills"
+      ? {
+          skillIds: parseSkillIds(record.skillIds),
+          skillOther: sanitizeSkillOther(record.skillOther),
+          availabilityDays: parseAvailabilityDays(record.availabilityDays),
+        }
+      : {}),
   };
 }
 
