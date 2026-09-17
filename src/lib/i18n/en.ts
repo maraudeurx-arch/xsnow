@@ -577,7 +577,7 @@ export const en: Messages = {
     contactEmail: "Contact email",
     contactEmailPh: "for our monetary offer",
     photo: "Ad photo",
-    photoHint: "upload a photo (400kb max)",
+    photoHint: "upload a photo (150kb max)",
     photoTooBig: "This image still exceeds {kb} KB after compression. Pick a lighter photo.",
     photoNotImage: "Choose a photo (JPEG, PNG, or WebP).",
     photoUndecodable: "Could not read this image. Try a JPEG or PNG.",

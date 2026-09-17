@@ -5,6 +5,9 @@
 
 export const AD_IMAGE_MAX_KB = 400;
 export const AD_IMAGE_MAX_BYTES = AD_IMAGE_MAX_KB * 1024;
+/** Harder cap for Resend attachments (mobile pubs). */
+export const AD_EMAIL_MAX_KB = 150;
+export const AD_EMAIL_MAX_BYTES = AD_EMAIL_MAX_KB * 1024;
 /** Skip decode for giant camera dumps that would freeze a phone tab. */
 export const AD_IMAGE_READ_MAX_BYTES = 12 * 1024 * 1024;
 export const AD_IMAGE_MAX_EDGE = 1280;
@@ -108,8 +111,19 @@ function canvasToBlob(canvas: HTMLCanvasElement, quality: number): Promise<Blob 
  * Compress a visitor photo to JPEG under {@link AD_IMAGE_MAX_KB} when needed.
  * Tiny already-legal JPEG/PNG/WebP files are kept as-is.
  */
+function mimeFromFile(file: File): string {
+  const typed = (file.type || "").toLowerCase().trim();
+  if (isAdImageMime(typed)) return typed === "image/jpg" ? "image/jpeg" : typed;
+  const name = (file.name || "").toLowerCase();
+  if (name.endsWith(".png")) return "image/png";
+  if (name.endsWith(".webp")) return "image/webp";
+  if (name.endsWith(".gif")) return "image/gif";
+  if (name.endsWith(".jpg") || name.endsWith(".jpeg") || name.endsWith(".jpe")) return "image/jpeg";
+  return typed;
+}
+
 export async function prepareAdImage(file: File): Promise<PrepareAdImageResult> {
-  const mime = (file.type || "").toLowerCase();
+  const mime = mimeFromFile(file);
   if (!isAdImageMime(mime)) return { ok: false, reason: "not_image" };
   if (file.size <= 0) return { ok: false, reason: "not_image" };
   if (file.size > AD_IMAGE_READ_MAX_BYTES) return { ok: false, reason: "too_large" };
@@ -160,6 +174,52 @@ export async function prepareAdImage(file: File): Promise<PrepareAdImageResult> 
         if (!adImageWithinLimit(blob.size)) continue;
         const dataUrl = await blobToDataUrl(blob);
         if (!isSafeImageDataUrl(dataUrl)) continue;
+        return {
+          ok: true,
+          value: {
+            dataUrl,
+            bytes: blob.size,
+            mime: "image/jpeg",
+            filename: "publicite.jpg",
+          },
+        };
+      }
+    }
+    return { ok: false, reason: "too_large" };
+  } catch {
+    return { ok: false, reason: "undecodable" };
+  } finally {
+    if (objectUrl) URL.revokeObjectURL(objectUrl);
+  }
+}
+
+/**
+ * Re-encode for the owner inbox: always JPEG under {@link AD_EMAIL_MAX_KB}.
+ * Real phone photos often fail Resend when sent near the 400 Ko display cap.
+ */
+export async function prepareAdImageForInbox(file: File): Promise<PrepareAdImageResult> {
+  const prepared = await prepareAdImage(file);
+  if (!prepared.ok) return prepared;
+  if (prepared.value.bytes <= AD_EMAIL_MAX_BYTES && prepared.value.mime.includes("jpeg")) {
+    return prepared;
+  }
+  if (typeof document === "undefined") {
+    return prepared.value.bytes <= AD_EMAIL_MAX_BYTES
+      ? prepared
+      : { ok: false, reason: "too_large" };
+  }
+  let objectUrl = "";
+  try {
+    objectUrl = URL.createObjectURL(file);
+    const image = await loadImage(objectUrl);
+    for (const edge of EDGE_STEPS) {
+      const canvas = drawScaled(image, edge);
+      if (!canvas) continue;
+      for (const quality of QUALITY_STEPS) {
+        const blob = await canvasToBlob(canvas, quality);
+        if (!blob || blob.size > AD_EMAIL_MAX_BYTES) continue;
+        const dataUrl = await blobToDataUrl(blob);
+        if (!isSafeImageDataUrl(dataUrl) || dataUrlByteLength(dataUrl) > AD_EMAIL_MAX_BYTES) continue;
         return {
           ok: true,
           value: {

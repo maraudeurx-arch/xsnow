@@ -577,7 +577,7 @@ export const fr = {
     contactEmail: "E-mail de contact",
     contactEmailPh: "pour notre proposition monétaire",
     photo: "Photo de la publicité",
-    photoHint: "upload une photo (400kb max)",
+    photoHint: "upload une photo (150kb max)",
     photoTooBig:
       "Cette image dépasse {kb} Ko même compressée. Choisis une photo plus légère.",
     photoNotImage: "Choisis une photo (JPEG, PNG ou WebP).",

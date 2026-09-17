@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import {
+  AD_EMAIL_MAX_BYTES,
+  AD_EMAIL_MAX_KB,
   AD_IMAGE_MAX_BYTES,
   AD_IMAGE_MAX_KB,
   adImageWithinLimit,
@@ -17,6 +19,8 @@ describe("ad image KB cap", () => {
     assert.equal(AD_IMAGE_MAX_BYTES, 400 * 1024);
     assert.equal(adImageWithinLimit(400 * 1024), true);
     assert.equal(adImageWithinLimit(400 * 1024 + 1), false);
+    assert.equal(AD_EMAIL_MAX_KB, 150);
+    assert.equal(AD_EMAIL_MAX_BYTES, 150 * 1024);
     assert.equal(adImageWithinLimit(0), false);
   });
 

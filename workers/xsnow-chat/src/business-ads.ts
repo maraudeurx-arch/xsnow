@@ -58,9 +58,23 @@ export async function handleBusinessAdsPost(
     return Response.json({ ok: false, error: "invalid" }, { status: 400 });
   }
   const mail = buildBusinessAdOwnerMail(input);
-  const result = await sendOwnerMail(env, mail);
+  let result = await sendOwnerMail(env, mail);
+  let attachmentOmitted = false;
+  if (!result.sent && mail.attachments?.length) {
+    const { attachments: _drop, ...without } = mail;
+    const retryText =
+      without.text +
+      "\n\n[Photo non jointe: l’envoi avec pièce jointe a échoué. Demander la photo à l’auteur si besoin.]";
+    result = await sendOwnerMail(env, { ...without, text: retryText });
+    attachmentOmitted = result.sent;
+  }
   return Response.json(
-    { ok: true, emailed: result.sent, reason: result.reason },
+    {
+      ok: true,
+      emailed: result.sent,
+      reason: result.reason,
+      attachmentOmitted,
+    },
     { status: result.sent ? 200 : 502 },
   );
 }
