@@ -46,9 +46,19 @@ export function parseRegisterNotice(raw: unknown): RegisterNoticeInput | null {
 
 export function resolveFromAddress(raw: unknown): string {
   if (typeof raw !== "string") return DEFAULT_IDEAS_FROM;
-  const text = raw.trim().replace(/[\r\n<>]/g, "").slice(0, 120);
-  if (!text.includes("@") || text.length < 5) return DEFAULT_IDEAS_FROM;
-  return text;
+  const text = raw.trim().replace(/[\r\n]/g, "").slice(0, 120);
+  // Allow "Name <email@domain>" or bare email; strip control chars only.
+  const angled = text.match(/^(.+?)<([^>]+@[^>]+)>$/);
+  if (angled) {
+    const email = angled[2]!.trim();
+    const name = angled[1]!.replace(/[<>]/g, "").trim();
+    if (email.includes("@") && email.length >= 5) {
+      return name ? `${name} <${email}>` : email;
+    }
+  }
+  const bare = text.replace(/[<>]/g, "").trim();
+  if (!bare.includes("@") || bare.length < 5 || bare.includes(" ")) return DEFAULT_IDEAS_FROM;
+  return bare;
 }
 
 function clipSubject(value: string) {
@@ -200,11 +210,17 @@ export async function sendOwnerMail(
     if (!response.ok) {
       let detail = "";
       try {
-        const errJson = (await response.json()) as { message?: string; name?: string };
-        detail = String(errJson.message || errJson.name || "").slice(0, 160);
+        const raw = (await response.text()).slice(0, 200);
+        try {
+          const errJson = JSON.parse(raw) as { message?: string; name?: string };
+          detail = String(errJson.message || errJson.name || raw);
+        } catch {
+          detail = raw.replace(/\s+/g, " ").trim();
+        }
       } catch {
         detail = "";
       }
+      detail = detail.slice(0, 160);
       return {
         sent: false,
         reason: detail ? `http_${response.status}:${detail}` : `http_${response.status}`,
