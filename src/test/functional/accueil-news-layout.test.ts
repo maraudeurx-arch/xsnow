@@ -28,8 +28,8 @@ describe("Accueil Nouvelles layout fills toward the footer", () => {
     assert.match(news, /data-neighborhood-news/);
     assert.match(news, /min-h-0 flex-1 grow flex-col gap-1 self-stretch/);
     assert.match(news, /sm:min-h-\[24rem\]/);
-    assert.match(news, /data-news-list[\s\S]*min-h-0[\s\S]*flex-1 grow/);
-    assert.match(news, /data-news-spacer[\s\S]*min-h-0[\s\S]*flex-1 grow/);
+    assert.match(news, /data-news-list/);
+    assert.match(news, /AccueilAdsReel/);
     assert.match(css, /\[data-news-list\][\s\S]*flex:\s*1 1 0%/);
     assert.match(css, /min-height:\s*max\(24rem,\s*52dvh\)/);
     assert.match(css, /min-height:\s*max\(16rem,\s*32dvh\)/);
@@ -51,16 +51,15 @@ describe("Accueil Nouvelles layout fills toward the footer", () => {
     );
     assert.doesNotMatch(news, /lorem ipsum/i);
     assert.doesNotMatch(news, /fake headline/i);
-    // Partner units sit under the full headline list (no mid-ad hang).
-    assert.match(news, /showMid \? <PartnerAdSlot slot="news-mid"/);
-    assert.doesNotMatch(news, /index === 0 && showMid/);
-    assert.match(css, /\[data-partner-slot="news-bottom"\][\s\S]*flex:\s*0\.55 1 0%/);
-    assert.match(css, /\[data-partner-slot="news-bottom"\][\s\S]*min-height:\s*max\(7\.2rem,\s*14dvh\)/);
-    // Overflow-safe: list min-height yields when ads must stay inside the card.
-    assert.match(
-      css,
-      /\[data-news-body\]:has\(\[data-partner-slot\]\)[\s\S]*grid-template-rows:\s*minmax\(0,\s*1fr\) auto minmax\(max\(7\.2rem,\s*14dvh\),\s*0\.55fr\)/,
-    );
+    // Full-bleed Accueil ads reel (one image, 5s) fills the reserved partner space.
+    assert.match(news, /<AccueilAdsReel \/>/);
+    assert.doesNotMatch(news, /PartnerAdSlot/);
+    const reel = read("components/AccueilAdsReel.tsx");
+    const adsLib = read("lib/accueil-ads.ts");
+    assert.match(reel, /data-accueil-ads-reel/);
+    assert.match(adsLib, /ACCUEIL_ADS_REEL_MS = 5_000/);
+    assert.match(adsLib, /opc-competences/);
+    assert.match(adsLib, /bogo-cat/);
   });
 
   it("keeps chat and footer outside the news flex-grow so they are not crushed", () => {

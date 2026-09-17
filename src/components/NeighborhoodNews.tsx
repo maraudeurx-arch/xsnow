@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { PartnerAdSlot } from "@/components/PartnerAdSlot";
+import { AccueilAdsReel } from "@/components/AccueilAdsReel";
 import { useI18n } from "@/lib/i18n/locale";
 import { usePlace } from "@/lib/place";
 import {
@@ -13,7 +13,6 @@ import {
   type NeighborhoodNewsItem,
   type NeighborhoodNewsPayload,
 } from "@/lib/neighborhood-news";
-import { visiblePartnerSlots, type PartnerSlotId } from "@/lib/partner-ads";
 
 export type NeighborhoodNewsState = {
   status: "hidden" | "need_city" | "loading" | "ready" | "empty" | "error";
@@ -25,15 +24,10 @@ type Props = {
   onNewsChange?: (state: NeighborhoodNewsState) => void;
 };
 
-function hasSlot(slots: PartnerSlotId[], id: PartnerSlotId) {
-  return slots.includes(id);
-}
-
 export function NeighborhoodNews({ onNewsChange }: Props) {
   const { city, countryCode, resolved } = usePlace();
   const { locale, m } = useI18n();
   const copy = m.neighborhoodNews;
-  const slots = visiblePartnerSlots();
   const [status, setStatus] = useState<NeighborhoodNewsState["status"]>(
     resolved ? "loading" : "need_city",
   );
@@ -120,9 +114,6 @@ export function NeighborhoodNews({ onNewsChange }: Props) {
     };
   }, [attempt, city, countryCode, locale, onNewsChange, resolved]);
 
-  const showMid = hasSlot(slots, "news-mid");
-  const showBottom = hasSlot(slots, "news-bottom");
-
   return (
     <section
       data-neighborhood-news
@@ -175,7 +166,7 @@ export function NeighborhoodNews({ onNewsChange }: Props) {
         {status === "ready" && items.length > 0 ? (
           <ul
             data-news-list
-            className="flex min-h-0 flex-1 grow flex-col gap-1 overflow-y-auto"
+            className="flex max-h-[28%] min-h-0 shrink grow-0 flex-col gap-1 overflow-y-auto"
           >
             {items.map((item) => (
               <li key={item.id}>
@@ -202,11 +193,10 @@ export function NeighborhoodNews({ onNewsChange }: Props) {
             ))}
           </ul>
         ) : (
-          <div data-news-spacer className="min-h-0 flex-1 grow" aria-hidden />
+          <div data-news-spacer className="min-h-0 shrink" aria-hidden />
         )}
 
-        {showMid ? <PartnerAdSlot slot="news-mid" /> : null}
-        {showBottom ? <PartnerAdSlot slot="news-bottom" /> : null}
+        <AccueilAdsReel />
       </div>
     </section>
   );
