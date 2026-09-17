@@ -21,9 +21,9 @@ export const MES_SERVICE_SHORTCUTS = [
     href: "/services/garde",
   },
   {
-    id: "tools",
-    action: "link" as const,
-    href: "/services/pret",
+    id: "skills",
+    action: "skills" as const,
+    href: "/mes-services?template=skills",
   },
 ] as const;
 

@@ -28,6 +28,7 @@ import {
   shareTextKey,
   unpublishedTemplateOffer,
   uxSessionDefaults,
+  skillsDefaults,
   writeEditedShareText,
   mailtoHref,
   offerFromSharePayload,
@@ -71,6 +72,34 @@ describe("publishIssues", () => {
     const ux = { ...uxSessionDefaults(), interacContact: "8195550101" };
     assert.deepEqual(publishIssues(ux), []);
     assert.equal(offerFromForm(ux).kind, "ux_session");
+  });
+
+  it("publishes a skills listing without Interac into En demande", () => {
+    const draft = skillsDefaults();
+    assert.ok(publishIssues(draft).includes("skills"));
+    assert.ok(publishIssues(draft).includes("days"));
+    const ready = {
+      ...draft,
+      skillIds: ["mechanic", "other"] as const,
+      skillOther: "<b>Soudure</b>",
+      availabilityDays: ["lun", "ven"] as const,
+    };
+    assert.deepEqual(publishIssues(ready), []);
+    const offer = offerFromForm(ready);
+    assert.equal(offer.kind, "skills");
+    assert.equal(offer.published, true);
+    assert.equal(offer.priceCad, 0);
+    assert.equal(offer.interacContact, "");
+    assert.equal(offer.skillOther, "Soudure");
+    assert.deepEqual(offer.skillIds, ["mechanic", "other"]);
+    assert.deepEqual(offer.availabilityDays, ["lun", "ven"]);
+    assert.doesNotMatch(offer.title, /<b>/);
+    const list = mergeBrowseOffers([offer], [], null);
+    assert.equal(list.length, 1);
+    assert.equal(list[0]?.kind, "skills");
+    const stored = parseStoredOffer(JSON.parse(JSON.stringify(offer)));
+    assert.equal(stored?.kind, "skills");
+    assert.equal(stored?.skillOther, "Soudure");
   });
 });
 

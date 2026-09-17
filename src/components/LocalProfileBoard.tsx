@@ -23,13 +23,19 @@ const fieldClass =
 const blueCtaClass =
   "tap inline-flex w-full min-h-11 items-center justify-center rounded-full border border-sky-300/80 bg-[#1d4ed8] px-3 text-sm font-extrabold tracking-wide text-snow shadow-[0_8px_24px_rgba(29,78,216,0.5)] hover:brightness-110";
 
-export function LocalProfileBoard() {
+export function LocalProfileBoard({
+  startOpen = false,
+  required = false,
+}: {
+  startOpen?: boolean;
+  required?: boolean;
+}) {
   const { m } = useI18n();
   const copy = m.register;
   const memoryReady = useDeviceMemoryReady();
   const { city } = usePlace();
   const [profile, setProfile] = useLocalProfile();
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(startOpen && !profile);
   const [form, setForm] = useState<LocalProfileInput>(emptyProfileInput);
   const [error, setError] = useState<"" | "firstName" | "lastName" | "email" | "phone">("");
 
@@ -77,11 +83,11 @@ export function LocalProfileBoard() {
     <section className="space-y-2 rounded-2xl border border-sky-400/35 bg-sky-500/10 p-3">
       {!profile && !memoryReady ? (
         <div data-device-memory-pending aria-busy="true" className="min-h-11" />
-      ) : !profile ? (
+      ) : !profile && !open ? (
         <button type="button" className={blueCtaClass} data-register-cta onClick={openForm}>
           {copy.cta}
         </button>
-      ) : (
+      ) : profile ? (
         <div className="space-y-2">
           <p className="text-sm font-extrabold text-snow">{copy.saved}</p>
           <p className="text-xs font-semibold text-snow/85" data-member-id>
@@ -94,7 +100,7 @@ export function LocalProfileBoard() {
             {copy.edit}
           </button>
         </div>
-      )}
+      ) : null}
 
       {open ? (
         <form className="grid gap-2" onSubmit={onSubmit} data-register-form>
@@ -158,6 +164,7 @@ export function LocalProfileBoard() {
             </p>
           ) : null}
           <div className="grid grid-cols-2 gap-2">
+            {required ? null : (
             <button
               type="button"
               className="tap rounded-full border border-white/20 bg-white/5 text-sm font-bold"
@@ -165,7 +172,8 @@ export function LocalProfileBoard() {
             >
               {copy.cancel}
             </button>
-            <button type="submit" className={blueCtaClass}>
+            )}
+            <button type="submit" className={`${blueCtaClass}${required ? " col-span-2" : ""}`}>
               {copy.save}
             </button>
           </div>

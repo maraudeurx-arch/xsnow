@@ -8,7 +8,7 @@ Visitor ideas, chat, share text, offer notes, monetization suggestions, and prox
 
 Mes services offers, En demande requests, Interac/PayPal, share blurbs, chat, and the optional registration profile (first name, last name, email, phone, `OPC-XXXX` member number) are **device-local**. Vos idées stay on-device **and** a sanitized copy (text, city, timestamp, optional OPC id — never last name or phone) is emailed to **opencommunity.opc@gmail.com** via the Worker (`POST /ideas` → Resend). Registration may also send a notice (`POST /register`: first name, OPC id, visitor email, city). There is no remote profile API in this MVP. A fresh browser starts empty: the client does **not** ship the owner’s Gatineau car loan (or any other personal listing) as default content.
 
-Community-wide features/offers/ideas appear for everyone only after **GOV + owner approval**, then as a numbered app release (`public/catalog/<version>.json`, currently empty for soft launch). A link a visitor copies themselves can show that one offer to the person who opens it — that is opt-in share, not a shared account.
+Community-wide features/offers/ideas appear for everyone only after **development-team approval**, then as a numbered app release (`public/catalog/<version>.json`, currently empty for soft launch). A link a visitor copies themselves can show that one offer to the person who opens it — that is opt-in share, not a shared account.
 
 ## Proximity alerts (consent only)
 
@@ -19,7 +19,7 @@ See **À propos OPC** for the visible version number (semver) and release notes.
 ## What visitors cannot do
 
 - **No path to the GitHub repo.** Submitting *Vos idées*, chatting with the avatar, or sharing an offer only writes to the visitor’s `localStorage` and, for Vos idées, a sanitized copy (text, city, timestamp, optional OPC id — no last name/phone) emailed to opencommunity.opc@gmail.com via Worker `POST /ideas`. If they consented to stats, anonymous `/stats` events may also be sent. Nothing auto-opens a pull request, commit, or GitHub issue.
-- **GOV + owner review only.** Product changes land in git after a human reviews a PR. Visitor suggestions are never merged automatically. The owner’s live inbox is Gmail; optional compile is `GET /ideas` behind `IDEAS_OWNER_SECRET`.
+- **Human review only.** Product changes land in git after a human reviews a PR. Visitor suggestions are never merged automatically. The development team’s live inbox is Gmail; optional compile is `GET /ideas` behind `IDEAS_OWNER_SECRET`.
 - **No file uploads.** This MVP has no visitor file, image, or attachment input. Pasted “ideas” that look like binaries, PEM blocks, or long base64 blobs are neutralized to `[removed-binary]`.
 - **No HTML execution.** User strings are React text nodes / `textarea` values (`textContent`), never `dangerouslySetInnerHTML`. Idea-wall URLs are **not** auto-linked. `javascript:`, `data:`, `vbscript:`, and `file:` schemes are stripped on input and again before analytics POST.
 

@@ -1,8 +1,15 @@
 # OPC public catalog
 
-Community-wide offers and ideas appear here **only after GOV + owner approval**, then ship in a numbered app release (`public/catalog/<version>.json`).
+Community-wide offers and ideas appear here **only after development-team approval**, then ship in a numbered app release (`public/catalog/<version>.json`).
 
 Personal Mes services offers, En demande requests, Interac/PayPal, chat, Vos idées, and the local registration profile stay on the visitor’s device until that happens. A sanitized copy of a submitted idea (text, city, timestamp, optional OPC id — no last name or phone) is emailed to opencommunity.opc@gmail.com. That inbox is not a public catalog.
+
+## 0.3.5 — 2026-09-17
+
+- Mes compétences: sign-up first (Mon profil), then skills + availability; publish into En demande on this device. Replaces Prêt d’outils.
+- User-facing copy: Politzer / GOV → l’équipe de développement (development team / equipo de desarrollo). GitHub maraudeurx-arch and opencommunity.opc@gmail.com kept.
+- Vos idées: one short privacy line under the ideas wall.
+- Public catalog remains empty.
 
 ## 0.3.4 — 2026-09-16
 

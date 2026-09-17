@@ -3,6 +3,7 @@
 import { FormEvent, Suspense, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import { LocalProfileBoard } from "@/components/LocalProfileBoard";
 import { noteOfferCreated } from "@/lib/analytics";
 import { interpolate } from "@/lib/i18n";
 import { useI18n } from "@/lib/i18n/locale";
@@ -30,11 +31,22 @@ import {
   writeEditedShareText,
   clipShareText,
   isInjectedSeedId,
+  skillsDefaults,
   type CommunityOffer,
   type OfferFormInput,
   type OfferKind,
 } from "@/lib/offers";
 import { NOTES_TEXT_MAX, SHARE_TEXT_MAX } from "@/lib/sanitize";
+import {
+  SKILL_IDS,
+  WEEKDAYS,
+  parseAvailabilityDays,
+  parseSkillIds,
+  skillsFallbackTitle,
+  type SkillId,
+  type Weekday,
+} from "@/lib/skills";
+import { useLocalProfile } from "@/lib/useLocalProfile";
 import { useStoredList } from "@/lib/useStoredList";
 
 const fieldClass =
@@ -46,6 +58,7 @@ const ctaClass =
 function kindLabel(kind: OfferKind, copy: Messages["offers"]) {
   if (kind === "hotspot") return copy.typeHotspot;
   if (kind === "ux_session") return copy.typeUxSession;
+  if (kind === "skills") return copy.typeSkills;
   return copy.typeCarMorning;
 }
 
@@ -86,8 +99,11 @@ export function MyServicesBoard() {
 function MyServicesBoardInner() {
   const { locale, m } = useI18n();
   const copy = m.offers;
+  const skillsCopy = m.skills;
+  const [profile] = useLocalProfile();
   const searchParams = useSearchParams();
   const initialTemplate = parseOfferTemplateQuery(searchParams.get("template"));
+  const initialSkills = initialTemplate === "skills" || searchParams.get("template") === "skills";
   const [stored, setItems] = useStoredList<CommunityOffer>(OFFERS_KEY);
   const items = useMemo(
     () =>
@@ -97,12 +113,18 @@ function MyServicesBoardInner() {
     [stored],
   );
   const [form, setForm] = useState<OfferFormInput>(() =>
-    initialTemplate && initialTemplate !== "car_morning"
-      ? localizedTemplateForm(initialTemplate, copy)
-      : carMorningDefaults(),
+    initialSkills
+      ? skillsDefaults()
+      : initialTemplate && initialTemplate !== "car_morning"
+        ? localizedTemplateForm(initialTemplate, copy)
+        : carMorningDefaults(),
   );
   const [editingId, setEditingId] = useState<string | null>(() =>
-    initialTemplate && initialTemplate !== "car_morning" ? draftTemplateId(initialTemplate) : null,
+    initialSkills
+      ? null
+      : initialTemplate && initialTemplate !== "car_morning"
+        ? draftTemplateId(initialTemplate)
+        : null,
   );
   const [error, setError] = useState("");
   const [saved, setSaved] = useState(false);
@@ -111,7 +133,8 @@ function MyServicesBoardInner() {
   const [shareOfferId, setShareOfferId] = useState<string | null>(null);
   const [shareStatus, setShareStatus] = useState<"ok" | "fail" | "">("");
   const [firstPublish, setFirstPublish] = useState(false);
-  const [showForm, setShowForm] = useState(() => Boolean(initialTemplate));
+  const [showForm, setShowForm] = useState(() => Boolean(initialTemplate) && !initialSkills);
+  const [showSkills, setShowSkills] = useState(() => initialSkills);
   const shareBox = useRef<HTMLElement | null>(null);
   const shareArea = useRef<HTMLTextAreaElement | null>(null);
 
@@ -136,6 +159,17 @@ function MyServicesBoardInner() {
   }
 
   function applyTemplate(nextKind: OfferKind, seedDraft: boolean, list = items) {
+    if (nextKind === "skills") {
+      setForm(skillsDefaults());
+      setEditingId(null);
+      setSaved(false);
+      setDraftSaved(false);
+      setError("");
+      setShowForm(false);
+      setShowSkills(true);
+      return;
+    }
+    setShowSkills(false);
     if (nextKind === "car_morning") {
       setForm((prev) => localizedTemplateForm("car_morning", copy, prev));
       setEditingId(null);
@@ -223,10 +257,29 @@ function MyServicesBoardInner() {
       setError(copy.needGas);
       return;
     }
+    if (issues.includes("skills")) {
+      setError(skillsCopy.needSkill);
+      return;
+    }
+    if (issues.includes("other")) {
+      setError(skillsCopy.needOther);
+      return;
+    }
+    if (issues.includes("days")) {
+      setError(skillsCopy.needDay);
+      return;
+    }
     if (!canPublish(form)) return;
 
     const existing = existingForSave();
-    const next = offerFromForm(form, existing);
+    const toSave =
+      formKind(form) === "skills"
+        ? {
+            ...form,
+            title: localizedSkillsTitle(form, skillsCopy),
+          }
+        : form;
+    const next = offerFromForm(toSave, existing);
     const existed = items.some((item) => item.id === next.id);
     const isFirstPublish = !existed && items.length === 0;
     upsertItem(next, items);
@@ -236,6 +289,7 @@ function MyServicesBoardInner() {
     setEditingId(null);
     setForm(carMorningDefaults());
     setShowForm(false);
+    setShowSkills(false);
     setFirstPublish(isFirstPublish);
     void openShare(next);
     if (!existed) noteOfferCreated(next.kind);
@@ -260,19 +314,19 @@ function MyServicesBoardInner() {
     "lend-car": m.mesServicesButtons.lendCar,
     moving: m.mesServicesButtons.moving,
     babysitting: m.mesServicesButtons.babysitting,
-    tools: m.mesServicesButtons.tools,
+    skills: m.mesServicesButtons.skills,
   } as const;
 
   return (
     <div className="space-y-6">
       <div className="grid gap-2">
         {MES_SERVICE_SHORTCUTS.map((item) =>
-          item.action === "car_morning" ? (
+          item.action === "car_morning" || item.action === "skills" ? (
             <button
               key={item.id}
               type="button"
               className={ctaClass}
-              onClick={() => applyTemplate("car_morning", false)}
+              onClick={() => applyTemplate(item.action === "skills" ? "skills" : "car_morning", false)}
             >
               {buttonLabel[item.id]}
             </button>
@@ -283,6 +337,31 @@ function MyServicesBoardInner() {
           ),
         )}
       </div>
+
+      {showSkills && !profile ? (
+        <div className="space-y-3" data-signup-gate>
+          <p className="text-sm leading-relaxed text-pretty text-snow/90">{m.register.gateLead}</p>
+          <LocalProfileBoard startOpen required />
+        </div>
+      ) : null}
+
+      {showSkills && profile ? (
+        <SkillsOfferForm
+          form={form}
+          error={error}
+          onPatch={patch}
+          onCancel={() => {
+            setShowSkills(false);
+            setError("");
+            setForm(carMorningDefaults());
+          }}
+          onSubmit={onSubmit}
+          labels={skillsCopy}
+          dayLabels={m.alerts.days}
+          windowFromLabel={copy.windowFrom}
+          windowToLabel={copy.windowTo}
+        />
+      ) : null}
 
       {showForm ? (
       <form onSubmit={onSubmit} className="grid gap-3">
@@ -553,9 +632,14 @@ function MyServicesBoardInner() {
                   {interpolate(copy.windowLine, {
                     from: formatHourFr(item.windowFrom),
                     to: formatHourFr(item.windowTo),
-                  })}{" "}
-                  · {formatCad(item.priceCad, locale)}{" "}
-                  {item.kind === "car_morning" ? copy.perMorning : copy.perSession}
+                  })}
+                  {item.kind === "skills"
+                    ? item.availabilityDays?.length
+                      ? ` · ${item.availabilityDays.join(", ")}`
+                      : ""
+                    : ` · ${formatCad(item.priceCad, locale)} ${
+                        item.kind === "car_morning" ? copy.perMorning : copy.perSession
+                      }`}
                   {item.neighborhood ? ` · ${item.neighborhood}` : ""}
                 </p>
                 {item.notes ? (
@@ -571,7 +655,13 @@ function MyServicesBoardInner() {
                       setSaved(false);
                       setDraftSaved(false);
                       setShareStatus("");
-                      setShowForm(true);
+                      if (item.kind === "skills") {
+                        setShowSkills(true);
+                        setShowForm(false);
+                      } else {
+                        setShowSkills(false);
+                        setShowForm(true);
+                      }
                     }}
                   >
                     {copy.edit}
@@ -592,3 +682,147 @@ function MyServicesBoardInner() {
     </div>
   );
 }
+
+function localizedSkillsTitle(form: OfferFormInput, labels: Messages["skills"]) {
+  const ids = parseSkillIds(form.skillIds);
+  const other = String(form.skillOther || "").trim();
+  const map: Record<SkillId, string> = {
+    mechanic: labels.mechanic,
+    plumber: labels.plumber,
+    electrician: labels.electrician,
+    driver: labels.driver,
+    other: labels.other,
+  };
+  const parts = ids.map((id) => (id === "other" && other ? other : map[id]));
+  return parts.join(", ") || skillsFallbackTitle(ids, other);
+}
+
+function SkillsOfferForm({
+  form,
+  error,
+  onPatch,
+  onCancel,
+  onSubmit,
+  labels,
+  dayLabels,
+  windowFromLabel,
+  windowToLabel,
+}: {
+  form: OfferFormInput;
+  error: string;
+  onPatch: <K extends keyof OfferFormInput>(key: K, value: OfferFormInput[K]) => void;
+  onCancel: () => void;
+  onSubmit: (event: FormEvent<HTMLFormElement>) => void;
+  labels: Messages["skills"];
+  dayLabels: Messages["alerts"]["days"];
+  windowFromLabel: string;
+  windowToLabel: string;
+}) {
+  const selected = new Set(parseSkillIds(form.skillIds));
+  const days = new Set(parseAvailabilityDays(form.availabilityDays));
+
+  function toggleSkill(id: SkillId) {
+    const next = new Set(selected);
+    if (next.has(id)) next.delete(id);
+    else next.add(id);
+    onPatch("skillIds", SKILL_IDS.filter((item) => next.has(item)));
+  }
+
+  function toggleDay(day: Weekday) {
+    const next = new Set(days);
+    if (next.has(day)) next.delete(day);
+    else next.add(day);
+    onPatch("availabilityDays", WEEKDAYS.filter((item) => next.has(item)));
+  }
+
+  return (
+    <form onSubmit={onSubmit} className="grid gap-3" data-skills-form>
+      <h3 className="text-base font-extrabold text-gold">{labels.formTitle}</h3>
+      <fieldset className="grid gap-2">
+        <legend className="text-sm font-semibold">{labels.skillsLabel}</legend>
+        {SKILL_IDS.map((id) => (
+          <label
+            key={id}
+            className="tap flex min-h-11 items-center gap-3 rounded-2xl border border-white/15 bg-white/5 px-3 text-sm font-semibold"
+          >
+            <input
+              type="checkbox"
+              checked={selected.has(id)}
+              onChange={() => toggleSkill(id)}
+              className="size-5 accent-gold"
+            />
+            {labels[id]}
+          </label>
+        ))}
+        {selected.has("other") ? (
+          <label className="grid gap-1 text-sm font-semibold">
+            {labels.other}
+            <input
+              value={form.skillOther || ""}
+              onChange={(event) => onPatch("skillOther", event.target.value)}
+              placeholder={labels.otherPh}
+              className={fieldClass}
+              autoComplete="off"
+            />
+          </label>
+        ) : null}
+      </fieldset>
+      <fieldset className="grid gap-2">
+        <legend className="text-sm font-semibold">{labels.daysLabel}</legend>
+        {WEEKDAYS.map((day) => (
+          <label
+            key={day}
+            className="tap flex min-h-11 items-center gap-3 rounded-2xl border border-white/15 bg-white/5 px-3 text-sm font-semibold"
+          >
+            <input
+              type="checkbox"
+              checked={days.has(day)}
+              onChange={() => toggleDay(day)}
+              className="size-5 accent-gold"
+            />
+            {dayLabels[day]}
+          </label>
+        ))}
+      </fieldset>
+      <fieldset className="grid gap-2">
+        <legend className="text-sm font-semibold">{labels.hoursLabel}</legend>
+        <div className="grid grid-cols-2 gap-3">
+          <label className="grid gap-1 text-sm font-semibold">
+            {windowFromLabel}
+            <input
+              type="time"
+              value={form.windowFrom}
+              onChange={(event) => onPatch("windowFrom", event.target.value)}
+              className={fieldClass}
+              required
+            />
+          </label>
+          <label className="grid gap-1 text-sm font-semibold">
+            {windowToLabel}
+            <input
+              type="time"
+              value={form.windowTo}
+              onChange={(event) => onPatch("windowTo", event.target.value)}
+              className={fieldClass}
+              required
+            />
+          </label>
+        </div>
+      </fieldset>
+      {error ? <p className="text-sm text-gold">{error}</p> : null}
+      <div className="grid gap-2 sm:grid-cols-2">
+        <button type="submit" className="tap rounded-full bg-cobalt font-extrabold text-snow">
+          {labels.publish}
+        </button>
+        <button
+          type="button"
+          className="tap rounded-full border border-white/20 bg-white/5 font-bold text-snow"
+          onClick={onCancel}
+        >
+          {labels.cancel}
+        </button>
+      </div>
+    </form>
+  );
+}
+

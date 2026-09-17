@@ -41,10 +41,11 @@ const ctaClass =
 
 function kindLabel(
   kind: OfferKind,
-  copy: { typeCarMorning: string; typeHotspot: string; typeUxSession: string },
+  copy: { typeCarMorning: string; typeHotspot: string; typeUxSession: string; typeSkills: string },
 ) {
   if (kind === "hotspot") return copy.typeHotspot;
   if (kind === "ux_session") return copy.typeUxSession;
+  if (kind === "skills") return copy.typeSkills;
   return copy.typeCarMorning;
 }
 
@@ -208,9 +209,14 @@ function DemandBoardInner() {
                 {interpolate(copy.windowLine, {
                   from: formatHourFr(offer.windowFrom),
                   to: formatHourFr(offer.windowTo),
-                })}{" "}
-                · {formatCad(offer.priceCad, locale)}{" "}
-                {offer.kind === "car_morning" ? copy.perMorning : copy.perSession}
+                })}
+                {offer.kind === "skills"
+                  ? offer.availabilityDays?.length
+                    ? ` · ${offer.availabilityDays.join(", ")}`
+                    : ""
+                  : ` · ${formatCad(offer.priceCad, locale)} ${
+                      offer.kind === "car_morning" ? copy.perMorning : copy.perSession
+                    }`}
                 {offer.neighborhood ? ` · ${offer.neighborhood}` : ""}
                 {offer.kind === "car_morning" && offer.gasBorrowerPays ? ` · ${copy.gasBadge}` : ""}
               </p>
@@ -316,49 +322,55 @@ function PaymentPanel({
   return (
     <div className="mt-3 space-y-3 rounded-2xl border border-gold/30 bg-gold/5 p-3">
       <p className="text-sm font-extrabold text-gold">{copy.paymentTitle}</p>
-      <p className="text-sm leading-relaxed text-snow/90">
-        {interpolate(offer.kind === "car_morning" ? copy.paymentAmount : copy.paymentAmountGeneric, {
-          amount,
-        })}
-      </p>
-      {offer.kind === "car_morning" ? (
-        <p className="text-sm leading-relaxed text-snow/90">{copy.paymentGas}</p>
-      ) : null}
-      <p className="text-sm leading-relaxed text-snow/90">
-        {offer.interacContact
-          ? interpolate(copy.paymentTo, { contact: offer.interacContact })
-          : copy.paymentToUnknown}
-      </p>
-      <p className="text-xs leading-relaxed text-ice/85">{copy.paymentConfirm}</p>
-      <p className="text-xs leading-relaxed text-snow/70">{copy.terms}</p>
-      <div className="grid gap-2">
-        <button
-          type="button"
-          className="tap rounded-full bg-cobalt text-sm font-extrabold text-snow"
-          onClick={() => onCopy("amount", amountRaw)}
-        >
-          {copied === "amount" ? copy.copied : copy.copyAmount}
-        </button>
-        {offer.interacContact ? (
-          <button
-            type="button"
-            className="tap rounded-full border border-white/20 bg-white/5 text-sm font-bold"
-            onClick={() => onCopy("interac", offer.interacContact)}
-          >
-            {copied === "interac" ? copy.copied : copy.copyInterac}
-          </button>
-        ) : null}
-        {paypalMeUrl(offer.paypalMe) ? (
-          <a
-            href={paypalMeUrl(offer.paypalMe)}
-            target="_blank"
-            rel="noopener noreferrer nofollow"
-            className="tap flex items-center justify-center rounded-full border border-gold/40 bg-gold/10 text-sm font-extrabold text-gold"
-          >
-            {copy.paypalPay}
-          </a>
-        ) : null}
-      </div>
+      {offer.kind === "skills" ? (
+        <p className="text-xs leading-relaxed text-snow/70">{copy.terms}</p>
+      ) : (
+        <>
+          <p className="text-sm leading-relaxed text-snow/90">
+            {interpolate(offer.kind === "car_morning" ? copy.paymentAmount : copy.paymentAmountGeneric, {
+              amount,
+            })}
+          </p>
+          {offer.kind === "car_morning" ? (
+            <p className="text-sm leading-relaxed text-snow/90">{copy.paymentGas}</p>
+          ) : null}
+          <p className="text-sm leading-relaxed text-snow/90">
+            {offer.interacContact
+              ? interpolate(copy.paymentTo, { contact: offer.interacContact })
+              : copy.paymentToUnknown}
+          </p>
+          <p className="text-xs leading-relaxed text-ice/85">{copy.paymentConfirm}</p>
+          <p className="text-xs leading-relaxed text-snow/70">{copy.terms}</p>
+          <div className="grid gap-2">
+            <button
+              type="button"
+              className="tap rounded-full bg-cobalt text-sm font-extrabold text-snow"
+              onClick={() => onCopy("amount", amountRaw)}
+            >
+              {copied === "amount" ? copy.copied : copy.copyAmount}
+            </button>
+            {offer.interacContact ? (
+              <button
+                type="button"
+                className="tap rounded-full border border-white/20 bg-white/5 text-sm font-bold"
+                onClick={() => onCopy("interac", offer.interacContact)}
+              >
+                {copied === "interac" ? copy.copied : copy.copyInterac}
+              </button>
+            ) : null}
+            {paypalMeUrl(offer.paypalMe) ? (
+              <a
+                href={paypalMeUrl(offer.paypalMe)}
+                target="_blank"
+                rel="noopener noreferrer nofollow"
+                className="tap flex items-center justify-center rounded-full border border-gold/40 bg-gold/10 text-sm font-extrabold text-gold"
+              >
+                {copy.paypalPay}
+              </a>
+            ) : null}
+          </div>
+        </>
+      )}
     </div>
   );
 }

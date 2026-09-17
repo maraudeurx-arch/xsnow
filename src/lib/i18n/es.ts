@@ -169,7 +169,7 @@ export const es: Messages = {
       sections: [
         {
           heading: "Quiénes somos",
-          body: "Open Community (OPC) / Xsnow es una app de ayuda mutua de barrio, con el nombre de tu ciudad. Sitio estático en GitHub Pages. No hace falta una cuenta de correo. Responsable público: Politzer. Lanzamiento suave independiente — no es una sociedad registrada. Contacto: GitHub Issues, o opencommunity.opc@gmail.com. Detalle: página Quién está detrás de OPC.",
+          body: "Open Community (OPC) / Xsnow es una app de ayuda mutua de barrio, con el nombre de tu ciudad. Sitio estático en GitHub Pages. No hace falta una cuenta de correo. El equipo de desarrollo se ocupa del proyecto. Lanzamiento suave independiente — no es una sociedad registrada. Contacto: GitHub Issues, o opencommunity.opc@gmail.com. Detalle: página Quién está detrás de OPC.",
         },
         {
           heading: "Qué recogemos",
@@ -193,7 +193,7 @@ export const es: Messages = {
         },
         {
           heading: "Anuncios personales",
-          body: "Tus ofertas (Mis servicios), solicitudes (En demanda), ideas (Tus ideas) y textos para compartir se quedan en este aparato. No es un feed social global. Una copia saneada de una idea enviada se envía por correo a opencommunity.opc@gmail.com; los demás visitantes no la ven. Un enlace que copias tú puede mostrar una oferta a quien lo abra. Para que algo aparezca en todos los teléfonos, hace falta la aprobación de GOV + el propietario y una versión numerada (catálogo público).",
+          body: "Tus ofertas (Mis servicios), solicitudes (En demanda), ideas (Tus ideas) y textos para compartir se quedan en este aparato. No es un feed social global. Una copia saneada de una idea enviada se envía por correo a opencommunity.opc@gmail.com; los demás visitantes no la ven. Un enlace que copias tú puede mostrar una oferta a quien lo abra. Para que algo aparezca en todos los teléfonos, hace falta la aprobación del equipo de desarrollo y una versión numerada (catálogo público).",
         },
       ],
     },
@@ -240,7 +240,7 @@ export const es: Messages = {
       sections: [
         {
           heading: "Responsable público",
-          body: "El nombre de pila público de la persona responsable es Politzer. Open Community (OPC) / Xsnow es un lanzamiento suave independiente: no es una sociedad registrada, ni una corporación, ni una compañía constituida. Aquí no se inventa ninguna razón social.",
+          body: "El equipo de desarrollo es responsable del proyecto. Open Community (OPC) / Xsnow es un lanzamiento suave independiente: no es una sociedad registrada, ni una corporación, ni una compañía constituida. Aquí no se inventa ninguna razón social.",
         },
         {
           heading: "Origen y ciudad mostrada",
@@ -248,15 +248,15 @@ export const es: Messages = {
         },
         {
           heading: "Código y revisión",
-          body: "El código es público en GitHub (cuenta maraudeurx-arch, repositorio xsnow). Las ideas y sugerencias de los visitantes nunca se fusionan automáticamente en el código. Los cambios de producto llegan a git tras una revisión humana (gobernanza del proyecto + propietario — «GOV + owner»). Sin auto-merge.",
+          body: "El código es público en GitHub (cuenta maraudeurx-arch, repositorio xsnow). Las ideas y sugerencias de los visitantes nunca se fusionan automáticamente en el código. Los cambios de producto llegan a git tras una revisión humana por el equipo de desarrollo. Sin auto-merge.",
         },
         {
           heading: "Contacto",
-          body: "El contacto público son las GitHub Issues del repositorio xsnow, y el correo dedicado opencommunity.opc@gmail.com. Politzer sigue siendo el responsable público. No uses otra dirección personal.",
+          body: "El contacto público son las GitHub Issues del repositorio xsnow, y el correo dedicado opencommunity.opc@gmail.com. El equipo de desarrollo sigue siendo el contacto público. No uses otra dirección personal.",
         },
         {
           heading: "Datos locales y versiones",
-          body: "La versión de la app se muestra aquí. Las ofertas, solicitudes e ideas personales se quedan en el aparato hasta una publicación aprobada (GOV + propietario) en una versión numerada. El catálogo público de esta versión está vacío en el lanzamiento suave.",
+          body: "La versión de la app se muestra aquí. Las ofertas, solicitudes e ideas personales se quedan en el aparato hasta una publicación aprobada por el equipo de desarrollo en una versión numerada. El catálogo público de esta versión está vacío en el lanzamiento suave.",
         },
       ],
     },
@@ -454,10 +454,10 @@ export const es: Messages = {
       "{placeName} / {community} — {slogan} Nuestra proximidad y nuestro espíritu de ayuda mutua son la garantía de nuestro éxito.",
     versionLabel: "Versión",
     deviceLocalNote:
-      "Tus ofertas, solicitudes, ideas, textos para compartir, inscripción (nombre, apellidos, correo, teléfono, número OPC-XXXX) y datos Interac/PayPal se quedan en este aparato. Una copia saneada de una idea (frase, ciudad, fecha, número OPC si estás inscrito — no tus datos de contacto) puede ir por correo a opencommunity.opc@gmail.com. Nada personal aparece en el de otro visitante hasta que GOV + el propietario aprueben una publicación en una versión numerada (catálogo público).",
+      "Tus ofertas, solicitudes, ideas, textos para compartir, inscripción (nombre, apellidos, correo, teléfono, número OPC-XXXX) y datos Interac/PayPal se quedan en este aparato. Una copia saneada de una idea (frase, ciudad, fecha, número OPC si estás inscrito — no tus datos de contacto) puede ir por correo a opencommunity.opc@gmail.com. Nada personal aparece en el de otro visitante hasta que el equipo de desarrollo apruebe una publicación en una versión numerada (catálogo público).",
     releaseNotesTitle: "Notas de la versión",
     releaseNotesBody:
-      "0.3.4 — Alertas de proximidad: horario lunes→domingo, radio 5/10/20 km, invitación y consentimiento de la persona (GPS del navegador / PWA). SMS Twilio opcional (secretos del Worker). Sin Apple Buscar / iCloud / Mensajes. 0.3.3 — Tus ideas: correo saneado a opencommunity.opc@gmail.com. El catálogo público sigue vacío.",
+      "0.3.5 — Mis competencias (tras inscribirse): publicar competencias + disponibilidad en En demanda. Texto: equipo de desarrollo. 0.3.4 — Alertas de proximidad: horario lunes→domingo, radio 5/10/20 km, invitación y consentimiento de la persona (GPS del navegador / PWA). SMS Twilio opcional (secretos del Worker). Sin Apple Buscar / iCloud / Mensajes. 0.3.3 — Tus ideas: correo saneado a opencommunity.opc@gmail.com. El catálogo público sigue vacío.",
     language: "Idioma",
     comingSoon: "Las notificaciones y la estación de pantalla llegarán aquí.",
     locationConsent: "Ubicación",
@@ -796,7 +796,7 @@ export const es: Messages = {
     lendCar: "Prestar mi coche",
     moving: "Ayudar en una mudanza",
     babysitting: "Niñera",
-    tools: "Préstamo de herramientas",
+    skills: "Mis competencias",
   },
   enDemandeButtons: {
     moving: "Ayuda de mudanza",
@@ -804,12 +804,30 @@ export const es: Messages = {
     carpool: "Viaje compartido",
     equipment: "Préstamo de equipo",
   },
+  skills: {
+    formTitle: "Mis competencias",
+    skillsLabel: "Competencias",
+    mechanic: "Mecánico",
+    plumber: "Fontanero",
+    electrician: "Electricista",
+    driver: "Conductor",
+    other: "Otros",
+    otherPh: "Precisa tu competencia",
+    daysLabel: "Días disponibles",
+    hoursLabel: "Horas",
+    needSkill: "Elige al menos una competencia.",
+    needOther: "Precisa la competencia « Otros ».",
+    needDay: "Elige al menos un día.",
+    publish: "Publicar en En demanda",
+    cancel: "Cerrar",
+  },
 
   offers: {
     typeLabel: "Tipo de oferta",
     typeCarMorning: "Préstamo de coche — mañanas",
     typeHotspot: "Hotspot / conexión compartida",
     typeUxSession: "Sesión de test de usuario",
+    typeSkills: "Competencias",
     draft: "Borrador",
     saveDraft: "Guardar el borrador",
     draftSaved: "Borrador guardado en este aparato — aún no publicado.",
@@ -945,6 +963,8 @@ export const es: Messages = {
     invalidEmail: "Indica un correo válido.",
     invalidPhone: "Indica un teléfono válido.",
     localOnly: "Estos datos se quedan en este aparato. No se publican, y el correo/teléfono no aparecen en el encabezado.",
+    gateLead:
+      "Inscríbete primero (Mi perfil). Tus datos se quedan en este aparato. Un número OPC-XXXX es local.",
     share: "Compartir",
     shareTitle: "Invitar a alguien",
     shareHint: "Edita el texto y luego cópialo. El enlace no incluye tu correo ni tu teléfono.",
@@ -981,17 +1001,16 @@ export const es: Messages = {
     neighborhoodShare: "Barrio",
     neighborhoodPh: "Hull, Aylmer, Plateau…",
     submit: "Enviar la idea",
-    submitHint:
-      "Tu idea se queda en este aparato. Enviar también intenta un correo (frase, ciudad, fecha, número OPC si te inscribiste — no tu teléfono) a opencommunity.opc@gmail.com, para que Politzer decida qué construir. Sin red: la idea se queda aquí.",
+    submitHint: "",
     registerHint: "La inscripción local (número OPC) se queda en este aparato:",
     registerLink: "Inscribirse",
     registeredHint: "Número local de este aparato:",
     thankYou: "Idea bien recibida",
     thankYouBody:
-      "Gracias. Tu idea está guardada en este aparato. Un correo saneado va a opencommunity.opc@gmail.com. Otros teléfonos no la ven hasta que GOV + el propietario la aprueben en una versión numerada.",
+      "Gracias. Tu idea está guardada en este aparato. Un correo saneado va a opencommunity.opc@gmail.com. Otros teléfonos no la ven hasta que el equipo de desarrollo la apruebe en una versión numerada.",
     wallTitle: "Muro de ideas (este aparato)",
     wallHint:
-      "Tus ideas se quedan aquí. No aparecen en otro teléfono. Politzer las recibe por correo para decidir qué construir.",
+      "El equipo de desarrollo las recibe en opencommunity.opc@gmail.com (GitHub maraudeurx-arch).",
     wallEmpty: "Aún no hay ninguna idea aquí. La primera suele ser la más útil.",
     inboxSent: "Correo enviado a opencommunity.opc@gmail.com.",
     inboxFailed: "Guardada aquí. El correo al propietario no pudo salir (red).",
@@ -1009,7 +1028,7 @@ export const es: Messages = {
   },
   ownerIdeas: {
     title: "Bandeja de ideas",
-    lead: "Compilación para Politzer. Hace falta el secreto. Ninguna idea se inventa.",
+    lead: "Compilación para el equipo de desarrollo. Hace falta el secreto. Ninguna idea se inventa.",
     how: "La bandeja real es el correo opencommunity.opc@gmail.com (Resend, secreto RESEND_API_KEY). Esta página también compila GET /ideas?secret=… si IDEAS_OWNER_SECRET está configurado. Ninguna idea se inventa.",
     secretLabel: "Secreto del propietario",
     secretPh: "Pegar IDEAS_OWNER_SECRET",

@@ -12,6 +12,28 @@ export async function skipConsent(page: Page) {
   });
 }
 
+/** Device-local OPC profile so gated boards (Vos idées, Gagner maintenant) open. */
+export async function seedLocalProfile(page: Page) {
+  await page.addInitScript(() => {
+    try {
+      window.localStorage.setItem(
+        "xsnow.localProfile",
+        JSON.stringify({
+          id: "OPC-7K3M",
+          firstName: "Marie",
+          lastName: "Tremblay",
+          email: "marie@voisin.test",
+          phone: "819-555-0100",
+          createdAt: "2026-09-17T12:00:00.000Z",
+          updatedAt: "2026-09-17T12:00:00.000Z",
+        }),
+      );
+    } catch {
+      // Private mode
+    }
+  });
+}
+
 /** Never POST e2e ideas/registrations/alerts to the production Worker. */
 export async function stubIdeaInbox(
   page: Page,
