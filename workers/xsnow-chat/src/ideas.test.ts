@@ -162,6 +162,45 @@ describe("handleIdeasPost", () => {
     assert.equal((noDb.data as { emailed?: boolean }).emailed, true);
   });
 
+  it("never mails visitor phone or email even if the POST includes them", async () => {
+    const mails: Array<{ subject: string; text: string }> = [];
+    const mailer: OwnerMailer = async (_env, mail) => {
+      mails.push(mail);
+      return { sent: true };
+    };
+    const db = memoryD1();
+    const now = Date.parse("2026-09-17T12:00:00.000Z");
+    const result = await handleIdeasPost(
+      {
+        id: "idea-pii",
+        text: "Un café de réparation vélo",
+        city: "Aylmer",
+        opcId: "OPC-7K3M",
+        email: "marie@voisin.test",
+        phone: "819-555-0100",
+        lastName: "Tremblay",
+      },
+      { DB: db },
+      now,
+      mailer,
+    );
+    assert.equal(result.status, 200);
+    assert.equal((result.data as { emailed?: boolean }).emailed, true);
+    const stored = JSON.stringify(db.rows);
+    assert.equal(stored.includes("marie@"), false);
+    assert.equal(stored.includes("555-0100"), false);
+    assert.equal(stored.includes("Tremblay"), false);
+    assert.equal(mails.length, 1);
+    const mailText = mails[0]?.text ?? "";
+    assert.match(mailText, /Un café de réparation vélo/);
+    assert.match(mailText, /Aylmer/);
+    assert.match(mailText, /OPC-7K3M/);
+    assert.match(mailText, /2026-09-17T12:00:00.000Z/);
+    assert.doesNotMatch(mailText, /marie@voisin\.test/);
+    assert.doesNotMatch(mailText, /819-555-0100/);
+    assert.doesNotMatch(mailText, /Tremblay/);
+  });
+
   it("still returns 200 and keeps D1 when mail fails", async () => {
     const db = memoryD1();
     const result = await handleIdeasPost(

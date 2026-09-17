@@ -74,6 +74,7 @@ export function parseIdeaInboxInput(raw: unknown): IdeaInboxInput | null {
   const city = typeof record.city === "string" ? clipInboxCity(record.city) : "";
   const id = sanitizeRecordId(record.id) || "";
   const opcId = clipOpcId(record.opcId);
+  // Whitelist only. Extra keys (email, phone, lastName, …) are dropped here.
   return { id, text, city, opcId };
 }
 

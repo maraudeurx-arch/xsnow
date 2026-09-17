@@ -8,7 +8,8 @@ Personal Mes services offers, En demande requests, Interac/PayPal, chat, Vos id�
 
 - Mes compétences: sign-up first (Mon profil), then skills + availability; publish into En demande on this device. Replaces Prêt d’outils.
 - User-facing copy: Politzer / GOV → l’équipe de développement (development team / equipo de desarrollo). GitHub maraudeurx-arch and opencommunity.opc@gmail.com kept.
-- Vos idées: one short privacy line under the ideas wall.
+- Vos idées: one short privacy line under the ideas wall. Worker `POST /ideas` emails opencommunity.opc@gmail.com (idea text, city, date, OPC id if registered). Visitor phone/email stay off that mail; Mon profil opt-in uses a separate `POST /register`. Mail failure keeps localStorage + wall.
+- WhatsApp Business is a later optional channel (same sanitized payload); not in this release.
 - Public catalog remains empty.
 
 ## 0.3.4 — 2026-09-16

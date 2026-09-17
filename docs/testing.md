@@ -66,7 +66,7 @@ Critical paths:
 - Fresh storage: `/services/{kind}` boards empty (no demo seed titles)
 - Regional ambiance: autumn before geo; Caribbean for `?city=Port-au-Prince`; CA stays seasonal
 - Gagner maintenant / Vos idées / Mes compétences: local sign-up (Mon profil) before the form
-- Vos idées: submit stays in `localStorage` (device wall); a sanitized copy is POSTed to `/ideas` (e2e stubs the Worker so CI does not pollute production)
+- Vos idées: submit stays in `localStorage` (device wall); a sanitized copy is POSTed to `/ideas` (e2e stubs the Worker so CI does not pollute production). Payload is text + city + date + OPC id — never visitor phone/email. WhatsApp is documented as a later optional channel, not implemented.
 - Alertes de proximité: guardian form (prénom, lien, place, weekly hours, 5/10/20 km) + real invite/accept consent (e2e stubs `/alerts`)
 - Owner inbox page: empty state has no invented ideas; secret required
 - Onboarding: avatar picker before geo; About readable without the consent sheet

@@ -168,16 +168,19 @@ describe("Mon profil hub dedupes Accueil actions", () => {
   });
 });
 
-describe("Vos idées auto-emails Politzer without permission UX", () => {
+describe("Vos idées auto-emails the development team without permission UX", () => {
   it("POSTs /ideas on submit with no mailto, share sheet, Notification, or confirm", () => {
     const ideas = readFileSync(join(srcDir, "components/features/IdeasBoard.tsx"), "utf8");
     assert.match(ideas, /postIdeaToInbox/);
     assert.match(ideas, /sendInbox\(idea\)/);
+    assert.match(ideas, /opcId: profile\?\.id/);
+    assert.doesNotMatch(ideas, /profile\?\.email|profile\?\.phone|profile\?\.lastName/);
     assert.doesNotMatch(ideas, /mailto:/);
     assert.doesNotMatch(ideas, /Notification/);
     assert.doesNotMatch(ideas, /navigator\.share/);
     assert.doesNotMatch(ideas, /window\.confirm|confirm\(/);
     assert.doesNotMatch(ideas, /retryInbox|Renvoyer au propriétaire/);
+    assert.doesNotMatch(ideas, /WhatsApp|whatsapp/);
 
     const register = readFileSync(join(srcDir, "components/LocalProfileBoard.tsx"), "utf8");
     assert.match(register, /postRegisterNotice/);

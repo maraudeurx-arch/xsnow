@@ -144,6 +144,8 @@ Le `To:` est **codé en dur** (`opencommunity.opc@gmail.com`) — un visiteur ne
 
 Sans `RESEND_API_KEY`, `POST /ideas` répond `{ ok: true, emailed: false }` — le client affiche l’échec e-mail et garde la copie locale. La page vide n’invente **aucune** idée.
 
+WhatsApp Business n’est **pas** dans cette version (coût / complexité). Canal optionnel plus tard, même contenu assaini que l’e-mail — pas à la place de Gmail.
+
 ### Ville du visiteur (géolocalisation)
 
 Après le choix d’avatar, un bandeau demandait la position. **Désormais, dès la première visite**, une feuille de consentement demande deux choix optionnels : position (nom de ville ; sinon Gatineau) et stats d’usage anonymes. Rien n’est envoyé au Worker `/stats` et le dialogue GPS du navigateur n’apparaît qu’après un **oui**. Les choix restent dans `localStorage` (`xsnow.geoConsent`, `xsnow.analyticsConsent`) et se changent dans **Mon profil → Réglages**. Pages **Vie privée** (`/vie-privee`) et **Conditions** (`/conditions`).
@@ -224,6 +226,8 @@ npx wrangler deploy
    - Unlisted app page: `/xsnow/proprietaire/idees/?secret=…`
 
 Without `RESEND_API_KEY`, `POST /ideas` returns `{ ok: true, emailed: false }` — the client shows email failed and keeps the local copy. The empty inbox does **not** invent ideas.
+
+WhatsApp Business is **not** in this release (cost / complexity). Later optional channel, same sanitized payload as email — not a Gmail replacement.
 
 ### Visitor city
 

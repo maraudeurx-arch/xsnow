@@ -95,6 +95,7 @@ export function IdeasBoard() {
   }
 
   async function sendInbox(idea: CommunityIdea) {
+    // Never send visitor phone/email on idea mail — even if the local profile has them.
     const result = await postIdeaToInbox({
       id: idea.id,
       text: idea.text,
