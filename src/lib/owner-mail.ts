@@ -197,7 +197,19 @@ export async function sendOwnerMail(
         ...(mail.attachments?.length ? { attachments: mail.attachments } : {}),
       }),
     });
-    if (!response.ok) return { sent: false, reason: `http_${response.status}` };
+    if (!response.ok) {
+      let detail = "";
+      try {
+        const errJson = (await response.json()) as { message?: string; name?: string };
+        detail = String(errJson.message || errJson.name || "").slice(0, 160);
+      } catch {
+        detail = "";
+      }
+      return {
+        sent: false,
+        reason: detail ? `http_${response.status}:${detail}` : `http_${response.status}`,
+      };
+    }
     return { sent: true };
   } catch {
     return { sent: false, reason: "network" };
