@@ -26,7 +26,7 @@ test.describe("WhatsApp promo landings", () => {
       await expect(page.getByRole("heading", { level: 1 })).toHaveText(pageInfo.heading);
       const cta = page.getByRole("link", { name: "Cliquez ici", exact: true });
       await expect(cta).toBeVisible();
-      await expect(cta).toHaveAttribute("href", "https://maraudeurx-arch.github.io/xsnow/");
+      await expect(cta).toHaveAttribute("href", "https://opencommunity.app/");
       const box = await cta.boundingBox();
       expect(box).toBeTruthy();
       expect(box!.height).toBeGreaterThanOrEqual(44);

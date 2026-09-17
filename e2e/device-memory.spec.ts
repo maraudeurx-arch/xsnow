@@ -334,16 +334,22 @@ test.describe("iOS empty-localStorage cold start", () => {
 });
 
 test.describe("PWA launch URL", () => {
-  test("manifest start_url stays under /xsnow/", async ({ request }) => {
+  test("manifest start_url is the custom domain, not github.io", async ({ request }) => {
     const response = await request.get("./manifest.webmanifest");
     expect(response.ok()).toBeTruthy();
     const body = (await response.json()) as { start_url?: string; scope?: string; id?: string; icons?: { src?: string }[] };
-    expect(body.start_url).toBe("https://maraudeurx-arch.github.io/xsnow/");
-    expect(body.scope).toBe("https://maraudeurx-arch.github.io/xsnow/");
-    expect(body.id).toBe("https://maraudeurx-arch.github.io/xsnow/");
+    expect(body.start_url).toBe("https://opencommunity.app/");
+    expect(body.scope).toBe("https://opencommunity.app/");
+    expect(body.id).toBe("https://opencommunity.app/");
     expect(body.start_url).not.toBe("/");
     expect(body.start_url).not.toBe("/xsnow/");
     expect(body.start_url).not.toMatch(/\/xsnow\/xsnow/);
-    expect(body.icons?.[0]?.src).toBe("https://maraudeurx-arch.github.io/xsnow/brand/app-icon-192.png");
+    expect(body.icons?.[0]?.src).toBe("https://opencommunity.app/brand/app-icon-192.png");
+  });
+
+  test("export includes GitHub Pages CNAME for opencommunity.app", async ({ request }) => {
+    const response = await request.get("./CNAME");
+    expect(response.ok()).toBeTruthy();
+    expect((await response.text()).trim()).toBe("opencommunity.app");
   });
 });

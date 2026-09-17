@@ -109,7 +109,7 @@ describe("transparency version and contact markers", () => {
 });
 
 describe("PWA manifest start URL", () => {
-  it("embeds the absolute /xsnow/ URL so Home Screen does not open github.io root", () => {
+  it("embeds the absolute custom-domain URL so Home Screen does not open github.io root", () => {
     const source = readFileSync(join(appDir, "manifest.ts"), "utf8");
     assert.match(source, /pwaManifestLaunch/);
     assert.match(source, /start_url: launch\.start_url/);
@@ -120,7 +120,7 @@ describe("PWA manifest start URL", () => {
     assert.doesNotMatch(source, /start_url: PWA_SCOPE/);
     const paths = readFileSync(join(srcDir, "lib/paths.ts"), "utf8");
     assert.match(paths, /PWA_START_URL = PUBLIC_SITE_URL/);
-    assert.match(paths, /PUBLIC_SITE_ORIGIN = "https:\/\/maraudeurx-arch\.github\.io"/);
+    assert.match(paths, /PUBLIC_SITE_ORIGIN = CUSTOM_DOMAIN_ORIGIN/);
     const chrome = readFileSync(join(srcDir, "components/AppChrome.tsx"), "utf8");
     assert.match(chrome, /PagesScopeRedirect/);
     const notFound = readFileSync(join(appDir, "not-found.tsx"), "utf8");

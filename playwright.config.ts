@@ -2,7 +2,7 @@ import { defineConfig, devices } from "@playwright/test";
 
 const port = process.env.E2E_PORT || "4173";
 const host = process.env.E2E_HOST || "127.0.0.1";
-const basePath = "/xsnow";
+const basePath = (process.env.E2E_BASE_PATH || "").replace(/\/+$/, "");
 const iphone = devices["iPhone 12"];
 
 export default defineConfig({

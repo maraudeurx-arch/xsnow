@@ -35,8 +35,8 @@ function headingText(html: string) {
 }
 
 describe("WhatsApp promo landing pages", () => {
-  it("ships three clickable GitHub Pages landings without city names", () => {
-    assert.equal(PUBLIC_SITE_URL, "https://maraudeurx-arch.github.io/xsnow/");
+  it("ships three clickable custom-domain landings without city names", () => {
+    assert.equal(PUBLIC_SITE_URL, "https://opencommunity.app/");
 
     for (const page of PAGES) {
       const html = readFileSync(join(promoDir, page.file), "utf8");
@@ -44,10 +44,7 @@ describe("WhatsApp promo landing pages", () => {
       assert.match(html, /name="viewport"/);
       assert.match(html, /width=device-width/);
       assert.equal(headingText(html), page.headline);
-      assert.match(
-        html,
-        /<a class="cta" href="https:\/\/maraudeurx-arch\.github\.io\/xsnow\/">Cliquez ici<\/a>/,
-      );
+      assert.match(html, /<a class="cta" href="https:\/\/opencommunity\.app\/">Cliquez ici<\/a>/);
       assert.doesNotMatch(html, /Gatineau/i);
     }
   });

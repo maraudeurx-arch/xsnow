@@ -29,6 +29,8 @@ jobs:
       - run: npm ci
       - run: npm run build
         env:
+          CUSTOM_DOMAIN: "1"
+          NEXT_PUBLIC_CUSTOM_DOMAIN: "1"
           NEXT_PUBLIC_CHAT_API_URL: ${{ vars.NEXT_PUBLIC_CHAT_API_URL }}
           NEXT_PUBLIC_NEWS_API_URL: ${{ vars.NEXT_PUBLIC_NEWS_API_URL }}
           NEXT_PUBLIC_ADS_ENABLED: ${{ vars.NEXT_PUBLIC_ADS_ENABLED }}
@@ -53,6 +55,8 @@ jobs:
       - run: npx playwright install --with-deps chromium
       - run: npm run build
         env:
+          CUSTOM_DOMAIN: "1"
+          NEXT_PUBLIC_CUSTOM_DOMAIN: "1"
           NEXT_PUBLIC_CHAT_API_URL: ${{ vars.NEXT_PUBLIC_CHAT_API_URL }}
           NEXT_PUBLIC_NEWS_API_URL: ${{ vars.NEXT_PUBLIC_NEWS_API_URL }}
           NEXT_PUBLIC_ADS_ENABLED: ${{ vars.NEXT_PUBLIC_ADS_ENABLED }}

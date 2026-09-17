@@ -1,6 +1,6 @@
 # Security (soft launch)
 
-Public summary in the app (FR / EN / ES): [Sécurité](https://maraudeurx-arch.github.io/xsnow/securite/). Responsible disclosure: [GitHub Issues](https://github.com/maraudeurx-arch/xsnow/issues) or [opencommunity.opc@gmail.com](mailto:opencommunity.opc@gmail.com). There is **no independent third-party audit yet**.
+Public summary in the app (FR / EN / ES): [Sécurité](https://opencommunity.app/securite/). Responsible disclosure: [GitHub Issues](https://github.com/maraudeurx-arch/xsnow/issues) or [opencommunity.opc@gmail.com](mailto:opencommunity.opc@gmail.com). There is **no independent third-party audit yet**.
 
 Visitor ideas, chat, share text, offer notes, monetization suggestions, and proximity-alert fields are **untrusted data**. They never become Git, never become HTML, and never become executable URLs. WhatsApp Business is **not** a live inbox in this release; Gmail via Worker `POST /ideas` is the cheap path.
 

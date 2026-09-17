@@ -152,7 +152,7 @@ describe("invite token and legacy alerts", () => {
     assert.equal(sanitizeAlertToken("javascript:alert(1)"), "");
     assert.equal(sanitizeAlertToken("icloud-password"), "");
     const url = publicAlertInviteUrl("alr-abcdefghjk");
-    assert.equal(url, "https://maraudeurx-arch.github.io/xsnow/alertes/?alerte=alr-abcdefghjk");
+    assert.equal(url, "https://opencommunity.app/alertes/?alerte=alr-abcdefghjk");
     assert.equal(parseAlertInviteSearch("?alerte=alr-abcdefghjk&lang=fr"), "alr-abcdefghjk");
     assert.equal(parseAlertInviteSearch("?invite=ami"), "");
   });

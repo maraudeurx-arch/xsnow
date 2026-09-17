@@ -4,7 +4,11 @@ import {
   ABOUT_HREF,
   absoluteAssetUrl,
   BASE_PATH,
+  CUSTOM_DOMAIN_ORIGIN,
   GITHUB_ISSUES_URL,
+  GITHUB_PAGES_HOST,
+  GITHUB_PAGES_ORIGIN,
+  GITHUB_PAGES_SITE_URL,
   GITHUB_REPO_URL,
   HOW_IT_WORKS_HREF,
   isGithubPagesProjectHost,
@@ -14,6 +18,7 @@ import {
   OPC_PUBLIC_EMAIL,
   OPC_PUBLIC_MAILTO,
   PRIVACY_HREF,
+  PROJECT_PAGES_BASE,
   PROOFS_HREF,
   PUBLIC_SITE_ORIGIN,
   PUBLIC_SITE_URL,
@@ -42,35 +47,36 @@ describe("public trust paths", () => {
     assert.doesNotMatch(OPC_PUBLIC_EMAIL, /icloud/i);
   });
 
-  it("keeps the PWA Home Screen URL under /xsnow/, not github.io root", () => {
+  it("pins the PWA Home Screen URL to the custom domain, not github.io root", () => {
+    assert.equal(PROJECT_PAGES_BASE, "/xsnow");
     assert.equal(BASE_PATH, "/xsnow");
     assert.equal(PWA_SCOPE, "/xsnow/");
     assert.equal(PWA_SCOPE.startsWith(BASE_PATH), true);
     assert.notEqual(PWA_SCOPE, "/");
-    assert.equal(PUBLIC_SITE_ORIGIN, "https://maraudeurx-arch.github.io");
-    assert.equal(PUBLIC_SITE_URL, "https://maraudeurx-arch.github.io/xsnow/");
+    assert.equal(PUBLIC_SITE_ORIGIN, CUSTOM_DOMAIN_ORIGIN);
+    assert.equal(PUBLIC_SITE_ORIGIN, "https://opencommunity.app");
+    assert.equal(PUBLIC_SITE_URL, "https://opencommunity.app/");
+    assert.equal(GITHUB_PAGES_SITE_URL, "https://maraudeurx-arch.github.io/xsnow/");
     assert.equal(PWA_START_URL, PUBLIC_SITE_URL);
-    assert.equal(PWA_START_URL.endsWith("/xsnow/"), true);
     assert.notEqual(PWA_START_URL, "/");
-    assert.notEqual(PWA_START_URL, PUBLIC_SITE_ORIGIN);
-    assert.notEqual(PWA_START_URL, `${PUBLIC_SITE_ORIGIN}/`);
+    assert.notEqual(PWA_START_URL, GITHUB_PAGES_ORIGIN);
+    assert.notEqual(PWA_START_URL, `${GITHUB_PAGES_ORIGIN}/`);
+    assert.notEqual(PWA_START_URL, GITHUB_PAGES_SITE_URL);
 
     const launch = pwaManifestLaunch();
     assert.equal(launch.start_url, PWA_START_URL);
     assert.equal(launch.scope, PWA_START_URL);
     assert.equal(launch.id, PWA_START_URL);
-    assert.equal(launch.start_url.includes("/xsnow/"), true);
+    assert.equal(launch.start_url, "https://opencommunity.app/");
     assert.equal(launch.start_url.startsWith("https://"), true);
     assert.doesNotMatch(launch.start_url, /\/xsnow\/xsnow/);
-    assert.equal(
-      absoluteAssetUrl("/brand/app-icon-192.png"),
-      "https://maraudeurx-arch.github.io/xsnow/brand/app-icon-192.png",
-    );
+    assert.equal(absoluteAssetUrl("/brand/app-icon-192.png"), "https://opencommunity.app/brand/app-icon-192.png");
   });
 
-  it("redirects github.io org-root shortcuts onto /xsnow/", () => {
-    assert.equal(isGithubPagesProjectHost("maraudeurx-arch.github.io"), true);
+  it("redirects github.io (any path) onto the custom domain", () => {
+    assert.equal(isGithubPagesProjectHost(GITHUB_PAGES_HOST), true);
     assert.equal(isGithubPagesProjectHost("localhost"), false);
+    assert.equal(isGithubPagesProjectHost("opencommunity.app"), false);
     assert.equal(isGithubPagesProjectHost("example.com"), false);
     assert.equal(isOutsideAppScope("/"), true);
     assert.equal(isOutsideAppScope("/index.html"), true);
@@ -88,6 +94,13 @@ describe("public trust paths", () => {
       needsGithubPagesScopeRedirect({
         hostname: "maraudeurx-arch.github.io",
         pathname: "/xsnow/",
+      }),
+      true,
+    );
+    assert.equal(
+      needsGithubPagesScopeRedirect({
+        hostname: "opencommunity.app",
+        pathname: "/",
       }),
       false,
     );

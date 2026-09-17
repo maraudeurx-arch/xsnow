@@ -3,7 +3,7 @@ import { Fraunces, Outfit } from "next/font/google";
 import { AppChrome } from "@/components/AppChrome";
 import { Providers } from "@/app/providers";
 import { CONTENT_SECURITY_POLICY } from "@/lib/csp";
-import { assetUrl } from "@/lib/paths";
+import { PUBLIC_SITE_URL, assetUrl } from "@/lib/paths";
 import "./globals.css";
 
 const outfit = Outfit({
@@ -17,6 +17,7 @@ const fraunces = Fraunces({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(PUBLIC_SITE_URL),
   title: {
     default: "Open Community",
     template: "%s · Open Community",

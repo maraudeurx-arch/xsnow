@@ -1,13 +1,14 @@
 /**
- * Serve the Next static export (`out/`) at `/xsnow/`, matching GitHub Pages.
- * Playwright and `npm run serve:static` use this so assetPrefix/basePath resolve.
+ * Serve the Next static export (`out/`).
+ * Default: domain-root (custom domain / CUSTOM_DOMAIN=1).
+ * `E2E_BASE_PATH=/xsnow` matches a project-Pages export (`CUSTOM_DOMAIN=0`).
  */
 import { createReadStream, existsSync, statSync } from "node:fs";
 import { createServer } from "node:http";
 import { extname, join, normalize, relative, resolve } from "node:path";
 
 const ROOT = resolve(process.cwd(), "out");
-const BASE = "/xsnow";
+const BASE = (process.env.E2E_BASE_PATH || "").replace(/\/+$/, "");
 const PORT = Number(process.env.E2E_PORT || 4173);
 const HOST = process.env.E2E_HOST || "127.0.0.1";
 
@@ -36,11 +37,16 @@ function send(res, status, headers = {}, body) {
 
 function fileFromUrl(urlPath) {
   const decoded = decodeURIComponent(urlPath.split("?")[0]);
-  if (decoded === "/") return { redirect: `${BASE}/` };
-  if (decoded === BASE) return { redirect: `${BASE}/` };
-  if (!decoded.startsWith(`${BASE}/`) && decoded !== BASE) return { status: 404 };
+  let rel;
+  if (!BASE) {
+    rel = decoded.startsWith("/") ? decoded : `/${decoded}`;
+  } else {
+    if (decoded === "/") return { redirect: `${BASE}/` };
+    if (decoded === BASE) return { redirect: `${BASE}/` };
+    if (!decoded.startsWith(`${BASE}/`) && decoded !== BASE) return { status: 404 };
+    rel = decoded.slice(BASE.length) || "/";
+  }
 
-  const rel = decoded.slice(BASE.length) || "/";
   const candidates = [];
   if (rel.endsWith("/")) {
     candidates.push(join(ROOT, rel, "index.html"));
@@ -86,5 +92,5 @@ const server = createServer((req, res) => {
 });
 
 server.listen(PORT, HOST, () => {
-  console.log(`Static Pages export at http://${HOST}:${PORT}${BASE}/`);
+  console.log(`Static Pages export at http://${HOST}:${PORT}${BASE || ""}/`);
 });
