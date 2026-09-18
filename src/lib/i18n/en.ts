@@ -5,6 +5,11 @@ export const en: Messages = {
   brand: {
     community: "Open Community",
     slogan: "Monetize Yourself!",
+    slogans: [
+      "Monetize Yourself!",
+      "Digitize your skills.",
+      "Use our AI to do more.",
+    ],
   },
   place: {
     neighborhood: "your neighbourhood",

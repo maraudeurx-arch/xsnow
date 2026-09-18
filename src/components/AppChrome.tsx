@@ -7,6 +7,7 @@ import { PlaceDocumentTitle } from "@/components/PlaceWordmark";
 import { SeasonalBackdrop, SeasonScene } from "@/components/SeasonalBackdrop";
 import { SiteFooter } from "@/components/SiteFooter";
 import { BrandCopy } from "@/components/BrandCopy";
+import { RotatingBrandSlogan } from "@/components/RotatingBrandSlogan";
 import { PagesScopeRedirect } from "@/components/PagesScopeRedirect";
 
 export function AppChrome({ children }: { children: ReactNode }) {
@@ -24,7 +25,7 @@ export function AppChrome({ children }: { children: ReactNode }) {
             <BrandCopy field="community" />
           </h1>
           <p className="mt-0.5 font-[family-name:var(--font-brand)] leading-none font-bold tracking-[0.01em] text-gold [text-shadow:0_2px_10px_rgba(0,0,0,0.55)]">
-            <BrandCopy field="slogan" />
+            <RotatingBrandSlogan />
           </p>
         </header>
 
