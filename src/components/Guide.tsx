@@ -34,11 +34,6 @@ import {
   welcomeSpeechReady,
 } from "@/lib/welcome-place";
 import { useStoredAvatar } from "@/lib/useStoredAvatar";
-import {
-  ensureGuideControlsStarted,
-  refreshGuideControlsStarted,
-  shouldShowGuideControls,
-} from "@/lib/guide-controls";
 import { useDeviceMemoryReady } from "@/lib/useDeviceMemoryReady";
 
 const pickerSize =
@@ -51,7 +46,6 @@ export function Guide() {
   const [avatarId, setAvatarId] = useStoredAvatar();
   const memoryReady = useDeviceMemoryReady();
   const [picking, setPicking] = useState(false);
-  const [showGuideControls, setShowGuideControls] = useState(true);
   const [newsHeadlines, setNewsHeadlines] = useState("");
   const onNewsChange = useCallback((state: NeighborhoodNewsState) => {
     setNewsHeadlines(state.headlineLine);
@@ -97,10 +91,6 @@ export function Guide() {
     } else if (!readWelcomeGate()) {
       openWelcomeGate();
     }
-    const switching = Boolean(avatarId) && avatarId !== id;
-    if (switching) refreshGuideControlsStarted();
-    else ensureGuideControlsStarted();
-    setShowGuideControls(true);
     setAvatarId(id);
     setPicking(false);
   }
@@ -110,17 +100,8 @@ export function Guide() {
     if (!welcomeSpeechReady({ hasAvatar: true })) return;
     if (readWelcomeGate() || isWelcomeInFlight()) return;
     // Returning visitor: avatar already on this device. Do not auto-play
-    // welcome on reload — Réécouter is there if they want it again.
+    // welcome on reload — Réécouter is available in Mon profil instead.
     openWelcomeGate();
-  }, [chosen]);
-
-  useEffect(() => {
-    if (!chosen) return;
-    ensureGuideControlsStarted();
-    const tick = () => setShowGuideControls(shouldShowGuideControls());
-    tick();
-    const id = window.setInterval(tick, 30_000);
-    return () => window.clearInterval(id);
   }, [chosen]);
 
   return (
@@ -174,18 +155,6 @@ export function Guide() {
       ) : chosen ? (
         <div className="home-stage grid h-full min-h-0 w-full flex-1 grow grid-rows-[auto_minmax(0,1fr)_auto] overflow-hidden rounded-2xl px-[var(--home-card-pad-x)] py-[var(--home-card-pad-y)]">
           <div className="flex shrink-0 flex-col gap-[var(--home-stack-gap)]">
-            {showGuideControls ? (
-              <div className="flex min-w-0 items-center gap-2" data-guide-controls>
-                <ReplayButton gender={chosen.gender} />
-                <button
-                  type="button"
-                  className="inline-flex min-h-[var(--home-chip-h)] min-w-0 flex-1 items-center justify-center rounded-full border border-white/20 bg-white/[0.06] px-2 text-[10px] font-semibold tracking-wide text-snow hover:border-violet/50 hover:bg-white/[0.09]"
-                  onClick={() => setPicking(true)}
-                >
-                  {m.guide.changeAvatar}
-                </button>
-              </div>
-            ) : null}
             <nav
               aria-label={m.guide.offerShortcuts}
               className="grid shrink-0 grid-cols-2 gap-[var(--home-chip-gap)]"
@@ -255,26 +224,6 @@ function ShareHomeButton() {
       onClick={() => void shareApp()}
     >
       {m.shareOpc.short}
-    </button>
-  );
-}
-
-function ReplayButton({ gender }: { gender: Avatar["gender"] }) {
-  const { replay } = useSpeech();
-  const { m } = useI18n();
-
-  return (
-    <button
-      type="button"
-      data-welcome-replay
-      className="inline-flex min-h-[var(--home-chip-h)] min-w-0 flex-1 items-center justify-center gap-1 rounded-full border border-cobalt/55 bg-cobalt px-2 text-[10px] font-semibold tracking-wide text-snow shadow-[0_4px_14px_rgba(37,99,235,0.32)]"
-      aria-label={m.guide.replay}
-      onClick={() => replay(gender)}
-    >
-      <svg aria-hidden viewBox="0 0 16 16" className="h-3 w-3 fill-current">
-        <path d="M2.5 6.2v3.6c0 .4.3.7.7.7h1.7l3 2.4c.5.4 1.1 0 1.1-.6V3.7c0-.6-.6-1-1.1-.6l-3 2.4H3.2c-.4 0-.7.3-.7.7Zm8.2 4.4a.6.6 0 0 0 .1-.8 2.6 2.6 0 0 0 0-3.6.6.6 0 1 0-.9.8 1.4 1.4 0 0 1 0 2c.2.3.6.3.8 0Zm1.6 1.5a.6.6 0 0 0 .1-.9 4.8 4.8 0 0 0 0-6.4.6.6 0 1 0-.9.8 3.6 3.6 0 0 1 0 4.8c.2.3.6.3.8 0Z" />
-      </svg>
-      {m.guide.replay}
     </button>
   );
 }

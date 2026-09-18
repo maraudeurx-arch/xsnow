@@ -60,7 +60,7 @@ test.describe("durable on-device memory", () => {
 
     await page.goto("./");
     await expect(page.getByText("Choisis ton avatar")).toHaveCount(0);
-    await expect(page.getByRole("button", { name: "Réécouter" })).toBeVisible();
+    await expect(page.getByRole("button", { name: /Réécouter/ })).toHaveCount(0);
     await expect(page.locator("[data-header-profile]")).toHaveText("M.T.");
 
     await page.goto("./vos-idees/");
@@ -75,12 +75,15 @@ test.describe("durable on-device memory", () => {
     await expect(page.locator("[data-header-profile]")).toHaveText("M.T.");
 
     await page.goto("./mon-profil/");
+    await expect(page.locator("[data-profile-avatar-controls]")).toBeVisible();
+    await expect(page.getByRole("button", { name: /Réécouter/ })).toBeVisible();
+    await expect(page.getByRole("button", { name: /Changer d.?avatar/ })).toBeVisible();
     await expect(page.locator("[data-member-id]")).toHaveText(/Numéro OPC-7K3M/);
     await expect(page.getByText("Marie Tremblay")).toBeVisible();
 
     await page.goto("./");
     await expect(page.getByText("Choisis ton avatar")).toHaveCount(0);
-    await expect(page.getByRole("button", { name: "Réécouter" })).toBeVisible();
+    await expect(page.getByRole("button", { name: /Réécouter/ })).toHaveCount(0);
     await expect(page.locator("[data-header-profile]")).toHaveText("M.T.");
     await expect(page.locator("[data-header-profile]")).not.toContainText("@");
 
@@ -99,10 +102,13 @@ test.describe("durable on-device memory", () => {
     await page.goto("./");
     await expect(page.getByText("Choisis ton avatar")).toBeVisible();
     await page.getByRole("button", { name: "Femme, peau foncée" }).click();
-    await expect(page.getByRole("button", { name: "Réécouter" })).toBeVisible();
+    await expect(page.getByRole("button", { name: /Réécouter/ })).toHaveCount(0);
     await expect(page.getByText("Choisis ton avatar")).toHaveCount(0);
 
     await page.goto("./mon-profil/");
+    await expect(page.locator("[data-profile-avatar-controls]")).toBeVisible();
+    await expect(page.getByRole("button", { name: /Réécouter/ })).toBeVisible();
+    await expect(page.getByRole("button", { name: /Changer d.?avatar/ })).toBeVisible();
     await page.getByRole("button", { name: "S’inscrire" }).click();
     await page.locator('input[name="firstName"]').fill("Marie");
     await page.locator('input[name="lastName"]').fill("Tremblay");
@@ -119,7 +125,7 @@ test.describe("durable on-device memory", () => {
 
     await page.goto("./");
     await expect(page.getByText("Choisis ton avatar")).toHaveCount(0);
-    await expect(page.getByRole("button", { name: "Réécouter" })).toBeVisible();
+    await expect(page.getByRole("button", { name: /Réécouter/ })).toHaveCount(0);
     await expect(page.locator("[data-header-profile]")).toHaveText("M.T.");
 
     const stored = await page.evaluate(() => ({
@@ -260,7 +266,7 @@ test.describe("iOS empty-localStorage cold start", () => {
     await expect(page.locator("html")).toHaveAttribute("data-device-memory", "ready");
     await expect(page.getByText("Choisis ton avatar")).toHaveCount(0);
     await expect(page.locator("[data-header-profile]")).toHaveText("M.T.");
-    await expect(page.getByRole("button", { name: "Réécouter" })).toBeVisible();
+    await expect(page.getByRole("button", { name: /Réécouter/ })).toHaveCount(0);
 
     const restored = await page.evaluate(() => ({
       avatar: window.localStorage.getItem("xsnow.avatar"),
@@ -276,6 +282,9 @@ test.describe("iOS empty-localStorage cold start", () => {
     expect(restored.analytics).toContain("denied");
 
     await page.goto("./mon-profil/");
+    await expect(page.locator("[data-profile-avatar-controls]")).toBeVisible();
+    await expect(page.getByRole("button", { name: /Réécouter/ })).toBeVisible();
+    await expect(page.getByRole("button", { name: /Changer d.?avatar/ })).toBeVisible();
     await expect(page.locator("[data-member-id]")).toHaveText(/Numéro OPC/);
     await expect(page.getByText("Marie Tremblay")).toBeVisible();
     await expect(page.getByRole("button", { name: "S’inscrire" })).toHaveCount(0);
