@@ -9,6 +9,7 @@ import {
   isCustomDomainCname,
   resolveDomainMode,
   resolvePagesBasePath,
+  runtimePagesBasePath,
   useCustomDomainBasePath,
 } from "./pages-base.ts";
 
@@ -34,5 +35,16 @@ describe("pages basePath (custom domain vs project Pages)", () => {
     assert.equal(isCustomDomainCname("opencommunity.app"), true);
     assert.equal(isCustomDomainCname("www.opencommunity.app"), true);
     assert.equal(isCustomDomainCname("maraudeurx-arch.github.io"), false);
+  });
+});
+
+describe("runtimePagesBasePath", () => {
+  it("forces empty base on opencommunity.app even if build path is /xsnow", () => {
+    assert.equal(runtimePagesBasePath("opencommunity.app", PROJECT_PAGES_BASE), "");
+    assert.equal(runtimePagesBasePath("www.opencommunity.app", PROJECT_PAGES_BASE), "");
+  });
+
+  it("keeps /xsnow on github.io project host", () => {
+    assert.equal(runtimePagesBasePath("maraudeurx-arch.github.io", PROJECT_PAGES_BASE), PROJECT_PAGES_BASE);
   });
 });
