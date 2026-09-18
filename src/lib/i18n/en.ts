@@ -222,6 +222,10 @@ export const en: Messages = {
           body: "No illegal use, no harassment. Respect your neighbours. You remain responsible for your content and services.",
         },
         {
+          heading: "Business advertising",
+          body: "The “free advertising for the first 2 weeks” offer applies only to the first business ad submitted with a contact email. A second ad (and any later ones), even with the same email, do not get those free 2 weeks: after review, a paid proposal applies. The Open Community team decides publication; ads are not published automatically.",
+        },
+        {
           heading: "Limits",
           body: "The service is provided as is. We may change or pause features. See Privacy for data practices.",
         },
@@ -584,7 +588,7 @@ export const en: Messages = {
     photoBusy: "Compressing photo…",
     photoReady: "Photo ready ({kb} KB).",
     photoRequired: "Add a photo to submit your ad for review.",
-    reviewLead: "(Free advertising for the first 2 weeks)",
+    reviewLead: "(Free 2 weeks: first ad with email only)",
     publish: "Send for review",
     sending: "Sending…",
     savedSent:

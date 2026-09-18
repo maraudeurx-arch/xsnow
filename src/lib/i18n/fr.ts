@@ -221,6 +221,10 @@ export const fr = {
           body: "Pas d’usage illégal, pas de harcèlement. Respecte tes voisins. Les contenus et services restent ta responsabilité.",
         },
         {
+          heading: "Publicité business",
+          body: "L’offre « publicité gratuite pour les 2 premières semaines » s’applique uniquement à la première publicité business envoyée avec une adresse e-mail de contact. Une deuxième publicité (et les suivantes), même avec le même e-mail, ne bénéficie pas de ces 2 semaines gratuites : après examen, une proposition de paiement s’applique. L’équipe Open Community décide de la publication ; ce n’est pas une publication automatique.",
+        },
+        {
           heading: "Limite",
           body: "Le service est fourni tel quel. Nous pouvons changer ou interrompre des fonctions. Voir aussi Vie privée pour les données.",
         },
@@ -585,7 +589,7 @@ export const fr = {
     photoBusy: "Compression de la photo…",
     photoReady: "Photo prête ({kb} Ko).",
     photoRequired: "Ajoute une photo pour envoyer ta pub en vérification.",
-    reviewLead: "(Publicité gratuite pour les 2 premières semaines)",
+    reviewLead: "(Publicité gratuite 2 semaines : première pub avec e-mail seulement)",
     publish: "Envoyer pour vérification",
     sending: "Envoi…",
     savedSent:
