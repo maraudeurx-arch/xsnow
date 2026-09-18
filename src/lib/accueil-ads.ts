@@ -24,6 +24,8 @@ export type AccueilAd = {
   href: string;
   /** Short title for alt / aria. */
   title: string;
+  /** Soft-launch model creative — show an “Exemple” badge, not a real sold ad. */
+  example?: boolean;
 };
 
 export type VisitorAccueilAd = {
@@ -35,27 +37,51 @@ export type VisitorAccueilAd = {
 };
 
 /**
- * Order: neighbourhood examples, then OPC house promos.
+ * Order: labeled model ads (business + neighbourhood), then OPC house promos.
  * Visitor photos are prepended at runtime via {@link listAccueilAds}.
  */
 export const ACCUEIL_ADS: readonly AccueilAd[] = [
   {
+    id: "exemple-coiffeuse",
+    imagePath: "/ads/exemple-coiffeuse.svg",
+    href: "/business",
+    title: "Exemple — Salon Mira (modèle de pub)",
+    example: true,
+  },
+  {
+    id: "exemple-plombier",
+    imagePath: "/ads/exemple-plombier.svg",
+    href: "/business",
+    title: "Exemple — Plomberie Nord (modèle de pub)",
+    example: true,
+  },
+  {
+    id: "exemple-cafe",
+    imagePath: "/ads/exemple-cafe.svg",
+    href: "/business",
+    title: "Exemple — Café du coin (modèle de pub)",
+    example: true,
+  },
+  {
     id: "bogo-cat",
     imagePath: "/ads/bogo-cat.jpg",
-    href: "/",
-    title: "Chat perdu — Bogo",
+    href: "/business",
+    title: "Exemple — Chat perdu (Bogo)",
+    example: true,
   },
   {
     id: "garderie-zozo",
     imagePath: "/ads/garderie-zozo.jpg",
-    href: "/",
-    title: "Place en garderie — Zozo",
+    href: "/business",
+    title: "Exemple — Place en garderie (Zozo)",
+    example: true,
   },
   {
     id: "appart-chambre",
     imagePath: "/ads/appart-chambre.jpg",
-    href: "/",
-    title: "Chambre à louer — environ 533 $/mois",
+    href: "/business",
+    title: "Exemple — Chambre à louer",
+    example: true,
   },
   {
     id: "opc-competences",

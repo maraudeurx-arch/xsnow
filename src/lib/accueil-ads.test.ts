@@ -20,6 +20,9 @@ describe("accueil-ads", () => {
     assert.deepEqual(
       ACCUEIL_ADS.map((ad) => ad.id),
       [
+        "exemple-coiffeuse",
+        "exemple-plombier",
+        "exemple-cafe",
         "bogo-cat",
         "garderie-zozo",
         "appart-chambre",
@@ -27,6 +30,7 @@ describe("accueil-ads", () => {
         "opc-commerce",
       ],
     );
+    assert.ok(ACCUEIL_ADS.filter((ad) => ad.example).length >= 3);
   });
 
   it("cycles the index", () => {
