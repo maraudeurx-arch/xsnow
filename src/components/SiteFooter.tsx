@@ -10,13 +10,13 @@ export function SiteFooter() {
 
   return (
     <footer className="opc-glass-soft relative z-20 mt-0 shrink-0 rounded px-1.5 py-0 text-center">
-      <p className="text-[8px] leading-none font-medium text-snow [text-shadow:0_1px_8px_rgba(0,0,0,0.7)]">
+      <p className="text-[11px] leading-snug font-medium text-snow [text-shadow:0_1px_8px_rgba(0,0,0,0.7)]">
         {m.footer.before}
         <span className="font-extrabold text-gold">{demonym}</span>
         {m.footer.after}
       </p>
-      <p className="mt-px px-0.5 text-[8px] leading-none font-medium text-snow [text-shadow:0_1px_8px_rgba(0,0,0,0.7)]">
-        <LegalLinks className="inline text-[8px] leading-none" />
+      <p className="mt-px px-0.5 text-[11px] leading-snug font-medium text-snow [text-shadow:0_1px_8px_rgba(0,0,0,0.7)]">
+        <LegalLinks className="inline text-[11px] leading-snug" />
       </p>
     </footer>
   );

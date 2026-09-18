@@ -87,7 +87,7 @@ export function OwnerIdeasBoard() {
   return (
     <FeaturePanel title={copy.title} lead={copy.lead}>
       <div className="space-y-4" data-owner-ideas>
-        <p className="text-xs leading-relaxed text-ice/80">{copy.how}</p>
+        <p className="text-sm leading-relaxed text-ice/85">{copy.how}</p>
 
         {!payload ? (
           <form className="space-y-2" onSubmit={onUnlock}>
@@ -129,7 +129,7 @@ export function OwnerIdeasBoard() {
             <div>
               <h3 className="text-sm font-extrabold text-snow">{copy.compiledTitle}</h3>
               {compiled.length === 0 ? (
-                <p className="mt-1 text-xs text-ice/75">{copy.empty}</p>
+                <p className="mt-1 text-sm text-ice/80">{copy.empty}</p>
               ) : (
                 <ul className="mt-1 space-y-1 text-sm text-snow/90">
                   {compiled.map((row) => (
