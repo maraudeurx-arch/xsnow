@@ -34,6 +34,11 @@ import {
   welcomeSpeechReady,
 } from "@/lib/welcome-place";
 import { useStoredAvatar } from "@/lib/useStoredAvatar";
+import {
+  ensureGuideControlsStarted,
+  refreshGuideControlsStarted,
+  shouldShowGuideControls,
+} from "@/lib/guide-controls";
 import { useDeviceMemoryReady } from "@/lib/useDeviceMemoryReady";
 
 const pickerSize =
@@ -47,6 +52,7 @@ export function Guide() {
   const [avatarId, setAvatarId] = useStoredAvatar();
   const memoryReady = useDeviceMemoryReady();
   const [picking, setPicking] = useState(false);
+  const [showGuideControls, setShowGuideControls] = useState(true);
   const [newsHeadlines, setNewsHeadlines] = useState("");
   const onNewsChange = useCallback((state: NeighborhoodNewsState) => {
     setNewsHeadlines(state.headlineLine);
@@ -92,6 +98,10 @@ export function Guide() {
     } else if (!readWelcomeGate()) {
       openWelcomeGate();
     }
+    const switching = Boolean(avatarId) && avatarId !== id;
+    if (switching) refreshGuideControlsStarted();
+    else ensureGuideControlsStarted();
+    setShowGuideControls(true);
     setAvatarId(id);
     setPicking(false);
   }
@@ -103,6 +113,15 @@ export function Guide() {
     // Returning visitor: avatar already on this device. Do not auto-play
     // welcome on reload — Réécouter is there if they want it again.
     openWelcomeGate();
+  }, [chosen]);
+
+  useEffect(() => {
+    if (!chosen) return;
+    ensureGuideControlsStarted();
+    const tick = () => setShowGuideControls(shouldShowGuideControls());
+    tick();
+    const id = window.setInterval(tick, 30_000);
+    return () => window.clearInterval(id);
   }, [chosen]);
 
   return (
@@ -158,7 +177,8 @@ export function Guide() {
           <div className="flex shrink-0 flex-col gap-[var(--home-stack-gap)]">
             <div className="flex items-center gap-2">
               <AvatarDisc avatar={chosen} className={chosenSize} priority />
-              <div className="flex min-w-0 flex-1 items-center gap-2">
+              {showGuideControls ? (
+              <div className="flex min-w-0 flex-1 items-center gap-2" data-guide-controls>
                 <ReplayButton gender={chosen.gender} />
                 <button
                   type="button"
@@ -168,6 +188,9 @@ export function Guide() {
                   {m.guide.changeAvatar}
                 </button>
               </div>
+              ) : (
+                <div className="min-w-0 flex-1" aria-hidden="true" />
+              )}
             </div>
             <nav
               aria-label={m.guide.offerShortcuts}
