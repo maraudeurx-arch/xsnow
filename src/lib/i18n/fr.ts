@@ -58,7 +58,7 @@ export const fr = {
   guide: {
     pickAvatar: "Choisis ton avatar",
     changeAvatar: "Changer d’avatar",
-    replay: "Réécouter",
+    replay: "Réécouter l’intro",
     offerShortcuts: "Raccourcis Gagner maintenant, Vos idées, Partager et S’inscrire",
     vosIdees: "Vos idées",
     partager: "Partager",

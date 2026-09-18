@@ -59,7 +59,7 @@ export const en: Messages = {
   guide: {
     pickAvatar: "Choose your avatar",
     changeAvatar: "Change avatar",
-    replay: "Listen again",
+    replay: "Replay intro",
     offerShortcuts: "Shortcuts to Earn now, Your ideas, Share, and Sign up",
     vosIdees: "Your ideas",
     partager: "Share",
