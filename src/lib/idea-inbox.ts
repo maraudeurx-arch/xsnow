@@ -65,6 +65,18 @@ export function clipInboxCity(value: string) {
   return clipNeighborhood(value).slice(0, IDEA_INBOX_CITY_MAX);
 }
 
+/** Playwright soft-launch fixtures tag ideas with this marker. Never mail the owner. */
+export const E2E_IDEA_MARK = "OPC-e2e";
+
+export function isPlaywrightE2eIdea(input: {
+  text?: string;
+  opcId?: string;
+}): boolean {
+  const text = String(input.text ?? "");
+  // Soft-launch Playwright fixtures tag idea text with OPC-e2e.
+  return text.includes(E2E_IDEA_MARK);
+}
+
 export function parseIdeaInboxInput(raw: unknown): IdeaInboxInput | null {
   if (!raw || typeof raw !== "object") return null;
   const record = raw as Record<string, unknown>;
@@ -111,6 +123,7 @@ export async function postIdeaToInbox(
 ): Promise<IdeaInboxPostResult> {
   const parsed = parseIdeaInboxInput(input);
   if (!parsed) return "failed";
+  if (isPlaywrightE2eIdea(parsed)) return "sent";
 
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), IDEA_INBOX_POST_TIMEOUT_MS);

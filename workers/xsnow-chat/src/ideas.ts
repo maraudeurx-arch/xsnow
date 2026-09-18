@@ -12,6 +12,7 @@ import {
   IDEA_EVENT_TYPE,
   IDEA_INBOX_LIST_MAX,
   inboxListPayload,
+  isPlaywrightE2eIdea,
   OWNER_SECRET_QUERY,
   parseIdeaInboxInput,
   type StoredInboxIdea,
@@ -228,11 +229,13 @@ export async function handleIdeasPost(
   }
 
   let emailed = false;
-  try {
-    const mail = await mailer(env, buildIdeaOwnerMail(parsed, now));
-    emailed = Boolean(mail.sent);
-  } catch {
-    emailed = false;
+  if (!isPlaywrightE2eIdea(parsed)) {
+    try {
+      const mail = await mailer(env, buildIdeaOwnerMail(parsed, now));
+      emailed = Boolean(mail.sent);
+    } catch {
+      emailed = false;
+    }
   }
 
   return { status: 200, data: { ok: true, persisted, emailed } };

@@ -162,6 +162,29 @@ describe("handleIdeasPost", () => {
     assert.equal((noDb.data as { emailed?: boolean }).emailed, true);
   });
 
+  it("does not email the owner for Playwright OPC-e2e ideas", async () => {
+    const mails: Array<{ subject: string; text: string }> = [];
+    const mailer: OwnerMailer = async (_env, mail) => {
+      mails.push(mail);
+      return { sent: true };
+    };
+    const result = await handleIdeasPost(
+      {
+        id: "idea-e2e",
+        text: "Co-voiturage OPC-e2e 123",
+        city: "Gatineau",
+        opcId: "OPC-7K3M",
+      },
+      {},
+      Date.now(),
+      mailer,
+    );
+    assert.equal(result.status, 200);
+    assert.equal((result.data as { ok?: boolean }).ok, true);
+    assert.equal((result.data as { emailed?: boolean }).emailed, false);
+    assert.equal(mails.length, 0);
+  });
+
   it("never mails visitor phone or email even if the POST includes them", async () => {
     const mails: Array<{ subject: string; text: string }> = [];
     const mailer: OwnerMailer = async (_env, mail) => {

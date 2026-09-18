@@ -90,7 +90,13 @@ export async function stubIdeaInbox(
       });
       return;
     }
-    await route.continue();
+    // Never fall through to the production Worker for these endpoints.
+    await route.fulfill({
+      status: 404,
+      contentType: "application/json",
+      headers: cors,
+      body: JSON.stringify({ error: "e2e_stub_unhandled" }),
+    });
   });
 }
 
