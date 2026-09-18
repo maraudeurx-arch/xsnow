@@ -222,6 +222,10 @@ export const es: Messages = {
           body: "Sin uso ilegal, sin acoso. Respeta a tus vecinos. Sigues siendo responsable de tu contenido y tus servicios.",
         },
         {
+          heading: "Publicidad business",
+          body: "La oferta de «publicidad gratuita las 2 primeras semanas» aplica solo al primer anuncio business enviado con un correo de contacto. Un segundo anuncio (y los siguientes), aunque sea con el mismo correo, no reciben esas 2 semanas gratis: tras revisión, se aplica una propuesta de pago. El equipo de Open Community decide la publicación; no es automática.",
+        },
+        {
           heading: "Límites",
           body: "El servicio se ofrece tal cual. Podemos cambiar o pausar funciones. Consulta Privacidad para los datos.",
         },
@@ -585,7 +589,7 @@ export const es: Messages = {
     photoBusy: "Comprimiendo la foto…",
     photoReady: "Foto lista ({kb} Ko).",
     photoRequired: "Añade una foto para enviar el anuncio a revisión.",
-    reviewLead: "(Publicidad gratuita las 2 primeras semanas)",
+    reviewLead: "(Publicidad gratuita 2 semanas: solo la primera con e-mail)",
     publish: "Enviar a verificación",
     sending: "Enviando…",
     savedSent:
