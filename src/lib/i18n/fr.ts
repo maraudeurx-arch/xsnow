@@ -4,6 +4,11 @@ export const fr = {
   brand: {
     community: "Open Community",
     slogan: "Monétisé Vous!",
+    slogans: [
+      "La force de l’entraide locale.",
+      "Les gens d’ici, pour les gens d’ici.",
+      "Connecter et solidaire.",
+    ],
   },
   place: {
     neighborhood: "votre quartier",
