@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState, type ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { HomeBackLink } from "@/components/HomeBackLink";
 import { useI18n } from "@/lib/i18n/locale";
 import { pathMatches } from "@/lib/paths";
@@ -53,10 +53,6 @@ export function AccueilMenu({ compact = false }: { compact?: boolean }) {
   const [open, setOpen] = useState(false);
   const { m } = useI18n();
 
-  useEffect(() => {
-    setOpen(false);
-  }, [pathname]);
-
   const close = () => setOpen(false);
 
   return (
@@ -74,19 +70,9 @@ export function AccueilMenu({ compact = false }: { compact?: boolean }) {
       </button>
 
       {open ? (
-        <button
-          type="button"
-          aria-label="Fermer le menu"
-          data-accueil-menu-scrim
-          className="fixed inset-0 z-40 bg-[rgba(6,8,14,0.72)] backdrop-blur-[2px]"
-          onClick={close}
-        />
-      ) : null}
-
-      {open ? (
         <nav
           aria-label={m.nav.accueilProposals}
-          className="opc-glass-menu absolute top-full left-0 z-[60] mt-1.5 max-h-[min(68dvh,32rem)] w-[min(calc(100vw-1.5rem),20rem)] space-y-1.5 overflow-y-auto overflow-x-hidden rounded-xl p-1.5 pr-1"
+          className="opc-glass-menu absolute top-full left-0 z-50 mt-1.5 max-h-[min(68dvh,32rem)] w-[min(calc(100vw-1.5rem),20rem)] space-y-1.5 overflow-y-auto overflow-x-hidden rounded-xl p-1.5 pr-1"
         >
           <HomeBackLink
             className={`${itemClass(pathMatches(pathname, "/"))} justify-center border-gold/50 font-extrabold`}
