@@ -36,7 +36,7 @@ export function FeaturePanel({
       ) : null}
       {lead ? (
         <p
-          className={`mx-auto max-w-md text-sm leading-relaxed text-pretty text-ice/85 ${
+          className={`mx-auto max-w-md text-[15px] leading-relaxed text-pretty text-ice/90 ${
             compact ? "mt-1" : "mt-2"
           }`}
         >

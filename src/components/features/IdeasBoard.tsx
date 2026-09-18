@@ -182,14 +182,14 @@ export function IdeasBoard() {
           />
         </div>
         {copy.submitHint ? (
-          <p className="text-xs leading-relaxed text-ice/80">{copy.submitHint}</p>
+          <p className="text-sm leading-relaxed text-ice/85">{copy.submitHint}</p>
         ) : null}
         {profile ? (
-          <p className="text-xs leading-relaxed text-ice/70">
+          <p className="text-sm leading-relaxed text-ice/80">
             {copy.registeredHint} {profile.id}
           </p>
         ) : (
-          <p className="text-xs leading-relaxed text-ice/70">
+          <p className="text-sm leading-relaxed text-ice/80">
             {copy.registerHint}{" "}
             <Link href="/mon-profil" className="font-semibold text-gold underline-offset-2 hover:underline">
               {copy.registerLink}
@@ -197,7 +197,7 @@ export function IdeasBoard() {
           </p>
         )}
         {error ? (
-          <p className="text-xs font-semibold text-gold" role="status">
+          <p className="text-sm font-semibold text-gold" role="status">
             {copy.textRequired}
           </p>
         ) : null}
@@ -208,9 +208,9 @@ export function IdeasBoard() {
 
       <section className="space-y-2" data-idea-wall>
         <h3 className="text-sm font-extrabold text-snow">{copy.wallTitle}</h3>
-        <p className="text-xs leading-relaxed text-ice/75">{copy.wallHint}</p>
+        <p className="text-sm leading-relaxed text-ice/80">{copy.wallHint}</p>
         {items.length === 0 ? (
-          <p className="text-xs text-ice/70">{copy.wallEmpty}</p>
+          <p className="text-sm text-ice/80">{copy.wallEmpty}</p>
         ) : (
           <ul className="space-y-2">
             {items.map((idea) => (
@@ -220,14 +220,14 @@ export function IdeasBoard() {
                 data-idea-item={idea.id}
               >
                 <p className="text-sm leading-relaxed text-snow">{idea.text}</p>
-                <p className="mt-1 text-[11px] text-ice/65">{formatIdeaWhen(idea.createdAt, locale)}</p>
+                <p className="mt-1 text-xs text-ice/70">{formatIdeaWhen(idea.createdAt, locale)}</p>
                 {idea.inbox === "sent" ? (
-                  <p className="mt-1 text-[11px] font-semibold text-gold" data-idea-inbox="sent">
+                  <p className="mt-1 text-xs font-semibold text-gold" data-idea-inbox="sent">
                     {copy.inboxSent}
                   </p>
                 ) : null}
                 {idea.inbox === "failed" ? (
-                  <p className="mt-1 text-[11px] font-semibold text-gold" data-idea-inbox="failed">
+                  <p className="mt-1 text-xs font-semibold text-gold" data-idea-inbox="failed">
                     {copy.inboxFailed}
                   </p>
                 ) : null}
