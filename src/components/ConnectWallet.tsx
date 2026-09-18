@@ -39,7 +39,7 @@ function UnconfiguredConnect({ compact }: { compact: boolean }) {
         <p
           id={hintId}
           role="status"
-          className="absolute right-0 top-full z-40 mt-1 w-max max-w-[16rem] rounded-md border border-white/15 bg-[rgba(8,8,10,0.94)] px-2 py-1 text-left text-[10px] font-semibold leading-snug text-snow shadow-[0_8px_20px_rgba(0,0,0,0.45)]"
+          className="opc-glass-menu absolute right-0 top-full z-40 mt-1 w-max max-w-[16rem] rounded-md px-2 py-1 text-left text-[10px] font-semibold leading-snug text-snow"
         >
           {m.wallet.needsConfig}
         </p>

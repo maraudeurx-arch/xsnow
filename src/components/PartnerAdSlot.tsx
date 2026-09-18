@@ -105,7 +105,7 @@ export function PartnerAdSlot({ slot }: { slot: PartnerSlotId }) {
               rel="noopener noreferrer sponsored"
               data-partner-link
               data-partner-cta={display.ctaKind}
-              className="flex h-full min-h-0 flex-1 flex-col overflow-hidden rounded-md border border-white/10 bg-night/40 hover:border-cobalt/45"
+              className="opc-glass-soft flex h-full min-h-0 flex-1 flex-col overflow-hidden rounded-md hover:border-cobalt/45"
             >
               <CreativeBody
                 name={display.name}
@@ -121,7 +121,7 @@ export function PartnerAdSlot({ slot }: { slot: PartnerSlotId }) {
               href={href}
               data-partner-link
               data-partner-cta={display.ctaKind}
-              className="flex h-full min-h-0 flex-1 flex-col overflow-hidden rounded-md border border-white/10 bg-night/40 hover:border-cobalt/45"
+              className="opc-glass-soft flex h-full min-h-0 flex-1 flex-col overflow-hidden rounded-md hover:border-cobalt/45"
             >
               <CreativeBody
                 name={display.name}

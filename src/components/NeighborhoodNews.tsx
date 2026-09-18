@@ -120,7 +120,7 @@ export function NeighborhoodNews({ onNewsChange }: Props) {
       data-news-status={status}
       data-news-ads-only
       aria-label={copy.title}
-      className="flex min-h-0 flex-1 grow flex-col self-stretch overflow-hidden rounded-xl border border-gold/30 bg-[rgba(8,8,12,0.92)] p-1 sm:min-h-[24rem]"
+      className="opc-glass-soft flex min-h-0 flex-1 grow flex-col self-stretch overflow-hidden rounded-xl border border-gold/30 p-1 sm:min-h-[24rem]"
     >
       {/* Headlines stay off-screen: space is reserved for full-bleed ads. */}
       <div className="sr-only" aria-live="polite">

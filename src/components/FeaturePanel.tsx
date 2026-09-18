@@ -16,12 +16,12 @@ export function FeaturePanel({
 }) {
   return (
     <section
-      className={`w-full max-w-xl rounded-3xl border border-white/10 bg-[linear-gradient(180deg,rgba(18,20,26,0.94)_0%,rgba(8,8,10,0.94)_100%)] text-center shadow-[0_18px_50px_rgba(0,0,0,0.45)] backdrop-blur-md ${
+      className={`opc-glass w-full max-w-xl rounded-3xl text-center ${
         compact ? "p-3 sm:p-5" : "p-4 sm:p-6"
       }`}
     >
       {homeBack ? (
-        <div className="sticky top-0 z-10 -mx-1 mb-3 rounded-2xl bg-[rgba(8,8,12,0.96)] py-1 backdrop-blur-md">
+        <div className="opc-glass-soft sticky top-0 z-10 -mx-1 mb-3 rounded-2xl py-1">
           <HomeBackLink />
         </div>
       ) : null}
