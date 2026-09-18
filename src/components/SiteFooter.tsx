@@ -6,11 +6,15 @@ import { RotatingFooterSlogan } from "@/components/RotatingFooterSlogan";
 export function SiteFooter() {
   return (
     <footer className="opc-glass-soft relative z-20 mt-0 shrink-0 rounded px-1.5 py-0 text-center">
-      <p className="text-[13px] leading-snug font-medium text-snow [text-shadow:0_1px_8px_rgba(0,0,0,0.7)]">
+      <p className="text-[26px] leading-snug font-bold tracking-[0.01em] text-gold [text-shadow:0_2px_10px_rgba(0,0,0,0.55)]">
         <RotatingFooterSlogan />
       </p>
-      <p className="mt-px px-0.5 text-[13px] leading-snug font-medium text-snow [text-shadow:0_1px_8px_rgba(0,0,0,0.7)]">
-        <LegalLinks className="inline text-[13px] leading-snug" />
+      <p className="mt-px px-0.5 text-[6.5px] leading-snug font-medium">
+        <LegalLinks
+          className="inline text-[6.5px] leading-snug"
+          linkClassName="font-extrabold text-black hover:underline"
+          separatorClassName="px-0.5 text-black/50"
+        />
       </p>
     </footer>
   );
