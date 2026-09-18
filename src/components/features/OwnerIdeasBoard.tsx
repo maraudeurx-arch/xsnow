@@ -87,7 +87,7 @@ export function OwnerIdeasBoard() {
   return (
     <FeaturePanel title={copy.title} lead={copy.lead}>
       <div className="space-y-4" data-owner-ideas>
-        <p className="text-sm leading-relaxed text-ice/85">{copy.how}</p>
+        <p className="text-base leading-relaxed text-snow/90">{copy.how}</p>
 
         {!payload ? (
           <form className="space-y-2" onSubmit={onUnlock}>
@@ -152,7 +152,7 @@ export function OwnerIdeasBoard() {
                     className="rounded-2xl border border-white/10 bg-white/[0.04] p-3"
                     data-owner-idea={idea.id}
                   >
-                    <p className="text-[11px] text-ice/65">
+                    <p className="text-sm text-snow/80">
                       {cityLabel(idea.city)} · {formatWhen(idea.createdAt, locale)}
                     </p>
                     <p className="mt-1 text-sm leading-relaxed text-snow">{idea.text}</p>
