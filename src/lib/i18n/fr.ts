@@ -4,6 +4,11 @@ export const fr = {
   brand: {
     community: "Open Community",
     slogan: "Monétisé Vous!",
+    slogans: [
+      "Monétisé Vous!",
+      "Digitalisé vos compétences.",
+      "Utiliser notre ia pour en faire plus.",
+    ],
   },
   place: {
     neighborhood: "votre quartier",
