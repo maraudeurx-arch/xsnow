@@ -1,9 +1,9 @@
-import Link from "next/link";
 import { Suspense, type ReactNode } from "react";
 import { BrandLogo } from "@/components/BrandLogo";
 import { HeaderNav } from "@/components/HeaderNav";
 import { HeaderProfileLabel } from "@/components/HeaderProfileLabel";
-import { PlaceWordmark, PlaceDocumentTitle } from "@/components/PlaceWordmark";
+import { HeaderPlaceWithAvatar } from "@/components/HeaderPlaceWithAvatar";
+import { PlaceDocumentTitle } from "@/components/PlaceWordmark";
 import { SeasonalBackdrop, SeasonScene } from "@/components/SeasonalBackdrop";
 import { SiteFooter } from "@/components/SiteFooter";
 import { BrandCopy } from "@/components/BrandCopy";
@@ -31,12 +31,7 @@ export function AppChrome({ children }: { children: ReactNode }) {
         <div className="relative z-30 shrink-0 overflow-visible">
           <div className="chrome-panel overflow-visible rounded-xl px-1.5 py-0">
             <div className="flex w-full items-center justify-between gap-2">
-              <Link
-                href="/"
-                className="inline-flex items-center text-[1.02rem] leading-none font-black tracking-tight text-gold [text-shadow:0_2px_12px_rgba(0,0,0,0.55)] sm:text-[1.45rem]"
-              >
-                <PlaceWordmark />
-              </Link>
+              <HeaderPlaceWithAvatar />
               <div className="inline-flex min-w-0 items-center gap-1.5">
                 <HeaderProfileLabel />
                 <BrandLogo />
