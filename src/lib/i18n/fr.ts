@@ -342,8 +342,8 @@ export const fr = {
     securityMd: "Politique de sécurité (SECURITY.md)",
   },
   footer: {
-    before: "Proximité et Esprit d’entraide au service des ",
-    after: ".",
+    before: "Proximité et Esprit d’entraide au service des gens d’ici.",
+    after: "",
     privacy: "Vie privée",
     terms: "Conditions",
     about: "À propos",

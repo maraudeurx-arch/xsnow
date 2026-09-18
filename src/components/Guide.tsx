@@ -43,7 +43,6 @@ import { useDeviceMemoryReady } from "@/lib/useDeviceMemoryReady";
 
 const pickerSize =
   "size-[min(26vw,17dvh,6.6rem)] sm:size-[min(22vw,8.5rem)]";
-const chosenSize = "size-[var(--home-avatar)]";
 
 const shortcutClass =
   "inline-flex min-h-[var(--home-chip-h)] w-full items-center justify-center rounded-lg border border-cobalt/55 bg-cobalt px-1.5 text-center text-[10px] font-extrabold leading-tight text-snow shadow-[0_4px_14px_rgba(37,99,235,0.28)]";
@@ -175,10 +174,8 @@ export function Guide() {
       ) : chosen ? (
         <div className="home-stage grid h-full min-h-0 w-full flex-1 grow grid-rows-[auto_minmax(0,1fr)_auto] overflow-hidden rounded-2xl px-[var(--home-card-pad-x)] py-[var(--home-card-pad-y)]">
           <div className="flex shrink-0 flex-col gap-[var(--home-stack-gap)]">
-            <div className="flex items-center gap-2">
-              <AvatarDisc avatar={chosen} className={chosenSize} priority />
-              {showGuideControls ? (
-              <div className="flex min-w-0 flex-1 items-center gap-2" data-guide-controls>
+            {showGuideControls ? (
+              <div className="flex min-w-0 items-center gap-2" data-guide-controls>
                 <ReplayButton gender={chosen.gender} />
                 <button
                   type="button"
@@ -188,10 +185,7 @@ export function Guide() {
                   {m.guide.changeAvatar}
                 </button>
               </div>
-              ) : (
-                <div className="min-w-0 flex-1" aria-hidden="true" />
-              )}
-            </div>
+            ) : null}
             <nav
               aria-label={m.guide.offerShortcuts}
               className="grid shrink-0 grid-cols-2 gap-[var(--home-chip-gap)]"

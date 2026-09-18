@@ -342,8 +342,8 @@ export const en: Messages = {
     securityMd: "Security policy (SECURITY.md)",
   },
   footer: {
-    before: "Proximity and a spirit of mutual aid in service of ",
-    after: ".",
+    before: "Proximity and a spirit of mutual aid in service of people here.",
+    after: "",
     privacy: "Privacy",
     terms: "Terms",
     about: "About",

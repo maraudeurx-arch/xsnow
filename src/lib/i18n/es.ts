@@ -342,8 +342,8 @@ export const es: Messages = {
     securityMd: "Política de seguridad (SECURITY.md)",
   },
   footer: {
-    before: "Proximidad y espíritu de ayuda mutua al servicio de ",
-    after: ".",
+    before: "Proximidad y espíritu de ayuda mutua al servicio de la gente de aquí.",
+    after: "",
     privacy: "Privacidad",
     terms: "Condiciones",
     about: "Acerca de",
