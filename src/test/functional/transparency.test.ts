@@ -119,7 +119,9 @@ describe("PWA manifest start URL", () => {
     assert.doesNotMatch(source, /start_url: "\/"/);
     assert.doesNotMatch(source, /start_url: PWA_SCOPE/);
     const paths = readFileSync(join(srcDir, "lib/paths.ts"), "utf8");
-    assert.match(paths, /PWA_START_URL = PUBLIC_SITE_URL/);
+    assert.match(paths, /PWA_START_URL = `\$\{PWA_ASSET_ORIGIN\}\/`/);
+    assert.match(paths, /PWA_ASSET_ORIGIN/);
+    assert.match(paths, /PUBLIC_SITE_TLS_READY/);
     assert.match(paths, /PUBLIC_SITE_ORIGIN = CUSTOM_DOMAIN_ORIGIN/);
     const chrome = readFileSync(join(srcDir, "components/AppChrome.tsx"), "utf8");
     assert.match(chrome, /PagesScopeRedirect/);
