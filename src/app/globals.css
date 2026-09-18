@@ -173,8 +173,8 @@ body {
 .footer-slogan-track {
   display: inline-flex;
   width: max-content;
-  gap: 3rem;
-  animation: footer-slogan-slide 22s linear infinite;
+  gap: 4rem;
+  animation: footer-slogan-slide 36s linear infinite;
 }
 
 .footer-slogan-item {
@@ -194,11 +194,13 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .footer-slogan-track {
     animation: none;
-    justify-content: center;
+    display: block;
     width: 100%;
+    text-align: center;
+    white-space: normal;
   }
 
-  .footer-slogan-item[aria-hidden="true"] {
+  .footer-slogan-item:not(:first-child) {
     display: none;
   }
 }
