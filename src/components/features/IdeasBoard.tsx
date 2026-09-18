@@ -182,14 +182,14 @@ export function IdeasBoard() {
           />
         </div>
         {copy.submitHint ? (
-          <p className="text-sm leading-relaxed text-ice/85">{copy.submitHint}</p>
+          <p className="text-base leading-relaxed text-snow/90">{copy.submitHint}</p>
         ) : null}
         {profile ? (
-          <p className="text-sm leading-relaxed text-ice/80">
+          <p className="text-base leading-relaxed text-snow/85">
             {copy.registeredHint} {profile.id}
           </p>
         ) : (
-          <p className="text-sm leading-relaxed text-ice/80">
+          <p className="text-base leading-relaxed text-snow/85">
             {copy.registerHint}{" "}
             <Link href="/mon-profil" className="font-semibold text-gold underline-offset-2 hover:underline">
               {copy.registerLink}
@@ -208,9 +208,9 @@ export function IdeasBoard() {
 
       <section className="space-y-2" data-idea-wall>
         <h3 className="text-sm font-extrabold text-snow">{copy.wallTitle}</h3>
-        <p className="text-sm leading-relaxed text-ice/80">{copy.wallHint}</p>
+        <p className="text-base leading-relaxed text-snow/85">{copy.wallHint}</p>
         {items.length === 0 ? (
-          <p className="text-sm text-ice/80">{copy.wallEmpty}</p>
+          <p className="text-base text-snow/85">{copy.wallEmpty}</p>
         ) : (
           <ul className="space-y-2">
             {items.map((idea) => (
@@ -220,7 +220,7 @@ export function IdeasBoard() {
                 data-idea-item={idea.id}
               >
                 <p className="text-sm leading-relaxed text-snow">{idea.text}</p>
-                <p className="mt-1 text-xs text-ice/70">{formatIdeaWhen(idea.createdAt, locale)}</p>
+                <p className="mt-1 text-sm text-snow/80">{formatIdeaWhen(idea.createdAt, locale)}</p>
                 {idea.inbox === "sent" ? (
                   <p className="mt-1 text-xs font-semibold text-gold" data-idea-inbox="sent">
                     {copy.inboxSent}
