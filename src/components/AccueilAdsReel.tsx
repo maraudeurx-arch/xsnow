@@ -94,15 +94,6 @@ export function AccueilAdsReel() {
         ))}
       </div>
 
-      {ad.example ? (
-        <span
-          data-accueil-ad-example
-          className="pointer-events-none absolute left-2 top-5 z-20 rounded-full border border-gold/60 bg-night/80 px-2.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wide text-gold"
-        >
-          Exemple
-        </span>
-      ) : null}
-
       <Link
         href={ad.href}
         data-accueil-ad-link={ad.id}

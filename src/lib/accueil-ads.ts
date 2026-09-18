@@ -24,7 +24,7 @@ export type AccueilAd = {
   href: string;
   /** Short title for alt / aria. */
   title: string;
-  /** Soft-launch model creative — show an “Exemple” badge, not a real sold ad. */
+  /** Soft-launch model creative (seed inventory, not a sold partner slot). */
   example?: boolean;
 };
 
@@ -45,42 +45,42 @@ export const ACCUEIL_ADS: readonly AccueilAd[] = [
     id: "exemple-coiffeuse",
     imagePath: "/ads/exemple-coiffeuse.svg",
     href: "/business",
-    title: "Exemple — Salon Mira (modèle de pub)",
+    title: "Salon Mira — coupe & couleur",
     example: true,
   },
   {
     id: "exemple-plombier",
     imagePath: "/ads/exemple-plombier.svg",
     href: "/business",
-    title: "Exemple — Plomberie Nord (modèle de pub)",
+    title: "Plomberie Nord — urgence quartier",
     example: true,
   },
   {
     id: "exemple-cafe",
     imagePath: "/ads/exemple-cafe.svg",
     href: "/business",
-    title: "Exemple — Café du coin (modèle de pub)",
+    title: "Café du coin — brunch & terrasse",
     example: true,
   },
   {
     id: "bogo-cat",
     imagePath: "/ads/bogo-cat.jpg",
     href: "/business",
-    title: "Exemple — Chat perdu (Bogo)",
+    title: "Chat perdu — Bogo",
     example: true,
   },
   {
     id: "garderie-zozo",
     imagePath: "/ads/garderie-zozo.jpg",
     href: "/business",
-    title: "Exemple — Place en garderie (Zozo)",
+    title: "Place en garderie — Zozo",
     example: true,
   },
   {
     id: "appart-chambre",
     imagePath: "/ads/appart-chambre.jpg",
     href: "/business",
-    title: "Exemple — Chambre à louer",
+    title: "Chambre à louer",
     example: true,
   },
   {
