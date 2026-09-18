@@ -5,6 +5,7 @@ import {
   GITHUB_PAGES_ORIGIN,
   PROJECT_PAGES_BASE,
   resolvePagesBasePath,
+  runtimePagesBasePath,
 } from "./pages-base.ts";
 
 export {
@@ -16,6 +17,7 @@ export {
   WWW_CUSTOM_DOMAIN_ORIGIN,
   resolveDomainMode,
   resolvePagesBasePath,
+  runtimePagesBasePath,
   useCustomDomainBasePath,
 } from "./pages-base.ts";
 
@@ -40,11 +42,11 @@ export const SECURITY_HREF = "/securite";
 export const PROOFS_HREF = "/preuves-de-revenus";
 
 /**
- * Flip to true when https://opencommunity.app serves a cert for that host
- * (not `CN=*.github.io`). Until then, Home Screen icon fetches over https fail
- * and iOS shows a letter “O”.
+ * Custom-domain TLS is live (GitHub Pages Let's Encrypt for opencommunity.app).
+ * PWA manifest / icons / metadataBase must use https — http + https_enforced
+ * left Home Screen icons and some Safari image loads looking broken.
  */
-export const PUBLIC_SITE_TLS_READY = false;
+export const PUBLIC_SITE_TLS_READY = true;
 
 /** Canonical public origin (https preferred for shares; may warn until TLS). */
 export const PUBLIC_SITE_ORIGIN = CUSTOM_DOMAIN_ORIGIN;
@@ -84,7 +86,11 @@ export const TRUST_NAV = [
 
 export function assetUrl(path: string) {
   const normalized = path.startsWith("/") ? path : `/${path}`;
-  return `${BASE_PATH}${normalized}`;
+  const base =
+    typeof window !== "undefined"
+      ? runtimePagesBasePath(window.location.hostname, BASE_PATH)
+      : BASE_PATH;
+  return `${base}${normalized}`;
 }
 
 /** Absolute asset href for PWA icons (HTTP until custom-domain TLS is ready). */

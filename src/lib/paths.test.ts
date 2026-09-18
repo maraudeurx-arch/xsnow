@@ -58,11 +58,11 @@ describe("public trust paths", () => {
     assert.equal(PUBLIC_SITE_ORIGIN, CUSTOM_DOMAIN_ORIGIN);
     assert.equal(PUBLIC_SITE_ORIGIN, "https://opencommunity.app");
     assert.equal(PUBLIC_SITE_URL, "https://opencommunity.app/");
-    assert.equal(PUBLIC_SITE_TLS_READY, false);
-    assert.equal(PWA_ASSET_ORIGIN, "http://opencommunity.app");
-    assert.equal(PWA_START_URL, "http://opencommunity.app/");
+    assert.equal(PUBLIC_SITE_TLS_READY, true);
+    assert.equal(PWA_ASSET_ORIGIN, "https://opencommunity.app");
+    assert.equal(PWA_START_URL, "https://opencommunity.app/");
     assert.equal(GITHUB_PAGES_SITE_URL, "https://maraudeurx-arch.github.io/xsnow/");
-    assert.notEqual(PWA_START_URL, PUBLIC_SITE_URL); // http vs https until TLS ready
+    assert.equal(PWA_START_URL, PUBLIC_SITE_URL); // https now that TLS is ready
     assert.notEqual(PWA_START_URL, "/");
     assert.notEqual(PWA_START_URL, GITHUB_PAGES_ORIGIN);
     assert.notEqual(PWA_START_URL, `${GITHUB_PAGES_ORIGIN}/`);
@@ -72,10 +72,10 @@ describe("public trust paths", () => {
     assert.equal(launch.start_url, PWA_START_URL);
     assert.equal(launch.scope, PWA_START_URL);
     assert.equal(launch.id, PWA_START_URL);
-    assert.equal(launch.start_url, "http://opencommunity.app/");
-    assert.equal(launch.start_url.startsWith("http://"), true); // http until TLS ready
+    assert.equal(launch.start_url, "https://opencommunity.app/");
+    assert.equal(launch.start_url.startsWith("https://"), true);
     assert.doesNotMatch(launch.start_url, /\/xsnow\/xsnow/);
-    assert.equal(absoluteAssetUrl("/brand/app-icon-192.png"), "http://opencommunity.app/brand/app-icon-192.png");
+    assert.equal(absoluteAssetUrl("/brand/app-icon-192.png"), "https://opencommunity.app/brand/app-icon-192.png");
   });
 
   it("redirects github.io (any path) onto the custom domain", () => {
