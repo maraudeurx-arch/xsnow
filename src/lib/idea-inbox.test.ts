@@ -7,6 +7,7 @@ import {
   inboxListPayload,
   ownerIdeasExportName,
   parseIdeaInboxInput,
+  isPlaywrightE2eIdea,
   postIdeaToInbox,
   postRegisterNotice,
   registerNoticeEndpoint,
@@ -218,5 +219,13 @@ describe("postIdeaToInbox / fetchOwnerIdeaInbox", () => {
     if (ok.ok) assert.equal(ok.payload.count, 0);
     const denied = await fetchOwnerIdeaInbox("  ", fakeFetch);
     assert.equal(denied.ok, false);
+  });
+});
+
+describe("isPlaywrightE2eIdea", () => {
+  it("flags OPC-e2e text only", () => {
+    assert.equal(isPlaywrightE2eIdea({ text: "Co-voiturage OPC-e2e 1" }), true);
+    assert.equal(isPlaywrightE2eIdea({ text: "Vraie idée", opcId: "OPC-7K3M" }), false);
+    assert.equal(isPlaywrightE2eIdea({ text: "Vraie idée", opcId: "OPC-7K3M" }), false);
   });
 });

@@ -170,7 +170,34 @@ test.describe("Open Community soft-launch smoke", () => {
 
   test("local confirm and add-another do not wait for a slow inbox POST", async ({ page }) => {
     await seedLocalProfile(page);
-    await stubIdeaInbox(page, "failed", { delayMs: 4_000 });
+    let releaseHold: (() => void) | undefined;
+    const hold = new Promise<void>((resolve) => {
+      releaseHold = resolve;
+    });
+    await page.route(/\/(ideas|register)(\?|$)/, async (route) => {
+      if (route.request().method() === "OPTIONS") {
+        await route.fulfill({
+          status: 204,
+          headers: {
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Headers": "Content-Type, Authorization",
+            "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+          },
+        });
+        return;
+      }
+      if (route.request().method() === "POST") {
+        await hold;
+        await route.fulfill({
+          status: 503,
+          contentType: "application/json",
+          headers: { "Access-Control-Allow-Origin": "*" },
+          body: JSON.stringify({ error: "mail_failed" }),
+        });
+        return;
+      }
+      await route.fallback();
+    });
     const idea = `Co-voiturage OPC-e2e ${Date.now()}`;
     await page.goto("./vos-idees/");
     await page.getByLabel("Ton idée").fill(idea);
@@ -187,7 +214,8 @@ test.describe("Open Community soft-launch smoke", () => {
     await page.getByRole("button", { name: "Ajouter une autre idée" }).click();
     await expect(page.getByLabel("Ton idée")).toHaveValue("");
     await expect(page.getByRole("button", { name: "Envoyer l’idée" })).toBeVisible();
-    await page.unrouteAll({ behavior: "ignoreErrors" });
+    // Release the held stub fulfill — never unrouteAll (that leaked POSTs to production).
+    releaseHold?.();
   });
 
   test("transparency pages are reachable from the footer", async ({ page }) => {
