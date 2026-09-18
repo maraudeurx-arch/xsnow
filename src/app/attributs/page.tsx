@@ -1,12 +1,15 @@
 import { AttributesBoard } from "@/components/features/AttributesBoard";
 import { LocalizedFeature } from "@/components/LocalizedFeature";
+import { SignupGate } from "@/components/SignupGate";
 
 export const metadata = { title: "Vos attributs" };
 
 export default function AttributsPage() {
   return (
-    <LocalizedFeature feature="attributs">
-      <AttributesBoard />
-    </LocalizedFeature>
+    <SignupGate>
+      <LocalizedFeature feature="attributs">
+        <AttributesBoard />
+      </LocalizedFeature>
+    </SignupGate>
   );
 }
