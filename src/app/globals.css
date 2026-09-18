@@ -152,6 +152,57 @@ body {
   font-size: var(--brand-slogan);
 }
 
+.footer-slogan-line {
+  font-size: var(--brand-slogan);
+}
+
+.footer-slogan-marquee {
+  display: block;
+  overflow: hidden;
+  width: 100%;
+  white-space: nowrap;
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 8%,
+    #000 92%,
+    transparent
+  );
+}
+
+.footer-slogan-track {
+  display: inline-flex;
+  width: max-content;
+  gap: 3rem;
+  animation: footer-slogan-slide 22s linear infinite;
+}
+
+.footer-slogan-item {
+  flex: none;
+  padding-inline: 0.5rem;
+}
+
+@keyframes footer-slogan-slide {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .footer-slogan-track {
+    animation: none;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .footer-slogan-item[aria-hidden="true"] {
+    display: none;
+  }
+}
+
 /*
  * Wordmark/nav + main share leftover height above the sticky footer.
  * On home (#home-guide), leftover height goes into the Accueil card so
