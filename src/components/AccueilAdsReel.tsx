@@ -55,7 +55,7 @@ export function AccueilAdsReel() {
     return (
       <aside
         data-accueil-ads-reel
-        className="relative flex h-full min-h-0 w-full flex-1 items-center justify-center overflow-hidden rounded-xl border border-gold/35 bg-night text-sm text-snow/70"
+        className="opc-glass-soft relative flex h-full min-h-0 w-full flex-1 items-center justify-center overflow-hidden rounded-xl border border-gold/35 text-sm text-snow/70"
       >
         Aucune publicité pour l’instant.
       </aside>
@@ -67,7 +67,7 @@ export function AccueilAdsReel() {
       data-accueil-ads-reel
       data-ad-id={ad.id}
       aria-label={ad.title}
-      className="relative flex h-full min-h-0 w-full flex-1 flex-col overflow-hidden rounded-xl border border-gold/35 bg-night"
+      className="opc-glass-soft relative flex h-full min-h-0 w-full flex-1 flex-col overflow-hidden rounded-xl border border-gold/35"
     >
       <div className="pointer-events-none absolute inset-x-2 top-2 z-20 flex gap-1">
         {ads.map((item, slotIndex) => (

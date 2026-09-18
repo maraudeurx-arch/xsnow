@@ -72,7 +72,7 @@ export function AccueilMenu({ compact = false }: { compact?: boolean }) {
       {open ? (
         <nav
           aria-label={m.nav.accueilProposals}
-          className="absolute top-full left-0 z-50 mt-1.5 max-h-[min(68dvh,32rem)] w-[min(calc(100vw-1.5rem),20rem)] space-y-1.5 overflow-y-auto overflow-x-hidden rounded-xl border border-white/10 bg-[linear-gradient(180deg,rgba(18,20,26,0.98)_0%,rgba(8,8,10,0.98)_100%)] p-1.5 pr-1 shadow-[0_16px_40px_rgba(0,0,0,0.45)] backdrop-blur-md"
+          className="opc-glass-menu absolute top-full left-0 z-50 mt-1.5 max-h-[min(68dvh,32rem)] w-[min(calc(100vw-1.5rem),20rem)] space-y-1.5 overflow-y-auto overflow-x-hidden rounded-xl p-1.5 pr-1"
         >
           <HomeBackLink
             className={`${itemClass(pathMatches(pathname, "/"))} justify-center border-gold/50 font-extrabold`}

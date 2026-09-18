@@ -5,7 +5,7 @@ import { hrefWithLang } from "@/lib/i18n";
 import { useI18n } from "@/lib/i18n/locale";
 
 export const homeBackBarClass =
-  "tap inline-flex min-h-11 w-full items-center justify-center gap-1.5 rounded-full border border-gold/65 bg-[rgba(8,8,12,0.94)] px-3 text-[13px] font-extrabold text-gold shadow-[0_6px_16px_rgba(0,0,0,0.35)]";
+  "tap opc-glass-soft inline-flex min-h-11 w-full items-center justify-center gap-1.5 rounded-full border border-gold/65 px-3 text-[13px] font-extrabold text-gold";
 
 export function HomeBackLink({
   className = homeBackBarClass,

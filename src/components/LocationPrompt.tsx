@@ -9,7 +9,7 @@ export function LocationPrompt() {
 
   return (
     <section
-      className="w-full rounded-2xl border border-white/10 bg-[linear-gradient(180deg,rgba(18,20,26,0.92)_0%,rgba(8,8,10,0.92)_100%)] p-3 text-left shadow-[0_12px_32px_rgba(0,0,0,0.35)] backdrop-blur-md"
+      className="opc-glass w-full rounded-2xl p-3 text-left"
       aria-label={m.geo.section}
     >
       <p className="text-[13px] font-extrabold tracking-wide text-snow">{m.geo.title}</p>

@@ -56,7 +56,7 @@ export function ConsentSheet() {
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 p-3 sm:items-center">
       <section
-        className="w-full max-w-md max-h-[min(85dvh,36rem)] overflow-y-auto rounded-2xl border border-white/10 bg-[linear-gradient(180deg,rgba(18,20,26,0.96)_0%,rgba(8,8,10,0.96)_100%)] p-3 text-left shadow-[0_18px_40px_rgba(0,0,0,0.5)] backdrop-blur-md"
+        className="opc-glass-menu w-full max-w-md max-h-[min(85dvh,36rem)] overflow-y-auto rounded-2xl p-3 text-left"
         role="dialog"
         aria-modal="true"
         aria-labelledby="opc-consent-title"
