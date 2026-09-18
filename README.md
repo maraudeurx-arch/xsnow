@@ -59,7 +59,7 @@ Xsnow est la vitrine **Open-Community** : faire connaître un business, voir qui
 - En haut à gauche : **Xsnow**, puis **Accueil** (toutes les propositions à l’intérieur)
 - En haut à droite : **Connect** (RainbowKit / WalletConnect, Ethereum principal + Base ; Sepolia en option)
 - Titre centré : **Open-Community** / **Monétisé Vous!**
-- Centre : avatar + bulle + **Réécouter** (`speechSynthesis`, iOS = tap)
+- Dans **Mon profil** : avatar + **Réécouter** et **Changer d’avatar** (`speechSynthesis`, iOS = tap)
 - Safari iPhone : `viewport-fit=cover`, safe areas, cibles ~44 px
 
 Aucun panneau Jeton / Outils. Les formulaires restent dans `localStorage`. La caution d’un prêt est un accord affiché, pas un vrai escrow.

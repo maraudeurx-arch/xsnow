@@ -48,7 +48,7 @@ fresh.describe("new visitor onboarding order", () => {
 
     await page.getByRole("button", { name: "Homme, peau claire" }).click();
 
-    await expect(page.getByRole("button", { name: "Réécouter" })).toBeVisible();
+    await expect(page.getByRole("button", { name: /Réécouter/ })).toHaveCount(0);
     await expect(page.getByRole("dialog")).toBeVisible();
     await expect(page.getByText("Position — optionnelle")).toBeVisible();
     await expect(page.getByRole("button", { name: "Oui" }).first()).toBeVisible();
@@ -64,7 +64,7 @@ fresh.describe("new visitor onboarding order", () => {
 
     await page.goto("./");
     await expect(page.getByText("Choisis ton avatar")).toHaveCount(0);
-    await expect(page.getByRole("button", { name: "Réécouter" })).toBeVisible();
+    await expect(page.getByRole("button", { name: /Réécouter/ })).toHaveCount(0);
     await expect(page.getByRole("link", { name: "Gagner maintenant" })).toBeVisible();
     await expect(page.getByRole("link", { name: "Vos idées" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Partager" })).toBeVisible();
@@ -76,7 +76,6 @@ fresh.describe("new visitor onboarding order", () => {
       page.getByRole("link", { name: "Vos idées" }),
       page.getByRole("button", { name: "Partager" }),
       page.locator("[data-home-inscrire]"),
-      page.getByRole("button", { name: "Réécouter" }),
     ]) {
       await expect(locator).toHaveCSS("background-color", cobalt);
     }
@@ -86,6 +85,11 @@ fresh.describe("new visitor onboarding order", () => {
     await expect(page.getByRole("button", { name: "Compris" })).toHaveCount(0);
     await expect(page.getByRole("note")).toHaveCount(0);
     await expect(page.locator("[data-install-guide]")).toHaveCount(0);
+
+    await page.goto("./mon-profil/");
+    await expect(page.locator("[data-profile-avatar-controls]")).toBeVisible();
+    await expect(page.getByRole("button", { name: /Réécouter/ })).toBeVisible();
+    await expect(page.getByRole("button", { name: /Changer d.?avatar/ })).toBeVisible();
   });
 
   fresh("lets a new visitor read About version and contact without geo", async ({ page }) => {

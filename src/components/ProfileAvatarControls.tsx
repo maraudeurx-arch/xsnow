@@ -6,7 +6,6 @@ import { AVATARS, avatarById, type Avatar, type AvatarId } from "@/lib/avatars";
 import { welcomeSpeechFor } from "@/lib/content";
 import { useI18n } from "@/lib/i18n/locale";
 import { hasPlayedWelcomeFor, markWelcomePlayed } from "@/lib/device-memory";
-import { refreshGuideControlsStarted } from "@/lib/guide-controls";
 import { usePlace } from "@/lib/place";
 import { useSpeech, type SpeakOptions } from "@/lib/speech";
 import { useStoredAvatar } from "@/lib/useStoredAvatar";
@@ -65,7 +64,6 @@ export function ProfileAvatarControls() {
     } else if (!readWelcomeGate()) {
       openWelcomeGate();
     }
-    if (avatarId && avatarId !== id) refreshGuideControlsStarted();
     setAvatarId(id);
     setPicking(false);
   }
