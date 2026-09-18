@@ -63,6 +63,8 @@ export interface Env {
 
 const MODEL = "@cf/meta/llama-3.2-3b-instruct";
 const MAX_BODY_BYTES = 16_384;
+/** Business photo ads (JPEG ≤150 Ko as base64 JSON). */
+const MAX_BUSINESS_AD_BODY_BYTES = 700_000;
 const MAX_MESSAGES = 24;
 const MAX_TEXT_CHARS = CHAT_TEXT_MAX;
 const MAX_TOKENS = 400;
@@ -220,13 +222,17 @@ function isStatsPath(pathname: string) {
   return value === "/stats" || value.endsWith("/stats");
 }
 
-async function readJsonBody(request: Request, origin: string | null): Promise<{ ok: true; value: unknown } | { ok: false; response: Response }> {
+async function readJsonBody(
+  request: Request,
+  origin: string | null,
+  maxBytes: number = MAX_BODY_BYTES,
+): Promise<{ ok: true; value: unknown } | { ok: false; response: Response }> {
   if (!isJsonContentType(request.headers.get("Content-Type"))) {
     return { ok: false, response: json({ error: "unsupported_media_type" }, 415, origin) };
   }
 
   const declaredLength = Number(request.headers.get("Content-Length") || "0");
-  if (declaredLength > MAX_BODY_BYTES) {
+  if (declaredLength > maxBytes) {
     return { ok: false, response: json({ error: "payload_too_large" }, 413, origin) };
   }
 
@@ -237,7 +243,7 @@ async function readJsonBody(request: Request, origin: string | null): Promise<{ 
     return { ok: false, response: json({ error: "bad_request" }, 400, origin) };
   }
 
-  if (rawText.length > MAX_BODY_BYTES) {
+  if (rawText.length > maxBytes) {
     return { ok: false, response: json({ error: "payload_too_large" }, 413, origin) };
   }
 
@@ -307,7 +313,7 @@ async function handleBusinessAds(request: Request, env: Env, origin: string | nu
   if (tooMany(clientIp(request))) {
     return json({ error: "rate_limited" }, 429, origin);
   }
-  const body = await readJsonBody(request, origin);
+  const body = await readJsonBody(request, origin, MAX_BUSINESS_AD_BODY_BYTES);
   if (!body.ok) return body.response;
   const response = await handleBusinessAdsPost(body.value, env);
   const data = await response.json();
