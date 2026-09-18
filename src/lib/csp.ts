@@ -8,11 +8,8 @@
  * `base-uri 'self'` close plugin / <base> injection. Visitor ideas are still
  * never rendered as HTML.
  *
- * NOTE: do NOT add `upgrade-insecure-requests` until GitHub Pages has issued a
- * valid TLS cert for the custom domain (opencommunity.app). While users open
- * http://opencommunity.app, that directive upgrades images/scripts to https://
- * with a mismatched *.github.io cert and breaks avatars/assets. Re-add once
- * https://opencommunity.app serves a matching certificate.
+ * `upgrade-insecure-requests` is intentional: opencommunity.app now serves a
+ * matching Let's Encrypt cert (GitHub Pages https_enforced).
  */
 export const CONTENT_SECURITY_POLICY = [
   "default-src 'self'",
@@ -26,4 +23,5 @@ export const CONTENT_SECURITY_POLICY = [
   "frame-src 'self' https:",
   "worker-src 'self' blob:",
   "form-action 'self' https:",
+  "upgrade-insecure-requests",
 ].join("; ");
