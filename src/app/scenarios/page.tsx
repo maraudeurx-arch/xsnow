@@ -1,7 +1,12 @@
 import { LocalizedStubFeature } from "@/components/LocalizedStub";
+import { SignupGate } from "@/components/SignupGate";
 
 export const metadata = { title: "Scénarios humour / animé" };
 
 export default function ScenariosPage() {
-  return <LocalizedStubFeature feature="scenarios" stub="scenarios" />;
+  return (
+    <SignupGate>
+      <LocalizedStubFeature feature="scenarios" stub="scenarios" />
+    </SignupGate>
+  );
 }
