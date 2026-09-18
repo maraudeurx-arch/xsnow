@@ -152,6 +152,39 @@ body {
   font-size: var(--brand-slogan);
 }
 
+/* One slogan at a time, centered, clipped to the banner line width */
+.brand-slogan-viewport {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  margin-inline: auto;
+  overflow: hidden;
+  line-height: inherit;
+}
+
+.brand-slogan-track {
+  display: flex;
+  width: 100%;
+  transition: transform 0.55s ease;
+  will-change: transform;
+}
+
+.brand-slogan-slide {
+  flex: 0 0 100%;
+  box-sizing: border-box;
+  padding-inline: 0.15rem;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .brand-slogan-track {
+    transition: none;
+  }
+}
+
 .footer-slogan-line {
   font-size: var(--brand-slogan);
 }

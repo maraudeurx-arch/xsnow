@@ -24,7 +24,7 @@ export function AppChrome({ children }: { children: ReactNode }) {
           <h1 className="mx-auto font-[family-name:var(--font-brand)] leading-[0.92] font-extrabold tracking-[-0.02em] text-balance text-snow [text-shadow:0_2px_18px_rgba(0,0,0,0.72)]">
             <BrandCopy field="community" />
           </h1>
-          <p className="mt-0.5 font-[family-name:var(--font-brand)] leading-none font-bold tracking-[0.01em] text-gold [text-shadow:0_2px_10px_rgba(0,0,0,0.55)]">
+          <p className="mx-auto mt-0.5 w-full max-w-full overflow-hidden font-[family-name:var(--font-brand)] leading-none font-bold tracking-[0.01em] text-gold [text-shadow:0_2px_10px_rgba(0,0,0,0.55)]">
             <RotatingBrandSlogan />
           </p>
         </header>
