@@ -14,8 +14,16 @@ export const DEFAULT_IDEAS_FROM = "Open Community <beth.t@example.com>";
 export type OwnerMail = {
   subject: string;
   text: string;
+  /** Optional HTML body (inline photo via cid:). */
+  html?: string;
   /** Optional Resend attachments (base64 content, no data: prefix). */
-  attachments?: Array<{ filename: string; content: string; content_type?: string }>;
+  attachments?: Array<{
+    filename: string;
+    content: string;
+    content_type?: string;
+    /** Resend inline CID — pair with <img src="cid:…"> in html. */
+    content_id?: string;
+  }>;
 };
 
 export type RegisterNoticeInput = {
@@ -68,6 +76,16 @@ function clipSubject(value: string) {
     allowNewlines: false,
   });
 }
+
+function escapeHtml(value: string) {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+export const BUSINESS_AD_PHOTO_CID = "opc-ad-photo";
 
 export function buildIdeaOwnerMail(
   idea: { text: string; city: string; opcId?: string },
@@ -154,17 +172,37 @@ export function buildBusinessAdOwnerMail(
     : lower.endsWith(".webp")
       ? "image/webp"
       : "image/jpeg";
-  const attachments =
-    ad.imageBase64 && ad.imageFilename
-      ? [
-          {
-            filename: ad.imageFilename,
-            content: ad.imageBase64,
-            content_type: contentType,
-          },
-        ]
-      : undefined;
-  return { subject, text, attachments };
+  const hasPhoto = Boolean(ad.imageBase64 && ad.imageFilename);
+  const attachments = hasPhoto
+    ? [
+        {
+          filename: ad.imageFilename,
+          content: ad.imageBase64,
+          content_type: contentType,
+          content_id: BUSINESS_AD_PHOTO_CID,
+        },
+      ]
+    : undefined;
+  const descHtml = escapeHtml(ad.description || "(vide)").replace(/\n/g, "<br/>");
+  const html = [
+    "<p><strong>Nouvelle pub business Open Community</strong> (à vérifier avant diffusion Accueil).</p>",
+    "<ul>",
+    `<li><strong>Date:</strong> ${escapeHtml(when)}</li>`,
+    `<li><strong>Ville:</strong> ${escapeHtml(city)}</li>`,
+    `<li><strong>Commerce:</strong> ${escapeHtml(ad.name)}</li>`,
+    `<li><strong>Catégorie:</strong> ${escapeHtml(ad.category || "(non fournie)")}</li>`,
+    `<li><strong>Contact auteur:</strong> ${escapeHtml(ad.contactEmail)}</li>`,
+    `<li><strong>Numéro OPC:</strong> ${escapeHtml(ad.opcId || "non inscrit")}</li>`,
+    `<li><strong>Photo:</strong> ${escapeHtml(ad.imageFilename)} (~${Math.ceil(ad.imageBytes / 1024)} Ko)</li>`,
+    "</ul>",
+    `<p><strong>Description:</strong><br/>${descHtml}</p>`,
+    hasPhoto
+      ? `<p><img src="cid:${BUSINESS_AD_PHOTO_CID}" alt="Pub business" style="max-width:100%;height:auto;border-radius:8px;" /></p>`
+      : "<p><em>Pas de photo jointe.</em></p>",
+    "<p>Processus: vérifier la légitimité, puis revenir vers l’auteur avec une proposition monétaire compétitive.</p>",
+    "<p>— Ne pas publier sur Accueil tant que l’équipe n’a pas approuvé.</p>",
+  ].join("\n");
+  return { subject, text, html, attachments };
 }
 
 export type ResendSendResult = { sent: boolean; reason?: string };
@@ -203,6 +241,7 @@ export async function sendOwnerMail(
         to: [OPC_INBOX_TO],
         subject,
         text,
+        ...(mail.html ? { html: mail.html } : {}),
         ...(mail.attachments?.length ? { attachments: mail.attachments } : {}),
       }),
     });

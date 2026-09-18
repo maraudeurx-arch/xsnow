@@ -1,16 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import {
-  OPC_INBOX_TO,
-  RESEND_API_URL,
-  DEFAULT_IDEAS_FROM,
-  buildIdeaOwnerMail,
-  buildRegisterOwnerMail,
-  clipOpcId,
-  parseRegisterNotice,
-  resolveFromAddress,
-  sendOwnerMail,
-} from "./owner-mail.ts";
+import { OPC_INBOX_TO, RESEND_API_URL, DEFAULT_IDEAS_FROM, buildIdeaOwnerMail, buildRegisterOwnerMail, clipOpcId, parseRegisterNotice, resolveFromAddress, sendOwnerMail, buildBusinessAdOwnerMail, BUSINESS_AD_PHOTO_CID } from "./owner-mail.ts";
 
 describe("clipOpcId / parseRegisterNotice", () => {
   it("keeps a valid OPC-XXXX and drops junk", () => {
@@ -127,5 +117,25 @@ describe("sendOwnerMail", () => {
   it("falls back to the default From when the env value is junk", () => {
     assert.equal(resolveFromAddress("not-an-email"), DEFAULT_IDEAS_FROM);
     assert.equal(resolveFromAddress(""), DEFAULT_IDEAS_FROM);
+  });
+});
+
+describe("buildBusinessAdOwnerMail", () => {
+  it("embeds the photo inline via cid and keeps a downloadable attachment", () => {
+    const mail = buildBusinessAdOwnerMail({
+      name: "Animalerie",
+      category: "Animaux",
+      city: "Gatineau",
+      description: "Cours de brossage",
+      contactEmail: "estipol@gmail.com",
+      opcId: "OPC-3LLP",
+      imageBase64: "AAAA",
+      imageFilename: "pub-business.jpg",
+      imageBytes: 133000,
+    });
+    assert.match(mail.html ?? "", new RegExp(`cid:${BUSINESS_AD_PHOTO_CID}`));
+    assert.equal(mail.attachments?.[0]?.content_id, BUSINESS_AD_PHOTO_CID);
+    assert.equal(mail.attachments?.[0]?.content_type, "image/jpeg");
+    assert.match(mail.text, /Animalerie/);
   });
 });
