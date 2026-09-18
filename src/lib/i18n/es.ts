@@ -59,7 +59,7 @@ export const es: Messages = {
   guide: {
     pickAvatar: "Elige tu avatar",
     changeAvatar: "Cambiar de avatar",
-    replay: "Volver a escuchar",
+    replay: "Reescuchar la intro",
     offerShortcuts: "Atajos a Ganar ahora, Tus ideas, Compartir e Inscribirse",
     vosIdees: "Tus ideas",
     partager: "Compartir",
@@ -342,8 +342,8 @@ export const es: Messages = {
     securityMd: "Política de seguridad (SECURITY.md)",
   },
   footer: {
-    before: "Proximidad y espíritu de ayuda mutua al servicio de ",
-    after: ".",
+    before: "Proximidad y espíritu de ayuda mutua al servicio de la gente de aquí.",
+    after: "",
     privacy: "Privacidad",
     terms: "Condiciones",
     about: "Acerca de",

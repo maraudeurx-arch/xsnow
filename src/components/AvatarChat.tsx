@@ -21,6 +21,7 @@ import { ChatFault, completeChat, type ChatMessage } from "@/lib/llm";
 import type { Avatar } from "@/lib/avatars";
 import { useSpeech } from "@/lib/speech";
 import { FeedbackRow } from "@/components/FeedbackRow";
+import { AvatarDisc } from "@/components/AvatarDisc";
 
 export function AvatarChat({
   avatar,
@@ -291,6 +292,14 @@ export function AvatarChat({
             {chat.ideaPrompt}
           </Link>
         ) : null}
+      </div>
+
+      <div className="flex shrink-0 justify-center py-0.5" data-avatar-chat-disc>
+        <AvatarDisc
+          avatar={avatar}
+          className="size-[calc(var(--home-avatar)*0.78)]"
+          priority
+        />
       </div>
 
       {messages.length > 0 ? <FeedbackRow surface="accueil" compact /> : null}

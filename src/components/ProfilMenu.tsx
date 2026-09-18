@@ -6,6 +6,7 @@ import { headerNavBtnClass } from "@/components/AccueilMenu";
 import { InstallGuide } from "@/components/InstallGuide";
 import { LanguageSwitch } from "@/components/LanguageSwitch";
 import { LocalProfileBoard } from "@/components/LocalProfileBoard";
+import { ProfileAvatarControls } from "@/components/ProfileAvatarControls";
 import { useI18n } from "@/lib/i18n/locale";
 import { pathMatches } from "@/lib/paths";
 
@@ -21,6 +22,7 @@ export function ProfilMenu() {
   return (
     <div className="grid gap-3">
       <LocalProfileBoard />
+      <ProfileAvatarControls />
       <nav aria-label={m.nav.monProfil} className="grid gap-1.5">
         {PROFILE_LINKS.map((item) => (
           <Link

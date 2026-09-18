@@ -21,7 +21,7 @@
   /* Accueil: no header→card air — leftover height feeds Nouvelles. */
   --home-block-gap: 0;
   /* Gaps inside the avatar/chat card — keep compact so news flex-grows hard. */
-  --home-stack-gap: 0.16rem;
+  --home-stack-gap: 0.08rem;
   /* Hairline between Nouvelles and the chat composer (not full stack gap). */
   --home-news-chat-gap: 0.06rem;
   --home-nav-gap: 0.16rem;
