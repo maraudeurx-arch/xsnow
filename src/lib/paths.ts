@@ -1,4 +1,5 @@
 import {
+  CUSTOM_DOMAIN_HOST,
   CUSTOM_DOMAIN_ORIGIN,
   GITHUB_PAGES_HOST,
   GITHUB_PAGES_ORIGIN,
@@ -38,20 +39,31 @@ export const HOW_IT_WORKS_HREF = "/comment-ca-marche";
 export const SECURITY_HREF = "/securite";
 export const PROOFS_HREF = "/preuves-de-revenus";
 
-/** Canonical public origin (custom domain). */
+/**
+ * Flip to true when https://opencommunity.app serves a cert for that host
+ * (not `CN=*.github.io`). Until then, Home Screen icon fetches over https fail
+ * and iOS shows a letter “O”.
+ */
+export const PUBLIC_SITE_TLS_READY = false;
+
+/** Canonical public origin (https preferred for shares; may warn until TLS). */
 export const PUBLIC_SITE_ORIGIN = CUSTOM_DOMAIN_ORIGIN;
 
 /** Canonical public URL. Used in share posts, install tips, and deep links. */
 export const PUBLIC_SITE_URL = `${PUBLIC_SITE_ORIGIN}/`;
 
+/** Origin safe for PWA icons / start_url while custom-domain TLS is broken. */
+export const PWA_ASSET_ORIGIN = PUBLIC_SITE_TLS_READY
+  ? CUSTOM_DOMAIN_ORIGIN
+  : `http://${CUSTOM_DOMAIN_HOST}`;
+
 /** Project Pages URL kept as a fallback note; GitHub redirects it after DNS. */
 export const GITHUB_PAGES_SITE_URL = `${GITHUB_PAGES_ORIGIN}${PROJECT_PAGES_BASE}/`;
 
 /**
- * Absolute Home Screen launch URL. Always the custom domain so iOS does not
- * pin a github.io origin that later redirects (or 404s at `/`).
+ * Absolute Home Screen launch URL. HTTP until TLS matches opencommunity.app.
  */
-export const PWA_START_URL = PUBLIC_SITE_URL;
+export const PWA_START_URL = `${PWA_ASSET_ORIGIN}/`;
 
 /** Public GitHub identity and dedicated OPC contact email (no personal addresses). */
 export const GITHUB_REPO_URL = "https://github.com/maraudeurx-arch/xsnow";
@@ -75,10 +87,10 @@ export function assetUrl(path: string) {
   return `${BASE_PATH}${normalized}`;
 }
 
-/** Icon / asset href on the canonical custom domain (never github.io root). */
+/** Absolute asset href for PWA icons (HTTP until custom-domain TLS is ready). */
 export function absoluteAssetUrl(path: string) {
   const normalized = path.startsWith("/") ? path : `/${path}`;
-  return `${PUBLIC_SITE_ORIGIN}${normalized}`;
+  return `${PWA_ASSET_ORIGIN}${normalized}`;
 }
 
 /** Values written into `manifest.webmanifest` (absolute, never `/`). */
