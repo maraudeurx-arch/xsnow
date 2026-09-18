@@ -4,11 +4,6 @@ export const fr = {
   brand: {
     community: "Open Community",
     slogan: "Monétisé Vous!",
-    slogans: [
-      "La force de l’entraide locale.",
-      "Les gens d’ici, pour les gens d’ici.",
-      "Connecter et solidaire.",
-    ],
   },
   place: {
     neighborhood: "votre quartier",
@@ -349,6 +344,11 @@ export const fr = {
   footer: {
     before: "Proximité et Esprit d’entraide au service des gens d’ici.",
     after: "",
+    slogans: [
+      "Open Community — La force de l’entraide locale.",
+      "Open Community — Les gens d’ici, pour les gens d’ici.",
+      "Open Community — Connecter et solidaire.",
+    ],
     privacy: "Vie privée",
     terms: "Conditions",
     about: "À propos",

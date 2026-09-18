@@ -4,11 +4,11 @@ import { useEffect, useState } from "react";
 import { useI18n } from "@/lib/i18n/locale";
 import { pickSloganForSession } from "@/lib/rotating-slogan";
 
-/** Banner tagline that advances once per app reopen. */
-export function RotatingBrandSlogan() {
+/** Footer tagline that advances once per app reopen. */
+export function RotatingFooterSlogan() {
   const { m } = useI18n();
-  const slogans = m.brand.slogans;
-  const fallback = slogans[0] ?? "";
+  const slogans = m.footer.slogans;
+  const fallback = slogans[0] ?? m.footer.before;
   const [text, setText] = useState(fallback);
 
   useEffect(() => {

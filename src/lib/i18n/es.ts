@@ -5,11 +5,6 @@ export const es: Messages = {
   brand: {
     community: "Open Community",
     slogan: "¡Monetízate!",
-    slogans: [
-      "La fuerza de la ayuda mutua local.",
-      "La gente de aquí, para la gente de aquí.",
-      "Conectada y solidaria.",
-    ],
   },
   place: {
     neighborhood: "tu barrio",
@@ -349,6 +344,11 @@ export const es: Messages = {
   footer: {
     before: "Proximidad y espíritu de ayuda mutua al servicio de la gente de aquí.",
     after: "",
+    slogans: [
+      "Open Community — La fuerza de la ayuda mutua local.",
+      "Open Community — La gente de aquí, para la gente de aquí.",
+      "Open Community — Conectada y solidaria.",
+    ],
     privacy: "Privacidad",
     terms: "Condiciones",
     about: "Acerca de",

@@ -1,7 +1,7 @@
-/** Rotate brand taglines once per app reopen (new browser session). */
+/** Rotate footer taglines once per app reopen (new browser session). */
 
-export const SLOGAN_SESSION_KEY = "xsnow.sloganSessionIndex";
-export const SLOGAN_INDEX_KEY = "xsnow.sloganIndex";
+export const SLOGAN_SESSION_KEY = "xsnow.footerSloganSessionIndex";
+export const SLOGAN_INDEX_KEY = "xsnow.footerSloganIndex";
 
 function safeStorage(store?: Storage): Storage | undefined {
   if (store) return store;
