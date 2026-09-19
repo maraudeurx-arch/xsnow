@@ -3,11 +3,11 @@ import { GITHUB_PAGES_SITE_URL, PUBLIC_SITE_URL } from "../paths.ts";
 export const fr = {
   brand: {
     community: "Open Community",
-    slogan: "Monétisé Vous!",
+    slogan: "Monétisez-vous !",
     slogans: [
-      "Monétisé Vous!",
-      "Digitalisé vos compétences.",
-      "Utiliser notre ia pour en faire plus.",
+      "Monétisez-vous !",
+      "Digitalisez vos compétences.",
+      "Utilisez notre IA pour en faire plus.",
     ],
   },
   place: {
@@ -19,7 +19,7 @@ export const fr = {
     accueil: "Accueil",
     accueilProposals: "Propositions Accueil",
     mesServices: "Mes services",
-    enDemande: "En demande",
+    enDemande: "Demandes",
     monProfil: "Mon profil",
     vosIdees: "Vos idées",
     backHome: "Retour à l’accueil",
@@ -36,7 +36,7 @@ export const fr = {
     alertes:
       "Sois alerté si ton enfant, ton conjoint ou tes parents âgés s’éloignent de l’endroit où ils sont censés être",
     business: "Faites connaître votre business par des pubs",
-    monetise: "Monétiser vous : votre image, votre voix.",
+    monetise: "Monétisez-vous : votre image, votre voix.",
     vosIdees: "Vos idées · S’impliquer",
     gagnerMaintenant: "Gagner maintenant",
     sondages: "Répondre à des sondages et gagner de l’argent",
@@ -195,7 +195,7 @@ export const fr = {
         },
         {
           heading: "Annonces personnelles",
-          body: "Tes offres (Mes services), demandes (En demande), idées (Vos idées) et textes de partage restent sur cet appareil. Ce n’est pas un fil social global. Une copie assainie d’une idée envoyée part par e-mail vers opencommunity.opc@gmail.com ; les autres visiteurs ne la voient pas. Un lien que tu copies toi-même peut montrer une offre à la personne qui l’ouvre. Pour que quelque chose apparaisse chez tout le monde, il faut une approbation de l’équipe de développement, puis une version numérotée (catalogue public).",
+          body: "Tes offres (Mes services), demandes (Demandes), idées (Vos idées) et textes de partage restent sur cet appareil. Ce n’est pas un fil social global. Une copie assainie d’une idée envoyée part par e-mail vers opencommunity.opc@gmail.com ; les autres visiteurs ne la voient pas. Un lien que tu copies toi-même peut montrer une offre à la personne qui l’ouvre. Pour que quelque chose apparaisse chez tout le monde, il faut une approbation de l’équipe de développement, puis une version numérotée (catalogue public).",
         },
       ],
     },
@@ -352,7 +352,7 @@ export const fr = {
     slogans: [
       "Open Community — La force de l’entraide locale.",
       "Open Community — Les gens d’ici, pour les gens d’ici.",
-      "Open Community — Connecter et solidaire.",
+      "Open Community — Connectée et solidaire.",
     ],
     privacy: "Vie privée",
     terms: "Conditions",
@@ -364,7 +364,7 @@ export const fr = {
   welcome:
     "Bonjour, et bienvenue sur l’application Open Community, je suis ton avatar. La proximité et l’esprit d’entraide des gens d’ici font notre force. À travers Open Community, fais connaître à tes voisins un service que tu peux leur rendre en échange d’une compensation : ça peut être aider à déménager, faire des courses, ou aider à des travaux dans la maison. De plus, cette application t’offre des services gratuits, comme t’aider à retrouver ton téléphone si tu le perds, et t’avertir si ton enfant, ton conjoint ou tes parents âgés s’éloignent de l’endroit où ils sont censés être. Également, as-tu des suggestions de tâches et de services que tu aimerais monétiser ? Fais-le-moi savoir, ou note-les dans Vos idées, et toute la communauté en profitera. Garde à l’esprit que les gens qui partagent cette application, et qui produisent des idées qui sont monétisées, recevront au prorata de leurs efforts. N’hésite donc pas à me questionner à tout moment, je suis à ton entière disposition.",
   systemPrompt:
-    "Tu es le guide local Open Community à {city} — directeur honnête, utile d’abord (cash + communauté). Tu n’es pas un humain et tu n’es pas un agent avec des outils externes (pas de web, pas d’e-mail, pas de wallet). Tu parles uniquement en français, tu tutoies, tu restes concret et bref. Entraide de quartier : courses, déménagement, travaux, garde, prêt d’objets, prêt de voiture le matin (Interac, essence à l’emprunteur ; rappeler l’assurance — OPC n’est ni l’assureur ni un processeur de paiement), téléphone perdu, alertes proches. Pas de ferme de pubs, de clics, de faux comptes, ni de discours arnaque. Oriente tout de suite : une idée → Vos idées (une phrase, 30 s) ; gagner → Gagner maintenant / Mes services / En demande. Invite à toucher Accueil, sous {placeName} à gauche, ou Mes services / En demande / Gagner maintenant / Vos idées. Si le visiteur a une idée, reformule-la et pousse-le vers Vos idées ; capture aussi les suggestions de monétisation. Urgence réelle : 911. Exemples : U: Je veux de l’argent vite. A: Pas de pubs en boucle. Trois chemins : Mes services (voisin, Interac), En demande, ou Gagner maintenant (tests UX / panels, hotspot). Une idée ? Ouvre Vos idées. U: On pourrait déneiger les allées. A: Solide. Note-la dans Vos idées. Paiement voisin = Interac. U: Tu peux chercher ça sur internet ? A: Non, je suis le guide dans l’app, pas un agent externe. Dis-moi l’idée ou ouvre Vos idées / Gagner maintenant / Mes services. U: Quoi de neuf dans le quartier ? A: Regarde « Nouvelles du Quartier » sous Partager — j’y renvoie sans inventer de manchette. Ton apparence : {avatar}.",
+    "Tu es le guide local Open Community à {city} — directeur honnête, utile d’abord (cash + communauté). Tu n’es pas un humain et tu n’es pas un agent avec des outils externes (pas de web, pas d’e-mail, pas de wallet). Tu parles uniquement en français, tu tutoies, tu restes concret et bref. Entraide de quartier : courses, déménagement, travaux, garde, prêt d’objets, prêt de voiture le matin (Interac, essence à l’emprunteur ; rappeler l’assurance — OPC n’est ni l’assureur ni un processeur de paiement), téléphone perdu, alertes proches. Pas de ferme de pubs, de clics, de faux comptes, ni de discours arnaque. Oriente tout de suite : une idée → Vos idées (une phrase, 30 s) ; gagner → Gagner maintenant / Mes services / Demandes. Invite à toucher Accueil, sous {placeName} à gauche, ou Mes services / Demandes / Gagner maintenant / Vos idées. Si le visiteur a une idée, reformule-la et pousse-le vers Vos idées ; capture aussi les suggestions de monétisation. Urgence réelle : 911. Exemples : U: Je veux de l’argent vite. A: Pas de pubs en boucle. Trois chemins : Mes services (voisin, Interac), Demandes, ou Gagner maintenant (tests UX / panels, hotspot). Une idée ? Ouvre Vos idées. U: On pourrait déneiger les allées. A: Solide. Note-la dans Vos idées. Paiement voisin = Interac. U: Tu peux chercher ça sur internet ? A: Non, je suis le guide dans l’app, pas un agent externe. Dis-moi l’idée ou ouvre Vos idées / Gagner maintenant / Mes services. U: Quoi de neuf dans le quartier ? A: Regarde « Nouvelles du Quartier » sous Partager — j’y renvoie sans inventer de manchette. Ton apparence : {avatar}.",
   features: {
     business: {
       title: "Faites connaître votre business par des pubs",
@@ -403,7 +403,7 @@ export const fr = {
       lead: "Les services de sécurité du quartier : téléphone perdu et alertes si un proche s’éloigne.",
     },
     monetise: {
-      title: "Monétiser vous : votre image, votre voix.",
+      title: "Monétisez-vous : votre image, votre voix.",
       lead: "Proposez votre image ou votre voix à la communauté. Bientôt branché sur vos services.",
     },
     gagnerMaintenant: {
@@ -423,7 +423,7 @@ export const fr = {
       lead: "",
     },
     enDemande: {
-      title: "En demande",
+      title: "Demandes",
       lead: "",
     },
     monProfil: {
@@ -444,7 +444,7 @@ export const fr = {
     },
     aPropos: {
       title: "À propos de Open Community (OPC)",
-      lead: "Proximité, entraide et visibilité locale — Monétisé Vous!",
+      lead: "Proximité, entraide et visibilité locale — Monétisez-vous !",
     },
     vosIdees: {
       title: "",
@@ -469,7 +469,7 @@ export const fr = {
       "Tes offres, demandes, idées, textes de partage, inscription (prénom, nom, e-mail, téléphone, numéro OPC-XXXX) et coordonnées Interac/PayPal restent sur cet appareil. Une copie assainie d’une idée (phrase, ville, date, numéro OPC si inscrit — pas tes coordonnées) peut partir par e-mail vers opencommunity.opc@gmail.com. Rien de personnel n’apparaît chez un autre visiteur tant que l’équipe de développement n’approuve pas une publication dans une version numérotée (catalogue public).",
     releaseNotesTitle: "Notes de version",
     releaseNotesBody:
-      "0.3.5 — Mes compétences (après inscription) : publier compétences + disponibilité dans En demande. Copie : équipe de développement. 0.3.4 — Alertes de proximité : horaire lundi→dimanche, rayon 5/10/20 km, invitation et consentement du proche (GPS du navigateur / PWA). SMS Twilio optionnel (secrets Worker). Pas d’Apple Localiser / iCloud / Messages. 0.3.3 — Vos idées : e-mail assaini vers opencommunity.opc@gmail.com. Catalogue public toujours vide.",
+      "0.3.5 — Mes compétences (après inscription) : publier compétences + disponibilité dans Demandes. Copie : équipe de développement. 0.3.4 — Alertes de proximité : horaire lundi→dimanche, rayon 5/10/20 km, invitation et consentement du proche (GPS du navigateur / PWA). SMS Twilio optionnel (secrets Worker). Pas d’Apple Localiser / iCloud / Messages. 0.3.3 — Vos idées : e-mail assaini vers opencommunity.opc@gmail.com. Catalogue public toujours vide.",
     language: "Langue",
     comingSoon: "Notifications et saison d’affichage arriveront ici.",
     locationConsent: "Position",
@@ -837,7 +837,7 @@ export const fr = {
     needSkill: "Choisis au moins une compétence.",
     needOther: "Précise la compétence « Autres ».",
     needDay: "Choisis au moins un jour.",
-    publish: "Publier dans En demande",
+    publish: "Publier dans Demandes",
     cancel: "Fermer",
   },
 
@@ -888,7 +888,7 @@ export const fr = {
     cancelEdit: "Annuler",
     listTitle: "Vos offres",
     emptyList:
-      "Pas encore d’offre sur cet appareil. Le formulaire ci-dessus est un modèle vide, pas l’offre de quelqu’un d’autre. Les voisins ne la verront dans En demande que via un lien que tu partages, ou après une version publique approuvée.",
+      "Pas encore d’offre sur cet appareil. Le formulaire ci-dessus est un modèle vide, pas l’offre de quelqu’un d’autre. Les voisins ne la verront dans Demandes que via un lien que tu partages, ou après une version publique approuvée.",
     share: "Texte à partager",
     shareEdit: "Modifier",
     shareCopy: "Copier",
@@ -896,7 +896,7 @@ export const fr = {
     shareCopied: "Texte copié — collez-le dans Marketplace ou un groupe.",
     shareFailed: "Copie impossible. Le texte est affiché ci-dessous : sélectionnez-le.",
     publishSuccess: "Offre publiée. Pour la partager : Modifier, puis Copier.",
-    publishSuccessLink: "Les voisins demandent dans En demande.",
+    publishSuccessLink: "Les voisins demandent dans Demandes.",
     edit: "Modifier",
     published: "Publiée",
     terms:

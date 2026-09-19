@@ -43,8 +43,8 @@ describe("interpolate", () => {
 
   it("fills several keys and leaves unknown ones empty", () => {
     assert.equal(
-      interpolate("{community} — {slogan}", { community: "Open Community", slogan: "Monétisé Vous!" }),
-      "Open Community — Monétisé Vous!",
+      interpolate("{community} — {slogan}", { community: "Open Community", slogan: "Monétisez-vous !" }),
+      "Open Community — Monétisez-vous !",
     );
     assert.equal(interpolate("Ville {city}", {}), "Ville ");
   });
@@ -67,7 +67,7 @@ describe("car morning offer copy", () => {
     assert.equal(es.offers.shareEdit, "Editar");
     assert.equal(es.offers.shareCopy, "Copiar");
     assert.match(fr.offers.publishSuccess, /Modifier/);
-    assert.match(fr.offers.publishSuccessLink, /En demande/);
+    assert.match(fr.offers.publishSuccessLink, /Demandes/);
     assert.match(en.offers.emptyList, /In demand/);
     assert.match(es.offers.emptyRequests, /solicitudes/);
     assert.deepEqual(Object.keys(en.offers), Object.keys(fr.offers));
@@ -269,7 +269,7 @@ describe("mes services / en demande four buttons", () => {
     assert.equal(fr.features.mesServices.lead, "");
     assert.equal(en.features.mesServices.lead, "");
     assert.equal(es.features.mesServices.lead, "");
-    assert.equal(fr.features.enDemande.title, "En demande");
+    assert.equal(fr.features.enDemande.title, "Demandes");
     assert.equal(fr.features.enDemande.lead, "");
     assert.equal(en.features.enDemande.lead, "");
     assert.equal(es.features.enDemande.lead, "");

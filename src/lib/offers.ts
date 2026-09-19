@@ -609,7 +609,7 @@ export function sharePostFr(offer: CommunityOffer) {
     : offer.kind === "car_morning"
       ? "Paiement : Interac e-Transfer (l’essence en plus). Le prestataire confirme le contact."
       : offer.kind === "skills"
-        ? "Contact via En demande. Open Community n’est pas l’employeur."
+        ? "Contact via Demandes. Open Community n’est pas l’employeur."
         : "Paiement : Interac e-Transfer. Le prestataire confirme le contact.";
   const lines = [area ? `${offer.title} — ${area}` : offer.title, "", windowLine, priceLine];
   if (offer.notes) lines.push(offer.notes);

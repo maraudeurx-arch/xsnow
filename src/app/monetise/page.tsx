@@ -1,7 +1,7 @@
 import { LocalizedStubFeature } from "@/components/LocalizedStub";
 import { SignupGate } from "@/components/SignupGate";
 
-export const metadata = { title: "Monétiser vous : votre image, votre voix." };
+export const metadata = { title: "Monétisez-vous : votre image, votre voix." };
 
 export default function MonetisePage() {
   return (

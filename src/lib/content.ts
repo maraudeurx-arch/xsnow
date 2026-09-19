@@ -10,7 +10,7 @@ export const LOCATION = {
 export const BRAND = {
   name: LOCATION.cityDisplay,
   community: "Open Community",
-  slogan: "Monétisé Vous!",
+  slogan: "Monétisez-vous !",
   footerBefore: "Proximité et Esprit d’entraide au service des ",
   footerAfter: ".",
 } as const;
@@ -94,9 +94,9 @@ export const PROFESSIONNELLE_MENU = [
   },
   {
     href: "/monetise",
-    label: "Monétiser vous : votre image, votre voix.",
+    label: "Monétisez-vous : votre image, votre voix.",
     speech:
-      "Monétiser vous : votre image, votre voix. Proposez votre présence à la communauté de votre ville.",
+      "Monétisez-vous : votre image, votre voix. Proposez votre présence à la communauté de votre ville.",
   },
   {
     href: "/sondages",
@@ -108,7 +108,7 @@ export const PROFESSIONNELLE_MENU = [
 
 export const HEADER_NAV = [
   { href: "/mes-services", label: "Mes services" },
-  { href: "/en-demande", label: "En demande" },
+  { href: "/en-demande", label: "Demandes" },
   { href: "/mon-profil", label: "Mon profil" },
 ] as const;
 
@@ -167,7 +167,7 @@ export const FEATURE_COPY = {
     lead: "Les services de sécurité du quartier : téléphone perdu et alertes si un proche s’éloigne.",
   },
   monetise: {
-    title: "Monétiser vous : votre image, votre voix.",
+    title: "Monétisez-vous : votre image, votre voix.",
     lead: "Proposez votre image ou votre voix à la communauté. Bientôt branché sur vos services.",
   },
   sondages: {
@@ -183,7 +183,7 @@ export const FEATURE_COPY = {
     lead: "Ici, vous verrez ce que vous offrez déjà à la communauté : pubs, services, objets. En construction.",
   },
   enDemande: {
-    title: "En demande",
+    title: "Demandes",
     lead: "Les demandes du quartier que vous pourriez honorer. En construction.",
   },
   monProfil: {
@@ -204,7 +204,7 @@ export const FEATURE_COPY = {
   },
   aPropos: {
     title: "À propos de Open Community (OPC)",
-    lead: "Proximité, entraide et visibilité locale — Monétisé Vous!",
+    lead: "Proximité, entraide et visibilité locale — Monétisez-vous !",
   },
 } as const;
 

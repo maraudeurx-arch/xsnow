@@ -20,7 +20,7 @@ const PAGES = [
   },
   {
     file: "index.html",
-    headline: "Open Community — Monétisé Vous! Inscription gratuite.",
+    headline: "Open Community — Monétisez-vous ! Inscription gratuite.",
   },
 ] as const;
 
