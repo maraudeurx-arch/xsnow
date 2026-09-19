@@ -346,6 +346,14 @@ export const es: Messages = {
     emailLabel: "Correo de contacto OPC",
     securityMd: "Política de seguridad (SECURITY.md)",
   },
+  earnNow: {
+    missionsTitle: "Misiones teléfono / IA",
+    missionsLead:
+      "Plataformas externas (anotación, evaluación). Sin afiliación OPC. Sin ingreso garantizado — verifica elegibilidad en Canadá.",
+    onlineWorkTitle: "Trabajo en línea",
+    onlineWorkLead:
+      "Enseñar francés en línea (Japón, Asia y otros países) en plataformas de tutoría. Suele fijarse tarifa y horario. Sin afiliación OPC ni promesa de ingresos; cada sitio decide la aceptación.",
+  },
   footer: {
     before: "Proximidad y espíritu de ayuda mutua al servicio de la gente de aquí.",
     after: "",

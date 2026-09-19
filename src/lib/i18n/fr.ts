@@ -346,6 +346,14 @@ export const fr = {
     emailLabel: "E-mail de contact OPC",
     securityMd: "Politique de sécurité (SECURITY.md)",
   },
+  earnNow: {
+    missionsTitle: "Missions téléphone / IA",
+    missionsLead:
+      "Plateformes externes (annotation, évaluation). Pas d’affiliation OPC. Aucun revenu garanti — vérifie l’éligibilité Canada.",
+    onlineWorkTitle: "Travail en ligne",
+    onlineWorkLead:
+      "Enseigner le français en ligne (Japon, Asie et ailleurs) via des plateformes de tutorat. Tu fixes souvent tes tarifs et ton horaire. Pas d’affiliation OPC, pas de promesse de revenu ; l’acceptation dépend de chaque site.",
+  },
   footer: {
     before: "Proximité et Esprit d’entraide au service des gens d’ici.",
     after: "",

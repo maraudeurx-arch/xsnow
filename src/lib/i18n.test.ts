@@ -228,6 +228,10 @@ describe("vos idees copy", () => {
 describe("gagner maintenant copy", () => {
   it("drops the board heading and explains unaffiliated phone work in FR/EN/ES", () => {
     assert.equal(fr.menu.gagnerMaintenant, "Gagner maintenant");
+    assert.equal(fr.earnNow.onlineWorkTitle, "Travail en ligne");
+    assert.match(fr.earnNow.onlineWorkLead, /français/);
+    assert.match(fr.earnNow.onlineWorkLead, /Japon/);
+    assert.match(fr.earnNow.onlineWorkLead, /pas de promesse de revenu/);
     assert.equal(en.menu.gagnerMaintenant, "Earn now");
     assert.equal(es.menu.gagnerMaintenant, "Ganar ahora");
     assert.equal(fr.features.gagnerMaintenant.title, "");
