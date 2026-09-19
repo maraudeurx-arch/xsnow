@@ -18,12 +18,12 @@ export function EarnNowBoard() {
 
   return (
     <div className="grid gap-3">
-      <section className="grid gap-1.5" aria-labelledby="earn-missions-title">
-        <h2 id="earn-missions-title" className={sectionTitleClass}>
-          {copy.missionsTitle}
+      <section className="grid gap-1.5" aria-labelledby="earn-online-title">
+        <h2 id="earn-online-title" className={sectionTitleClass}>
+          {copy.onlineWorkTitle}
         </h2>
-        <p className={sectionLeadClass}>{copy.missionsLead}</p>
-        {PAID_MISSION_LINKS.map((link) => (
+        <p className={sectionLeadClass}>{copy.onlineWorkLead}</p>
+        {ONLINE_WORK_LINKS.map((link) => (
           <a
             key={link.id}
             href={link.url}
@@ -36,12 +36,12 @@ export function EarnNowBoard() {
         ))}
       </section>
 
-      <section className="grid gap-1.5" aria-labelledby="earn-online-title">
-        <h2 id="earn-online-title" className={sectionTitleClass}>
-          {copy.onlineWorkTitle}
+      <section className="grid gap-1.5" aria-labelledby="earn-missions-title">
+        <h2 id="earn-missions-title" className={sectionTitleClass}>
+          {copy.missionsTitle}
         </h2>
-        <p className={sectionLeadClass}>{copy.onlineWorkLead}</p>
-        {ONLINE_WORK_LINKS.map((link) => (
+        <p className={sectionLeadClass}>{copy.missionsLead}</p>
+        {PAID_MISSION_LINKS.map((link) => (
           <a
             key={link.id}
             href={link.url}
