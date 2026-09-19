@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     template: "%s · Open Community",
   },
   description:
-    "Open Community — Monétisé Vous! Proximité, entraide et visibilité locale.",
+    "Open Community — Monétisez-vous ! Proximité, entraide et visibilité locale.",
   applicationName: "Open Community",
   manifest: "/manifest.webmanifest",
   icons: {

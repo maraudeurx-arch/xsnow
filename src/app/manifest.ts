@@ -9,7 +9,7 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "Open Community",
     short_name: "OPC",
-    description: "Open Community — Monétisé Vous! Entraide de quartier.",
+    description: "Open Community — Monétisez-vous ! Entraide de quartier.",
     // Absolute custom-domain URLs so Home Screen does not pin github.io.
     id: launch.id,
     start_url: launch.start_url,

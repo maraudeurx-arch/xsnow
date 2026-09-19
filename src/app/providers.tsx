@@ -46,7 +46,7 @@ const walletChains = resolveWalletChains(enableTestnets());
 const walletConfig = projectId
   ? getDefaultConfig({
       appName: "Open Community",
-      appDescription: "Open Community — Monétisé Vous!",
+      appDescription: "Open Community — Monétisez-vous !",
       appUrl: PUBLIC_SITE_URL,
       appIcon: absoluteAssetUrl("/brand/app-icon-192.png"),
       projectId,

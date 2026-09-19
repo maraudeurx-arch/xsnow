@@ -302,7 +302,7 @@ describe("About version copy", () => {
       slogan: fr.brand.slogan,
     });
     assert.match(spoken, /Open Community/);
-    assert.match(spoken, /Monétisé Vous/);
+    assert.match(spoken, /Monétisez-vous/);
   });
 });
 

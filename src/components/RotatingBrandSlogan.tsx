@@ -5,7 +5,7 @@ import { useI18n } from "@/lib/i18n/locale";
 
 /**
  * Header gold slogans rotate one-at-a-time inside the existing centered
- * slogan line (same footprint as the old static « Monétisé Vous! »).
+ * slogan line (same footprint as the old static « Monétisez-vous ! »).
  */
 export function RotatingBrandSlogan() {
   const { m } = useI18n();
