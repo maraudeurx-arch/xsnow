@@ -105,7 +105,7 @@ export function AccueilAdsReel() {
           src={src}
           alt={ad.title}
           data-ad-image={ad.id}
-          className="h-full min-h-0 w-full flex-1 object-cover object-center"
+          className="h-full min-h-0 w-full flex-1 object-cover object-bottom"
           decoding="async"
           fetchPriority="high"
         />
