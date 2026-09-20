@@ -11,8 +11,8 @@ import {
 
 /**
  * Accueil ad surface: one full-bleed image at a time, rotates every 5s.
- * object-top keeps faces/headers visible; optional captionLines overlay
- * stays readable even when the photo is cropped.
+ * Default object-position is center; per-ad objectPosition overrides
+ * (e.g. Joase uses center top). Optional captionLines overlay stays readable.
  */
 export function AccueilAdsReel() {
   const [tick, setTick] = useState(0);
@@ -107,7 +107,8 @@ export function AccueilAdsReel() {
           src={src}
           alt={ad.title}
           data-ad-image={ad.id}
-          className="h-full min-h-0 w-full flex-1 object-cover object-top"
+          className="h-full min-h-0 w-full flex-1 object-cover"
+          style={{ objectPosition: ad.objectPosition ?? "center" }}
           decoding="async"
           fetchPriority="high"
         />

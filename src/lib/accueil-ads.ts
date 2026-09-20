@@ -28,6 +28,11 @@ export type AccueilAd = {
   example?: boolean;
   /** Optional on-screen caption lines (UI overlay — survives image crop). */
   captionLines?: readonly string[];
+  /**
+   * CSS object-position for object-cover crop (e.g. "center", "top", "50% 30%").
+   * Default in the reel is center so flyer-style creatives stay framed.
+   */
+  objectPosition?: string;
 };
 
 export type VisitorAccueilAd = {
@@ -52,6 +57,7 @@ export const ACCUEIL_ADS: readonly AccueilAd[] = [
       "Service de rénovation et de peinture",
       "Malabo — Guinée équatoriale",
     ],
+    objectPosition: "center top",
   },
   {
     id: "desinsectisation-libreville",
