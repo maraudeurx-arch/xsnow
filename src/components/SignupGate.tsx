@@ -6,7 +6,7 @@ import { useI18n } from "@/lib/i18n/locale";
 import { useDeviceMemoryReady } from "@/lib/useDeviceMemoryReady";
 import { useLocalProfile } from "@/lib/useLocalProfile";
 
-/** Require device-local registration (Mon profil) before a publish / earn surface. */
+/** Require device-local registration before offering or requesting a service. */
 export function SignupGate({ children }: { children: ReactNode }) {
   const { m } = useI18n();
   const memoryReady = useDeviceMemoryReady();
