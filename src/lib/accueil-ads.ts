@@ -45,7 +45,7 @@ export const ACCUEIL_ADS: readonly AccueilAd[] = [
     id: "joase-renov-malabo",
     imagePath: "/ads/joase-renov-malabo.jpg",
     href: "/business",
-    title: "Joase Renov — rénovation & peinture (Malabo)",
+    title: "Service de rénovation et de peinture — Malabo, Guinée équatoriale",
   },
   {
     id: "desinsectisation-libreville",
