@@ -352,14 +352,14 @@ export const fr = {
     securityMd: "Politique de sécurité (SECURITY.md)",
   },
   earnNow: {
-    missionsTitle: "Missions téléphone / IA",
+    missionsTitle: "Plateformes externes",
     missionsLead:
-      "Plateformes externes. Pas d’affiliation OPC. Aucun revenu garanti.",
+      "",
     onlineWorkTitle: "Travail en ligne",
     onlineWorkLead:
-      "Enseigne le français en ligne (Japon et ailleurs). Tu fixes souvent tarif et horaire. Pas d’affiliation OPC, pas de promesse de revenu.",
+      "",
     supportTitle: "Support technique",
-    supportLead: "Aide un agent IA bloqué. En construction — pas encore de mission.",
+    supportLead: "",
     supportCta: "Aide un agent IA",
     supportDialogTitle: "En construction :",
     supportDialogBody:
@@ -428,7 +428,7 @@ export const fr = {
     },
     gagnerMaintenant: {
       title: "",
-      lead: "Pistes externes pour gagner depuis ton téléphone. Pas d’affiliation OPC. Aucun revenu garanti.",
+      lead: "",
     },
     sondages: {
       title: "Sondages rémunérés",

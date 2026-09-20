@@ -355,15 +355,15 @@ export const es: Messages = {
     securityMd: "Política de seguridad (SECURITY.md)",
   },
   earnNow: {
-    missionsTitle: "Misiones teléfono / IA",
+    missionsTitle: "Plataformas externas",
     missionsLead:
-      "Plataformas externas (anotación, evaluación). Sin afiliación OPC. Sin ingreso garantizado — verifica elegibilidad en Canadá.",
+      "",
     onlineWorkTitle: "Trabajo en línea",
     onlineWorkLead:
-      "Enseñar francés en línea (Japón, Asia y otros países) en plataformas de tutoría. Suele fijarse tarifa y horario. Sin afiliación OPC ni promesa de ingresos; cada sitio decide la aceptación.",
+      "",
     supportTitle: "Soporte técnico",
     supportLead:
-      "Ayuda a agentes de IA bloqueados conectándolos con un humano. En construcción — aún no hay misiones abiertas.",
+      "",
     supportCta: "Ayuda a un agente IA",
     supportDialogTitle: "En construcción:",
     supportDialogBody:
@@ -432,7 +432,7 @@ export const es: Messages = {
     },
     gagnerMaintenant: {
       title: "",
-      lead: "Estas empresas no están afiliadas a OPC / Open Community. Sí permiten, en cambio, trabajar desde el teléfono y ganar dinero.",
+      lead: "",
     },
     sondages: {
       title: "Responde encuestas y gana dinero",

@@ -34,7 +34,9 @@ export function EarnNowBoard() {
         <h2 id="earn-online-title" className={sectionTitleClass}>
           {copy.onlineWorkTitle}
         </h2>
-        <p className={sectionLeadClass}>{copy.onlineWorkLead}</p>
+        {copy.onlineWorkLead ? (
+          <p className={sectionLeadClass}>{copy.onlineWorkLead}</p>
+        ) : null}
         {ONLINE_WORK_LINKS.map((link) => (
           <a
             key={link.id}
@@ -52,7 +54,9 @@ export function EarnNowBoard() {
         <h2 id="earn-missions-title" className={sectionTitleClass}>
           {copy.missionsTitle}
         </h2>
-        <p className={sectionLeadClass}>{copy.missionsLead}</p>
+        {copy.missionsLead ? (
+          <p className={sectionLeadClass}>{copy.missionsLead}</p>
+        ) : null}
         {PAID_MISSION_LINKS.map((link) => (
           <a
             key={link.id}
@@ -70,7 +74,9 @@ export function EarnNowBoard() {
         <h2 id="earn-support-title" className={sectionTitleClass}>
           {copy.supportTitle}
         </h2>
-        <p className={sectionLeadClass}>{copy.supportLead}</p>
+        {copy.supportLead ? (
+          <p className={sectionLeadClass}>{copy.supportLead}</p>
+        ) : null}
         <button
           type="button"
           className={ctaClass}
