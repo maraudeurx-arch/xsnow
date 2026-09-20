@@ -11,7 +11,8 @@ import {
 
 /**
  * Accueil ad surface: one full-bleed image at a time, rotates every 5s.
- * Includes device-local visitor business photos when present.
+ * object-top keeps faces/headers visible; optional captionLines overlay
+ * stays readable even when the photo is cropped.
  */
 export function AccueilAdsReel() {
   const [tick, setTick] = useState(0);
@@ -19,6 +20,7 @@ export function AccueilAdsReel() {
   const [index, setIndex] = useState(0);
   const ad = ads[index] ?? ads[0];
   const src = ad ? accueilAdImageUrl(ad) : "";
+  const captions = ad?.captionLines?.filter(Boolean) ?? [];
 
   useEffect(() => {
     const onStorage = () => setTick((value) => value + 1);
@@ -105,10 +107,25 @@ export function AccueilAdsReel() {
           src={src}
           alt={ad.title}
           data-ad-image={ad.id}
-          className="h-full min-h-0 w-full flex-1 object-cover object-bottom"
+          className="h-full min-h-0 w-full flex-1 object-cover object-top"
           decoding="async"
           fetchPriority="high"
         />
+        {captions.length > 0 ? (
+          <div
+            data-accueil-ad-caption
+            className="pointer-events-none absolute inset-x-0 bottom-0 z-10 bg-black/75 px-2 py-2 text-center"
+          >
+            {captions.map((line) => (
+              <p
+                key={line}
+                className="text-[11px] font-extrabold leading-tight text-snow [text-shadow:0_1px_2px_rgba(0,0,0,0.9)] sm:text-xs"
+              >
+                {line}
+              </p>
+            ))}
+          </div>
+        ) : null}
       </Link>
     </aside>
   );
