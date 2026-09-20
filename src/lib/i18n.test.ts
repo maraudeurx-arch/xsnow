@@ -232,6 +232,9 @@ describe("gagner maintenant copy", () => {
     assert.match(fr.earnNow.onlineWorkLead, /français/);
     assert.match(fr.earnNow.onlineWorkLead, /Japon/);
     assert.match(fr.earnNow.onlineWorkLead, /pas de promesse de revenu/);
+    assert.equal(fr.guide.introTitle, "Open Community");
+    assert.match(fr.guide.introBody, /entraide/);
+    assert.equal(fr.guide.introBenefits.length, 4);
     assert.equal(fr.earnNow.supportTitle, "Support technique");
     assert.equal(fr.earnNow.supportCta, "Aide un agent IA");
     assert.equal(fr.earnNow.supportDialogTitle, "En construction");
