@@ -1,6 +1,5 @@
 import { notFound } from "next/navigation";
 import { LocalizedService } from "@/components/LocalizedService";
-import { SignupGate } from "@/components/SignupGate";
 import { SERVICE_KINDS, SERVICES, isServiceKind } from "@/lib/services";
 
 export function generateStaticParams() {
@@ -26,8 +25,6 @@ export default async function ServiceKindPage({
   if (!isServiceKind(kind)) notFound();
 
   return (
-    <SignupGate>
-      <LocalizedService kind={kind} />
-    </SignupGate>
+    <LocalizedService kind={kind} />
   );
 }
