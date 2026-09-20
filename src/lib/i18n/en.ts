@@ -1006,7 +1006,7 @@ export const en: Messages = {
     invalidPhone: "Enter a valid phone number.",
     localOnly: "This stays on this device. It is not published, and email/phone never appear in the header.",
     gateLead:
-      "Sign up first (My profile). Your details stay on this device. An OPC-XXXX number is local.",
+      "To offer or request a service, sign up first (My profile). Your details stay on this device. An OPC-XXXX number is local.",
     share: "Share",
     shareTitle: "Invite someone",
     shareHint: "Edit the text, then copy it. The link does not include your email or phone.",

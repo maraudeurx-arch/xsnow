@@ -999,7 +999,7 @@ export const fr = {
     invalidPhone: "Indique un téléphone valide.",
     localOnly: "Ces données restent sur cet appareil. Elles ne sont pas publiées, ni e-mail ni téléphone dans l’en-tête.",
     gateLead:
-      "Inscris-toi d’abord (Mon profil). Tes données restent sur cet appareil. Un numéro OPC-XXXX est local.",
+      "Pour offrir ou demander un service, inscris-toi d’abord (Mon profil). Tes données restent sur cet appareil. Un numéro OPC-XXXX est local.",
     share: "Partager",
     shareTitle: "Inviter quelqu’un",
     shareHint: "Modifiez le texte, puis copiez-le. Le lien n’inclut pas ton e-mail ni ton téléphone.",
