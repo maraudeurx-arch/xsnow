@@ -26,6 +26,8 @@ export type AccueilAd = {
   title: string;
   /** Soft-launch model creative (seed inventory, not a sold partner slot). */
   example?: boolean;
+  /** Optional on-screen caption lines (UI overlay — survives image crop). */
+  captionLines?: readonly string[];
 };
 
 export type VisitorAccueilAd = {
@@ -46,6 +48,10 @@ export const ACCUEIL_ADS: readonly AccueilAd[] = [
     imagePath: "/ads/joase-renov-malabo.jpg",
     href: "/business",
     title: "Service de rénovation et de peinture — Malabo, Guinée équatoriale",
+    captionLines: [
+      "Service de rénovation et de peinture",
+      "Malabo — Guinée équatoriale",
+    ],
   },
   {
     id: "desinsectisation-libreville",
