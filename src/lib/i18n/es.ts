@@ -623,7 +623,7 @@ export const es: Messages = {
     photoBusy: "Comprimiendo la foto…",
     photoReady: "Foto lista ({kb} Ko).",
     photoRequired: "Añade una foto para enviar el anuncio a revisión.",
-    reviewLead: "(Publicidad gratuita 2 semanas: solo la primera con e-mail)",
+    reviewLead: "Solo el primer anuncio.",
     publish: "Enviar a verificación",
     sending: "Enviando…",
     savedSent:
