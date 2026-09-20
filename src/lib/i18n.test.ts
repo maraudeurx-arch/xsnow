@@ -338,11 +338,6 @@ describe("install tip copy", () => {
     assert.match(en.install.profileLead, /https:\/\/opencommunity\.app\//);
     assert.match(es.install.profileLead, /https:\/\/opencommunity\.app\//);
     assert.match(fr.install.tip, /https:\/\/opencommunity\.app\//);
-    assert.match(fr.install.wrongShortcut, /There isn’t a GitHub Pages site here/);
-    assert.match(fr.install.wrongShortcut, /opencommunity\.app/);
-    assert.match(fr.install.wrongShortcut, /maraudeurx-arch\.github\.io\/xsnow\//);
-    assert.match(en.install.wrongShortcut, /There isn’t a GitHub Pages site here/);
-    assert.match(es.install.wrongShortcut, /There isn’t a GitHub Pages site here/);
     assert.match(fr.notFound.githubPagesHint, /https:\/\/opencommunity\.app\//);
     assert.match(en.notFound.githubPagesHint, /https:\/\/opencommunity\.app\//);
     assert.match(es.notFound.githubPagesHint, /https:\/\/opencommunity\.app\//);

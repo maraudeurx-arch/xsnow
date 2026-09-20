@@ -59,7 +59,6 @@ export const es: Messages = {
       "Toca Compartir — el cuadrado con la flecha hacia arriba, abajo en la pantalla.",
       "Desplázate y elige Añadir a pantalla de inicio, luego Añadir.",
     ],
-    wrongShortcut: `Si el icono abre « There isn’t a GitHub Pages site here », no es OPC: el acceso apunta a maraudeurx-arch.github.io en lugar de ${PUBLIC_SITE_URL}. Borra el icono, abre la dirección de arriba en Safari y añádela de nuevo. La URL antigua ${GITHUB_PAGES_SITE_URL} redirige a opencommunity.app cuando el DNS está listo.`,
   },
   guide: {
     introTitle: "Open Community",

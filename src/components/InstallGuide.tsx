@@ -34,12 +34,6 @@ export function InstallGuide() {
         ))}
       </ol>
       <p className="mt-2 text-xs leading-relaxed text-ice/80">{copy.tipAndroid}</p>
-      <p
-        data-install-wrong-shortcut
-        className="mt-2 text-xs leading-relaxed text-snow/75"
-      >
-        {copy.wrongShortcut}
-      </p>
     </section>
   );
 }

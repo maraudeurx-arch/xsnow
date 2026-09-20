@@ -58,7 +58,6 @@ export const fr = {
       "Touche Partager — le carré avec la flèche vers le haut, en bas de l’écran.",
       "Fais défiler et choisis Sur l’écran d’accueil, puis Ajouter.",
     ],
-    wrongShortcut: `Si l’icône ouvre « There isn’t a GitHub Pages site here », ce n’est pas OPC : le raccourci pointe vers maraudeurx-arch.github.io au lieu de ${PUBLIC_SITE_URL}. Supprime l’icône, ouvre l’adresse ci-dessus dans Safari, puis ajoute-la de nouveau. L’ancienne URL ${GITHUB_PAGES_SITE_URL} redirige vers opencommunity.app une fois le DNS en place.`,
   },
   guide: {
     introTitle: "Open Community",
