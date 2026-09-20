@@ -72,12 +72,15 @@ export function AccueilMenu({ compact = false }: { compact?: boolean }) {
       {open ? (
         <nav
           aria-label={m.nav.accueilProposals}
-          className="opc-glass-menu absolute top-full left-0 z-50 mt-1.5 max-h-[min(68dvh,32rem)] w-[min(calc(100vw-1.5rem),20rem)] space-y-1.5 overflow-y-auto overflow-x-hidden rounded-xl p-1.5 pr-1"
+          className="opc-glass-menu absolute top-full left-0 z-50 mt-1.5 flex max-h-[min(68dvh,32rem)] w-[min(calc(100vw-1.5rem),20rem)] flex-col overflow-hidden rounded-xl p-1.5 pr-1"
         >
-          <HomeBackLink
-            className={`${itemClass(pathMatches(pathname, "/"))} justify-center border-gold/50 font-extrabold`}
-            onClick={close}
-          />
+          <div className="opc-glass-soft sticky top-0 z-10 -mx-0.5 mb-1.5 shrink-0 rounded-lg py-0.5">
+            <HomeBackLink
+              className={`${itemClass(pathMatches(pathname, "/"))} justify-center border-gold/50 font-extrabold`}
+              onClick={close}
+            />
+          </div>
+          <div className="min-h-0 flex-1 space-y-1.5 overflow-y-auto overflow-x-hidden">
           <Group title={m.nav.vosIdees}>
             {INVOLVE.map((item) => (
               <Link
@@ -167,6 +170,7 @@ export function AccueilMenu({ compact = false }: { compact?: boolean }) {
               </Link>
             ))}
           </Group>
+          </div>
         </nav>
       ) : null}
     </div>
