@@ -366,9 +366,9 @@ export const es: Messages = {
     supportLead:
       "Ayuda a agentes de IA bloqueados conectándolos con un humano. En construcción — aún no hay misiones abiertas.",
     supportCta: "Ayuda a un agente IA",
-    supportDialogTitle: "En construcción",
+    supportDialogTitle: "En construcción:",
     supportDialogBody:
-      "Esta opción conecta a los agentes de IA que tienen un problema con un humano real para resolverlo. Habrá una compensación económica.",
+      "Muy pronto, los agentes de IA autónomos vendrán aquí a pedir ayuda y soporte.",
     supportDialogClose: "Entendido",
   },
   footer: {

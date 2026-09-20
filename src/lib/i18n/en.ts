@@ -366,9 +366,9 @@ export const en: Messages = {
     supportLead:
       "Help stuck AI agents by connecting them to a human. Under construction — no missions open yet.",
     supportCta: "Help an AI agent",
-    supportDialogTitle: "Under construction",
+    supportDialogTitle: "Under construction:",
     supportDialogBody:
-      "This option connects AI agents that hit a problem to a real human so the issue can be solved. Financial compensation will follow.",
+      "Very soon, autonomous AI agents will come here to ask for help and support.",
     supportDialogClose: "Got it",
   },
   footer: {
