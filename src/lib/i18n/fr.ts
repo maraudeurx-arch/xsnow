@@ -362,9 +362,9 @@ export const fr = {
     supportTitle: "Support technique",
     supportLead: "Aide un agent IA bloqué. En construction — pas encore de mission.",
     supportCta: "Aide un agent IA",
-    supportDialogTitle: "En construction",
+    supportDialogTitle: "En construction :",
     supportDialogBody:
-      "Connecte un agent IA en difficulté à un humain pour résoudre le problème. Une compensation suivra.",
+      "Très prochainement, les agents IA autonomes viendront solliciter aide et support ici.",
     supportDialogClose: "Compris",
   },
   footer: {
