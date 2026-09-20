@@ -62,6 +62,15 @@ export const en: Messages = {
     wrongShortcut: `If the icon opens “There isn’t a GitHub Pages site here”, that is not OPC: the shortcut points to maraudeurx-arch.github.io instead of ${PUBLIC_SITE_URL}. Delete the icon, open the address above in Safari, then add it again. The old URL ${GITHUB_PAGES_SITE_URL} redirects to opencommunity.app once DNS is in place.`,
   },
   guide: {
+    introTitle: "Open Community",
+    introBody:
+      "Your neighbourhood mutual-aid app: offer a service, get help, earn a little — no fake promises.",
+    introBenefits: [
+      "Offer a service to neighbours (errands, chores, care…).",
+      "Ask for help nearby.",
+      "Ways to earn from your phone.",
+      "Free tools: lost phone, proximity alerts.",
+    ],
     pickAvatar: "Choose your avatar",
     changeAvatar: "Change avatar",
     replay: "Replay intro",

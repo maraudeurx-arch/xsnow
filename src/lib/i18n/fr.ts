@@ -61,6 +61,15 @@ export const fr = {
     wrongShortcut: `Si l’icône ouvre « There isn’t a GitHub Pages site here », ce n’est pas OPC : le raccourci pointe vers maraudeurx-arch.github.io au lieu de ${PUBLIC_SITE_URL}. Supprime l’icône, ouvre l’adresse ci-dessus dans Safari, puis ajoute-la de nouveau. L’ancienne URL ${GITHUB_PAGES_SITE_URL} redirige vers opencommunity.app une fois le DNS en place.`,
   },
   guide: {
+    introTitle: "Open Community",
+    introBody:
+      "L’app d’entraide de ton quartier : offre un service, trouve de l’aide, gagne un peu — sans fausse promesse.",
+    introBenefits: [
+      "Propose un service aux voisins (courses, travaux, garde…).",
+      "Demande de l’aide près de chez toi.",
+      "Pistes pour gagner depuis ton téléphone.",
+      "Services gratuits : téléphone perdu, alertes proches.",
+    ],
     pickAvatar: "Choisis ton avatar",
     changeAvatar: "Changer d’avatar",
     replay: "Réécouter l’intro",
@@ -111,20 +120,17 @@ export const fr = {
     retry: "Réessayer",
     partnerSlot: "Espace partenaire",
     partnerSponsored: "Publicité",
-    partnerPlaceholder:
-      "Partenaire local à venir. Entraide réelle — pas de fausse manchette, pas de ferme à clics.",
-    partnerFunding: "Ces espaces pourront aider à financer Grok et Cursor pour OPC — pas de revenus pubs en direct pour l’instant.",
+    partnerPlaceholder: "Partenaire local à venir. Entraide réelle — pas de ferme à clics.",
+    partnerFunding: "Ces espaces pourront aider à financer l’app. Pas de revenus pubs pour toi pour l’instant.",
     partnerCtaRegister: "S’inscrire / Mes infos",
     partnerCtaShare: "Partager / inviter",
     partnerGrowRegisterName: "S’inscrire · Mes infos (exemple)",
     partnerGrowRegisterTagline:
-      "Inscris-toi sur cet appareil — le quartier grandit avec toi. Pas de fausse manchette, pas de ferme à clics.",
+      "Inscris-toi sur cet appareil. Le quartier grandit avec toi.",
     partnerGrowShareName: "Partager · inviter (exemple)",
-    partnerGrowShareTagline:
-      "Invite un voisin à Open Community. Entraide réelle — pas de fausse manchette, pas de ferme à clics.",
+    partnerGrowShareTagline: "Invite un voisin. Entraide réelle.",
     partnerGrowLocalName: "Coop du quartier (exemple)",
-    partnerGrowLocalTagline:
-      "Emplacement partenaire à venir. En attendant : inscris-toi et invite un voisin. Pas de ferme à clics.",
+    partnerGrowLocalTagline: "Emplacement partenaire à venir. Inscris-toi et invite un voisin.",
     promptNoHeadlines:
       "Rôle nouvelles : quand la ville du visiteur est connue, la section « Nouvelles du Quartier » (sous Partager, au-dessus de ce chat) affiche de vraies manchettes locales. Tu n’as pas de manchette vérifiée listée maintenant — ne fabrique jamais de titre. Si on te demande les news, dis-le honnêtement et oriente vers cette section ou Vos idées / Gagner maintenant.",
     promptWithHeadlines:
@@ -133,7 +139,7 @@ export const fr = {
   geo: {
     section: "Autoriser la position",
     title: "Où es-tu en ce moment ?",
-    body: "Autorise ta position pour afficher le nom de ta ville (et, plus tard, tes voisins à proximité). Rien n’est envoyé à un serveur de suivi — seulement ta ville, sur cet appareil.",
+    body: "Autorise ta position pour afficher ta ville (et plus tard la proximité). Seulement ta ville, sur cet appareil — pas de suivi serveur.",
     allow: "Autoriser ma position",
     locating: "Recherche de ta ville…",
     skip: "Plus tard — afficher votre quartier",
@@ -349,21 +355,20 @@ export const fr = {
   earnNow: {
     missionsTitle: "Missions téléphone / IA",
     missionsLead:
-      "Plateformes externes (annotation, évaluation). Pas d’affiliation OPC. Aucun revenu garanti — vérifie l’éligibilité Canada.",
+      "Plateformes externes. Pas d’affiliation OPC. Aucun revenu garanti.",
     onlineWorkTitle: "Travail en ligne",
     onlineWorkLead:
-      "Enseigner le français en ligne (Japon, Asie et ailleurs) via des plateformes de tutorat. Tu fixes souvent tes tarifs et ton horaire. Pas d’affiliation OPC, pas de promesse de revenu ; l’acceptation dépend de chaque site.",
+      "Enseigne le français en ligne (Japon et ailleurs). Tu fixes souvent tarif et horaire. Pas d’affiliation OPC, pas de promesse de revenu.",
     supportTitle: "Support technique",
-    supportLead:
-      "Aide des agents IA bloqués en les connectant à un humain. En construction — aucune mission ouverte pour l’instant.",
+    supportLead: "Aide un agent IA bloqué. En construction — pas encore de mission.",
     supportCta: "Aide un agent IA",
     supportDialogTitle: "En construction",
     supportDialogBody:
-      "Cette option sert à connecter les agents IA qui rencontrent un problème à un véritable humain, afin de résoudre le problème. Une compensation financière s’ensuivra.",
+      "Connecte un agent IA en difficulté à un humain pour résoudre le problème. Une compensation suivra.",
     supportDialogClose: "Compris",
   },
   footer: {
-    before: "Proximité et Esprit d’entraide au service des gens d’ici.",
+    before: "Proximité et entraide pour les gens d’ici.",
     after: "",
     slogans: [
       "Open Community — La force de l’entraide locale.",
@@ -378,61 +383,61 @@ export const fr = {
     proofs: "Preuves",
   },
   welcome:
-    "Bonjour, et bienvenue sur l’application Open Community, je suis ton avatar. La proximité et l’esprit d’entraide des gens d’ici font notre force. À travers Open Community, fais connaître à tes voisins un service que tu peux leur rendre en échange d’une compensation : ça peut être aider à déménager, faire des courses, ou aider à des travaux dans la maison. De plus, cette application t’offre des services gratuits, comme t’aider à retrouver ton téléphone si tu le perds, et t’avertir si ton enfant, ton conjoint ou tes parents âgés s’éloignent de l’endroit où ils sont censés être. Également, as-tu des suggestions de tâches et de services que tu aimerais monétiser ? Fais-le-moi savoir, ou note-les dans Vos idées, et toute la communauté en profitera. Garde à l’esprit que les gens qui partagent cette application, et qui produisent des idées qui sont monétisées, recevront au prorata de leurs efforts. N’hésite donc pas à me questionner à tout moment, je suis à ton entière disposition.",
+    "Bonjour — bienvenue sur Open Community, je suis ton avatar. La force, c’est les gens d’ici. Propose un service aux voisins contre une compensation : courses, déménagement, petits travaux. Gratuit aussi : téléphone perdu, et alerte si un proche s’éloigne. Une idée à monétiser ? Dis-le-moi ou note-la dans Vos idées. Ceux qui partagent l’app et les idées retenues pourront être rémunérés au prorata. Pose-moi tes questions quand tu veux.",
   systemPrompt:
     "Tu es le guide local Open Community à {city} — directeur honnête, utile d’abord (cash + communauté). Tu n’es pas un humain et tu n’es pas un agent avec des outils externes (pas de web, pas d’e-mail, pas de wallet). Tu parles uniquement en français, tu tutoies, tu restes concret et bref. Entraide de quartier : courses, déménagement, travaux, garde, prêt d’objets, prêt de voiture le matin (Interac, essence à l’emprunteur ; rappeler l’assurance — OPC n’est ni l’assureur ni un processeur de paiement), téléphone perdu, alertes proches. Pas de ferme de pubs, de clics, de faux comptes, ni de discours arnaque. Oriente tout de suite : une idée → Vos idées (une phrase, 30 s) ; gagner → Gagner maintenant / Mes services / Demandes. Invite à toucher Accueil, sous {placeName} à gauche, ou Mes services / Demandes / Gagner maintenant / Vos idées. Si le visiteur a une idée, reformule-la et pousse-le vers Vos idées ; capture aussi les suggestions de monétisation. Urgence réelle : 911. Exemples : U: Je veux de l’argent vite. A: Pas de pubs en boucle. Trois chemins : Mes services (voisin, Interac), Demandes, ou Gagner maintenant (tests UX / panels, hotspot). Une idée ? Ouvre Vos idées. U: On pourrait déneiger les allées. A: Solide. Note-la dans Vos idées. Paiement voisin = Interac. U: Tu peux chercher ça sur internet ? A: Non, je suis le guide dans l’app, pas un agent externe. Dis-moi l’idée ou ouvre Vos idées / Gagner maintenant / Mes services. U: Quoi de neuf dans le quartier ? A: Regarde « Nouvelles du Quartier » sous Partager — j’y renvoie sans inventer de manchette. Ton apparence : {avatar}.",
   features: {
     business: {
-      title: "Faites connaître votre business par des pubs",
-      lead: "Envoie-nous ta publicité (photo ou vidéo). Nous en vérifierons la légitimité et te reviendrons avec une proposition de paiement compétitive.",
+      title: "Fais connaître ton business",
+      lead: "Envoie ta pub (photo ou vidéo). On vérifie, puis on te propose un tarif.",
     },
     proximite: {
-      title: "Voyez qui est à proximité",
-      lead: "Une carte humaine de votre quartier : voisins, commerces, entraide.",
+      title: "Qui est à proximité",
+      lead: "Voisins, commerces, entraide près de toi.",
     },
     telephone: {
-      title: "Retrouve ton téléphone perdu",
-      lead: "Signalez l’appareil. La proximité de votre ville devient un filet de sécurité.",
+      title: "Téléphone perdu",
+      lead: "Signale-le. Le quartier devient un filet de sécurité.",
     },
     alertes: {
       title: "Alertes de proximité",
-      lead: "Recevez une alerte si un enfant, un conjoint ou des parents âgés s’éloignent de la zone où ils doivent être. Le proche accepte lui-même — pas Apple Localiser.",
+      lead: "Alerte si un proche s’éloigne de la zone prévue. Il accepte lui-même — pas Apple Localiser.",
     },
     reportage: {
-      title: "Avec l’IA, crée des reportages sur votre quartier",
-      lead: "Un studio IA pour raconter votre rue, vos voisins, votre commerce. Prévu pour 2027.",
+      title: "Reportages de quartier (IA)",
+      lead: "Raconte ta rue et ton commerce. Prévu pour 2027.",
     },
     series: {
       title: "Séries TV",
-      lead: "Des séries nées ici, pour ici. Bientôt à l’antenne communautaire.",
+      lead: "Des séries nées ici. Bientôt.",
     },
     dessins: {
       title: "Dessins animés",
-      lead: "Des dessins animés bienveillants, pensés pour les familles du quartier.",
+      lead: "Pour les familles du quartier. Bientôt.",
     },
     attributs: {
-      title: "Vos attributs",
-      lead: "Vos étiquettes d’entraide. Elles restent sur cet appareil, chez vous.",
+      title: "Tes attributs",
+      lead: "Tes étiquettes d’entraide, sur cet appareil.",
     },
     services: {
       title: "Services Open Community",
-      lead: "Les services de sécurité du quartier : téléphone perdu et alertes si un proche s’éloigne.",
+      lead: "Téléphone perdu et alertes proches.",
     },
     monetise: {
-      title: "Monétisez-vous : votre image, votre voix.",
-      lead: "Proposez votre image ou votre voix à la communauté. Bientôt branché sur vos services.",
+      title: "Monétise-toi : image et voix",
+      lead: "Propose ton image ou ta voix. Bientôt branché.",
     },
     gagnerMaintenant: {
       title: "",
-      lead: "Ces entreprises ne sont pas affiliées à OPC / Open Community. Elles permettent toutefois de travailler depuis son téléphone et de gagner de l’argent.",
+      lead: "Pistes externes pour gagner depuis ton téléphone. Pas d’affiliation OPC. Aucun revenu garanti.",
     },
     sondages: {
-      title: "Répondre à des sondages et gagner de l’argent",
-      lead: "Des sondages locaux, une compensation claire. En construction.",
+      title: "Sondages rémunérés",
+      lead: "Sondages locaux. En construction.",
     },
     scenarios: {
-      title: "Crée des scénarios humour / animé",
-      lead: "Inventez des sketches et des dessins animés communautaires. Prévu pour 2027.",
+      title: "Scénarios humour / animé",
+      lead: "Sketches et animés du quartier. Prévu pour 2027.",
     },
     mesServices: {
       title: "Mes services",
@@ -997,16 +1002,16 @@ export const fr = {
     needLastName: "Indique ton nom.",
     invalidEmail: "Indique un e-mail valide.",
     invalidPhone: "Indique un téléphone valide.",
-    localOnly: "Ces données restent sur cet appareil. Elles ne sont pas publiées, ni e-mail ni téléphone dans l’en-tête.",
+    localOnly: "Sur cet appareil seulement. Pas d’e-mail ni de téléphone dans l’en-tête.",
     gateLead:
-      "Pour offrir ou demander un service, inscris-toi d’abord (Mon profil). Tes données restent sur cet appareil. Un numéro OPC-XXXX est local.",
+      "Pour offrir ou demander un service, inscris-toi (Mon profil). Données locales — numéro OPC-XXXX.",
     share: "Partager",
     shareTitle: "Inviter quelqu’un",
-    shareHint: "Modifiez le texte, puis copiez-le. Le lien n’inclut pas ton e-mail ni ton téléphone.",
+    shareHint: "Modifie le texte, puis copie. Pas d’e-mail ni de téléphone dans le lien.",
     shareEdit: "Modifier",
     shareCopy: "Copier",
     shareCopied: "Texte copié.",
-    shareFailed: "Copie impossible. Le texte est affiché : sélectionnez-le.",
+    shareFailed: "Copie impossible. Sélectionne le texte ci-dessous.",
     headerAria: "Profil inscrit : {name}",
   },
   feedback: {

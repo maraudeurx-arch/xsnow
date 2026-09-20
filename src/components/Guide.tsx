@@ -123,9 +123,28 @@ export function Guide() {
         <div
           role="group"
           aria-label={m.guide.pickAvatar}
-          className="home-stage flex min-h-0 w-full flex-col items-center gap-1.5 rounded-2xl px-3 py-3"
+          className="home-stage flex min-h-0 w-full flex-col items-center gap-2 rounded-2xl px-3 py-3"
+          data-avatar-picker
         >
-          <p className="text-[13px] leading-none font-extrabold tracking-wide text-snow [text-shadow:0_2px_10px_rgba(0,0,0,0.7)] sm:text-sm">
+          <div className="w-full max-w-sm space-y-1.5 text-center">
+            <p className="text-[14px] font-extrabold leading-snug tracking-wide text-snow [text-shadow:0_2px_10px_rgba(0,0,0,0.7)] sm:text-[15px]">
+              {m.guide.introTitle}
+            </p>
+            <p className="text-[12px] leading-snug text-snow/90 [text-shadow:0_1px_6px_rgba(0,0,0,0.55)] sm:text-[13px]">
+              {m.guide.introBody}
+            </p>
+            <ul className="mx-auto max-w-[20rem] space-y-0.5 text-left text-[11px] leading-snug text-snow/85 sm:text-[12px]">
+              {m.guide.introBenefits.map((line) => (
+                <li key={line} className="flex gap-1.5">
+                  <span aria-hidden className="shrink-0 text-gold">
+                    •
+                  </span>
+                  <span>{line}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <p className="mt-1 text-[13px] leading-none font-extrabold tracking-wide text-snow [text-shadow:0_2px_10px_rgba(0,0,0,0.7)] sm:text-sm">
             {m.guide.pickAvatar}
           </p>
           <div className="grid grid-cols-2 justify-items-center gap-x-4 gap-y-3 p-1 sm:gap-x-5 sm:gap-y-4">
