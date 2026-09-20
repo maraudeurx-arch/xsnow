@@ -42,6 +42,18 @@ export type VisitorAccueilAd = {
  */
 export const ACCUEIL_ADS: readonly AccueilAd[] = [
   {
+    id: "joase-renov-malabo",
+    imagePath: "/ads/joase-renov-malabo.jpg",
+    href: "/business",
+    title: "Joase Renov — rénovation & peinture (Malabo)",
+  },
+  {
+    id: "desinsectisation-libreville",
+    imagePath: "/ads/desinsectisation-libreville.jpg",
+    href: "/business",
+    title: "Désinsectisation & dératisation (Libreville)",
+  },
+  {
     id: "exemple-coiffeuse",
     imagePath: "/ads/exemple-coiffeuse.svg",
     href: "/business",
