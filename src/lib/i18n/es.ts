@@ -1008,7 +1008,7 @@ export const es: Messages = {
     invalidPhone: "Indica un teléfono válido.",
     localOnly: "Estos datos se quedan en este aparato. No se publican, y el correo/teléfono no aparecen en el encabezado.",
     gateLead:
-      "Inscríbete primero (Mi perfil). Tus datos se quedan en este aparato. Un número OPC-XXXX es local.",
+      "Para ofrecer o pedir un servicio, regístrate primero (Mi perfil). Tus datos se quedan en este aparato. Un número OPC-XXXX es local.",
     share: "Compartir",
     shareTitle: "Invitar a alguien",
     shareHint: "Edita el texto y luego cópialo. El enlace no incluye tu correo ni tu teléfono.",
