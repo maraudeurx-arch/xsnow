@@ -622,7 +622,7 @@ export const en: Messages = {
     photoBusy: "Compressing photo…",
     photoReady: "Photo ready ({kb} KB).",
     photoRequired: "Add a photo to submit your ad for review.",
-    reviewLead: "(Free 2 weeks: first ad with email only)",
+    reviewLead: "First ad only.",
     publish: "Send for review",
     sending: "Sending…",
     savedSent:
