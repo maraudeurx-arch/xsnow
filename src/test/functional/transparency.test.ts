@@ -147,7 +147,7 @@ describe("Mon profil hub dedupes Accueil actions", () => {
     assert.match(installGuide, /data-install-url/);
     assert.match(installGuide, /PUBLIC_SITE_URL/);
     assert.doesNotMatch(installGuide, /wrongShortcut/);
-    assert.match(installGuide, /data-install-wrong-shortcut/);
+    assert.doesNotMatch(installGuide, /data-install-wrong-shortcut/);
     assert.doesNotMatch(installGuide, /shouldShowInstallTip/);
     assert.doesNotMatch(installGuide, /writeInstallTipDismissed/);
 
