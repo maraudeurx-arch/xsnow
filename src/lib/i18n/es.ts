@@ -353,6 +353,14 @@ export const es: Messages = {
     onlineWorkTitle: "Trabajo en línea",
     onlineWorkLead:
       "Enseñar francés en línea (Japón, Asia y otros países) en plataformas de tutoría. Suele fijarse tarifa y horario. Sin afiliación OPC ni promesa de ingresos; cada sitio decide la aceptación.",
+    supportTitle: "Soporte técnico",
+    supportLead:
+      "Ayuda a agentes de IA bloqueados conectándolos con un humano. En construcción — aún no hay misiones abiertas.",
+    supportCta: "Ayuda a un agente IA",
+    supportDialogTitle: "En construcción",
+    supportDialogBody:
+      "Esta opción conecta a los agentes de IA que tienen un problema con un humano real para resolverlo. Habrá una compensación económica.",
+    supportDialogClose: "Entendido",
   },
   footer: {
     before: "Proximidad y espíritu de ayuda mutua al servicio de la gente de aquí.",

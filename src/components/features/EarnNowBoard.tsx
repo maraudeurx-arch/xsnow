@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useId, useState } from "react";
 import { PAID_MISSION_LINKS } from "@/lib/paid-missions";
 import { ONLINE_WORK_LINKS } from "@/lib/online-work";
 import { useI18n } from "@/lib/i18n/locale";
@@ -15,6 +16,17 @@ const sectionLeadClass = "text-left text-[11px] leading-snug text-snow/75";
 export function EarnNowBoard() {
   const { m } = useI18n();
   const copy = m.earnNow;
+  const [supportOpen, setSupportOpen] = useState(false);
+  const titleId = useId();
+
+  useEffect(() => {
+    if (!supportOpen) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setSupportOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [supportOpen]);
 
   return (
     <div className="grid gap-3">
@@ -53,6 +65,51 @@ export function EarnNowBoard() {
           </a>
         ))}
       </section>
+
+      <section className="grid gap-1.5" aria-labelledby="earn-support-title">
+        <h2 id="earn-support-title" className={sectionTitleClass}>
+          {copy.supportTitle}
+        </h2>
+        <p className={sectionLeadClass}>{copy.supportLead}</p>
+        <button
+          type="button"
+          className={ctaClass}
+          data-earn-support-cta
+          onClick={() => setSupportOpen(true)}
+        >
+          {copy.supportCta}
+        </button>
+      </section>
+
+      {supportOpen ? (
+        <div
+          className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 p-3 sm:items-center"
+          onClick={() => setSupportOpen(false)}
+        >
+          <section
+            className="opc-glass-menu w-full max-w-md rounded-2xl p-4 text-left"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby={titleId}
+            data-earn-support-dialog
+            onClick={(event) => event.stopPropagation()}
+          >
+            <p id={titleId} className="text-[14px] font-extrabold tracking-wide text-snow">
+              {copy.supportDialogTitle}
+            </p>
+            <p className="mt-2 text-[13px] leading-relaxed text-snow/90">
+              {copy.supportDialogBody}
+            </p>
+            <button
+              type="button"
+              className={`${ctaClass} mt-4`}
+              onClick={() => setSupportOpen(false)}
+            >
+              {copy.supportDialogClose}
+            </button>
+          </section>
+        </div>
+      ) : null}
     </div>
   );
 }

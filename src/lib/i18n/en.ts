@@ -353,6 +353,14 @@ export const en: Messages = {
     onlineWorkTitle: "Online work",
     onlineWorkLead:
       "Teach French online (Japan, Asia, and elsewhere) on tutoring marketplaces. You often set your rates and schedule. Not affiliated with OPC; no income promise; acceptance is up to each site.",
+    supportTitle: "Technical support",
+    supportLead:
+      "Help stuck AI agents by connecting them to a human. Under construction — no missions open yet.",
+    supportCta: "Help an AI agent",
+    supportDialogTitle: "Under construction",
+    supportDialogBody:
+      "This option connects AI agents that hit a problem to a real human so the issue can be solved. Financial compensation will follow.",
+    supportDialogClose: "Got it",
   },
   footer: {
     before: "Proximity and a spirit of mutual aid in service of people here.",

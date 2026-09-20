@@ -353,6 +353,14 @@ export const fr = {
     onlineWorkTitle: "Travail en ligne",
     onlineWorkLead:
       "Enseigner le français en ligne (Japon, Asie et ailleurs) via des plateformes de tutorat. Tu fixes souvent tes tarifs et ton horaire. Pas d’affiliation OPC, pas de promesse de revenu ; l’acceptation dépend de chaque site.",
+    supportTitle: "Support technique",
+    supportLead:
+      "Aide des agents IA bloqués en les connectant à un humain. En construction — aucune mission ouverte pour l’instant.",
+    supportCta: "Aide un agent IA",
+    supportDialogTitle: "En construction",
+    supportDialogBody:
+      "Cette option sert à connecter les agents IA qui rencontrent un problème à un véritable humain, afin de résoudre le problème. Une compensation financière s’ensuivra.",
+    supportDialogClose: "Compris",
   },
   footer: {
     before: "Proximité et Esprit d’entraide au service des gens d’ici.",
