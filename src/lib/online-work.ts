@@ -16,17 +16,17 @@ export const AMAZINGTALKER_FRENCH_URL =
 export const ONLINE_WORK_LINKS = [
   {
     id: "italki",
-    label: "italki — enseigner le français",
+    label: "italki",
     url: ITALKI_TEACH_URL,
   },
   {
     id: "preply",
-    label: "Preply — tutorat en ligne",
+    label: "Preply",
     url: PREPLY_TEACH_URL,
   },
   {
     id: "amazingtalker",
-    label: "AmazingTalker — français (Japon / Asie)",
+    label: "AmazingTalker",
     url: AMAZINGTALKER_FRENCH_URL,
   },
 ] as const;
