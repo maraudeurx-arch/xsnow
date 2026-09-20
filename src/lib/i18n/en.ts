@@ -59,7 +59,6 @@ export const en: Messages = {
       "Tap Share — the square with the arrow pointing up, at the bottom of the screen.",
       "Scroll and choose Add to Home Screen, then Add.",
     ],
-    wrongShortcut: `If the icon opens “There isn’t a GitHub Pages site here”, that is not OPC: the shortcut points to maraudeurx-arch.github.io instead of ${PUBLIC_SITE_URL}. Delete the icon, open the address above in Safari, then add it again. The old URL ${GITHUB_PAGES_SITE_URL} redirects to opencommunity.app once DNS is in place.`,
   },
   guide: {
     introTitle: "Open Community",
