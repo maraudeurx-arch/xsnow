@@ -355,15 +355,16 @@ export const en: Messages = {
     securityMd: "Security policy (SECURITY.md)",
   },
   earnNow: {
-    missionsTitle: "External platforms",
+    missionsTitle: "Remote work",
     missionsLead:
       "",
-    onlineWorkTitle: "Online work",
+    onlineWorkTitle: "Online tutoring",
     onlineWorkLead:
       "",
     supportTitle: "Technical support",
     supportLead:
       "",
+    disclaimer: "* These companies are not affiliated with OPC. No income is guaranteed by OPC.",
     supportCta: "Help an AI agent",
     supportDialogTitle: "Under construction:",
     supportDialogBody:

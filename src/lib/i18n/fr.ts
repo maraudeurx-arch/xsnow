@@ -352,14 +352,15 @@ export const fr = {
     securityMd: "Politique de sécurité (SECURITY.md)",
   },
   earnNow: {
-    missionsTitle: "Plateformes externes",
+    missionsTitle: "Télétravail",
     missionsLead:
       "",
-    onlineWorkTitle: "Travail en ligne",
+    onlineWorkTitle: "Tutorat en ligne",
     onlineWorkLead:
       "",
     supportTitle: "Support technique",
     supportLead: "",
+    disclaimer: "* Ces sociétés ne sont pas affiliées à OPC. Aucun revenu n’est garanti par OPC.",
     supportCta: "Aide un agent IA",
     supportDialogTitle: "En construction :",
     supportDialogBody:
