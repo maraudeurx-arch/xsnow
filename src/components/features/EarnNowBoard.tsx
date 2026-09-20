@@ -87,6 +87,15 @@ export function EarnNowBoard() {
         </button>
       </section>
 
+      {copy.disclaimer ? (
+        <p
+          data-earn-disclaimer
+          className="text-left text-[11px] leading-snug text-snow/70"
+        >
+          {copy.disclaimer}
+        </p>
+      ) : null}
+
       {supportOpen ? (
         <div
           className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 p-3 sm:items-center"
