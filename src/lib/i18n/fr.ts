@@ -1050,7 +1050,7 @@ export const fr = {
       "Merci. Ton idée est enregistrée sur cet appareil. Un e-mail assaini part vers opencommunity.opc@gmail.com. Les autres téléphones ne la voient pas tant que l’équipe de développement ne l’approuve pas dans une version numérotée.",
     wallTitle: "Mur d’idées (cet appareil)",
     wallHint:
-      "L’équipe de développement les reçoit à opencommunity.opc@gmail.com (GitHub maraudeurx-arch).",
+      "L’équipe d’OPC analysera l’idée et vous contactera avant de l’implémenter.",
     wallEmpty: "Pas encore d’idée ici. La première est souvent la plus utile.",
     inboxSent: "E-mail envoyé à opencommunity.opc@gmail.com.",
     inboxFailed: "Idée enregistrée ici. L’e-mail au propriétaire n’a pas pu partir (réseau).",

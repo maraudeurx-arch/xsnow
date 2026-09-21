@@ -1063,7 +1063,7 @@ export const es: Messages = {
       "Gracias. Tu idea está guardada en este aparato. Un correo saneado va a opencommunity.opc@gmail.com. Otros teléfonos no la ven hasta que el equipo de desarrollo la apruebe en una versión numerada.",
     wallTitle: "Muro de ideas (este aparato)",
     wallHint:
-      "El equipo de desarrollo las recibe en opencommunity.opc@gmail.com (GitHub maraudeurx-arch).",
+      "El equipo de OPC analizará la idea y te contactará antes de implementarla.",
     wallEmpty: "Aún no hay ninguna idea aquí. La primera suele ser la más útil.",
     inboxSent: "Correo enviado a opencommunity.opc@gmail.com.",
     inboxFailed: "Guardada aquí. El correo al propietario no pudo salir (red).",
