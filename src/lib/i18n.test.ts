@@ -172,9 +172,10 @@ describe("vos idees copy", () => {
     assert.equal(fr.ideas.submit, "Envoyer l’idée");
     assert.equal(en.ideas.submit, "Send the idea");
     assert.equal(es.ideas.submit, "Enviar la idea");
-    assert.match(fr.ideas.wallHint, /opencommunity\.opc@gmail\.com/);
-    assert.match(fr.ideas.wallHint, /équipe de développement/);
-    assert.match(fr.ideas.wallHint, /maraudeurx-arch/);
+    assert.match(fr.ideas.wallHint, /équipe d’OPC/);
+    assert.match(fr.ideas.wallHint, /analysera l’idée/);
+    assert.doesNotMatch(fr.ideas.wallHint, /maraudeurx-arch/);
+    assert.doesNotMatch(fr.ideas.wallHint, /opencommunity\.opc@gmail\.com/);
     assert.equal(fr.ideas.submitHint, "");
     assert.match(fr.ideas.thankYouBody, /opencommunity\.opc@gmail\.com/);
     assert.equal(fr.ownerIdeas.empty.includes("invent"), true);

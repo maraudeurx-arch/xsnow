@@ -1061,7 +1061,7 @@ export const en: Messages = {
       "Thank you. Your idea is saved on this device. A sanitized email goes to opencommunity.opc@gmail.com. Other phones do not see it until the development team approves it in a numbered release.",
     wallTitle: "Idea wall (this device)",
     wallHint:
-      "The development team receives them at opencommunity.opc@gmail.com (GitHub maraudeurx-arch).",
+      "The OPC team will review the idea and contact you before implementing it.",
     wallEmpty: "No idea here yet. The first one is often the most useful.",
     inboxSent: "Email sent to opencommunity.opc@gmail.com.",
     inboxFailed: "Saved here. The owner email could not be sent (network).",
