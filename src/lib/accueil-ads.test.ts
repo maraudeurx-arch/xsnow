@@ -20,7 +20,7 @@ describe("accueil-ads", () => {
     assert.deepEqual(
       ACCUEIL_ADS.map((ad) => ad.id),
       [
-        "joase-renov-malabo",
+        "studio-pattes-en-beaute",
         "desinsectisation-libreville",
         "exemple-coiffeuse",
         "exemple-plombier",
