@@ -49,15 +49,11 @@ export type VisitorAccueilAd = {
  */
 export const ACCUEIL_ADS: readonly AccueilAd[] = [
   {
-    id: "joase-renov-malabo",
-    imagePath: "/ads/joase-renov-malabo.jpg",
+    id: "studio-pattes-en-beaute",
+    imagePath: "/ads/studio-pattes-en-beaute.jpg",
     href: "/business",
-    title: "Service de rénovation et de peinture — Malabo, Guinée équatoriale",
-    captionLines: [
-      "Service de rénovation et de peinture",
-      "Malabo — Guinée équatoriale",
-    ],
-    objectPosition: "center top",
+    title: "Cours de brossage de chien — Studio Pattes en Beauté, Gatineau",
+    objectPosition: "center",
   },
   {
     id: "desinsectisation-libreville",
