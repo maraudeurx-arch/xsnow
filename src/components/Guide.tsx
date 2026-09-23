@@ -172,7 +172,7 @@ export function Guide() {
           </div>
         </div>
       ) : chosen ? (
-        <div className="home-stage grid h-full min-h-0 w-full flex-1 grow grid-rows-[auto_minmax(0,1fr)_minmax(8.75rem,28%)] overflow-hidden rounded-2xl px-[var(--home-card-pad-x)] py-[var(--home-card-pad-y)]">
+        <div className="home-stage grid h-full min-h-0 w-full flex-1 grow grid-rows-[auto_minmax(0,1fr)_auto] overflow-hidden rounded-2xl px-[var(--home-card-pad-x)] py-[var(--home-card-pad-y)]">
           <div className="flex shrink-0 flex-col gap-[var(--home-stack-gap)]">
             <nav
               aria-label={m.guide.offerShortcuts}
@@ -199,7 +199,7 @@ export function Guide() {
             </nav>
           </div>
           <NeighborhoodNews onNewsChange={onNewsChange} />
-          <div className="flex h-full min-h-0 flex-col pt-[var(--home-news-chat-gap)]">
+          <div className="flex shrink-0 flex-col pt-[var(--home-news-chat-gap)]">
             {needsPrompt && !unanswered && Boolean(avatarId) && welcomeGateOpen ? (
               <LocationPrompt />
             ) : (

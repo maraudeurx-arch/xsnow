@@ -276,17 +276,17 @@ export function AvatarChat({
   return (
     <section
       id="avatar-chat"
-      className="opc-glass-soft flex h-full min-h-[8.75rem] w-full flex-col justify-end gap-2 rounded-2xl border border-slate-200 px-2.5 py-2.5 text-left"
+      className="opc-glass-soft flex w-full shrink-0 flex-col gap-0.5 rounded-2xl border border-slate-200 px-2.5 py-1 text-left"
       aria-label={chat.title}
     >
       <div className="flex shrink-0 items-center gap-2 px-1">
-        <h2 className="text-sm font-extrabold tracking-tight text-slate-900">
+        <h2 className="text-sm leading-tight font-extrabold tracking-tight text-slate-900">
           {chat.title}
         </h2>
         {messages.length === 0 && !busy ? (
           <Link
             href="/vos-idees/#form"
-            className="ml-auto text-sm font-bold text-cobalt hover:underline"
+            className="ml-auto text-sm leading-tight font-bold text-cobalt hover:underline"
           >
             {chat.ideaPrompt}
           </Link>
@@ -336,7 +336,7 @@ export function AvatarChat({
       </div>
 
       <form
-        className="mt-0.5 flex shrink-0 items-center gap-1.5"
+        className="flex shrink-0 items-center gap-1.5"
         onSubmit={(event) => {
           event.preventDefault();
           forgetRecognition();
@@ -353,7 +353,7 @@ export function AvatarChat({
           placeholder={chat.placeholder}
           aria-label={chat.placeholder}
           maxLength={CHAT_TEXT_MAX}
-          className="min-h-12 min-w-0 flex-1 rounded-full border border-slate-200 bg-slate-50 px-3.5 text-base text-slate-900 outline-none placeholder:text-slate-400 focus:border-cobalt"
+          className="min-h-11 min-w-0 flex-1 rounded-full border border-slate-200 bg-slate-50 px-3.5 text-base text-slate-900 outline-none placeholder:text-slate-400 focus:border-cobalt"
         />
         <button
           type="button"
