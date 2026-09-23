@@ -3,7 +3,7 @@
 import { FormEvent, Suspense, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { LocalProfileBoard } from "@/components/LocalProfileBoard";
+import { SignupGate } from "@/components/SignupGate";
 import { noteOfferCreated } from "@/lib/analytics";
 import { interpolate } from "@/lib/i18n";
 import { useI18n } from "@/lib/i18n/locale";
@@ -46,7 +46,6 @@ import {
   type SkillId,
   type Weekday,
 } from "@/lib/skills";
-import { useLocalProfile } from "@/lib/useLocalProfile";
 import { useStoredList } from "@/lib/useStoredList";
 
 const fieldClass =
@@ -100,7 +99,6 @@ function MyServicesBoardInner() {
   const { locale, m } = useI18n();
   const copy = m.offers;
   const skillsCopy = m.skills;
-  const [profile] = useLocalProfile();
   const searchParams = useSearchParams();
   const initialTemplate = parseOfferTemplateQuery(searchParams.get("template"));
   const initialSkills = initialTemplate === "skills" || searchParams.get("template") === "skills";
@@ -338,32 +336,28 @@ function MyServicesBoardInner() {
         )}
       </div>
 
-      {showSkills && !profile ? (
-        <div className="space-y-3" data-signup-gate>
-          <p className="text-sm leading-relaxed text-pretty text-snow/90">{m.register.gateLead}</p>
-          <LocalProfileBoard startOpen required />
-        </div>
-      ) : null}
-
-      {showSkills && profile ? (
-        <SkillsOfferForm
-          form={form}
-          error={error}
-          onPatch={patch}
-          onCancel={() => {
-            setShowSkills(false);
-            setError("");
-            setForm(carMorningDefaults());
-          }}
-          onSubmit={onSubmit}
-          labels={skillsCopy}
-          dayLabels={m.alerts.days}
-          windowFromLabel={copy.windowFrom}
-          windowToLabel={copy.windowTo}
-        />
+      {showSkills ? (
+        <SignupGate>
+          <SkillsOfferForm
+            form={form}
+            error={error}
+            onPatch={patch}
+            onCancel={() => {
+              setShowSkills(false);
+              setError("");
+              setForm(carMorningDefaults());
+            }}
+            onSubmit={onSubmit}
+            labels={skillsCopy}
+            dayLabels={m.alerts.days}
+            windowFromLabel={copy.windowFrom}
+            windowToLabel={copy.windowTo}
+          />
+        </SignupGate>
       ) : null}
 
       {showForm ? (
+      <SignupGate>
       <form onSubmit={onSubmit} className="grid gap-3">
         <h3 className="text-base font-extrabold text-gold">
           {editing ? copy.formTitleEdit : copy.formTitleNew}
@@ -555,6 +549,7 @@ function MyServicesBoardInner() {
         {saved ? <p className="text-sm text-gold">{m.services.saved}</p> : null}
         {draftSaved ? <p className="text-sm text-gold">{copy.draftSaved}</p> : null}
       </form>
+      </SignupGate>
       ) : null}
 
       {shareText ? (

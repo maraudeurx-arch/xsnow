@@ -3,6 +3,7 @@
 import { FormEvent, Suspense, useMemo, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import { SignupGate } from "@/components/SignupGate";
 import { noteRequestCreated } from "@/lib/analytics";
 import { EN_DEMANDE_SHORTCUTS } from "@/lib/board-shortcuts";
 import { interpolate } from "@/lib/i18n";
@@ -237,6 +238,7 @@ function DemandBoardInner() {
               </button>
 
               {open && !showPay ? (
+                <SignupGate>
                 <form onSubmit={(event) => onRequest(event, offer)} className="mt-3 grid gap-3">
                   <p className="text-sm font-bold">{copy.requesting}</p>
                   <label className="grid gap-1 text-sm font-semibold">
@@ -273,6 +275,7 @@ function DemandBoardInner() {
                     {copy.sendRequest}
                   </button>
                 </form>
+                </SignupGate>
               ) : null}
 
               {showPay ? <PaymentPanel offer={offer} copied={copied} onCopy={copyValue} /> : null}
