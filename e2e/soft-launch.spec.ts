@@ -43,7 +43,7 @@ test.describe("Open Community soft-launch smoke", () => {
     await expect(page.getByRole("link", { name: "Ménage" })).toBeVisible();
     await expect(page.getByRole("link", { name: "Homme à tout faire" })).toBeVisible();
     await expect(page.getByRole("link", { name: "Aide au déménagement" })).toHaveCount(0);
-    await expect(page.getByRole("link", { name: "Aide au bricolage" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Aide au bricolage" })).toHaveCount(0);
     await expect(page.getByRole("link", { name: "Co-voiturage" })).toBeVisible();
     await expect(page.getByRole("link", { name: "Prêt d’équipement" })).toBeVisible();
     await expect(page.getByText(/Offres de cet appareil/)).toHaveCount(0);

@@ -244,9 +244,9 @@ body {
 
 /*
  * Wordmark/nav + main share leftover height above the sticky footer.
- * On home (#home-guide), leftover height goes into the Accueil card so
- * Nouvelles du Quartier (headlines + partner slots) can grow toward the
- * footer — not an empty photo band under the chat.
+ * On home (#home-guide), leftover height goes into the Accueil card.
+ * Ads fill the flexible row; the chat row keeps a reserved share so the
+ * avatar field stays readable above a compact footer.
  */
 .app-stage {
   position: relative;
@@ -336,7 +336,9 @@ body {
  */
 .app-stage:has(#home-guide) > .app-stage-main > #home-guide > .home-stage:has([data-neighborhood-news]) {
   display: grid;
-  grid-template-rows: auto minmax(0, 1fr) auto;
+  /* Shortcuts stay content-sized. Ads keep the flexible middle.
+     The chat row claims a readable share so « Écris à ton avatar » is not clipped. */
+  grid-template-rows: auto minmax(0, 1fr) minmax(8.75rem, 28%);
   grid-template-columns: minmax(0, 1fr);
   height: 100%;
   min-height: 0;
@@ -657,11 +659,10 @@ body {
 }
 
 /*
- * Mobile Accueil: pin branding to the top, grow the middle card toward the
- * footer, and pour leftover height into Nouvelles du Quartier. Headlines keep
- * the #77 flex-grow floors; the bottom partner slot also grows so ads fit
- * toward the chat — without overflowing the green card (PR #82 failure).
- * Chat stays row 3; footer stays usable.
+ * Mobile Accueil: branding stays content-sized, the card fills the stage,
+ * and the chat row keeps a readable share so the avatar field stays on screen.
+ * Ad floors are 0 — a dvh minimum used to clip that row under overflow:hidden.
+ * The footer slogan band is compact so the card can use the height.
  */
 @media (max-width: 639px) {
   .app-stage:has(#home-guide) {
@@ -696,20 +697,21 @@ body {
     flex: none;
     height: 100%;
     min-height: 0;
-    /* Card itself claims the stage row — kills autumn-photo void above footer. */
     align-self: stretch;
+    /* Chat claims more of the card; ads fill whatever remains. */
+    grid-template-rows: auto minmax(0, 1fr) minmax(9.5rem, 32%);
   }
 
   .app-stage:has(#home-guide) [data-neighborhood-news] {
     flex: 1 1 0%;
     align-self: stretch;
-    /* Ad frame grows, but stays under the shortcut row and above chat. */
-    min-height: max(12rem, 28dvh);
+    /* Do not floor the ad row — a dvh minimum clips the chat under overflow:hidden. */
+    min-height: 0;
   }
 
   .app-stage:has(#home-guide) [data-neighborhood-news] [data-news-body] {
     flex: 1 1 0%;
-    min-height: max(10rem, 24dvh);
+    min-height: 0;
   }
 
   /* Headline list / loading spacer is the flex-grow inventory inside the green card. */
@@ -748,24 +750,32 @@ body {
 
   /* Same specificity as the grid child rule so floors beat base height fill. */
   .app-stage:has(#home-guide) > .app-stage-main > #home-guide > .home-stage:has([data-neighborhood-news]) > [data-neighborhood-news] {
-    min-height: max(12rem, 28dvh);
+    min-height: 0;
   }
 
   .safe-frame:has(#home-guide) > footer {
-    margin-top: 0.15rem;
-    padding-top: 0.2rem;
-    padding-bottom: 0.15rem;
+    margin-top: 0.08rem;
+    padding: 0.15rem 0.4rem 0.1rem;
+  }
+
+  .safe-frame:has(#home-guide) > footer .footer-slogan-line {
+    font-size: 0.75rem;
+    line-height: 1.15;
+  }
+
+  .safe-frame:has(#home-guide) > footer > p + p {
+    margin-top: 0.1rem;
   }
 }
 
 /* Tall mobile: push Nouvelles harder into the card→footer inventory. */
 @media (max-width: 639px) and (min-height: 740px) {
   .app-stage:has(#home-guide) [data-neighborhood-news] {
-    min-height: max(16rem, 34dvh);
+    min-height: 0;
   }
 
   .app-stage:has(#home-guide) [data-neighborhood-news] [data-news-body] {
-    min-height: max(12rem, 26dvh);
+    min-height: 0;
   }
 
   .app-stage:has(#home-guide) [data-neighborhood-news] [data-news-list],
@@ -783,18 +793,22 @@ body {
   }
 
   .app-stage:has(#home-guide) > .app-stage-main > #home-guide > .home-stage:has([data-neighborhood-news]) > [data-neighborhood-news] {
-    min-height: max(16rem, 34dvh);
+    min-height: 0;
   }
 }
 
 /* Short Safari/Chrome dvh: drop rem floors so chat + footer links stay on-screen. */
 @media (max-width: 639px) and (max-height: 660px) {
+  .app-stage:has(#home-guide) > .app-stage-main > #home-guide > .home-stage:has([data-neighborhood-news]) {
+    grid-template-rows: auto minmax(0, 1fr) minmax(8.25rem, 30%);
+  }
+
   .app-stage:has(#home-guide) [data-neighborhood-news] {
-    min-height: max(14rem, 36dvh);
+    min-height: 0;
   }
 
   .app-stage:has(#home-guide) [data-neighborhood-news] [data-news-body] {
-    min-height: max(9rem, 20dvh);
+    min-height: 0;
   }
 
   .app-stage:has(#home-guide) [data-neighborhood-news] [data-news-list],
@@ -816,7 +830,7 @@ body {
   }
 
   .app-stage:has(#home-guide) > .app-stage-main > #home-guide > .home-stage:has([data-neighborhood-news]) > [data-neighborhood-news] {
-    min-height: max(14rem, 36dvh);
+    min-height: 0;
   }
 }
 

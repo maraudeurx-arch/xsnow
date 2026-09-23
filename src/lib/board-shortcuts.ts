@@ -1,7 +1,7 @@
 /**
  * Full-width CTAs on Mes services / En demande.
  * Mes services → publish flows; En demande → demand/browse flows.
- * Car lending and moving help stay out of these catalogs.
+ * Car lending, moving help, and DIY help stay out of these catalogs.
  */
 
 export const MES_SERVICE_SHORTCUTS = [
@@ -35,10 +35,6 @@ export const EN_DEMANDE_SHORTCUTS = [
   {
     id: "handyman",
     href: "/services/handyman?side=demande",
-  },
-  {
-    id: "diy",
-    href: "/services/pret?side=demande&title=Aide%20au%20bricolage&object=Outils%20de%20bricolage",
   },
   {
     id: "carpool",
