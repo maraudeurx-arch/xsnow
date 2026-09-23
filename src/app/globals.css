@@ -245,8 +245,9 @@ body {
 /*
  * Wordmark/nav + main share leftover height above the sticky footer.
  * On home (#home-guide), leftover height goes into the Accueil card.
- * Ads fill the flexible row; the chat row keeps a reserved share so the
- * avatar field stays readable above a compact footer.
+ * Ads fill the flexible row. The chat row is content-sized — about half
+ * the share reserved in #170 — so « Écris à ton avatar » stays visible
+ * and the extra height goes back to the ad.
  */
 .app-stage {
   position: relative;
@@ -336,9 +337,8 @@ body {
  */
 .app-stage:has(#home-guide) > .app-stage-main > #home-guide > .home-stage:has([data-neighborhood-news]) {
   display: grid;
-  /* Shortcuts stay content-sized. Ads keep the flexible middle.
-     The chat row claims a readable share so « Écris à ton avatar » is not clipped. */
-  grid-template-rows: auto minmax(0, 1fr) minmax(8.75rem, 28%);
+  /* Shortcuts and the avatar chat hug their content. Ads keep the rest. */
+  grid-template-rows: auto minmax(0, 1fr) auto;
   grid-template-columns: minmax(0, 1fr);
   height: 100%;
   min-height: 0;
@@ -660,9 +660,10 @@ body {
 
 /*
  * Mobile Accueil: branding stays content-sized, the card fills the stage,
- * and the chat row keeps a readable share so the avatar field stays on screen.
- * Ad floors are 0 — a dvh minimum used to clip that row under overflow:hidden.
- * The footer slogan band is compact so the card can use the height.
+ * and the chat row stays content-sized so the avatar field stays on screen
+ * without the tall reserved band from #170. Ad floors are 0 — a dvh minimum
+ * used to clip that row under overflow:hidden. The footer stays compact;
+ * height freed by the shorter chat goes to the ad.
  */
 @media (max-width: 639px) {
   .app-stage:has(#home-guide) {
@@ -698,8 +699,8 @@ body {
     height: 100%;
     min-height: 0;
     align-self: stretch;
-    /* Chat claims more of the card; ads fill whatever remains. */
-    grid-template-rows: auto minmax(0, 1fr) minmax(9.5rem, 32%);
+    /* Chat hugs title + field (~half the old 32% band). Ads take the rest. */
+    grid-template-rows: auto minmax(0, 1fr) auto;
   }
 
   .app-stage:has(#home-guide) [data-neighborhood-news] {
@@ -800,7 +801,7 @@ body {
 /* Short Safari/Chrome dvh: drop rem floors so chat + footer links stay on-screen. */
 @media (max-width: 639px) and (max-height: 660px) {
   .app-stage:has(#home-guide) > .app-stage-main > #home-guide > .home-stage:has([data-neighborhood-news]) {
-    grid-template-rows: auto minmax(0, 1fr) minmax(8.25rem, 30%);
+    grid-template-rows: auto minmax(0, 1fr) auto;
   }
 
   .app-stage:has(#home-guide) [data-neighborhood-news] {
