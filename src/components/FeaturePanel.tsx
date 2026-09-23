@@ -27,8 +27,8 @@ export function FeaturePanel({
       ) : null}
       {title ? (
         <h2
-          className={`font-[family-name:var(--font-fraunces)] text-balance font-extrabold text-snow ${
-            compact ? "text-xl" : "text-2xl"
+          className={`font-[family-name:var(--font-sans)] text-balance font-extrabold tracking-tight text-slate-900 ${
+            compact ? "text-2xl" : "text-[1.75rem] leading-tight"
           }`}
         >
           {title}
@@ -36,7 +36,7 @@ export function FeaturePanel({
       ) : null}
       {lead ? (
         <p
-          className={`mx-auto max-w-md text-base leading-relaxed text-pretty text-snow/90 ${
+          className={`mx-auto max-w-md text-base leading-relaxed text-pretty text-slate-600 ${
             compact ? "mt-1" : "mt-2"
           }`}
         >

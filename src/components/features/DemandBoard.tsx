@@ -37,7 +37,7 @@ const fieldClass =
   "tap rounded-2xl border border-white/15 bg-white/5 px-3 text-sm font-normal text-snow outline-none focus:border-gold";
 
 const ctaClass =
-  "tap inline-flex min-h-11 w-full items-center justify-center rounded-full border border-gold/65 bg-cobalt px-3 text-center text-sm font-extrabold text-snow";
+  "catalog-card tap inline-flex min-h-[4.75rem] w-full flex-col items-start justify-end rounded-2xl border border-slate-200 bg-white px-3 py-3 text-left text-[15px] font-bold leading-snug text-slate-900 shadow-[0_8px_20px_rgba(15,23,42,0.06)]";
 
 function kindLabel(
   kind: OfferKind,
@@ -166,7 +166,8 @@ function DemandBoardInner() {
   }
 
   const buttonLabel = {
-    moving: m.enDemandeButtons.moving,
+    cleaning: m.enDemandeButtons.cleaning,
+    handyman: m.enDemandeButtons.handyman,
     diy: m.enDemandeButtons.diy,
     carpool: m.enDemandeButtons.carpool,
     equipment: m.enDemandeButtons.equipment,
@@ -174,7 +175,7 @@ function DemandBoardInner() {
 
   return (
     <div className="space-y-6">
-      <div className="grid gap-2">
+      <div className="grid grid-cols-2 gap-3">
         {EN_DEMANDE_SHORTCUTS.map((item) => (
           <Link key={item.id} href={item.href} className={ctaClass}>
             {buttonLabel[item.id]}

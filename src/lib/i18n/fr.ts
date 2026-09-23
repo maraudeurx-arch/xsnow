@@ -490,7 +490,7 @@ export const fr = {
       "Tes offres, demandes, idées, textes de partage, inscription (prénom, nom, e-mail, téléphone, numéro OPC-XXXX) et coordonnées Interac/PayPal restent sur cet appareil. Une copie assainie d’une idée (phrase, ville, date, numéro OPC si inscrit — pas tes coordonnées) peut partir par e-mail vers opencommunity.opc@gmail.com. Rien de personnel n’apparaît chez un autre visiteur tant que l’équipe de développement n’approuve pas une publication dans une version numérotée (catalogue public).",
     releaseNotesTitle: "Notes de version",
     releaseNotesBody:
-      "0.3.5 — Mes compétences (après inscription) : publier compétences + disponibilité dans Demandes. Copie : équipe de développement. 0.3.4 — Alertes de proximité : horaire lundi→dimanche, rayon 5/10/20 km, invitation et consentement du proche (GPS du navigateur / PWA). SMS Twilio optionnel (secrets Worker). Pas d’Apple Localiser / iCloud / Messages. 0.3.3 — Vos idées : e-mail assaini vers opencommunity.opc@gmail.com. Catalogue public toujours vide.",
+      "0.4.0 — Look moderne (23 septembre 2026) : cartes, typographie et couleurs. Mes services et En demande : Ménage et Homme à tout faire. 0.3.5 — Mes compétences (après inscription) : publier compétences + disponibilité dans Demandes. Copie : équipe de développement. 0.3.4 — Alertes de proximité : horaire lundi→dimanche, rayon 5/10/20 km, invitation et consentement du proche (GPS du navigateur / PWA). SMS Twilio optionnel (secrets Worker). Pas d’Apple Localiser / iCloud / Messages. 0.3.3 — Vos idées : e-mail assaini vers opencommunity.opc@gmail.com. Catalogue public toujours vide.",
     language: "Langue",
     comingSoon: "Notifications et saison d’affichage arriveront ici.",
     locationConsent: "Position",
@@ -545,6 +545,16 @@ export const fr = {
       title: "Courses et livraison",
       short: "Courses & livraison",
       lead: "Offrez ou demandez une course, un colis ou une livraison de quartier. Le tarif est un accord entre voisins.",
+    },
+    menage: {
+      title: "Ménage",
+      short: "Ménage",
+      lead: "Maison, appartement ou bureau : proposez un ménage ou demandez un coup de main près de chez vous.",
+    },
+    handyman: {
+      title: "Homme à tout faire",
+      short: "Homme à tout faire",
+      lead: "Petits travaux du quotidien : réparations, montage, bricolage léger. Le tarif se convient entre voisins.",
     },
     demenagement: {
       title: "Aide au déménagement",
@@ -807,6 +817,22 @@ export const fr = {
       title: "Livraison pharmacie + lait",
       description: "Je ne peux pas sortir aujourd’hui. Pharmacie Jean-Coutu + 2 litres de lait.",
     },
+    "seed-menage-1": {
+      title: "Ménage hebdomadaire — 2h",
+      description: "Je passe le mardi matin. Cuisine, salle de bain, sols. Produits fournis.",
+    },
+    "seed-menage-2": {
+      title: "Grand ménage avant visite",
+      description: "Appartement 4½, samedi matin. Je fournis l’aspirateur.",
+    },
+    "seed-handyman-1": {
+      title: "Petits travaux le soir",
+      description: "Tablettes, tringles, robinet qui fuit. J’apporte la caisse à outils.",
+    },
+    "seed-handyman-2": {
+      title: "Monter une bibliothèque",
+      description: "Meuble en kit, environ 1h30. Tournevis déjà sur place.",
+    },
     "seed-demenagement-1": {
       title: "3e étage sans ascenseur — 2h",
       description: "Canapé + 8 cartons. Camionnette déjà louée, il me manque deux personnes.",
@@ -835,11 +861,15 @@ export const fr = {
   mesServicesButtons: {
     lendCar: "Prêter ma voiture",
     moving: "Aider au déménagement",
+    cleaning: "Ménage",
+    handyman: "Homme à tout faire",
     babysitting: "Baby-sitting",
     skills: "Mes compétences",
   },
   enDemandeButtons: {
     moving: "Aide au déménagement",
+    cleaning: "Ménage",
+    handyman: "Homme à tout faire",
     diy: "Aide au bricolage",
     carpool: "Co-voiturage",
     equipment: "Prêt d’équipement",

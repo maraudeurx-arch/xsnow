@@ -494,7 +494,7 @@ export const en: Messages = {
       "Your offers, requests, ideas, share texts, registration (first name, last name, email, phone, OPC-XXXX number), and Interac/PayPal details stay on this device. A sanitized copy of an idea (sentence, city, date, OPC number if registered — not your contact details) may be emailed to opencommunity.opc@gmail.com. Nothing personal appears for another visitor until the development team approves a numbered public release (public catalog).",
     releaseNotesTitle: "Release notes",
     releaseNotesBody:
-      "0.3.5 — My skills (after sign-up): publish skills + availability into In demand. Copy: development team. 0.3.4 — Proximity alerts: Monday–Sunday hours, 5/10/20 km radius, invite and consent from the loved one (browser / PWA GPS). Optional Twilio SMS (Worker secrets). No Apple Find My / iCloud / Messages. 0.3.3 — Your ideas: sanitized email to opencommunity.opc@gmail.com. Public catalog is still empty.",
+      "0.4.0 — Modern look (23 September 2026): cards, type, and colours. My services and In demand: cleaning and handyman. 0.3.5 — My skills (after sign-up): publish skills + availability into In demand. Copy: development team. 0.3.4 — Proximity alerts: Monday–Sunday hours, 5/10/20 km radius, invite and consent from the loved one (browser / PWA GPS). Optional Twilio SMS (Worker secrets). No Apple Find My / iCloud / Messages. 0.3.3 — Your ideas: sanitized email to opencommunity.opc@gmail.com. Public catalog is still empty.",
     language: "Language",
     comingSoon: "Notifications and display season will land here.",
     locationConsent: "Location",
@@ -549,6 +549,16 @@ export const en: Messages = {
       title: "Errands and delivery",
       short: "Errands & delivery",
       lead: "Offer or request a run, a parcel, or a neighbourhood delivery. The rate is an agreement between neighbours.",
+    },
+    menage: {
+      title: "Cleaning",
+      short: "Cleaning",
+      lead: "Home, flat, or office: offer a clean or ask for a hand nearby.",
+    },
+    handyman: {
+      title: "Handyman",
+      short: "Handyman",
+      lead: "Everyday jobs: repairs, assembly, light DIY. The rate is an agreement between neighbours.",
     },
     demenagement: {
       title: "Moving help",
@@ -818,6 +828,22 @@ export const en: Messages = {
       title: "Pharmacy + milk delivery",
       description: "I can’t go out today. Jean-Coutu pharmacy + 2 litres of milk.",
     },
+    "seed-menage-1": {
+      title: "Weekly clean — 2h",
+      description: "Tuesday mornings. Kitchen, bathroom, floors. I bring the products.",
+    },
+    "seed-menage-2": {
+      title: "Deep clean before a visit",
+      description: "4½ apartment, Saturday morning. Vacuum is already there.",
+    },
+    "seed-handyman-1": {
+      title: "Small jobs in the evening",
+      description: "Shelves, curtain rods, a dripping tap. I bring the toolbox.",
+    },
+    "seed-handyman-2": {
+      title: "Assemble a bookcase",
+      description: "Flat-pack unit, about 90 minutes. Screwdriver is on site.",
+    },
     "seed-demenagement-1": {
       title: "3rd floor, no elevator — 2h",
       description: "Sofa + 8 boxes. Van already rented, I still need two people.",
@@ -846,11 +872,15 @@ export const en: Messages = {
   mesServicesButtons: {
     lendCar: "Lend my car",
     moving: "Help with a move",
+    cleaning: "Cleaning",
+    handyman: "Handyman",
     babysitting: "Babysitting",
     skills: "My skills",
   },
   enDemandeButtons: {
     moving: "Moving help",
+    cleaning: "Cleaning",
+    handyman: "Handyman",
     diy: "DIY / handyman help",
     carpool: "Carpool",
     equipment: "Equipment loan",

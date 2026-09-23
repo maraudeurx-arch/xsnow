@@ -14,7 +14,7 @@ export function HeaderPlaceWithAvatar() {
   return (
     <Link
       href="/"
-      className="inline-flex min-w-0 items-center gap-1.5 text-[1.02rem] leading-none font-black tracking-tight text-gold [text-shadow:0_2px_12px_rgba(0,0,0,0.55)] sm:gap-2 sm:text-[1.45rem]"
+      className="inline-flex min-w-0 items-center gap-1.5 text-base leading-none font-black tracking-tight text-slate-900 sm:gap-2 sm:text-xl"
       data-header-place-avatar
     >
       {chosen ? (

@@ -494,7 +494,7 @@ export const es: Messages = {
       "Tus ofertas, solicitudes, ideas, textos para compartir, inscripción (nombre, apellidos, correo, teléfono, número OPC-XXXX) y datos Interac/PayPal se quedan en este aparato. Una copia saneada de una idea (frase, ciudad, fecha, número OPC si estás inscrito — no tus datos de contacto) puede ir por correo a opencommunity.opc@gmail.com. Nada personal aparece en el de otro visitante hasta que el equipo de desarrollo apruebe una publicación en una versión numerada (catálogo público).",
     releaseNotesTitle: "Notas de la versión",
     releaseNotesBody:
-      "0.3.5 — Mis competencias (tras inscribirse): publicar competencias + disponibilidad en En demanda. Texto: equipo de desarrollo. 0.3.4 — Alertas de proximidad: horario lunes→domingo, radio 5/10/20 km, invitación y consentimiento de la persona (GPS del navegador / PWA). SMS Twilio opcional (secretos del Worker). Sin Apple Buscar / iCloud / Mensajes. 0.3.3 — Tus ideas: correo saneado a opencommunity.opc@gmail.com. El catálogo público sigue vacío.",
+      "0.4.0 — Aspecto moderno (23 de septiembre de 2026): tarjetas, tipografía y colores. Mis servicios y En demanda: limpieza y manitas. 0.3.5 — Mis competencias (tras inscribirse): publicar competencias + disponibilidad en En demanda. Texto: equipo de desarrollo. 0.3.4 — Alertas de proximidad: horario lunes→domingo, radio 5/10/20 km, invitación y consentimiento de la persona (GPS del navegador / PWA). SMS Twilio opcional (secretos del Worker). Sin Apple Buscar / iCloud / Mensajes. 0.3.3 — Tus ideas: correo saneado a opencommunity.opc@gmail.com. El catálogo público sigue vacío.",
     language: "Idioma",
     comingSoon: "Las notificaciones y la estación de pantalla llegarán aquí.",
     locationConsent: "Ubicación",
@@ -550,6 +550,16 @@ export const es: Messages = {
       title: "Recados y entrega",
       short: "Recados y entrega",
       lead: "Ofrece o pide un recado, un paquete o una entrega de barrio. La tarifa es un acuerdo entre vecinos.",
+    },
+    menage: {
+      title: "Limpieza",
+      short: "Limpieza",
+      lead: "Casa, piso u oficina: ofrece una limpieza o pide una mano cerca de ti.",
+    },
+    handyman: {
+      title: "Manitas",
+      short: "Manitas",
+      lead: "Trabajos del día a día: reparaciones, montaje, bricolaje ligero. La tarifa se acuerda entre vecinos.",
     },
     demenagement: {
       title: "Ayuda para mudanzas",
@@ -820,6 +830,22 @@ export const es: Messages = {
       title: "Entrega farmacia + leche",
       description: "Hoy no puedo salir. Farmacia Jean-Coutu + 2 litros de leche.",
     },
+    "seed-menage-1": {
+      title: "Limpieza semanal — 2h",
+      description: "Paso los martes por la mañana. Cocina, baño, suelos. Llevo los productos.",
+    },
+    "seed-menage-2": {
+      title: "Limpieza a fondo antes de una visita",
+      description: "Piso de 4½, sábado por la mañana. La aspiradora ya está.",
+    },
+    "seed-handyman-1": {
+      title: "Pequeños trabajos por la tarde",
+      description: "Estantes, barras, un grifo que gotea. Llevo la caja de herramientas.",
+    },
+    "seed-handyman-2": {
+      title: "Montar una estantería",
+      description: "Mueble en kit, unas hora y media. El destornillador está en casa.",
+    },
     "seed-demenagement-1": {
       title: "3.er piso sin ascensor — 2h",
       description: "Sofá + 8 cajas. Furgoneta ya alquilada, me faltan dos personas.",
@@ -848,11 +874,15 @@ export const es: Messages = {
   mesServicesButtons: {
     lendCar: "Prestar mi coche",
     moving: "Ayudar en una mudanza",
+    cleaning: "Limpieza",
+    handyman: "Manitas",
     babysitting: "Niñera",
     skills: "Mis competencias",
   },
   enDemandeButtons: {
     moving: "Ayuda de mudanza",
+    cleaning: "Limpieza",
+    handyman: "Manitas",
     diy: "Ayuda de bricolaje",
     carpool: "Viaje compartido",
     equipment: "Préstamo de equipo",

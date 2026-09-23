@@ -65,8 +65,8 @@ describe("partner ad config", () => {
     assert.match(fr.neighborhoodNews.partnerSlot, /Espace partenaire/);
     assert.match(fr.neighborhoodNews.partnerSponsored, /Publicité/);
     assert.doesNotMatch(fr.neighborhoodNews.partnerPlaceholder, /Chargement des nouvelles/);
-    assert.match(fr.neighborhoodNews.partnerPlaceholder, /fausse manchette/);
-    assert.match(fr.neighborhoodNews.partnerFunding, /pas de revenus pubs en direct/);
+    assert.match(fr.neighborhoodNews.partnerPlaceholder, /Partenaire local à venir/);
+    assert.match(fr.neighborhoodNews.partnerFunding, /Pas de revenus pubs/);
     assert.equal(fr.neighborhoodNews.partnerCtaRegister, "S’inscrire / Mes infos");
     assert.equal(fr.neighborhoodNews.partnerCtaShare, "Partager / inviter");
     assert.equal(en.neighborhoodNews.partnerCtaRegister, "Sign up / My info");
@@ -91,7 +91,7 @@ describe("partner ad config", () => {
       const resolved = resolvePartnerCreative(creative, fr.neighborhoodNews);
       assert.doesNotMatch(resolved.name, /Chargement des nouvelles/);
       assert.doesNotMatch(resolved.tagline, /Chargement des nouvelles/);
-      assert.match(resolved.tagline, /ferme à clics/);
+      assert.doesNotMatch(resolved.tagline, /fausse manchette/);
       if (creative.kind === "share") {
         assert.equal(resolved.ctaKind, "share");
         assert.equal(resolved.cta, fr.neighborhoodNews.partnerCtaShare);

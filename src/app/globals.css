@@ -1,33 +1,33 @@
 @import "tailwindcss";
 
 :root {
-  --night: #07080b;
-  --night-deep: #050506;
-  --ice: #b8a6ff;
-  --gold: #3dff8a;
-  --cobalt: #2563eb;
+  --night: #f4f7fb;
+  --night-deep: #e8eef6;
+  --ice: #6b7280;
+  --gold: #22c55e;
+  --cobalt: #006efd;
   --violet: #8b5cf6;
-  --snow: #f4f6fb;
-  --glass: rgba(28, 18, 12, 0.74);
+  --orange: #fb923c;
+  --yellow: #facc15;
+  --snow: #f8fafc;
+  --ink: #111827;
+  --glass: rgba(255, 255, 255, 0.96);
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-right: env(safe-area-inset-right, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --safe-left: env(safe-area-inset-left, 0px);
   --home-logo: 2.15rem;
-  --home-nav-h: 2rem;
-  --home-chip-h: 1.9rem;
-  --home-avatar: min(10.5vw, 5.4dvh, 2.45rem);
-  --home-gap: 0.1rem;
-  /* Accueil: no header→card air — leftover height feeds Nouvelles. */
-  --home-block-gap: 0;
-  /* Gaps inside the avatar/chat card — keep compact so news flex-grows hard. */
-  --home-stack-gap: 0.08rem;
-  /* Hairline between Nouvelles and the chat composer (not full stack gap). */
-  --home-news-chat-gap: 0.06rem;
-  --home-nav-gap: 0.16rem;
-  --home-chip-gap: 0.18rem;
-  --home-card-pad-x: 0.36rem;
-  --home-card-pad-y: 0.1rem;
+  --home-nav-h: 2.75rem;
+  --home-chip-h: 2.75rem;
+  --home-avatar: min(12vw, 6dvh, 2.75rem);
+  --home-gap: 0.4rem;
+  --home-block-gap: 0.35rem;
+  --home-stack-gap: 0.4rem;
+  --home-news-chat-gap: 0.35rem;
+  --home-nav-gap: 0.35rem;
+  --home-chip-gap: 0.4rem;
+  --home-card-pad-x: 0.7rem;
+  --home-card-pad-y: 0.55rem;
   --home-avatar-ring: 0.22rem;
   --brand-title: clamp(1.7rem, 8.2vw, 3.35rem);
   --brand-slogan: clamp(1rem, 4.4vw, 1.5rem);
@@ -37,16 +37,16 @@
   :root {
     --home-logo: 4.5rem;
     --home-nav-h: 2.75rem;
-    --home-chip-h: 2.6rem;
+    --home-chip-h: 2.75rem;
     --home-avatar: min(16vw, 10dvh, 4.5rem);
-    --home-gap: 0.55rem;
-    --home-block-gap: 0.36rem;
-    --home-stack-gap: 1rem;
-    --home-news-chat-gap: 0.32rem;
+    --home-gap: 0.7rem;
+    --home-block-gap: 0.55rem;
+    --home-stack-gap: 0.75rem;
+    --home-news-chat-gap: 0.5rem;
     --home-nav-gap: 0.5rem;
     --home-chip-gap: 0.65rem;
-    --home-card-pad-x: 0.85rem;
-    --home-card-pad-y: 0.75rem;
+    --home-card-pad-x: 1rem;
+    --home-card-pad-y: 0.85rem;
   }
 }
 
@@ -54,17 +54,17 @@
 @media (max-height: 700px) {
   :root {
     --home-logo: 2.05rem;
-    --home-nav-h: 2rem;
-    --home-chip-h: 1.9rem;
+    --home-nav-h: 2.75rem;
+    --home-chip-h: 2.5rem;
     --home-avatar: min(11vw, 5.3dvh, 2.4rem);
-    --home-gap: 0.12rem;
-    --home-block-gap: 0;
-    --home-stack-gap: 0.2rem;
-    --home-news-chat-gap: 0.08rem;
-    --home-nav-gap: 0.16rem;
-    --home-chip-gap: 0.22rem;
-    --home-card-pad-x: 0.36rem;
-    --home-card-pad-y: 0.12rem;
+    --home-gap: 0.28rem;
+    --home-block-gap: 0.25rem;
+    --home-stack-gap: 0.28rem;
+    --home-news-chat-gap: 0.2rem;
+    --home-nav-gap: 0.25rem;
+    --home-chip-gap: 0.28rem;
+    --home-card-pad-x: 0.55rem;
+    --home-card-pad-y: 0.4rem;
     --home-avatar-ring: 0.2rem;
   }
 }
@@ -72,17 +72,17 @@
 @media (max-height: 620px) {
   :root {
     --home-logo: 1.85rem;
-    --home-nav-h: 1.85rem;
-    --home-chip-h: 1.8rem;
+    --home-nav-h: 2.5rem;
+    --home-chip-h: 2.4rem;
     --home-avatar: min(10vw, 4.7dvh, 2.2rem);
-    --home-gap: 0.1rem;
-    --home-block-gap: 0;
-    --home-stack-gap: 0.16rem;
-    --home-news-chat-gap: 0.06rem;
-    --home-nav-gap: 0.14rem;
-    --home-chip-gap: 0.18rem;
-    --home-card-pad-x: 0.32rem;
-    --home-card-pad-y: 0.1rem;
+    --home-gap: 0.2rem;
+    --home-block-gap: 0.16rem;
+    --home-stack-gap: 0.2rem;
+    --home-news-chat-gap: 0.16rem;
+    --home-nav-gap: 0.2rem;
+    --home-chip-gap: 0.2rem;
+    --home-card-pad-x: 0.45rem;
+    --home-card-pad-y: 0.28rem;
     --home-avatar-ring: 0.16rem;
   }
 }
@@ -93,9 +93,12 @@
   --color-gold: var(--gold);
   --color-cobalt: var(--cobalt);
   --color-violet: var(--violet);
+  --color-orange: var(--orange);
+  --color-yellow: var(--yellow);
   --color-snow: var(--snow);
+  --color-ink: var(--ink);
   --font-sans: var(--font-outfit);
-  --font-display: var(--font-fraunces);
+  --font-display: var(--font-outfit);
 }
 
 html,
@@ -104,8 +107,9 @@ body {
   height: 100svh;
   height: 100dvh;
   overflow: hidden;
-  background: #4aa3ff;
-  color: var(--snow);
+  background: #e8f1ff;
+  color: var(--ink);
+  font-size: 16px;
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
 }
@@ -579,46 +583,77 @@ body {
     linear-gradient(180deg, rgba(6, 8, 14, 0.36) 0%, rgba(6, 8, 14, 0.1) 30%, rgba(6, 8, 14, 0.14) 64%, rgba(6, 8, 14, 0.42) 100%);
 }
 
-.chrome-panel {
-  background: linear-gradient(180deg, rgba(36, 22, 14, 0.72) 0%, rgba(14, 12, 16, 0.82) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.36);
-  backdrop-filter: blur(18px) saturate(1.15);
-  -webkit-backdrop-filter: blur(18px) saturate(1.15);
+.chrome-panel,
+.home-stage,
+.opc-glass,
+.opc-glass-soft,
+.opc-glass-menu {
+  --snow: var(--ink);
+  --ice: #4b5563;
+  color: var(--ink);
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
 
 .home-stage {
-  background: linear-gradient(180deg, rgba(40, 24, 14, 0.74) 0%, rgba(12, 10, 14, 0.84) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.38);
-  backdrop-filter: blur(20px) saturate(1.15);
-  -webkit-backdrop-filter: blur(20px) saturate(1.15);
   min-height: 0;
 }
 
-/* Shared seasonal glass — panels, footer, sheets (let season colours show). */
-.opc-glass {
-  background: linear-gradient(180deg, rgba(40, 24, 14, 0.74) 0%, rgba(12, 10, 14, 0.84) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.38);
-  backdrop-filter: blur(20px) saturate(1.15);
-  -webkit-backdrop-filter: blur(20px) saturate(1.15);
+.catalog-card {
+  border-top: 4px solid var(--cobalt);
 }
 
-.opc-glass-soft {
-  background: linear-gradient(180deg, rgba(36, 22, 14, 0.68) 0%, rgba(14, 12, 16, 0.78) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.32);
-  backdrop-filter: blur(16px) saturate(1.15);
-  -webkit-backdrop-filter: blur(16px) saturate(1.15);
+.catalog-card:nth-child(2n) {
+  border-top-color: var(--gold);
+}
+
+.catalog-card:nth-child(3n) {
+  border-top-color: var(--violet);
 }
 
 .opc-glass-menu {
-  background: linear-gradient(180deg, rgba(42, 26, 16, 0.82) 0%, rgba(12, 10, 14, 0.90) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.42);
-  backdrop-filter: blur(22px) saturate(1.15);
-  -webkit-backdrop-filter: blur(22px) saturate(1.15);
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.12);
+}
+
+/* Filled primary actions stay white-on-blue even inside light cards. */
+.bg-cobalt {
+  --snow: #ffffff;
+  color: #ffffff;
+}
+
+[data-accueil-ad-caption] {
+  --snow: #ffffff;
+  color: #ffffff;
+}
+
+.chrome-panel [class*="text-shadow"],
+.home-stage [class*="text-shadow"],
+.opc-glass [class*="text-shadow"],
+.opc-glass-menu [class*="text-shadow"],
+.opc-glass-soft [class*="text-shadow"] {
+  text-shadow: none;
+}
+
+[data-accueil-ad-caption] [class*="text-shadow"] {
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
+}
+
+.chrome-panel [class*="border-white"],
+.home-stage [class*="border-white"],
+.opc-glass [class*="border-white"],
+.opc-glass-menu [class*="border-white"] {
+  border-color: #e5e7eb;
+}
+
+.opc-glass :is(input, textarea, select),
+.home-stage :is(input, textarea, select),
+.opc-glass-menu :is(input, textarea, select) {
+  background: #f8fafc;
+  color: #111827;
+  border-color: #d1d5db;
 }
 
 /*
@@ -630,11 +665,11 @@ body {
  */
 @media (max-width: 639px) {
   .app-stage:has(#home-guide) {
-    gap: 0;
+    gap: var(--home-block-gap);
   }
 
   .app-stage:has(#home-guide) > .brand-banner {
-    padding: 0 0.2rem;
+    padding: 0 0.2rem 0.1rem;
   }
 
   .app-stage:has(#home-guide) > .brand-banner h1 {
@@ -643,14 +678,14 @@ body {
   }
 
   .app-stage:has(#home-guide) > .brand-banner p {
-    margin-top: 0.12rem;
-    line-height: 1.05;
-    font-size: clamp(0.92rem, 3.8vw, 1.28rem);
+    margin-top: 0.15rem;
+    line-height: 1.15;
+    font-size: clamp(1rem, 4vw, 1.28rem);
   }
 
   .app-stage:has(#home-guide) .chrome-panel {
-    padding-top: 0;
-    padding-bottom: 0;
+    padding-top: 0.35rem;
+    padding-bottom: 0.35rem;
   }
 
   .app-stage:has(#home-guide) .chrome-panel nav {
@@ -668,20 +703,20 @@ body {
   .app-stage:has(#home-guide) [data-neighborhood-news] {
     flex: 1 1 0%;
     align-self: stretch;
-    /* Clearer inventory than #74 — leftover still flex-grows to the chat. */
-    min-height: max(24rem, 52dvh);
+    /* Ad frame grows, but stays under the shortcut row and above chat. */
+    min-height: max(12rem, 28dvh);
   }
 
   .app-stage:has(#home-guide) [data-neighborhood-news] [data-news-body] {
     flex: 1 1 0%;
-    min-height: max(18rem, 38dvh);
+    min-height: max(10rem, 24dvh);
   }
 
   /* Headline list / loading spacer is the flex-grow inventory inside the green card. */
   .app-stage:has(#home-guide) [data-neighborhood-news] [data-news-list],
   .app-stage:has(#home-guide) [data-neighborhood-news] [data-news-spacer] {
     flex: 1 1 0%;
-    min-height: max(16rem, 32dvh);
+    min-height: max(8rem, 18dvh);
   }
 
   /*
@@ -713,30 +748,29 @@ body {
 
   /* Same specificity as the grid child rule so floors beat base height fill. */
   .app-stage:has(#home-guide) > .app-stage-main > #home-guide > .home-stage:has([data-neighborhood-news]) > [data-neighborhood-news] {
-    min-height: max(24rem, 52dvh);
+    min-height: max(12rem, 28dvh);
   }
 
-  /* Keep footer usable but snug so the card can hang down to it. */
   .safe-frame:has(#home-guide) > footer {
-    margin-top: 0;
-    padding-top: 0;
-    padding-bottom: 0;
+    margin-top: 0.15rem;
+    padding-top: 0.2rem;
+    padding-bottom: 0.15rem;
   }
 }
 
 /* Tall mobile: push Nouvelles harder into the card→footer inventory. */
 @media (max-width: 639px) and (min-height: 740px) {
   .app-stage:has(#home-guide) [data-neighborhood-news] {
-    min-height: max(28rem, 60dvh);
+    min-height: max(16rem, 34dvh);
   }
 
   .app-stage:has(#home-guide) [data-neighborhood-news] [data-news-body] {
-    min-height: max(20rem, 42dvh);
+    min-height: max(12rem, 26dvh);
   }
 
   .app-stage:has(#home-guide) [data-neighborhood-news] [data-news-list],
   .app-stage:has(#home-guide) [data-neighborhood-news] [data-news-spacer] {
-    min-height: max(18rem, 36dvh);
+    min-height: max(8rem, 16dvh);
   }
 
   .app-stage:has(#home-guide) [data-news-body]:has([data-partner-slot]) [data-news-list],
@@ -749,7 +783,7 @@ body {
   }
 
   .app-stage:has(#home-guide) > .app-stage-main > #home-guide > .home-stage:has([data-neighborhood-news]) > [data-neighborhood-news] {
-    min-height: max(28rem, 60dvh);
+    min-height: max(16rem, 34dvh);
   }
 }
 
@@ -797,16 +831,16 @@ body {
   border-radius: 9999px;
   border: 3px solid var(--avatar-ring, var(--gold));
   box-shadow:
-    0 0 0 3px #050506,
-    0 0 0 5.5px var(--avatar-ring, var(--gold)),
-    0 0 14px color-mix(in srgb, var(--avatar-ring, var(--gold)) 35%, transparent);
+    0 0 0 3px #ffffff,
+    0 0 0 6px var(--avatar-ring, var(--gold)),
+    0 8px 16px color-mix(in srgb, var(--avatar-ring, var(--gold)) 28%, transparent);
 }
 
 .avatar-disc.is-selected {
   box-shadow:
-    0 0 0 3px #050506,
-    0 0 0 6.5px var(--avatar-ring, var(--gold)),
-    0 0 22px color-mix(in srgb, var(--avatar-ring, var(--gold)) 70%, transparent);
+    0 0 0 3px #ffffff,
+    0 0 0 7px var(--avatar-ring, var(--gold)),
+    0 10px 22px color-mix(in srgb, var(--avatar-ring, var(--gold)) 45%, transparent);
 }
 
 .season-flake,

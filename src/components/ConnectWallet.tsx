@@ -7,10 +7,10 @@ import { useI18n } from "@/lib/i18n/locale";
 import { hasWalletConnectProjectId } from "@/lib/wallet";
 
 const btnClass = (compact: boolean) =>
-  `inline-flex shrink-0 items-center justify-center border border-cobalt/60 bg-cobalt font-extrabold tracking-wide text-snow shadow-[0_4px_14px_rgba(37,99,235,0.38)] transition hover:brightness-110 ${
+  `inline-flex shrink-0 items-center justify-center truncate border border-cobalt bg-white font-bold tracking-tight text-cobalt transition hover:bg-cobalt/5 ${
     compact
-      ? "min-h-[var(--home-nav-h)] w-full min-w-0 rounded-lg px-0.5 py-0 text-[9px] leading-[1.05]"
-      : "tap min-h-11 rounded-full px-3 py-0.5 text-[12px]"
+      ? "min-h-[var(--home-nav-h)] w-full min-w-0 rounded-full px-1.5 py-0 text-[12px] leading-[1.15]"
+      : "tap min-h-11 rounded-full px-3.5 py-0.5 text-sm"
   }`;
 
 function UnconfiguredConnect({ compact }: { compact: boolean }) {

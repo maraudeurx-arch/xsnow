@@ -6,31 +6,30 @@ import { useState, type ReactNode } from "react";
 import { HomeBackLink } from "@/components/HomeBackLink";
 import { useI18n } from "@/lib/i18n/locale";
 import { pathMatches } from "@/lib/paths";
-import { SERVICE_LIST } from "@/lib/services";
+import { CATALOG_SERVICE_LIST } from "@/lib/services";
 
 export const headerNavBtnClass = (active = false, compact = false) =>
-  `inline-flex shrink-0 items-center justify-center gap-0.5 rounded-lg border font-extrabold tracking-wide shadow-[0_4px_14px_rgba(37,99,235,0.28)] ${
+  `inline-flex shrink-0 items-center justify-center gap-0.5 rounded-full border font-bold tracking-tight ${
     compact
-      ? "min-h-[var(--home-nav-h)] min-w-0 px-0.5 py-0 text-[9px] leading-[1.05] whitespace-normal"
-      : "min-h-11 px-3 py-0.5 text-[12px] whitespace-nowrap"
+      ? "min-h-[var(--home-nav-h)] min-w-0 px-1 py-0.5 text-[12px] leading-[1.15] whitespace-normal"
+      : "min-h-11 px-3.5 py-1 text-base whitespace-nowrap"
   } ${
     active
-      ? "border-gold/70 bg-gold/15 text-gold"
-      : "border-cobalt/55 bg-cobalt text-snow"
+      ? "border-transparent bg-cobalt text-white shadow-[0_6px_16px_rgba(0,110,253,0.28)]"
+      : "border-slate-200 bg-white text-slate-900 shadow-none"
   }`;
 
 const itemClass = (active: boolean) =>
-  `flex min-h-11 items-center rounded-lg border px-1.5 py-1 text-left text-[11px] leading-snug font-semibold whitespace-normal ${
+  `flex min-h-11 items-center rounded-xl border px-2.5 py-1.5 text-left text-sm leading-snug font-semibold whitespace-normal ${
     active
-      ? "border-gold/70 bg-gold/10 text-gold"
-      : "border-white/10 bg-white/[0.04] text-snow/90 hover:border-violet/40 hover:bg-white/[0.07]"
+      ? "border-transparent bg-cobalt text-white"
+      : "border-slate-200 bg-white text-slate-800 hover:border-cobalt/40"
   }`;
 
 const INVOLVE = [{ href: "/vos-idees", key: "vosIdees" as const }];
 const OFFERS = [
   { href: "/mes-services", key: "mesServices" as const },
   { href: "/en-demande", key: "enDemande" as const },
-  { href: "/en-demande/?kind=car-morning", key: "carMorning" as const },
 ];
 const COMMUNITY = [{ href: "/proximite", key: "proximite" as const }];
 const SAFETY = [
@@ -108,7 +107,7 @@ export function AccueilMenu({ compact = false }: { compact?: boolean }) {
                 className={itemClass(pathMatches(pathname, item.href.split("?")[0]))}
                 onClick={close}
               >
-                {item.key === "carMorning" ? m.menu.carMorning : m.nav[item.key]}
+                {m.nav[item.key]}
               </Link>
             ))}
           </Group>
@@ -123,7 +122,7 @@ export function AccueilMenu({ compact = false }: { compact?: boolean }) {
                 {m.menu[item.key]}
               </Link>
             ))}
-            {SERVICE_LIST.map((item) => (
+            {CATALOG_SERVICE_LIST.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}

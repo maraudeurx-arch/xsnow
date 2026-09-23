@@ -22,10 +22,10 @@ import { usePlace } from "@/lib/place";
 import { useStoredList } from "@/lib/useStoredList";
 
 const fieldClass =
-  "tap w-full rounded-2xl border border-white/15 bg-white/5 px-3 text-sm font-normal text-snow outline-none focus:border-gold";
+  "tap w-full rounded-2xl border border-slate-200 bg-slate-50 px-3 text-base font-normal text-slate-900 outline-none focus:border-cobalt";
 
 const ctaClass =
-  "tap inline-flex min-h-11 w-full items-center justify-center rounded-full border border-gold/65 bg-cobalt px-3 text-center text-sm font-extrabold text-snow shadow-[0_10px_28px_rgba(0,0,0,0.55)]";
+  "tap inline-flex min-h-12 w-full items-center justify-center rounded-full border border-transparent bg-cobalt px-3 text-center text-base font-bold text-white shadow-[0_8px_18px_rgba(0,110,253,0.22)]";
 
 function formatIdeaWhen(iso: string, locale: string) {
   const time = Date.parse(iso);

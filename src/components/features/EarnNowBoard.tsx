@@ -6,12 +6,12 @@ import { ONLINE_WORK_LINKS } from "@/lib/online-work";
 import { useI18n } from "@/lib/i18n/locale";
 
 const ctaClass =
-  "tap inline-flex min-h-10 w-full items-center justify-center rounded-full border border-gold/65 bg-cobalt px-3 text-center text-[13px] font-extrabold text-snow";
+  "tap inline-flex min-h-12 w-full items-center justify-between rounded-2xl border border-slate-200 bg-white px-3.5 text-left text-[15px] font-bold text-slate-900 shadow-[0_8px_20px_rgba(15,23,42,0.05)]";
 
 const sectionTitleClass =
-  "text-left text-[12px] font-extrabold uppercase tracking-wide text-snow/90";
+  "text-left text-lg font-extrabold tracking-tight text-slate-900";
 
-const sectionLeadClass = "text-left text-[11px] leading-snug text-snow/75";
+const sectionLeadClass = "text-left text-sm leading-snug text-slate-600";
 
 export function EarnNowBoard() {
   const { m } = useI18n();
@@ -90,7 +90,7 @@ export function EarnNowBoard() {
       {copy.disclaimer ? (
         <p
           data-earn-disclaimer
-          className="text-left text-[11px] leading-snug text-snow/70"
+          className="rounded-2xl border border-sky-100 bg-sky-50 px-3 py-2.5 text-left text-sm leading-snug text-slate-700"
         >
           {copy.disclaimer}
         </p>

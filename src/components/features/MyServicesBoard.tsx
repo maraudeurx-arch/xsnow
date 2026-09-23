@@ -53,7 +53,7 @@ const fieldClass =
   "tap rounded-2xl border border-white/15 bg-white/5 px-3 text-sm font-normal text-snow outline-none focus:border-gold";
 
 const ctaClass =
-  "tap inline-flex min-h-11 w-full items-center justify-center rounded-full border border-gold/65 bg-cobalt px-3 text-center text-sm font-extrabold text-snow";
+  "catalog-card tap inline-flex min-h-[4.75rem] w-full flex-col items-start justify-end rounded-2xl border border-slate-200 bg-white px-3 py-3 text-left text-[15px] font-bold leading-snug text-slate-900 shadow-[0_8px_20px_rgba(15,23,42,0.06)]";
 
 function kindLabel(kind: OfferKind, copy: Messages["offers"]) {
   if (kind === "hotspot") return copy.typeHotspot;
@@ -311,22 +311,22 @@ function MyServicesBoardInner() {
   }
 
   const buttonLabel = {
-    "lend-car": m.mesServicesButtons.lendCar,
-    moving: m.mesServicesButtons.moving,
+    cleaning: m.mesServicesButtons.cleaning,
+    handyman: m.mesServicesButtons.handyman,
     babysitting: m.mesServicesButtons.babysitting,
     skills: m.mesServicesButtons.skills,
   } as const;
 
   return (
     <div className="space-y-6">
-      <div className="grid gap-2">
+      <div className="grid grid-cols-2 gap-3">
         {MES_SERVICE_SHORTCUTS.map((item) =>
-          item.action === "car_morning" || item.action === "skills" ? (
+          item.action === "skills" ? (
             <button
               key={item.id}
               type="button"
               className={ctaClass}
-              onClick={() => applyTemplate(item.action === "skills" ? "skills" : "car_morning", false)}
+              onClick={() => applyTemplate("skills", false)}
             >
               {buttonLabel[item.id]}
             </button>

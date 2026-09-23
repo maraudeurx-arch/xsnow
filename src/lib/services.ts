@@ -1,5 +1,7 @@
 export const SERVICE_KINDS = [
   "courses",
+  "menage",
+  "handyman",
   "demenagement",
   "garde",
   "pret",
@@ -41,6 +43,8 @@ export type ServiceDefinition = {
   rateUnits: RateUnit[];
   hasCollateral: boolean;
   storageKey: string;
+  /** Hidden from menus and boards. Route stays so older links still open. */
+  listed?: boolean;
 };
 
 export const SERVICES: Record<ServiceKind, ServiceDefinition> = {
@@ -56,6 +60,30 @@ export const SERVICES: Record<ServiceKind, ServiceDefinition> = {
     hasCollateral: false,
     storageKey: "xsnow.services.courses",
   },
+  menage: {
+    kind: "menage",
+    href: "/services/menage",
+    title: "Ménage",
+    short: "Ménage",
+    lead: "Maison, appartement ou bureau : proposez un ménage ou demandez un coup de main près de chez vous.",
+    speech:
+      "Ménage. Proposez vos heures ou demandez quelqu’un du quartier pour un intérieur propre.",
+    rateUnits: ["heure", "forfait"],
+    hasCollateral: false,
+    storageKey: "xsnow.services.menage",
+  },
+  handyman: {
+    kind: "handyman",
+    href: "/services/handyman",
+    title: "Homme à tout faire",
+    short: "Homme à tout faire",
+    lead: "Petits travaux du quotidien : réparations, montage, bricolage léger. Le tarif se convient entre voisins.",
+    speech:
+      "Homme à tout faire. Petits travaux près de chez vous : réparations, montage et coups de main.",
+    rateUnits: ["heure", "forfait"],
+    hasCollateral: false,
+    storageKey: "xsnow.services.handyman",
+  },
   demenagement: {
     kind: "demenagement",
     href: "/services/demenagement",
@@ -67,6 +95,7 @@ export const SERVICES: Record<ServiceKind, ServiceDefinition> = {
     rateUnits: ["heure", "forfait"],
     hasCollateral: false,
     storageKey: "xsnow.services.demenagement",
+    listed: false,
   },
   garde: {
     kind: "garde",
@@ -95,6 +124,9 @@ export const SERVICES: Record<ServiceKind, ServiceDefinition> = {
 };
 
 export const SERVICE_LIST = SERVICE_KINDS.map((kind) => SERVICES[kind]);
+
+/** Kinds shown in Accueil and the neighbourhood catalogs. */
+export const CATALOG_SERVICE_LIST = SERVICE_LIST.filter((item) => item.listed !== false);
 
 export const RATE_UNIT_LABEL: Record<RateUnit, string> = {
   course: "par course",
@@ -168,6 +200,62 @@ export const SERVICE_SEEDS: Record<ServiceKind, ServiceListing[]> = {
       currency: "CAD",
       rateUnit: "course",
       createdAt: "2026-09-11T09:30:00.000Z",
+    },
+  ],
+  menage: [
+    {
+      id: seedId("menage", 1),
+      service: "menage",
+      side: "offre",
+      title: "Ménage hebdomadaire — 2h",
+      description: "Je passe le mardi matin. Cuisine, salle de bain, sols. Produits fournis.",
+      neighborhood: "Hull",
+      radiusKm: 4,
+      price: 22,
+      currency: "CAD",
+      rateUnit: "heure",
+      createdAt: "2026-09-12T15:00:00.000Z",
+    },
+    {
+      id: seedId("menage", 2),
+      service: "menage",
+      side: "demande",
+      title: "Grand ménage avant visite",
+      description: "Appartement 4½, samedi matin. Je fournis l’aspirateur.",
+      neighborhood: "Gatineau",
+      radiusKm: 5,
+      price: 80,
+      currency: "CAD",
+      rateUnit: "forfait",
+      createdAt: "2026-09-13T10:00:00.000Z",
+    },
+  ],
+  handyman: [
+    {
+      id: seedId("handyman", 1),
+      service: "handyman",
+      side: "offre",
+      title: "Petits travaux le soir",
+      description: "Tablettes, tringles, robinet qui fuit. J’apporte la caisse à outils.",
+      neighborhood: "Aylmer",
+      radiusKm: 8,
+      price: 30,
+      currency: "CAD",
+      rateUnit: "heure",
+      createdAt: "2026-09-11T18:30:00.000Z",
+    },
+    {
+      id: seedId("handyman", 2),
+      service: "handyman",
+      side: "demande",
+      title: "Monter une bibliothèque",
+      description: "Meuble en kit, environ 1h30. Tournevis déjà sur place.",
+      neighborhood: "Buckingham",
+      radiusKm: 6,
+      price: 40,
+      currency: "CAD",
+      rateUnit: "forfait",
+      createdAt: "2026-09-14T13:20:00.000Z",
     },
   ],
   demenagement: [

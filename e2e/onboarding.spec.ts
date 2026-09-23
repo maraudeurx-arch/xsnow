@@ -70,7 +70,7 @@ fresh.describe("new visitor onboarding order", () => {
     await expect(page.getByRole("button", { name: "Partager" })).toBeVisible();
     await expect(page.locator("[data-home-inscrire]")).toHaveText("S’inscrire");
 
-    const cobalt = "rgb(37, 99, 235)";
+    const cobalt = "rgb(0, 110, 253)";
     for (const locator of [
       page.getByRole("link", { name: "Gagner maintenant" }),
       page.getByRole("link", { name: "Vos idées" }),

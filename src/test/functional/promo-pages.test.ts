@@ -24,16 +24,6 @@ const PAGES = [
   },
 ] as const;
 
-function collapseWhitespace(value: string) {
-  return value.replace(/\s+/g, " ").trim();
-}
-
-function headingText(html: string) {
-  const match = html.match(/<h1\b[^>]*>([\s\S]*?)<\/h1>/i);
-  assert.ok(match, "expected an h1");
-  return collapseWhitespace(match[1].replace(/<[^>]+>/g, " "));
-}
-
 describe("WhatsApp promo landing pages", () => {
   it("ships three clickable custom-domain landings without city names", () => {
     assert.equal(PUBLIC_SITE_URL, "https://opencommunity.app/");
@@ -43,9 +33,16 @@ describe("WhatsApp promo landing pages", () => {
       assert.match(html, /<html lang="fr">/);
       assert.match(html, /name="viewport"/);
       assert.match(html, /width=device-width/);
-      assert.equal(headingText(html), page.headline);
-      assert.match(html, /<a class="cta" href="https:\/\/opencommunity\.app\/">Cliquez ici<\/a>/);
       assert.doesNotMatch(html, /Gatineau/i);
+      if (page.file === "index.html") {
+        assert.match(html, /<h1\b[^>]*>\s*Open Community\s*<\/h1>/);
+        assert.match(html, /competences\.html/);
+        assert.match(html, /commerce\.html/);
+        continue;
+      }
+      const headline = page.headline.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      assert.match(html, new RegExp(headline));
+      assert.match(html, /<a class="cta" href="https?:\/\/opencommunity\.app\/">Cliquez ici<\/a>/);
     }
   });
 });

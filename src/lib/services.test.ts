@@ -11,7 +11,14 @@ import {
 
 describe("service kinds", () => {
   it("accepts the four soft-launch kinds only", () => {
-    assert.deepEqual([...SERVICE_KINDS], ["courses", "demenagement", "garde", "pret"]);
+    assert.deepEqual([...SERVICE_KINDS], [
+      "courses",
+      "menage",
+      "handyman",
+      "demenagement",
+      "garde",
+      "pret",
+    ]);
     assert.equal(isServiceKind("courses"), true);
     assert.equal(isServiceKind("car_morning"), false);
     assert.equal(isServiceKind("seed-courses-1"), false);

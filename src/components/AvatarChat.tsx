@@ -276,17 +276,17 @@ export function AvatarChat({
   return (
     <section
       id="avatar-chat"
-      className="opc-glass-soft flex min-h-0 w-full shrink-0 flex-col gap-1 rounded-xl border border-gold/25 p-1 text-left"
+      className="opc-glass-soft flex min-h-0 w-full shrink-0 flex-col gap-1.5 rounded-2xl border border-slate-200 p-2 text-left"
       aria-label={chat.title}
     >
       <div className="flex shrink-0 items-center gap-2 px-1">
-        <h2 className="text-[10px] font-extrabold tracking-wide text-snow">
+        <h2 className="text-sm font-extrabold tracking-tight text-slate-900">
           {chat.title}
         </h2>
         {messages.length === 0 && !busy ? (
           <Link
             href="/vos-idees/#form"
-            className="ml-auto text-[9px] font-extrabold text-gold hover:underline"
+            className="ml-auto text-sm font-bold text-cobalt hover:underline"
           >
             {chat.ideaPrompt}
           </Link>
@@ -307,29 +307,29 @@ export function AvatarChat({
         {messages.map((message, index) => (
           <p
             key={`${message.role}-${index}`}
-            className={`max-w-[92%] rounded-2xl px-2 py-1 text-[11px] leading-snug ${
+            className={`max-w-[92%] rounded-2xl px-3 py-1.5 text-sm leading-snug ${
               message.role === "user"
-                ? "ml-auto bg-cobalt text-snow"
-                : "mr-auto border border-white/10 bg-white/[0.06] text-snow/95"
+                ? "ml-auto bg-cobalt text-white"
+                : "mr-auto border border-slate-200 bg-slate-50 text-slate-800"
             }`}
           >
             {message.content}
           </p>
         ))}
         {busy ? (
-          <p className="mr-auto text-[11px] text-ice/70">…</p>
+          <p className="mr-auto text-sm text-slate-500">…</p>
         ) : null}
         {pendingIdea ? (
           <Link
             href="/vos-idees/#form"
-            className="inline-flex min-h-8 w-full items-center justify-center rounded-xl border border-gold/50 bg-gold/10 px-3 text-center text-[10px] font-extrabold text-gold"
+            className="inline-flex min-h-11 w-full items-center justify-center rounded-full border border-cobalt bg-white px-3 text-center text-sm font-bold text-cobalt"
             onClick={() => writeIdeaDraft(pendingIdea)}
           >
             {chat.ideaCapture}
           </Link>
         ) : null}
         {error ? (
-          <p className="text-[11px] leading-snug text-gold" role="status">
+          <p className="text-sm leading-snug text-slate-700" role="status">
             {error}
           </p>
         ) : null}
@@ -353,14 +353,14 @@ export function AvatarChat({
           placeholder={chat.placeholder}
           aria-label={chat.placeholder}
           maxLength={CHAT_TEXT_MAX}
-          className="min-h-[var(--home-nav-h)] min-w-0 flex-1 rounded-full border border-white/20 bg-[rgba(8,10,18,0.45)] px-2.5 text-[16px] text-snow outline-none placeholder:text-snow/55 backdrop-blur-sm focus:border-gold/70"
+          className="min-h-[var(--home-nav-h)] min-w-0 flex-1 rounded-full border border-slate-200 bg-slate-50 px-3 text-base text-slate-900 outline-none placeholder:text-slate-400 focus:border-cobalt"
         />
         <button
           type="button"
           className={`tap-sm inline-flex size-[var(--home-nav-h)] shrink-0 items-center justify-center rounded-full border ${
             listening
               ? "mic-listen border-gold/70 bg-gold/15 text-gold"
-              : "border-white/20 bg-white/[0.06] text-snow"
+              : "border-slate-200 bg-white text-slate-800"
           } disabled:opacity-50`}
           aria-label={listening ? chat.listening : chat.speak}
           aria-pressed={listening}
