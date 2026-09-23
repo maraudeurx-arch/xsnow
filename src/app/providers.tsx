@@ -2,7 +2,7 @@
 
 import {
   RainbowKitProvider,
-  darkTheme,
+  lightTheme,
   getDefaultConfig,
   type Locale as RainbowKitLocale,
 } from "@rainbow-me/rainbowkit";
@@ -76,9 +76,9 @@ function RainbowStack({ children }: { children: ReactNode }) {
           locale={rainbowLocale}
           initialChain={primaryChain}
           modalSize="compact"
-          theme={darkTheme({
-            accentColor: "#2563eb",
-            accentColorForeground: "#f4f6fb",
+          theme={lightTheme({
+            accentColor: "#006EFD",
+            accentColorForeground: "#ffffff",
             borderRadius: "large",
           })}
         >

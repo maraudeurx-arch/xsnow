@@ -1,19 +1,19 @@
 /**
  * Full-width CTAs on Mes services / En demande.
  * Mes services → publish flows; En demande → demand/browse flows.
+ * Car lending and moving help stay out of these catalogs.
  */
 
 export const MES_SERVICE_SHORTCUTS = [
   {
-    id: "lend-car",
-    /** Opens the local car-morning offer form on Mes services. */
-    action: "car_morning" as const,
-    href: "/mes-services?template=car-morning",
+    id: "cleaning",
+    action: "link" as const,
+    href: "/services/menage",
   },
   {
-    id: "moving",
+    id: "handyman",
     action: "link" as const,
-    href: "/services/demenagement",
+    href: "/services/handyman",
   },
   {
     id: "babysitting",
@@ -29,8 +29,12 @@ export const MES_SERVICE_SHORTCUTS = [
 
 export const EN_DEMANDE_SHORTCUTS = [
   {
-    id: "moving",
-    href: "/services/demenagement?side=demande",
+    id: "cleaning",
+    href: "/services/menage?side=demande",
+  },
+  {
+    id: "handyman",
+    href: "/services/handyman?side=demande",
   },
   {
     id: "diy",

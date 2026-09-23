@@ -4,6 +4,12 @@ Community-wide offers and ideas appear here **only after development-team approv
 
 Personal Mes services offers, En demande requests, Interac/PayPal, chat, Vos idées, and the local registration profile stay on the visitor’s device until that happens. A sanitized copy of a submitted idea (text, city, timestamp, optional OPC id — no last name or phone) is emailed to opencommunity.opc@gmail.com. That inbox is not a public catalog.
 
+## 0.4.0 — 2026-09-23
+
+- Visual pass: Inter, palette (blue #006EFD, green #22C55E, yellow #FACC15, orange #FB923C, violet #8B5CF6, gray #6B7280), light cards, larger type, outlined Connect.
+- Mes services and En demande: add Ménage / Homme à tout faire. Hide Prêter ma voiture and Aide au déménagement from the boards and Accueil menu.
+- Public catalog remains empty.
+
 ## 0.3.5 — 2026-09-17
 
 - Mes compétences: sign-up first (Mon profil), then skills + availability; publish into En demande on this device. Replaces Prêt d’outils.

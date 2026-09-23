@@ -3,7 +3,7 @@
 import { FormEvent, Suspense, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { LocalProfileBoard } from "@/components/LocalProfileBoard";
+import { SignupGate } from "@/components/SignupGate";
 import { noteOfferCreated } from "@/lib/analytics";
 import { interpolate } from "@/lib/i18n";
 import { useI18n } from "@/lib/i18n/locale";
@@ -46,14 +46,13 @@ import {
   type SkillId,
   type Weekday,
 } from "@/lib/skills";
-import { useLocalProfile } from "@/lib/useLocalProfile";
 import { useStoredList } from "@/lib/useStoredList";
 
 const fieldClass =
   "tap rounded-2xl border border-white/15 bg-white/5 px-3 text-sm font-normal text-snow outline-none focus:border-gold";
 
 const ctaClass =
-  "tap inline-flex min-h-11 w-full items-center justify-center rounded-full border border-gold/65 bg-cobalt px-3 text-center text-sm font-extrabold text-snow";
+  "catalog-card tap inline-flex min-h-[4.75rem] w-full flex-col items-start justify-end rounded-2xl border border-slate-200 bg-white px-3 py-3 text-left text-[15px] font-bold leading-snug text-slate-900 shadow-[0_8px_20px_rgba(15,23,42,0.06)]";
 
 function kindLabel(kind: OfferKind, copy: Messages["offers"]) {
   if (kind === "hotspot") return copy.typeHotspot;
@@ -100,7 +99,6 @@ function MyServicesBoardInner() {
   const { locale, m } = useI18n();
   const copy = m.offers;
   const skillsCopy = m.skills;
-  const [profile] = useLocalProfile();
   const searchParams = useSearchParams();
   const initialTemplate = parseOfferTemplateQuery(searchParams.get("template"));
   const initialSkills = initialTemplate === "skills" || searchParams.get("template") === "skills";
@@ -311,22 +309,22 @@ function MyServicesBoardInner() {
   }
 
   const buttonLabel = {
-    "lend-car": m.mesServicesButtons.lendCar,
-    moving: m.mesServicesButtons.moving,
+    cleaning: m.mesServicesButtons.cleaning,
+    handyman: m.mesServicesButtons.handyman,
     babysitting: m.mesServicesButtons.babysitting,
     skills: m.mesServicesButtons.skills,
   } as const;
 
   return (
     <div className="space-y-6">
-      <div className="grid gap-2">
+      <div className="grid grid-cols-2 gap-3">
         {MES_SERVICE_SHORTCUTS.map((item) =>
-          item.action === "car_morning" || item.action === "skills" ? (
+          item.action === "skills" ? (
             <button
               key={item.id}
               type="button"
               className={ctaClass}
-              onClick={() => applyTemplate(item.action === "skills" ? "skills" : "car_morning", false)}
+              onClick={() => applyTemplate("skills", false)}
             >
               {buttonLabel[item.id]}
             </button>
@@ -338,32 +336,28 @@ function MyServicesBoardInner() {
         )}
       </div>
 
-      {showSkills && !profile ? (
-        <div className="space-y-3" data-signup-gate>
-          <p className="text-sm leading-relaxed text-pretty text-snow/90">{m.register.gateLead}</p>
-          <LocalProfileBoard startOpen required />
-        </div>
-      ) : null}
-
-      {showSkills && profile ? (
-        <SkillsOfferForm
-          form={form}
-          error={error}
-          onPatch={patch}
-          onCancel={() => {
-            setShowSkills(false);
-            setError("");
-            setForm(carMorningDefaults());
-          }}
-          onSubmit={onSubmit}
-          labels={skillsCopy}
-          dayLabels={m.alerts.days}
-          windowFromLabel={copy.windowFrom}
-          windowToLabel={copy.windowTo}
-        />
+      {showSkills ? (
+        <SignupGate>
+          <SkillsOfferForm
+            form={form}
+            error={error}
+            onPatch={patch}
+            onCancel={() => {
+              setShowSkills(false);
+              setError("");
+              setForm(carMorningDefaults());
+            }}
+            onSubmit={onSubmit}
+            labels={skillsCopy}
+            dayLabels={m.alerts.days}
+            windowFromLabel={copy.windowFrom}
+            windowToLabel={copy.windowTo}
+          />
+        </SignupGate>
       ) : null}
 
       {showForm ? (
+      <SignupGate>
       <form onSubmit={onSubmit} className="grid gap-3">
         <h3 className="text-base font-extrabold text-gold">
           {editing ? copy.formTitleEdit : copy.formTitleNew}
@@ -555,6 +549,7 @@ function MyServicesBoardInner() {
         {saved ? <p className="text-sm text-gold">{m.services.saved}</p> : null}
         {draftSaved ? <p className="text-sm text-gold">{copy.draftSaved}</p> : null}
       </form>
+      </SignupGate>
       ) : null}
 
       {shareText ? (

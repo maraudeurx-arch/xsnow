@@ -19,7 +19,7 @@ export function HeaderProfileLabel() {
       data-header-profile
       title={profile.id}
       aria-label={interpolate(m.register.headerAria, { name: label })}
-      className="max-w-[4.8rem] truncate text-right text-[10px] font-extrabold leading-none tracking-tight text-snow [text-shadow:0_2px_10px_rgba(0,0,0,0.55)] sm:max-w-[7.5rem] sm:text-xs"
+      className="max-w-[5.5rem] truncate text-right text-xs font-bold leading-none tracking-tight text-slate-700 sm:max-w-[7.5rem] sm:text-sm"
     >
       {label}
     </span>

@@ -1,15 +1,12 @@
 import { LocalizedFeature } from "@/components/LocalizedFeature";
 import { DemandBoard } from "@/components/features/DemandBoard";
-import { SignupGate } from "@/components/SignupGate";
 
 export const metadata = { title: "Demandes" };
 
 export default function EnDemandePage() {
   return (
-    <SignupGate>
-      <LocalizedFeature feature="enDemande">
-        <DemandBoard />
-      </LocalizedFeature>
-    </SignupGate>
+    <LocalizedFeature feature="enDemande">
+      <DemandBoard />
+    </LocalizedFeature>
   );
 }

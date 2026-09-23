@@ -1,22 +1,22 @@
 import type { Metadata, Viewport } from "next";
-import { Fraunces, Outfit, Plus_Jakarta_Sans } from "next/font/google";
+import { Inter } from "next/font/google";
 import { AppChrome } from "@/components/AppChrome";
 import { Providers } from "@/app/providers";
 import { CONTENT_SECURITY_POLICY } from "@/lib/csp";
 import { PWA_ASSET_ORIGIN, assetUrl } from "@/lib/paths";
 import "./globals.css";
 
-const outfit = Outfit({
+const inter = Inter({
   variable: "--font-outfit",
   subsets: ["latin"],
 });
 
-const fraunces = Fraunces({
+const interDisplay = Inter({
   variable: "--font-fraunces",
   subsets: ["latin"],
 });
 
-const jakarta = Plus_Jakarta_Sans({
+const interBrand = Inter({
   variable: "--font-brand",
   subsets: ["latin"],
   weight: ["500", "600", "700", "800"],
@@ -57,14 +57,14 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
-  themeColor: "#050506",
+  themeColor: "#006EFD",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="fr"
-      className={`${outfit.variable} ${fraunces.variable} ${jakarta.variable} h-full antialiased`}
+      className={`${inter.variable} ${interDisplay.variable} ${interBrand.variable} h-full antialiased`}
     >
       <head>
         <meta httpEquiv="Content-Security-Policy" content={CONTENT_SECURITY_POLICY} />

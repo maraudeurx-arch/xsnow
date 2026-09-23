@@ -40,7 +40,7 @@ const pickerSize =
   "size-[min(26vw,17dvh,6.6rem)] sm:size-[min(22vw,8.5rem)]";
 
 const shortcutClass =
-  "inline-flex min-h-[var(--home-chip-h)] w-full items-center justify-center rounded-lg border border-cobalt/55 bg-cobalt px-1.5 text-center text-[10px] font-extrabold leading-tight text-snow shadow-[0_4px_14px_rgba(37,99,235,0.28)]";
+  "inline-flex min-h-[var(--home-chip-h)] w-full items-center justify-center rounded-full border border-transparent bg-cobalt px-2 text-center text-sm font-bold leading-tight text-white shadow-[0_6px_16px_rgba(0,110,253,0.22)]";
 
 export function Guide() {
   const [avatarId, setAvatarId] = useStoredAvatar();
@@ -127,13 +127,13 @@ export function Guide() {
           data-avatar-picker
         >
           <div className="w-full max-w-sm space-y-1.5 text-center">
-            <p className="text-[14px] font-extrabold leading-snug tracking-wide text-snow [text-shadow:0_2px_10px_rgba(0,0,0,0.7)] sm:text-[15px]">
+            <p className="text-2xl font-extrabold leading-tight tracking-tight text-slate-900">
               {m.guide.introTitle}
             </p>
-            <p className="text-[12px] leading-snug text-snow/90 [text-shadow:0_1px_6px_rgba(0,0,0,0.55)] sm:text-[13px]">
+            <p className="text-base leading-snug text-slate-600">
               {m.guide.introBody}
             </p>
-            <ul className="mx-auto max-w-[20rem] space-y-0.5 text-left text-[11px] leading-snug text-snow/85 sm:text-[12px]">
+            <ul className="mx-auto max-w-[20rem] space-y-1 text-left text-sm leading-snug text-slate-700">
               {m.guide.introBenefits.map((line) => (
                 <li key={line} className="flex gap-1.5">
                   <span aria-hidden className="shrink-0 text-gold">
@@ -144,7 +144,7 @@ export function Guide() {
               ))}
             </ul>
           </div>
-          <p className="mt-1 text-[13px] leading-none font-extrabold tracking-wide text-snow [text-shadow:0_2px_10px_rgba(0,0,0,0.7)] sm:text-sm">
+          <p className="mt-1 text-base leading-none font-extrabold tracking-tight text-slate-900">
             {m.guide.pickAvatar}
           </p>
           <div className="grid grid-cols-2 justify-items-center gap-x-4 gap-y-3 p-1 sm:gap-x-5 sm:gap-y-4">

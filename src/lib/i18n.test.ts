@@ -210,7 +210,7 @@ describe("vos idees copy", () => {
     assert.equal(en.neighborhoodNews.partnerSlot, "Partner space");
     assert.equal(es.neighborhoodNews.partnerSlot, "Espacio para socios");
     assert.match(fr.neighborhoodNews.partnerPlaceholder, /ferme à clics/);
-    assert.match(fr.neighborhoodNews.partnerFunding, /Grok et Cursor/);
+    assert.match(fr.neighborhoodNews.partnerFunding, /financer l’app/);
     assert.equal(fr.neighborhoodNews.partnerCtaRegister, "S’inscrire / Mes infos");
     assert.equal(en.neighborhoodNews.partnerCtaRegister, "Sign up / My info");
     assert.equal(es.neighborhoodNews.partnerCtaRegister, "Inscribirse / Mis datos");
@@ -220,7 +220,7 @@ describe("vos idees copy", () => {
     assert.match(fr.neighborhoodNews.partnerGrowRegisterName, /exemple/);
     assert.match(en.neighborhoodNews.partnerGrowRegisterName, /example/i);
     assert.match(es.neighborhoodNews.partnerGrowShareName, /ejemplo/i);
-    assert.match(fr.neighborhoodNews.partnerGrowRegisterTagline, /fausse manchette/);
+    assert.match(fr.neighborhoodNews.partnerGrowRegisterTagline, /quartier grandit/);
     assert.match(fr.neighborhoodNews.partnerGrowShareTagline, /Invite un voisin/);
     assert.equal(fr.neighborhoodNews.retry, "Réessayer");
   });
@@ -242,35 +242,27 @@ describe("gagner maintenant copy", () => {
     assert.equal(fr.guide.introBenefits.length, 4);
     assert.equal(fr.earnNow.supportTitle, "Support technique");
     assert.equal(fr.earnNow.supportCta, "Aide un agent IA");
-    assert.equal(fr.earnNow.supportDialogTitle, "En construction");
+    assert.equal(fr.earnNow.supportDialogTitle, "En construction :");
     assert.match(fr.earnNow.supportDialogBody, /agents IA/);
-    assert.match(fr.earnNow.supportDialogBody, /compensation financière/);
+    assert.match(fr.earnNow.supportDialogBody, /solliciter aide et support/);
     assert.equal(en.menu.gagnerMaintenant, "Earn now");
     assert.equal(es.menu.gagnerMaintenant, "Ganar ahora");
     assert.equal(fr.features.gagnerMaintenant.title, "");
     assert.equal(en.features.gagnerMaintenant.title, "");
     assert.equal(es.features.gagnerMaintenant.title, "");
-    assert.match(fr.features.gagnerMaintenant.lead, /pas affiliées à OPC \/ Open Community/);
-    assert.match(fr.features.gagnerMaintenant.lead, /téléphone/);
-    assert.match(fr.features.gagnerMaintenant.lead, /gagner de l’argent/);
-    assert.match(en.features.gagnerMaintenant.lead, /not affiliated with OPC \/ Open Community/);
-    assert.match(en.features.gagnerMaintenant.lead, /phone/);
-    assert.match(en.features.gagnerMaintenant.lead, /earn money/);
-    assert.match(es.features.gagnerMaintenant.lead, /no están afiliadas a OPC \/ Open Community/);
-    assert.match(es.features.gagnerMaintenant.lead, /teléfono/);
-    assert.match(es.features.gagnerMaintenant.lead, /ganar dinero/);
-    for (const lead of [
-      fr.features.gagnerMaintenant.lead,
-      en.features.gagnerMaintenant.lead,
-      es.features.gagnerMaintenant.lead,
-    ]) {
-      const sentences = lead.split(/(?<=\.)\s+/).filter(Boolean);
-      assert.ok(sentences.length >= 2 && sentences.length <= 3, lead);
-    }
+    assert.equal(fr.features.gagnerMaintenant.lead, "");
+    assert.equal(en.features.gagnerMaintenant.lead, "");
+    assert.equal(es.features.gagnerMaintenant.lead, "");
+    assert.match(fr.earnNow.disclaimer, /pas affiliées à OPC/);
+    assert.match(fr.earnNow.disclaimer, /Aucun revenu/);
+    assert.match(en.earnNow.disclaimer, /not affiliated with OPC/);
+    assert.match(en.earnNow.disclaimer, /No income is guaranteed/);
+    assert.match(es.earnNow.disclaimer, /no están afiliadas a OPC/);
+    assert.match(es.earnNow.disclaimer, /no garantiza ningún ingreso/);
     assert.equal("gagner" in fr, false);
     assert.equal("gagner" in en, false);
     assert.equal("gagner" in es, false);
-    assert.doesNotMatch(fr.features.gagnerMaintenant.lead, /Trois chemins/);
+    assert.doesNotMatch(fr.earnNow.disclaimer, /Trois chemins/);
     assert.deepEqual(Object.keys(en.features), Object.keys(fr.features));
     assert.deepEqual(Object.keys(es.features), Object.keys(fr.features));
     assert.match(fr.systemPrompt, /Gagner maintenant/);

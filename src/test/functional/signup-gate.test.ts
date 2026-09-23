@@ -11,8 +11,16 @@ function page(rel: string) {
   return join(app, rel, "page.tsx");
 }
 
-/** Only offer / request a service requires signup. Exploration stays open. */
-const MUST_GATE = ["mes-services", "en-demande"];
+/**
+ * Catalog pages stay browsable. Signup happens only when offering, requesting,
+ * or publishing skills — inside the boards, not around the whole page.
+ */
+const BROWSABLE_CATALOGS = ["mes-services", "en-demande"];
+
+const GATED_ACTIONS = [
+  ["components/features/MyServicesBoard.tsx", "MyServicesBoard"],
+  ["components/features/DemandBoard.tsx", "DemandBoard"],
+] as const;
 
 const MUST_STAY_OPEN = [
   "vie-privee",
@@ -41,11 +49,21 @@ const MUST_STAY_OPEN = [
 
 describe("SignupGate coverage", () => {
   it("requires registration only to offer or request a service", () => {
-    for (const rel of MUST_GATE) {
+    for (const rel of BROWSABLE_CATALOGS) {
       const file = page(rel);
       assert.equal(existsSync(file), true, rel);
       const src = readFileSync(file, "utf8");
-      assert.match(src, /SignupGate/, `${rel} must wrap SignupGate`);
+      assert.doesNotMatch(
+        src,
+        /SignupGate/,
+        `${rel} must stay browsable without a page-level SignupGate`,
+      );
+    }
+    for (const [rel, label] of GATED_ACTIONS) {
+      const file = join(root, rel);
+      assert.equal(existsSync(file), true, rel);
+      const src = readFileSync(file, "utf8");
+      assert.match(src, /<SignupGate>/, `${label} must wrap SignupGate around publish actions`);
     }
   });
 

@@ -8,7 +8,7 @@ test.describe("Open Community soft-launch smoke", () => {
   test("home loads with the Open Community banner and avatar rings", async ({ page }) => {
     await page.goto("./");
     await expect(page.getByRole("heading", { name: "Open Community", level: 1 })).toBeVisible();
-    await expect(page.getByText("Monétisé Vous!")).toBeVisible();
+    await expect(page.getByText("Monétisez-vous !")).toBeVisible();
     await expect(page.getByRole("button", { name: /Connect/ })).toBeVisible();
     await expect(page.getByText("Choisis ton avatar")).toBeVisible();
 
@@ -26,19 +26,23 @@ test.describe("Open Community soft-launch smoke", () => {
   test("fresh storage: Mes services and En demande show four CTAs and stay empty", async ({ page }) => {
     await page.goto("./mes-services/");
     await expect(page.getByRole("heading", { name: "Mes services", level: 2 })).toBeVisible();
-    await expect(page.getByRole("button", { name: "Prêter ma voiture" })).toBeVisible();
-    await expect(page.getByRole("link", { name: "Aider au déménagement" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Ménage" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Homme à tout faire" })).toBeVisible();
     await expect(page.getByRole("link", { name: "Baby-sitting" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Mes compétences" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Prêter ma voiture" })).toHaveCount(0);
+    await expect(page.getByRole("link", { name: "Aider au déménagement" })).toHaveCount(0);
     await expect(page.getByRole("link", { name: "Prêt d’outils" })).toHaveCount(0);
     await expect(page.getByText("Publiée")).toHaveCount(0);
     await expect(page.getByText(/Publiez ce que vous offrez/)).toHaveCount(0);
     await expect(page.getByText("Modèles")).toHaveCount(0);
 
-    await page.getByRole("link", { name: "En demande" }).click();
+    await page.getByRole("link", { name: "Demandes" }).click();
     await expect(page).toHaveURL(/en-demande/);
-    await expect(page.getByRole("heading", { name: "En demande", level: 2 })).toBeVisible();
-    await expect(page.getByRole("link", { name: "Aide au déménagement" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Demandes", level: 2 })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Ménage" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Homme à tout faire" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Aide au déménagement" })).toHaveCount(0);
     await expect(page.getByRole("link", { name: "Aide au bricolage" })).toBeVisible();
     await expect(page.getByRole("link", { name: "Co-voiturage" })).toBeVisible();
     await expect(page.getByRole("link", { name: "Prêt d’équipement" })).toBeVisible();
@@ -65,17 +69,17 @@ test.describe("Open Community soft-launch smoke", () => {
     await page.getByRole("checkbox", { name: "Autres" }).check();
     await page.getByPlaceholder("Précise ta compétence").fill("<script>alert(1)</script>Soudure");
     await page.getByRole("checkbox", { name: "Samedi" }).check();
-    await page.getByRole("button", { name: "Publier dans En demande" }).click();
+    await page.getByRole("button", { name: "Publier dans Demandes" }).click();
 
     const stored = await page.evaluate(() => window.localStorage.getItem("xsnow.offers"));
     expect(stored).toContain("skills");
     expect(stored).toContain("Soudure");
     expect(stored).not.toMatch(/<script/i);
 
-    await page.getByRole("link", { name: "En demande" }).first().click();
+    await page.getByRole("link", { name: "Demandes" }).first().click();
     await expect(page).toHaveURL(/en-demande/);
     await expect(page.getByText("Mécanicien, Soudure")).toBeVisible();
-    await expect(page.getByText("Compétences")).toBeVisible();
+    await expect(page.getByText("Compétences", { exact: true })).toBeVisible();
   });
 
   test("Gagner maintenant hides the heading, explains unaffiliated platforms, and keeps four apply links", async ({
@@ -85,8 +89,8 @@ test.describe("Open Community soft-launch smoke", () => {
     await page.goto("./gagner-maintenant/");
     await expect(page.getByRole("heading", { name: "Gagner maintenant", level: 2 })).toHaveCount(0);
     await expect(page.locator("[data-home-back]")).toBeVisible();
-    await expect(page.getByText(/pas affiliées à OPC \/ Open Community/)).toBeVisible();
-    await expect(page.getByText(/travailler depuis son téléphone/)).toBeVisible();
+    await expect(page.getByText(/pas affiliées à OPC/)).toBeVisible();
+    await expect(page.getByText(/Aucun revenu/)).toBeVisible();
 
     for (const link of PAID_MISSION_LINKS) {
       const cta = page.getByRole("link", { name: link.label, exact: true });
@@ -156,7 +160,7 @@ test.describe("Open Community soft-launch smoke", () => {
   test("a Vos idées submit stays on-device when the owner email cannot be sent", async ({ page }) => {
     await seedLocalProfile(page);
     await stubIdeaInbox(page, "failed");
-    const idea = `Hors ligne OPC-e2e ${Date.now()}`;
+    const idea = `Hors ligne voisin ${Date.now()}`;
     await page.goto("./vos-idees/");
     await page.getByLabel("Ton idée").fill(idea);
     await page.getByRole("button", { name: "Envoyer l’idée" }).click();
