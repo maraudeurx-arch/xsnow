@@ -23,20 +23,22 @@ describe("board shortcuts", () => {
     );
   });
 
-  it("mirrors ménage and homme à tout faire on En demande without moving help", () => {
-    assert.equal(EN_DEMANDE_SHORTCUTS.length, 5);
+  it("mirrors ménage and homme à tout faire on En demande without moving or DIY help", () => {
+    assert.equal(EN_DEMANDE_SHORTCUTS.length, 4);
     assert.deepEqual(
       EN_DEMANDE_SHORTCUTS.map((item) => item.id),
-      ["cleaning", "handyman", "diy", "carpool", "equipment"],
+      ["cleaning", "handyman", "carpool", "equipment"],
     );
     assert.match(EN_DEMANDE_SHORTCUTS[0]?.href ?? "", /menage\?side=demande/);
     assert.match(EN_DEMANDE_SHORTCUTS[1]?.href ?? "", /handyman\?side=demande/);
-    assert.match(EN_DEMANDE_SHORTCUTS[2]?.href ?? "", /pret\?side=demande/);
-    assert.match(EN_DEMANDE_SHORTCUTS[2]?.href ?? "", /bricolage/);
-    assert.match(EN_DEMANDE_SHORTCUTS[3]?.href ?? "", /kind=car-morning/);
-    assert.match(EN_DEMANDE_SHORTCUTS[4]?.href ?? "", /pret\?side=demande/);
+    assert.match(EN_DEMANDE_SHORTCUTS[2]?.href ?? "", /kind=car-morning/);
+    assert.match(EN_DEMANDE_SHORTCUTS[3]?.href ?? "", /pret\?side=demande/);
     assert.equal(
-      EN_DEMANDE_SHORTCUTS.some((item) => item.id === "moving"),
+      EN_DEMANDE_SHORTCUTS.some((item) => item.id === "moving" || item.id === "diy"),
+      false,
+    );
+    assert.equal(
+      EN_DEMANDE_SHORTCUTS.some((item) => /bricolage/i.test(item.href)),
       false,
     );
   });

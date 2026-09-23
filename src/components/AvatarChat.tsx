@@ -276,7 +276,7 @@ export function AvatarChat({
   return (
     <section
       id="avatar-chat"
-      className="opc-glass-soft flex min-h-0 w-full shrink-0 flex-col gap-1.5 rounded-2xl border border-slate-200 p-2 text-left"
+      className="opc-glass-soft flex h-full min-h-[8.75rem] w-full flex-col justify-end gap-2 rounded-2xl border border-slate-200 px-2.5 py-2.5 text-left"
       aria-label={chat.title}
     >
       <div className="flex shrink-0 items-center gap-2 px-1">
@@ -353,7 +353,7 @@ export function AvatarChat({
           placeholder={chat.placeholder}
           aria-label={chat.placeholder}
           maxLength={CHAT_TEXT_MAX}
-          className="min-h-[var(--home-nav-h)] min-w-0 flex-1 rounded-full border border-slate-200 bg-slate-50 px-3 text-base text-slate-900 outline-none placeholder:text-slate-400 focus:border-cobalt"
+          className="min-h-12 min-w-0 flex-1 rounded-full border border-slate-200 bg-slate-50 px-3.5 text-base text-slate-900 outline-none placeholder:text-slate-400 focus:border-cobalt"
         />
         <button
           type="button"

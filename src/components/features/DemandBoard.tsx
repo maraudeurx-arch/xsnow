@@ -169,7 +169,6 @@ function DemandBoardInner() {
   const buttonLabel = {
     cleaning: m.enDemandeButtons.cleaning,
     handyman: m.enDemandeButtons.handyman,
-    diy: m.enDemandeButtons.diy,
     carpool: m.enDemandeButtons.carpool,
     equipment: m.enDemandeButtons.equipment,
   } as const;
