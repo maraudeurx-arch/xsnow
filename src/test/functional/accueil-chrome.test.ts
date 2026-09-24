@@ -52,7 +52,7 @@ describe("Accueil chrome: cobalt, green slogans, ring pills, Parchemin glass", (
     const glass = css.slice(start, end);
     assert.match(glass, /rgba\(245, 242, 235, 0\.72\)/);
     assert.match(glass, /backdrop-filter: blur\(16px\);/);
-    assert.match(glass, /-webkit-backdrop-filter: blur\(16px\);/);
+    assert.doesNotMatch(glass, /-webkit-backdrop-filter:/);
     assert.match(glass, /\.chrome-panel/);
     assert.match(glass, /\.home-stage/);
     assert.match(glass, /\.opc-glass,/);
