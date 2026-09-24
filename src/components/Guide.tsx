@@ -40,7 +40,7 @@ const pickerSize =
   "size-[min(26vw,17dvh,6.6rem)] sm:size-[min(22vw,8.5rem)]";
 
 const shortcutClass =
-  "inline-flex min-h-[var(--home-chip-h)] w-full items-center justify-center rounded-full border border-transparent bg-cobalt px-2 text-center text-sm font-bold leading-tight text-white shadow-[0_6px_16px_rgba(0,110,253,0.22)]";
+  "inline-flex min-h-[var(--home-chip-h)] w-full items-center justify-center rounded-full border border-transparent bg-cobalt px-1 text-center text-[length:var(--home-chip-font)] font-bold leading-none text-white shadow-[0_3px_8px_rgba(0,110,253,0.18)]";
 
 export function Guide() {
   const [avatarId, setAvatarId] = useStoredAvatar();

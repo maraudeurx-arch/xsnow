@@ -18,14 +18,16 @@
   --safe-left: env(safe-area-inset-left, 0px);
   --home-logo: 2.15rem;
   --home-nav-h: 2.75rem;
-  --home-chip-h: 2.75rem;
+  /* Accueil blue chips are half the previous 2.75rem / 14px pills. */
+  --home-chip-h: 1.375rem;
+  --home-chip-font: 0.5rem;
   --home-avatar: min(12vw, 6dvh, 2.75rem);
   --home-gap: 0.4rem;
   --home-block-gap: 0.35rem;
   --home-stack-gap: 0.4rem;
-  --home-news-chat-gap: 0.35rem;
+  --home-news-chat-gap: 0.125rem;
   --home-nav-gap: 0.35rem;
-  --home-chip-gap: 0.4rem;
+  --home-chip-gap: 0.2rem;
   --home-card-pad-x: 0.7rem;
   --home-card-pad-y: 0.55rem;
   --home-avatar-ring: 0.22rem;
@@ -37,14 +39,15 @@
   :root {
     --home-logo: 4.5rem;
     --home-nav-h: 2.75rem;
-    --home-chip-h: 2.75rem;
+    --home-chip-h: 1.375rem;
+    --home-chip-font: 0.5rem;
     --home-avatar: min(16vw, 10dvh, 4.5rem);
     --home-gap: 0.7rem;
     --home-block-gap: 0.55rem;
     --home-stack-gap: 0.75rem;
-    --home-news-chat-gap: 0.5rem;
+    --home-news-chat-gap: 0.15rem;
     --home-nav-gap: 0.5rem;
-    --home-chip-gap: 0.65rem;
+    --home-chip-gap: 0.325rem;
     --home-card-pad-x: 1rem;
     --home-card-pad-y: 0.85rem;
   }
@@ -55,14 +58,15 @@
   :root {
     --home-logo: 2.05rem;
     --home-nav-h: 2.75rem;
-    --home-chip-h: 2.5rem;
+    --home-chip-h: 1.25rem;
+    --home-chip-font: 0.5rem;
     --home-avatar: min(11vw, 5.3dvh, 2.4rem);
     --home-gap: 0.28rem;
     --home-block-gap: 0.25rem;
     --home-stack-gap: 0.28rem;
-    --home-news-chat-gap: 0.2rem;
+    --home-news-chat-gap: 0.1rem;
     --home-nav-gap: 0.25rem;
-    --home-chip-gap: 0.28rem;
+    --home-chip-gap: 0.14rem;
     --home-card-pad-x: 0.55rem;
     --home-card-pad-y: 0.4rem;
     --home-avatar-ring: 0.2rem;
@@ -73,14 +77,15 @@
   :root {
     --home-logo: 1.85rem;
     --home-nav-h: 2.5rem;
-    --home-chip-h: 2.4rem;
+    --home-chip-h: 1.2rem;
+    --home-chip-font: 0.5rem;
     --home-avatar: min(10vw, 4.7dvh, 2.2rem);
     --home-gap: 0.2rem;
     --home-block-gap: 0.16rem;
     --home-stack-gap: 0.2rem;
-    --home-news-chat-gap: 0.16rem;
+    --home-news-chat-gap: 0.08rem;
     --home-nav-gap: 0.2rem;
-    --home-chip-gap: 0.2rem;
+    --home-chip-gap: 0.1rem;
     --home-card-pad-x: 0.45rem;
     --home-card-pad-y: 0.28rem;
     --home-avatar-ring: 0.16rem;
@@ -282,6 +287,16 @@ body {
   justify-content: flex-start;
   min-height: 0;
   padding: 0;
+}
+
+/* Accueil only: wordmark + header mark render black. Other pages keep the white logo. */
+.app-stage:has(#home-guide) > .brand-banner h1 {
+  color: #000000;
+  text-shadow: none;
+}
+
+.app-stage:has(#home-guide) .logo-rock {
+  filter: brightness(0);
 }
 
 .app-stage-main {
