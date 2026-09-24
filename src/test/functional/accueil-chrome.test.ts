@@ -10,7 +10,7 @@ function read(rel: string) {
   return readFileSync(join(srcDir, rel), "utf8");
 }
 
-describe("Accueil chrome: cobalt, green slogans, ring pills, Parchemin glass", () => {
+describe("Accueil chrome: cobalt mark, green header slogan, Parchemin glass", () => {
   const css = read("app/globals.css");
 
   it("paints the Accueil wordmark and logo cobalt and leaves other pages alone", () => {
@@ -20,10 +20,15 @@ describe("Accueil chrome: cobalt, green slogans, ring pills, Parchemin glass", (
     assert.doesNotMatch(css, /\.logo-rock \{\s*filter: brightness\(0\);/);
   });
 
-  it("colors Accueil header and footer slogans with the green --gold token", () => {
+  it("colors the Accueil header slogan green and the footer marquee cobalt", () => {
     assert.match(css, /\.app-stage:has\(#home-guide\) > \.brand-banner p \{\s*color: var\(--gold\);/);
-    assert.match(css, /\.safe-frame:has\(#home-guide\) \.footer-slogan-line \{\s*color: var\(--gold\);/);
+    assert.match(
+      css,
+      /\.footer-slogan-line \{\s*font-size: var\(--brand-slogan\);\s*color: var\(--cobalt\);/,
+    );
+    assert.doesNotMatch(css, /\.footer-slogan-line[^{]*\{[^}]*color:\s*var\(--gold\)/);
     assert.match(css, /--gold: #22c55e;/);
+    assert.match(css, /--cobalt: #006efd;/);
     assert.match(css, /animation: footer-slogan-slide 36s linear infinite;/);
   });
 
@@ -45,11 +50,12 @@ describe("Accueil chrome: cobalt, green slogans, ring pills, Parchemin glass", (
     assert.match(css, /--home-nav-h: 2\.3rem;/);
   });
 
-  it("frosts only Accueil surface blocks in Parchemin", () => {
-    const start = css.indexOf("Accueil surfaces: Parchemin frosted glass");
-    const end = css.indexOf("Accueil header nav pills");
+  it("frosts chrome shells in Parchemin on every page", () => {
+    const start = css.indexOf("Shared chrome shells: Parchemin frosted glass");
+    const end = css.indexOf("Filled primary actions stay white-on-blue");
     assert.ok(start > 0 && end > start);
     const glass = css.slice(start, end);
+    assert.doesNotMatch(glass, /#home-guide/);
     assert.match(glass, /rgba\(245, 242, 235, 0\.72\)/);
     assert.match(glass, /backdrop-filter: blur\(16px\);/);
     assert.doesNotMatch(glass, /-webkit-backdrop-filter:/);
@@ -57,9 +63,12 @@ describe("Accueil chrome: cobalt, green slogans, ring pills, Parchemin glass", (
     assert.match(glass, /\.home-stage/);
     assert.match(glass, /\.opc-glass,/);
     assert.match(glass, /\.opc-glass-menu/);
-    assert.match(glass, /\.app-stage:has\(#home-guide\) #avatar-chat/);
-    assert.match(glass, /\.safe-frame:has\(#home-guide\) > footer/);
-    assert.doesNotMatch(glass, /opc-glass-soft/);
+    assert.match(glass, /footer\.opc-glass-soft/);
+    assert.match(glass, /\.chrome-shell/);
+    assert.doesNotMatch(glass, /\n\.opc-glass-soft/);
+    assert.doesNotMatch(glass, /#avatar-chat/);
+    assert.match(css, /\.opc-glass-soft,\s*\n\.opc-glass-menu \{\s*[^}]*background:\s*#ffffff;/);
+    assert.doesNotMatch(css, /#avatar-chat[^{]*\{[^}]*rgba\(245,\s*242,\s*235/);
     assert.match(css, /--home-chip-h: 1\.375rem;/);
   });
 });

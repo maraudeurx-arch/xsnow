@@ -16,12 +16,12 @@ export function FeaturePanel({
 }) {
   return (
     <section
-      className={`opc-glass w-full max-w-xl rounded-3xl text-center ${
+      className={`opc-glass chrome-shell w-full max-w-xl rounded-3xl text-center ${
         compact ? "p-3 sm:p-5" : "p-4 sm:p-6"
       }`}
     >
       {homeBack ? (
-        <div className="opc-glass-soft sticky top-0 z-10 -mx-1 mb-3 rounded-2xl py-1">
+        <div className="chrome-shell sticky top-0 z-10 -mx-1 mb-3 rounded-2xl py-1">
           <HomeBackLink />
         </div>
       ) : null}

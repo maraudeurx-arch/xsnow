@@ -30,7 +30,7 @@ export function AppChrome({ children }: { children: ReactNode }) {
         </header>
 
         <div className="relative z-30 shrink-0 overflow-visible">
-          <div className="chrome-panel overflow-visible rounded-2xl px-2 py-1.5">
+          <div className="chrome-panel chrome-shell overflow-visible rounded-2xl px-2 py-1.5">
             <div className="flex w-full items-center justify-between gap-2">
               <HeaderPlaceWithAvatar />
               <div className="inline-flex min-w-0 items-center gap-1.5">

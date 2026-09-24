@@ -61,15 +61,12 @@ export const en: Messages = {
     ],
   },
   guide: {
-    introTitle: "Open Community",
-    introBody:
-      "Your neighbourhood mutual-aid app: offer a service, get help, earn a little — no fake promises.",
+    introTitle: "Open Community (OPC) is:",
     introBenefits: [
-      "Offer a service to neighbours (errands, chores, care…).",
-      "Ask for help nearby.",
-      "Ways to earn from your phone.",
-      "Free tools: lost phone, proximity alerts.",
+      "mutual aid between neighbours",
+      "the chance to earn using only a phone and an internet connection.",
     ],
+    introDisclaimer: "No income is guaranteed.",
     pickAvatar: "Choose your avatar",
     changeAvatar: "Change avatar",
     replay: "Replay intro",

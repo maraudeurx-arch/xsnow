@@ -123,31 +123,34 @@ export function Guide() {
         <div
           role="group"
           aria-label={m.guide.pickAvatar}
-          className="home-stage flex min-h-0 w-full flex-col items-center gap-2 rounded-2xl px-3 py-3"
+          className="home-stage flex h-full min-h-0 w-full flex-col items-center justify-center gap-4 overflow-y-auto rounded-2xl px-4 py-4"
           data-avatar-picker
         >
-          <div className="w-full max-w-sm space-y-1.5 text-center">
-            <p className="text-2xl font-extrabold leading-tight tracking-tight text-slate-900">
+          <div className="w-full max-w-sm space-y-2 text-center">
+            <p className="text-xl font-extrabold leading-tight tracking-tight text-slate-900 sm:text-2xl">
               {m.guide.introTitle}
             </p>
-            <p className="text-base leading-snug text-slate-600">
-              {m.guide.introBody}
-            </p>
-            <ul className="mx-auto max-w-[20rem] space-y-1 text-left text-sm leading-snug text-slate-700">
+            <ul className="mx-auto max-w-[22rem] space-y-1 text-left text-sm leading-snug text-slate-700">
               {m.guide.introBenefits.map((line) => (
                 <li key={line} className="flex gap-1.5">
                   <span aria-hidden className="shrink-0 text-gold">
-                    •
+                    –
                   </span>
                   <span>{line}</span>
                 </li>
               ))}
             </ul>
+            <p className="text-sm leading-snug text-slate-600">
+              * {m.guide.introDisclaimer}
+            </p>
           </div>
-          <p className="mt-1 text-base leading-none font-extrabold tracking-tight text-slate-900">
+          <p className="text-base leading-none font-extrabold tracking-tight text-slate-900">
             {m.guide.pickAvatar}
           </p>
-          <div className="grid grid-cols-2 justify-items-center gap-x-4 gap-y-3 p-1 sm:gap-x-5 sm:gap-y-4">
+          <div
+            data-avatar-grid
+            className="mx-auto grid w-fit max-w-full grid-cols-2 place-items-center gap-x-6 gap-y-4 p-1 sm:gap-x-8 sm:gap-y-5"
+          >
             {AVATARS.map((avatar) => {
               const selected = avatar.id === avatarId;
               const label = m.guide.avatars[avatar.id];

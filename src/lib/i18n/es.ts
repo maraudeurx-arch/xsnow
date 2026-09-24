@@ -61,15 +61,12 @@ export const es: Messages = {
     ],
   },
   guide: {
-    introTitle: "Open Community",
-    introBody:
-      "La app de ayuda mutua de tu barrio: ofrece un servicio, pide ayuda, gana un poco — sin promesas falsas.",
+    introTitle: "Open Community (OPC) es:",
     introBenefits: [
-      "Ofrece un servicio a vecinos (recados, trabajos, cuidado…).",
-      "Pide ayuda cerca de ti.",
-      "Pistas para ganar desde el teléfono.",
-      "Gratis: teléfono perdido y alertas de cercanos.",
+      "la ayuda mutua entre vecinos",
+      "la posibilidad de ganar solo con un teléfono y una conexión a internet.",
     ],
+    introDisclaimer: "Ningún ingreso está garantizado.",
     pickAvatar: "Elige tu avatar",
     changeAvatar: "Cambiar de avatar",
     replay: "Reescuchar la intro",
