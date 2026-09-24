@@ -276,17 +276,17 @@ export function AvatarChat({
   return (
     <section
       id="avatar-chat"
-      className="opc-glass-soft flex w-full shrink-0 flex-col gap-0.5 rounded-2xl border border-slate-200 px-2.5 py-1 text-left"
+      className="opc-glass-soft flex w-full shrink-0 flex-col gap-px rounded-xl border border-slate-200 px-1.5 py-px text-left"
       aria-label={chat.title}
     >
-      <div className="flex shrink-0 items-center gap-2 px-1">
-        <h2 className="text-sm leading-tight font-extrabold tracking-tight text-slate-900">
+      <div className="flex h-3.5 shrink-0 items-center gap-1.5 overflow-hidden px-0.5">
+        <h2 className="min-w-0 truncate text-[11px] leading-none font-extrabold tracking-tight text-slate-900">
           {chat.title}
         </h2>
         {messages.length === 0 && !busy ? (
           <Link
             href="/vos-idees/#form"
-            className="ml-auto text-sm leading-tight font-bold text-cobalt hover:underline"
+            className="ml-auto shrink-0 whitespace-nowrap text-[11px] leading-none font-bold text-cobalt hover:underline"
           >
             {chat.ideaPrompt}
           </Link>
@@ -298,10 +298,10 @@ export function AvatarChat({
 
       <div
         ref={listRef}
-        className={`min-h-0 space-y-1 overflow-y-auto px-1 ${
+        className={`min-h-0 space-y-0.5 overflow-y-auto px-0.5 ${
           messages.length > 0 || busy || pendingIdea || error
-            ? "flex-1 py-0.5 max-h-[min(22dvh,8.5rem)]"
-            : "h-0 overflow-hidden p-0"
+            ? "max-h-16 py-0.5"
+            : "hidden"
         }`}
       >
         {messages.map((message, index) => (
@@ -336,7 +336,7 @@ export function AvatarChat({
       </div>
 
       <form
-        className="flex shrink-0 items-center gap-1.5"
+        className="flex shrink-0 items-center gap-1"
         onSubmit={(event) => {
           event.preventDefault();
           forgetRecognition();
@@ -353,11 +353,11 @@ export function AvatarChat({
           placeholder={chat.placeholder}
           aria-label={chat.placeholder}
           maxLength={CHAT_TEXT_MAX}
-          className="min-h-11 min-w-0 flex-1 rounded-full border border-slate-200 bg-slate-50 px-3.5 text-base text-slate-900 outline-none placeholder:text-slate-400 focus:border-cobalt"
+          className="h-7 min-h-0 min-w-0 flex-1 rounded-full border border-slate-200 bg-slate-50 px-2.5 text-[13px] leading-none text-slate-900 outline-none placeholder:text-slate-400 focus:border-cobalt"
         />
         <button
           type="button"
-          className={`tap-sm inline-flex size-[var(--home-nav-h)] shrink-0 items-center justify-center rounded-full border ${
+          className={`inline-flex size-7 min-h-0 min-w-0 shrink-0 items-center justify-center rounded-full border ${
             listening
               ? "mic-listen border-gold/70 bg-gold/15 text-gold"
               : "border-slate-200 bg-white text-slate-800"
@@ -371,7 +371,7 @@ export function AvatarChat({
         </button>
         <button
           type="submit"
-          className="tap-sm inline-flex size-[var(--home-nav-h)] shrink-0 items-center justify-center rounded-full border border-cobalt/55 bg-cobalt text-snow disabled:opacity-50"
+          className="inline-flex size-7 min-h-0 min-w-0 shrink-0 items-center justify-center rounded-full border border-cobalt/55 bg-cobalt text-snow disabled:opacity-50"
           aria-label={chat.send}
           disabled={busy}
         >
@@ -384,7 +384,7 @@ export function AvatarChat({
 
 function MicIcon() {
   return (
-    <svg aria-hidden viewBox="0 0 16 16" className="h-4 w-4 fill-current">
+    <svg aria-hidden viewBox="0 0 16 16" className="h-3 w-3 fill-current">
       <path d="M8 1.4A2.3 2.3 0 0 0 5.7 3.7v3.1a2.3 2.3 0 1 0 4.6 0V3.7A2.3 2.3 0 0 0 8 1.4Zm-4.4 5.4a.7.7 0 0 0-1.4 0 5.1 5.1 0 0 0 4.4 5v1.5H5.2a.7.7 0 0 0 0 1.4h5.6a.7.7 0 1 0 0-1.4H8.7v-1.5a5.1 5.1 0 0 0 4.4-5 .7.7 0 0 0-1.4 0 3.7 3.7 0 1 1-7.4 0Z" />
     </svg>
   );
@@ -392,7 +392,7 @@ function MicIcon() {
 
 function SendIcon() {
   return (
-    <svg aria-hidden viewBox="0 0 16 16" className="h-4 w-4 fill-current">
+    <svg aria-hidden viewBox="0 0 16 16" className="h-3 w-3 fill-current">
       <path d="M2.1 8.05 13.4 2.4c.55-.28 1.12.3.84.84L8.6 14.5a.7.7 0 0 1-1.3-.08L6.1 9.9 2.18 8.7a.7.7 0 0 1-.08-1.3Z" />
     </svg>
   );

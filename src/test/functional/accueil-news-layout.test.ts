@@ -35,4 +35,17 @@ describe("Accueil ads-only full-bleed layout", () => {
     assert.match(chat, /id="avatar-chat"/);
     assert.match(chat, /shrink-0/);
   });
+
+  it("halves Accueil chips and keeps the avatar field in a short band", () => {
+    const css = read("app/globals.css");
+    const guide = read("components/Guide.tsx");
+    const chat = read("components/AvatarChat.tsx");
+    assert.match(css, /--home-chip-h: 1\.375rem;/);
+    assert.match(css, /--home-chip-font: 0\.5rem;/);
+    assert.match(guide, /text-\[length:var\(--home-chip-font\)\]/);
+    assert.match(chat, /h-7 /);
+    assert.match(chat, /Écris à ton avatar|chat\.placeholder/);
+    assert.match(css, /color: #000000;/);
+    assert.match(css, /\.logo-rock \{\s*filter: brightness\(0\);/);
+  });
 });
