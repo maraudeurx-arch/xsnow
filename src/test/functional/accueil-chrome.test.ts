@@ -57,6 +57,8 @@ describe("Accueil chrome: cobalt, green slogans, ring pills, Parchemin glass", (
     assert.match(glass, /\.home-stage/);
     assert.match(glass, /\.opc-glass,/);
     assert.match(glass, /\.opc-glass-menu/);
+    assert.match(glass, /\.app-stage:has\(#home-guide\) #avatar-chat/);
+    assert.match(glass, /\.safe-frame:has\(#home-guide\) > footer/);
     assert.doesNotMatch(glass, /opc-glass-soft/);
     assert.match(css, /--home-chip-h: 1\.375rem;/);
   });
