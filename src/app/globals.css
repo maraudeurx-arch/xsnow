@@ -196,6 +196,7 @@ body {
 
 .footer-slogan-line {
   font-size: var(--brand-slogan);
+  color: var(--cobalt);
 }
 
 .footer-slogan-marquee {
@@ -302,36 +303,10 @@ body {
   text-shadow: none;
 }
 
-.safe-frame:has(#home-guide) .footer-slogan-line {
-  color: var(--gold);
-}
-
 .app-stage:has(#home-guide) .logo-rock {
   /* White PNG → #006efd / var(--cobalt). brightness(0) flattens the mark;
      the rest is a solved filter. Alpha is preserved. */
   filter: brightness(0) saturate(100%) invert(50%) sepia(81%) saturate(7232%) hue-rotate(205deg) brightness(100%) contrast(103%);
-}
-
-/* Accueil surfaces: Parchemin frosted glass. Other pages stay solid white. */
-.app-stage:has(#home-guide) .chrome-panel,
-.app-stage:has(#home-guide) .home-stage,
-.app-stage:has(#home-guide) .opc-glass,
-.app-stage:has(#home-guide) .opc-glass-menu {
-  background: rgba(245, 242, 235, 0.72);
-  border: 1px solid rgba(255, 255, 255, 0.7);
-  box-shadow:
-    0 10px 28px rgba(15, 23, 42, 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.55);
-  /* Author the unprefixed blur only. The CSS build adds the WebKit prefix.
-     Listing the prefixed property in this rule drops the unprefixed blur. */
-  backdrop-filter: blur(16px);
-  color: var(--ink);
-}
-
-.app-stage:has(#home-guide) .opc-glass-menu {
-  box-shadow:
-    0 16px 40px rgba(15, 23, 42, 0.12),
-    inset 0 1px 0 rgba(255, 255, 255, 0.55);
 }
 
 /* Accueil header nav pills: avatar-ring outline, labels inside the capsule. */
@@ -698,8 +673,30 @@ body {
   border-top-color: var(--violet);
 }
 
+/* Shared chrome shells: Parchemin frosted glass on every page.
+   Header, Accueil card, feature panels, menus, footer, and the sticky
+   back bar. Inner .opc-glass-soft tiles (ads, avatar chat) stay solid white. */
+.chrome-panel,
+.home-stage,
+.opc-glass,
+.opc-glass-menu,
+footer.opc-glass-soft,
+.chrome-shell {
+  background: rgba(245, 242, 235, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  box-shadow:
+    0 10px 28px rgba(15, 23, 42, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.55);
+  /* Author the unprefixed blur only. The CSS build adds the WebKit prefix.
+     Listing the prefixed property in this rule drops the unprefixed blur. */
+  backdrop-filter: blur(16px);
+  color: var(--ink);
+}
+
 .opc-glass-menu {
-  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.12);
+  box-shadow:
+    0 16px 40px rgba(15, 23, 42, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.55);
 }
 
 /* Filled primary actions stay white-on-blue even inside light cards. */

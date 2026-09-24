@@ -5,8 +5,8 @@ import { RotatingFooterSlogan } from "@/components/RotatingFooterSlogan";
 
 export function SiteFooter() {
   return (
-    <footer className="opc-glass-soft relative z-20 mt-0 shrink-0 rounded-2xl px-2 py-1.5 text-center">
-      <p className="footer-slogan-line font-[family-name:var(--font-brand)] leading-tight font-bold tracking-[0.01em] text-slate-800">
+    <footer className="chrome-shell opc-glass-soft relative z-20 mt-0 shrink-0 rounded-2xl px-2 py-1.5 text-center">
+      <p className="footer-slogan-line font-[family-name:var(--font-brand)] leading-tight font-bold tracking-[0.01em]">
         <RotatingFooterSlogan />
       </p>
       <p className="mt-1 px-0.5 text-xs leading-snug font-medium">
