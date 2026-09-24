@@ -312,11 +312,15 @@ body {
   filter: brightness(0) saturate(100%) invert(50%) sepia(81%) saturate(7232%) hue-rotate(205deg) brightness(100%) contrast(103%);
 }
 
-/* Accueil surfaces: Parchemin frosted glass. Other pages stay solid white. */
+/* Accueil surfaces: Parchemin frosted glass. Other pages stay solid white.
+   #avatar-chat and the home footer join this same block. Ads stay on their
+   own surface class so the reel is not frosted. */
 .app-stage:has(#home-guide) .chrome-panel,
 .app-stage:has(#home-guide) .home-stage,
 .app-stage:has(#home-guide) .opc-glass,
-.app-stage:has(#home-guide) .opc-glass-menu {
+.app-stage:has(#home-guide) .opc-glass-menu,
+.app-stage:has(#home-guide) #avatar-chat,
+.safe-frame:has(#home-guide) > footer {
   background: rgba(245, 242, 235, 0.72);
   border: 1px solid rgba(255, 255, 255, 0.7);
   box-shadow:
