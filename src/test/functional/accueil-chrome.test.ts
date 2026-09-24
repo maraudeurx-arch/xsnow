@@ -32,22 +32,28 @@ describe("Accueil chrome: cobalt mark, green header slogan, Parchemin glass", ()
     assert.match(css, /animation: footer-slogan-slide 36s linear infinite;/);
   });
 
-  it("outlines inactive Accueil nav chips with the chosen avatar ring", () => {
+  it("fills nav chips and Accueil shortcuts with solid cobalt and white text", () => {
     const nav = read("components/HeaderNav.tsx");
     const menu = read("components/AccueilMenu.tsx");
     const connect = read("components/ConnectWallet.tsx");
+    const guide = read("components/Guide.tsx");
+    const place = read("components/HeaderPlaceWithAvatar.tsx");
     assert.match(nav, /useStoredAvatar/);
-    assert.match(nav, /AVATAR_RINGS\[avatarById\(avatarId\)\.ring\]/);
-    assert.match(nav, /"--avatar-ring": ring/);
     assert.match(nav, /data-header-nav/);
     assert.match(menu, /header-nav-chip/);
     assert.match(connect, /header-nav-chip/);
-    assert.match(css, /\.app-stage:has\(#home-guide\) \.header-nav-chip:not\(\[aria-current="page"\]\) \{\s*border-color: var\(--avatar-ring, var\(--cobalt\)\);/);
+    assert.match(guide, /home-shortcut/);
+    assert.match(place, /text-gold/);
+    assert.doesNotMatch(place, /text-slate-900/);
+    assert.match(css, /\.header-nav-chip,\s*\n\.home-shortcut \{\s*background: var\(--cobalt\);\s*color: #ffffff;/);
+    assert.match(css, /\.header-nav-chip\[aria-current="page"\] \{\s*background: #0054c8;/);
+    assert.match(css, /\.app-stage:has\(#home-guide\) \.header-nav-chip \{\s*[^}]*background: var\(--cobalt\);\s*color: #ffffff;/);
     assert.match(css, /min-height:\s*2\.3rem;/);
     assert.match(css, /font-size:\s*0\.68rem;/);
     assert.match(css, /white-space:\s*normal;/);
     assert.match(css, /box-sizing:\s*border-box;/);
     assert.match(css, /--home-nav-h: 2\.3rem;/);
+    assert.doesNotMatch(css, /border-color: var\(--avatar-ring, var\(--cobalt\)\)/);
   });
 
   it("frosts chrome shells in Parchemin on every page", () => {
@@ -70,5 +76,26 @@ describe("Accueil chrome: cobalt mark, green header slogan, Parchemin glass", ()
     assert.match(css, /\.opc-glass-soft,\s*\n\.opc-glass-menu \{\s*[^}]*background:\s*#ffffff;/);
     assert.doesNotMatch(css, /#avatar-chat[^{]*\{[^}]*rgba\(245,\s*242,\s*235/);
     assert.match(css, /--home-chip-h: 1\.375rem;/);
+  });
+});
+
+describe("Look A classic chrome from pre-look-moderne-0.3.5", () => {
+  const classic = read("app/look-classic.css");
+  const layout = read("app/layout.tsx");
+
+  it("scopes the 0.3.5 tokens, dark glass, and cobalt pills to data-opc-look=a", () => {
+    assert.match(classic, /pre-look-moderne-0\.3\.5/);
+    assert.match(classic, /f817873a4795/);
+    assert.match(classic, /html\[data-opc-look="a"\] \{\s*[^}]*--gold: #3dff8a;/);
+    assert.match(classic, /--cobalt: #2563eb;/);
+    assert.match(classic, /rgba\(36, 22, 14, 0\.72\)/);
+    assert.match(classic, /rgba\(40, 24, 14, 0\.74\)/);
+    assert.match(classic, /font-size: 9px;/);
+    assert.match(classic, /border-radius: 0\.5rem;/);
+    assert.match(classic, /color: var\(--gold\);/);
+    assert.match(layout, /opc-look\.js/);
+    assert.match(layout, /beforeInteractive/);
+    assert.match(layout, /--font-classic-outfit/);
+    assert.match(layout, /look-classic\.css/);
   });
 });

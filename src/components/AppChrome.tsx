@@ -8,11 +8,13 @@ import { SeasonalBackdrop, SeasonScene } from "@/components/SeasonalBackdrop";
 import { SiteFooter } from "@/components/SiteFooter";
 import { BrandCopy } from "@/components/BrandCopy";
 import { RotatingBrandSlogan } from "@/components/RotatingBrandSlogan";
+import { OpcLook } from "@/components/OpcLook";
 import { PagesScopeRedirect } from "@/components/PagesScopeRedirect";
 
 export function AppChrome({ children }: { children: ReactNode }) {
   return (
       <div className="safe-frame relative flex flex-col overflow-hidden bg-[#e8f1ff]">
+      <OpcLook />
       <PagesScopeRedirect />
       <PlaceDocumentTitle />
       <Suspense fallback={<SeasonScene season="autumn" />}>
