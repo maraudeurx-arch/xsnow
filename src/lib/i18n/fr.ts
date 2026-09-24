@@ -60,15 +60,12 @@ export const fr = {
     ],
   },
   guide: {
-    introTitle: "Open Community",
-    introBody:
-      "L’app d’entraide de ton quartier : offre un service, trouve de l’aide, gagne un peu — sans fausse promesse.",
+    introTitle: "Open Community (OPC) c’est :",
     introBenefits: [
-      "Propose un service aux voisins (courses, travaux, garde…).",
-      "Demande de l’aide près de chez toi.",
-      "Pistes pour gagner depuis ton téléphone.",
-      "Services gratuits : téléphone perdu, alertes proches.",
+      "l’entraide entre voisins",
+      "la possibilité de gagner uniquement à l’aide d’un téléphone et d’une connexion internet.",
     ],
+    introDisclaimer: "Aucune garantie de revenu.",
     pickAvatar: "Choisis ton avatar",
     changeAvatar: "Changer d’avatar",
     replay: "Réécouter l’intro",

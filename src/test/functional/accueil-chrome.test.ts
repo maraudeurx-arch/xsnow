@@ -66,7 +66,9 @@ describe("Accueil chrome: cobalt mark, green header slogan, Parchemin glass", ()
     assert.match(glass, /footer\.opc-glass-soft/);
     assert.match(glass, /\.chrome-shell/);
     assert.doesNotMatch(glass, /\n\.opc-glass-soft/);
+    assert.doesNotMatch(glass, /#avatar-chat/);
     assert.match(css, /\.opc-glass-soft,\s*\n\.opc-glass-menu \{\s*[^}]*background:\s*#ffffff;/);
+    assert.doesNotMatch(css, /#avatar-chat[^{]*\{[^}]*rgba\(245,\s*242,\s*235/);
     assert.match(css, /--home-chip-h: 1\.375rem;/);
   });
 });

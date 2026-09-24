@@ -237,9 +237,14 @@ describe("gagner maintenant copy", () => {
     assert.equal(fr.earnNow.onlineWorkLead, "");
     assert.match(fr.earnNow.disclaimer, /pas affiliées à OPC/);
     assert.match(fr.earnNow.disclaimer, /Aucun revenu/);
-    assert.equal(fr.guide.introTitle, "Open Community");
-    assert.match(fr.guide.introBody, /entraide/);
-    assert.equal(fr.guide.introBenefits.length, 4);
+    assert.equal(fr.guide.introTitle, "Open Community (OPC) c’est :");
+    assert.deepEqual(fr.guide.introBenefits, [
+      "l’entraide entre voisins",
+      "la possibilité de gagner uniquement à l’aide d’un téléphone et d’une connexion internet.",
+    ]);
+    assert.equal(fr.guide.introDisclaimer, "Aucune garantie de revenu.");
+    assert.equal(en.guide.introBenefits.length, 2);
+    assert.equal(es.guide.introBenefits.length, 2);
     assert.equal(fr.earnNow.supportTitle, "Support technique");
     assert.equal(fr.earnNow.supportCta, "Aide un agent IA");
     assert.equal(fr.earnNow.supportDialogTitle, "En construction :");
