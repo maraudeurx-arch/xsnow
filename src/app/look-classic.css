@@ -3,6 +3,9 @@
  * (app 0.3.5, commit f817873a4795). Applied when html/body/app-stage carry
  * data-opc-look="a". Look B stays in globals.css (Parchemin + cobalt polish).
  *
+ * Look only: colors, type, glass, and button chrome. Product copy and
+ * features stay on the current 0.4.0 tree for both looks.
+ *
  * Tokens, glass, and chip geometry below are copied from that snapshot's
  * globals.css and component classes, then scoped so they do not leak into B.
  */

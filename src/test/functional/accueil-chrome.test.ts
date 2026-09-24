@@ -98,4 +98,19 @@ describe("Look A classic chrome from pre-look-moderne-0.3.5", () => {
     assert.match(layout, /--font-classic-outfit/);
     assert.match(layout, /look-classic\.css/);
   });
+
+  it("keeps 0.4.0 copy and features for both looks", () => {
+    const fr = read("lib/i18n/fr.ts");
+    const guide = read("components/Guide.tsx");
+    const look = read("lib/opc-look.ts");
+    assert.match(fr, /gagnerMaintenant: "Gagner maintenant"/);
+    assert.match(fr, /introTitle: "Open Community \(OPC\) c’est :"/);
+    assert.match(fr, /introDisclaimer: "Aucune garantie de revenu\."/);
+    assert.match(guide, /m\.guide\.introTitle/);
+    assert.match(guide, /m\.guide\.introDisclaimer/);
+    assert.match(guide, /m\.menu\.gagnerMaintenant/);
+    assert.doesNotMatch(guide, /opcLook|data-opc-look/);
+    assert.doesNotMatch(classic, /content\s*:/);
+    assert.match(look, /A\/B is look-only/);
+  });
 });

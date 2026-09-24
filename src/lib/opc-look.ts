@@ -4,8 +4,11 @@
  * Epoch (fixed): 2026-01-01T00:00:00.000Z
  * Period: 14 days.
  * Even periods are Look A (classic chrome from git tag `pre-look-moderne-0.3.5`,
- * commit f817873a4795, app 0.3.5). Odd periods are Look B (current Parchemin
- * chrome, green place name, solid cobalt buttons).
+ * commit f817873a4795). Odd periods are Look B (Parchemin chrome, green place
+ * name, solid cobalt buttons).
+ *
+ * A/B is look-only. Copy, i18n, and features stay on the current 0.4.0 tree
+ * for both looks — do not swap in 0.3.5 wording, pitches, or section names.
  *
  * Preview either look with `?opc-look=a` or `?opc-look=b` (not stored).
  */
