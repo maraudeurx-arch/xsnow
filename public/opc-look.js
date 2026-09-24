@@ -1,0 +1,1 @@
+(function(){var E=1767225600000,P=1209600000,look="b";try{var q=new URLSearchParams(location.search).get("opc-look");if(q==="a"||q==="b")look=q;else{var period=Math.floor((Date.now()-E)/P);look=((period%2)+2)%2===0?"a":"b";}}catch(e){}var root=document.documentElement;root.setAttribute("data-opc-look",look);if(document.body)document.body.setAttribute("data-opc-look",look);})();

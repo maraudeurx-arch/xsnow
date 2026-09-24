@@ -309,7 +309,23 @@ body {
   filter: brightness(0) saturate(100%) invert(50%) sepia(81%) saturate(7232%) hue-rotate(205deg) brightness(100%) contrast(103%);
 }
 
-/* Accueil header nav pills: avatar-ring outline, labels inside the capsule. */
+/* Option A: every nav chip is solid cobalt (#006efd) with white text.
+   The active chip stays in the cobalt family, one step darker. */
+.header-nav-chip,
+.home-shortcut {
+  background: var(--cobalt);
+  color: #ffffff;
+  border-color: var(--cobalt);
+  box-shadow: 0 6px 16px rgba(0, 110, 253, 0.28);
+}
+
+.header-nav-chip[aria-current="page"] {
+  background: #0054c8;
+  border-color: #0054c8;
+  color: #ffffff;
+}
+
+/* Accueil header nav pills: labels inside the capsule. */
 .app-stage:has(#home-guide) .header-nav-chip {
   box-sizing: border-box;
   display: inline-flex;
@@ -331,14 +347,15 @@ body {
   white-space: normal;
   overflow-wrap: normal;
   word-break: normal;
-}
-
-.app-stage:has(#home-guide) .header-nav-chip:not([aria-current="page"]) {
-  border-color: var(--avatar-ring, var(--cobalt));
+  background: var(--cobalt);
+  color: #ffffff;
+  border-color: var(--cobalt);
 }
 
 .app-stage:has(#home-guide) .header-nav-chip[aria-current="page"] {
-  border-color: var(--cobalt);
+  background: #0054c8;
+  border-color: #0054c8;
+  color: #ffffff;
 }
 
 .app-stage-main {
