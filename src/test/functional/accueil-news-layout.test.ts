@@ -45,7 +45,12 @@ describe("Accueil ads-only full-bleed layout", () => {
     assert.match(guide, /text-\[length:var\(--home-chip-font\)\]/);
     assert.match(chat, /h-7 /);
     assert.match(chat, /Écris à ton avatar|chat\.placeholder/);
-    assert.match(css, /color: #000000;/);
-    assert.match(css, /\.logo-rock \{\s*filter: brightness\(0\);/);
+    assert.match(css, /\.app-stage:has\(#home-guide\) > \.brand-banner h1 \{\s*color: var\(--cobalt\);/);
+    assert.doesNotMatch(css, /color: #000000;/);
+    assert.match(
+      css,
+      /\.app-stage:has\(#home-guide\) \.logo-rock \{\s*\/\*[\s\S]*?\*\/\s*filter: brightness\(0\) saturate\(100%\) invert\(50%\) sepia\(81%\) saturate\(7232%\) hue-rotate\(205deg\) brightness\(100%\) contrast\(103%\);/,
+    );
+    assert.doesNotMatch(css, /\.logo-rock \{\s*filter: brightness\(0\);/);
   });
 });

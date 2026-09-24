@@ -11,7 +11,7 @@ import { CATALOG_SERVICE_LIST } from "@/lib/services";
 export const headerNavBtnClass = (active = false, compact = false) =>
   `inline-flex shrink-0 items-center justify-center gap-0.5 rounded-full border font-bold tracking-tight ${
     compact
-      ? "min-h-[var(--home-nav-h)] min-w-0 px-1 py-0.5 text-[12px] leading-[1.15] whitespace-normal"
+      ? "header-nav-chip min-h-[var(--home-nav-h)] min-w-0 px-1 py-0.5 text-[12px] leading-[1.15] whitespace-normal"
       : "min-h-11 px-3.5 py-1 text-base whitespace-nowrap"
   } ${
     active
