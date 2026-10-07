@@ -2,6 +2,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import type { NextConfig } from "next";
 import { isCustomDomainCname, resolvePagesBasePath } from "./src/lib/pages-base.ts";
+import { tutoratPageExtensions } from "./src/lib/tutorat/flag.ts";
 
 function publicCnamePresent() {
   try {
@@ -29,6 +30,8 @@ const x402Aliases = {
 
 const nextConfig: NextConfig = {
   output: "export",
+  // `/tutorat` (page.tutorat.tsx) is only routed when built with NEXT_PUBLIC_TUTORAT=1.
+  pageExtensions: tutoratPageExtensions(process.env),
   ...(pagesBase ? { basePath: pagesBase, assetPrefix: pagesBase } : {}),
   trailingSlash: true,
   images: {
