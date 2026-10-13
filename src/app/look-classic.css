@@ -285,3 +285,29 @@ html[data-opc-look="a"] :is(.home-stage, .opc-glass, .opc-glass-soft) :is(input,
 html[data-opc-look="a"] :is(.home-stage, .opc-glass, .opc-glass-soft) :is(input, textarea, select)::placeholder {
   color: rgba(244, 246, 251, 0.55);
 }
+
+/*
+ * Accueil menu legibility (mobile, autumn-leaf background).
+ * 1. Menu links carry `bg-white text-slate-800`; the bg-white/bg-sky-50 rule above
+ *    forced them to #111827 while `.opc-glass-menu a.bg-white` made the card almost
+ *    transparent → dark grey on dark glass. Pin snow text on a solid dark card.
+ * 2. The dropdown floats over the current route (e.g. /mes-services); its 82–90 %
+ *    glass + blur let that page bleed through. The menu is now opaque.
+ */
+html[data-opc-look="a"] .opc-glass-menu {
+  background: linear-gradient(180deg, #2a1a10 0%, #0c0a0e 100%);
+  backdrop-filter: none;
+}
+
+html[data-opc-look="a"] .opc-glass-menu .opc-glass-soft {
+  background: #1f150e;
+  backdrop-filter: none;
+}
+
+html[data-opc-look="a"] .opc-glass-menu a.bg-white,
+html[data-opc-look="a"] .opc-glass-menu a.bg-white:is(.text-slate-900, .text-slate-800, .text-slate-700, .text-slate-600),
+html[data-opc-look="a"] .opc-glass-menu a.bg-white :is(.text-slate-900, .text-slate-800, .text-slate-700, .text-slate-600, .text-slate-500) {
+  background: #2b2522;
+  color: #f4f6fb;
+  border-color: rgba(255, 255, 255, 0.22);
+}
