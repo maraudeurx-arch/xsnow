@@ -261,8 +261,8 @@ html[data-opc-look="a"] :is(.chrome-panel, .home-stage, .opc-glass, .opc-glass-s
   color: #f4f6fb;
 }
 
-html[data-opc-look="a"] :is(.chrome-panel, .home-stage, .opc-glass, .opc-glass-soft, .opc-glass-menu) :is(.bg-white, .bg-slate-50, .bg-slate-100) :is(.text-slate-900, .text-slate-800, .text-slate-700, .text-slate-600, .text-slate-500),
-html[data-opc-look="a"] :is(.chrome-panel, .home-stage, .opc-glass, .opc-glass-soft, .opc-glass-menu) :is(.bg-white, .bg-slate-50, .bg-slate-100):is(.text-slate-900, .text-slate-800, .text-slate-700, .text-slate-600) {
+html[data-opc-look="a"] :is(.chrome-panel, .home-stage, .opc-glass, .opc-glass-soft, .opc-glass-menu) :is(.bg-white, .bg-slate-50, .bg-slate-100, .bg-sky-50) :is(.text-slate-900, .text-slate-800, .text-slate-700, .text-slate-600, .text-slate-500),
+html[data-opc-look="a"] :is(.chrome-panel, .home-stage, .opc-glass, .opc-glass-soft, .opc-glass-menu) :is(.bg-white, .bg-slate-50, .bg-slate-100, .bg-sky-50):is(.text-slate-900, .text-slate-800, .text-slate-700, .text-slate-600) {
   color: #111827;
 }
 
