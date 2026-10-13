@@ -99,6 +99,10 @@ describe("Look A classic chrome from pre-look-moderne-0.3.5", () => {
     assert.match(layout, /look-classic\.css/);
   });
 
+  it("keeps the Gagner maintenant disclaimer (bg-sky-50) readable with dark text", () => {
+    assert.match(classic, /:is\(\.bg-white, \.bg-slate-50, \.bg-slate-100, \.bg-sky-50\)/);
+  });
+
   it("keeps 0.4.0 copy and features for both looks", () => {
     const fr = read("lib/i18n/fr.ts");
     const guide = read("components/Guide.tsx");
