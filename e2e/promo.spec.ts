@@ -14,7 +14,7 @@ const LANDINGS = [
   },
 ] as const;
 
-const APP_URL = /^https?:\/\/opencommunity\.app\/$/;
+const APP_URL = "https://opencommunity.app/";
 
 test.describe("WhatsApp promo landings", () => {
   for (const pageInfo of LANDINGS) {
@@ -32,6 +32,9 @@ test.describe("WhatsApp promo landings", () => {
       expect(box!.height).toBeGreaterThanOrEqual(44);
       expect(box!.width).toBeGreaterThanOrEqual(120);
       await expect(page.getByText(/Gatineau/i)).toHaveCount(0);
+      await expect(page.locator('a[href^="http://"]')).toHaveCount(0);
+      await expect(page.locator('meta[property="og:url"]')).toHaveAttribute("content", /^https:\/\/opencommunity\.app\//);
+      await expect(page.locator('meta[property="og:image"]')).toHaveAttribute("content", /^https:\/\/opencommunity\.app\//);
     });
   }
 
@@ -43,5 +46,6 @@ test.describe("WhatsApp promo landings", () => {
     await expect(page.getByRole("link", { name: "Pub compétences" })).toHaveAttribute("href", "./competences.html");
     await expect(page.getByRole("link", { name: "Pub commerce" })).toHaveAttribute("href", "./commerce.html");
     await expect(page.getByRole("link", { name: "Aller sur l’app" })).toHaveAttribute("href", APP_URL);
+    await expect(page.locator('a[href^="http://"]')).toHaveCount(0);
   });
 });
