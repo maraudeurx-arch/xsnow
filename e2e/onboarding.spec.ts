@@ -62,7 +62,8 @@ fresh.describe("new visitor onboarding order", () => {
       window.localStorage.setItem("xsnow.analyticsConsent", JSON.stringify("denied"));
     });
 
-    await page.goto("./");
+    // Cobalt buttons belong to Look B; pin it so the test does not flip every 2 weeks.
+    await page.goto("./?opc-look=b");
     await expect(page.getByText("Choisis ton avatar")).toHaveCount(0);
     await expect(page.getByRole("button", { name: /Réécouter/ })).toHaveCount(0);
     await expect(page.getByRole("link", { name: "Gagner maintenant" })).toBeVisible();
