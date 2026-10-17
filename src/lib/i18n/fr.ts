@@ -48,7 +48,6 @@ export const fr = {
   install: {
     tip: `Sur iPhone (Safari) : ouvre ${PUBLIC_SITE_URL} puis Partager → Sur l’écran d’accueil.`,
     tipAndroid: `Sur Android (Chrome) : ouvre ${PUBLIC_SITE_URL} puis menu ⋮ → Installer l’app, ou Ajouter à l’écran d’accueil.`,
-    dismiss: "Compris",
     profileTitle: "Mettre OPC sur l’écran d’accueil",
     profileLead: `Open Community est une app web, pas une app de l’App Store. Sur iPhone, ouvre d’abord ${PUBLIC_SITE_URL} dans Safari, puis ajoute-la à l’écran d’accueil.`,
     siteUrlLabel: "Adresse exacte à ouvrir dans Safari",

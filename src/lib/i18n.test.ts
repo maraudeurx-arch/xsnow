@@ -310,9 +310,10 @@ describe("install tip copy", () => {
     assert.match(en.install.tip, /Home Screen/);
     assert.match(es.install.tip, /Compartir/);
     assert.match(es.install.tip, /pantalla de inicio/);
-    assert.equal(fr.install.dismiss, "Compris");
-    assert.equal(en.install.dismiss, "Got it");
-    assert.equal(es.install.dismiss, "Entendido");
+    // Le tip « Compris » est retiré partout : plus de bouton de fermeture.
+    for (const locale of [fr, en, es]) {
+      assert.equal("dismiss" in locale.install, false);
+    }
     assert.equal(fr.install.profileTitle, "Mettre OPC sur l’écran d’accueil");
     assert.equal(en.install.profileTitle, "Put OPC on the Home Screen");
     assert.equal(es.install.profileTitle, "Poner OPC en la pantalla de inicio");

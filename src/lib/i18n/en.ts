@@ -49,7 +49,6 @@ export const en: Messages = {
   install: {
     tip: `On iPhone (Safari): open ${PUBLIC_SITE_URL} then Share → Add to Home Screen.`,
     tipAndroid: `On Android (Chrome): open ${PUBLIC_SITE_URL} then menu ⋮ → Install app, or Add to Home screen.`,
-    dismiss: "Got it",
     profileTitle: "Put OPC on the Home Screen",
     profileLead: `Open Community is a web app, not an App Store app. On iPhone, first open ${PUBLIC_SITE_URL} in Safari, then add it to the Home Screen.`,
     siteUrlLabel: "Exact address to open in Safari",

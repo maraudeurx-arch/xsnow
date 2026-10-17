@@ -150,6 +150,10 @@ describe("Mon profil hub dedupes Accueil actions", () => {
     assert.doesNotMatch(installGuide, /data-install-wrong-shortcut/);
     assert.doesNotMatch(installGuide, /shouldShowInstallTip/);
     assert.doesNotMatch(installGuide, /writeInstallTipDismissed/);
+    // Tip « Compris » retiré partout : le composant et sa logique n'existent plus.
+    assert.equal(existsSync(join(srcDir, "components/InstallTip.tsx")), false);
+    assert.equal(existsSync(join(srcDir, "lib/install-tip.ts")), false);
+    assert.doesNotMatch(installGuide, /\bCompris\b/);
 
     const board = readFileSync(join(srcDir, "components/LocalProfileBoard.tsx"), "utf8");
     assert.doesNotMatch(board, /data-share-cta/);
