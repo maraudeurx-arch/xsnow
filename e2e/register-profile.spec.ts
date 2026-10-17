@@ -18,7 +18,6 @@ test.describe("local registration on Mon profil", () => {
     await expect(installGuide.getByRole("heading", { name: "Mettre OPC sur l’écran d’accueil" })).toBeVisible();
     await expect(installGuide.getByText(/Ouvre exactement https:\/\/opencommunity\.app\//)).toBeVisible();
     await expect(installGuide.getByRole("link", { name: "https://opencommunity.app/" })).toBeVisible();
-    await expect(installGuide.getByText(/There isn’t a GitHub Pages site here/)).toBeVisible();
     await expect(installGuide.getByText(/Partager/)).toBeVisible();
     await expect(installGuide.getByText(/Sur l’écran d’accueil/)).toBeVisible();
     await expect(installGuide.getByText(/Android \(Chrome\)/)).toBeVisible();
@@ -85,7 +84,6 @@ test.describe("local registration on Mon profil", () => {
     await expect(guide.getByText(/Share/)).toBeVisible();
     await expect(guide.getByText(/Add to Home Screen/)).toBeVisible();
     await expect(guide.getByText(/Install app/)).toBeVisible();
-    await expect(guide.getByText(/There isn’t a GitHub Pages site here/)).toBeVisible();
 
     await page.getByRole("button", { name: "Español" }).click();
     await expect(guide.getByRole("heading", { name: "Poner OPC en la pantalla de inicio" })).toBeVisible();

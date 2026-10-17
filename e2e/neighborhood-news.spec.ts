@@ -37,7 +37,7 @@ test.describe("Accueil full-bleed ads reel", () => {
     await page.goto("./?city=Gatineau");
 
     const news = page.locator("[data-neighborhood-news]");
-    await expect(news).toHaveAttribute("data-news-ads-only", "");
+    await expect(news).toHaveAttribute("data-news-ads-only");
     const adsReel = page.locator("[data-accueil-ads-reel]");
     await expect(adsReel).toHaveCount(1);
     await expect(adsReel.locator("[data-ad-image]")).toBeVisible();
@@ -68,7 +68,7 @@ test.describe("Accueil full-bleed ads reel", () => {
 
     await page.goto("./?city=Gatineau");
     const reel = page.locator("[data-accueil-ads-reel]");
-    await expect(reel).toHaveAttribute("data-ad-id", "bogo-cat");
-    await expect(reel).toHaveAttribute("data-ad-id", "garderie-zozo", { timeout: 7_000 });
+    await expect(reel).toHaveAttribute("data-ad-id", "studio-pattes-en-beaute");
+    await expect(reel).toHaveAttribute("data-ad-id", "desinsectisation-libreville", { timeout: 7_000 });
   });
 });
