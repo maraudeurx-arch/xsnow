@@ -1078,16 +1078,10 @@ export const en: Messages = {
     neighborhoodShare: "Neighbourhood",
     neighborhoodPh: "Hull, Aylmer, Plateau…",
     submit: "Send the idea",
-    submitHint: "",
-    registerHint: "Local sign-up (OPC number) stays on this device:",
-    registerLink: "Sign up",
-    registeredHint: "Local number on this device:",
     thankYou: "Idea received",
     thankYouBody:
       "Thank you. Your idea is saved on this device. A sanitized email goes to opencommunity.opc@gmail.com. Other phones do not see it until the development team approves it in a numbered release.",
     wallTitle: "Idea wall (this device)",
-    wallHint:
-      "The OPC team will review the idea and contact you before implementing it.",
     wallEmpty: "No idea here yet. The first one is often the most useful.",
     inboxSent: "Email sent to opencommunity.opc@gmail.com.",
     inboxFailed: "Saved here. The owner email could not be sent (network).",

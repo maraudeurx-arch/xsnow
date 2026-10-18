@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { noteCommunityIdea, noteIdeaSubmit } from "@/lib/analytics";
 import { useI18n } from "@/lib/i18n/locale";
@@ -166,7 +165,7 @@ export function IdeasBoard() {
     <div className="space-y-4">
       <form id="form" ref={formRef} className="space-y-3" onSubmit={(event) => void onSubmit(event)}>
         <div className="space-y-1.5">
-          <label htmlFor="idea-text" className="block text-sm font-semibold text-snow">
+          <label htmlFor="idea-text" className="sr-only">
             {copy.textLabel}
           </label>
           <textarea
@@ -181,21 +180,6 @@ export function IdeasBoard() {
             className={`${fieldClass} min-h-[72px] py-2 leading-relaxed`}
           />
         </div>
-        {copy.submitHint ? (
-          <p className="text-base leading-relaxed text-snow/90">{copy.submitHint}</p>
-        ) : null}
-        {profile ? (
-          <p className="text-base leading-relaxed text-snow/85">
-            {copy.registeredHint} {profile.id}
-          </p>
-        ) : (
-          <p className="text-base leading-relaxed text-snow/85">
-            {copy.registerHint}{" "}
-            <Link href="/mon-profil" className="font-semibold text-gold underline-offset-2 hover:underline">
-              {copy.registerLink}
-            </Link>
-          </p>
-        )}
         {error ? (
           <p className="text-sm font-semibold text-gold" role="status">
             {copy.textRequired}
@@ -208,7 +192,6 @@ export function IdeasBoard() {
 
       <section className="space-y-2" data-idea-wall>
         <h3 className="text-sm font-extrabold text-snow">{copy.wallTitle}</h3>
-        <p className="text-base leading-relaxed text-snow/85">{copy.wallHint}</p>
         {items.length === 0 ? (
           <p className="text-base text-snow/85">{copy.wallEmpty}</p>
         ) : (
