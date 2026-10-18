@@ -100,6 +100,24 @@ test.describe("Open Community soft-launch smoke", () => {
     }
   });
 
+  test("Gagner maintenant support dialog moves focus in and gives it back on close", async ({ page }) => {
+    await seedLocalProfile(page);
+    await page.goto("./gagner-maintenant/");
+    const cta = page.locator("[data-earn-support-cta]");
+    await cta.click();
+    const dialog = page.getByRole("dialog");
+    await expect(dialog).toBeVisible();
+    await expect(page.locator("[data-earn-support-close]")).toBeFocused();
+    await page.keyboard.press("Escape");
+    await expect(dialog).toHaveCount(0);
+    await expect(cta).toBeFocused();
+
+    await cta.click();
+    await page.locator("[data-earn-support-close]").click();
+    await expect(dialog).toHaveCount(0);
+    await expect(cta).toBeFocused();
+  });
+
   test("fresh storage: neighbourhood service boards stay empty", async ({ page }) => {
     for (const kind of SERVICE_KINDS) {
       await page.goto(`./services/${kind}/`);
