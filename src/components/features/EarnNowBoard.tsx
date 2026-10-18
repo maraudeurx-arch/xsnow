@@ -4,6 +4,8 @@ import { useEffect, useId, useState } from "react";
 import { PAID_MISSION_LINKS } from "@/lib/paid-missions";
 import { ONLINE_WORK_LINKS } from "@/lib/online-work";
 import { useI18n } from "@/lib/i18n/locale";
+import { isPartnerLinksEnabled } from "@/lib/partner-links";
+import { PartnerLinksBlock } from "@/components/features/PartnerLinksBlock";
 
 const ctaClass =
   "tap inline-flex min-h-12 w-full items-center justify-between rounded-2xl border border-slate-200 bg-white px-3.5 text-left text-[15px] font-bold text-slate-900 shadow-[0_8px_20px_rgba(15,23,42,0.05)]";
@@ -69,6 +71,9 @@ export function EarnNowBoard() {
           </a>
         ))}
       </section>
+
+      {/* Draft, OFF by default: needs NEXT_PUBLIC_PARTNER_LINKS=1 at build time. */}
+      {isPartnerLinksEnabled() ? <PartnerLinksBlock /> : null}
 
       <section className="grid gap-1.5" aria-labelledby="earn-support-title">
         <h2 id="earn-support-title" className={sectionTitleClass}>
