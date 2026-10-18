@@ -55,6 +55,66 @@ fresh.describe("new visitor onboarding order", () => {
     await expect(page.getByRole("button", { name: /Non —/ })).toBeVisible();
   });
 
+  fresh("blue Accueil buttons appear only after the avatar is chosen and the welcome audio ends", async ({ page }) => {
+    await page.addInitScript(() => {
+      window.localStorage.setItem("xsnow.geoConsent", JSON.stringify("skipped"));
+      window.localStorage.setItem("xsnow.analyticsConsent", JSON.stringify("denied"));
+      let held: SpeechSynthesisUtterance | null = null;
+      const fake = {
+        speaking: false,
+        pending: false,
+        paused: false,
+        onvoiceschanged: null as ((this: SpeechSynthesis, ev: Event) => void) | null,
+        getVoices() {
+          return [];
+        },
+        speak(utter: SpeechSynthesisUtterance) {
+          // prime() sends a silent " " unlock line: let it finish at once.
+          if (!utter.text.trim()) return;
+          this.speaking = true;
+          held = utter;
+          window.setTimeout(() => utter.onstart?.(new Event("start") as SpeechSynthesisEvent), 20);
+        },
+        cancel() {
+          this.speaking = false;
+          this.pending = false;
+        },
+        pause() {},
+        resume() {},
+        addEventListener() {},
+        removeEventListener() {},
+        dispatchEvent() {
+          return true;
+        },
+      };
+      Object.defineProperty(window, "speechSynthesis", { configurable: true, value: fake });
+      (window as unknown as { __endWelcome: () => void }).__endWelcome = () => {
+        fake.speaking = false;
+        held?.onend?.(new Event("end") as SpeechSynthesisEvent);
+      };
+    });
+
+    await page.goto("./");
+    await expect(page.getByText("Choisis ton avatar")).toBeVisible();
+    const shortcuts = [
+      page.getByRole("link", { name: "Gagner maintenant" }),
+      page.getByRole("link", { name: "Vos idées" }),
+      page.getByRole("button", { name: "Partager" }),
+      page.locator("[data-home-inscrire]"),
+    ];
+    // Before the avatar choice: no blue button.
+    for (const locator of shortcuts) await expect(locator).toHaveCount(0);
+
+    await page.getByRole("button", { name: "Homme, peau claire" }).click();
+    await expect(page.getByText("Choisis ton avatar")).toHaveCount(0);
+    // Welcome audio still playing (past the 1.2 s autoplay grace): still no blue button.
+    await page.waitForTimeout(1_600);
+    for (const locator of shortcuts) await expect(locator).toHaveCount(0);
+
+    await page.evaluate(() => (window as unknown as { __endWelcome: () => void }).__endWelcome());
+    for (const locator of shortcuts) await expect(locator).toBeVisible();
+  });
+
   fresh("returning visitor with avatar and geo choice skips picker and geo sheet", async ({ page }) => {
     await page.addInitScript(() => {
       window.localStorage.setItem("xsnow.avatar", JSON.stringify("homme-blanc"));
