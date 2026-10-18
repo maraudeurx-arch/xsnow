@@ -57,6 +57,8 @@ export function IdeasBoard() {
   useEffect(() => {
     const draft = readIdeaDraft();
     if (!draft) return;
+    // Draft lives in sessionStorage; read after hydration.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setForm((prev) => ({ ...prev, text: prev.text || draft }));
     clearIdeaDraft();
     window.setTimeout(() => textArea.current?.focus(), 50);

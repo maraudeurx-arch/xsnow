@@ -39,6 +39,8 @@ export function NeighborhoodNews({ onNewsChange }: Props) {
     let alive = true;
 
     if (!resolved) {
+      // Syncs with place/cache/network; reset before the fetch below.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setStatus("need_city");
       setItems([]);
       setFromCache(false);

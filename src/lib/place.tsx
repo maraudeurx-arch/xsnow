@@ -222,6 +222,8 @@ function PlaceProviderInner({ children }: { children: ReactNode }) {
     if (typeof navigator === "undefined" || !navigator.geolocation) return;
     refreshedRef.current = true;
     const needsCity = !stored.place.city.trim();
+    // Spinner for the geolocation request started right below.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (needsCity) setLocating(true);
     navigator.geolocation.getCurrentPosition(
       (position) => {

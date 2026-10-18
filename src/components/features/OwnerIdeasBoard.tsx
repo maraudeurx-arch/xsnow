@@ -60,6 +60,8 @@ export function OwnerIdeasBoard() {
 
   useEffect(() => {
     if (!urlSecret.trim()) return;
+    // load() sets loading state, then fetches the owner inbox.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     void load(urlSecret);
   }, [urlSecret]);
 

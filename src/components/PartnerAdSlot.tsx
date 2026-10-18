@@ -45,6 +45,8 @@ export function PartnerAdSlot({ slot }: { slot: PartnerSlotId }) {
   useEffect(() => {
     if (adsense || creatives.length === 0) return;
     const start = readRotationIndex(creatives.length);
+    // Rotation index lives in localStorage; read after hydration.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setRotation(start);
     setCreative(creativeForSlot(slot, start, creatives));
 

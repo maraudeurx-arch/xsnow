@@ -2,7 +2,7 @@
 
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { usePathname } from "next/navigation";
-import { useEffect, useId, useState } from "react";
+import { useId, useState } from "react";
 import { useI18n } from "@/lib/i18n/locale";
 import { hasWalletConnectProjectId } from "@/lib/wallet";
 
@@ -18,10 +18,12 @@ function UnconfiguredConnect({ compact }: { compact: boolean }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const hintId = useId();
-
-  useEffect(() => {
+  // Close the hint on navigation (adjust state during render, no effect).
+  const [seenPathname, setSeenPathname] = useState(pathname);
+  if (seenPathname !== pathname) {
+    setSeenPathname(pathname);
     setOpen(false);
-  }, [pathname]);
+  }
 
   return (
     <div className={`relative inline-flex min-w-0 flex-col ${compact ? "w-full" : "items-end"}`}>
