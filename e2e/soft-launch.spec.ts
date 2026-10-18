@@ -118,6 +118,15 @@ test.describe("Open Community soft-launch smoke", () => {
     await expect(cta).toBeFocused();
   });
 
+  test("Gagner maintenant hides the draft Liens partenaires block by default (flag OFF)", async ({ page }) => {
+    await seedLocalProfile(page);
+    await page.goto("./gagner-maintenant/");
+    await expect(page.getByText(/pas affiliées à OPC/)).toBeVisible();
+    await expect(page.locator("[data-earn-partner-links]")).toHaveCount(0);
+    await expect(page.locator("[data-hitl-pool-optin]")).toHaveCount(0);
+    await expect(page.getByText("Travailler pour l’IA depuis chez toi")).toHaveCount(0);
+  });
+
   test("fresh storage: neighbourhood service boards stay empty", async ({ page }) => {
     for (const kind of SERVICE_KINDS) {
       await page.goto(`./services/${kind}/`);
