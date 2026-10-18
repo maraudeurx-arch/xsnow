@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { PAID_MISSION_LINKS } from "@/lib/paid-missions";
 import { ONLINE_WORK_LINKS } from "@/lib/online-work";
 import { useI18n } from "@/lib/i18n/locale";
@@ -20,6 +20,20 @@ export function EarnNowBoard() {
   const copy = m.earnNow;
   const [supportOpen, setSupportOpen] = useState(false);
   const titleId = useId();
+  const supportCtaRef = useRef<HTMLButtonElement | null>(null);
+  const supportCloseRef = useRef<HTMLButtonElement | null>(null);
+  const supportWasOpen = useRef(false);
+
+  // a11y: move focus into the modal dialog, and give it back to the CTA on close.
+  useEffect(() => {
+    if (supportOpen) {
+      supportWasOpen.current = true;
+      supportCloseRef.current?.focus();
+    } else if (supportWasOpen.current) {
+      supportWasOpen.current = false;
+      supportCtaRef.current?.focus();
+    }
+  }, [supportOpen]);
 
   useEffect(() => {
     if (!supportOpen) return;
@@ -84,6 +98,7 @@ export function EarnNowBoard() {
         ) : null}
         <button
           type="button"
+          ref={supportCtaRef}
           className={ctaClass}
           data-earn-support-cta
           onClick={() => setSupportOpen(true)}
@@ -121,8 +136,10 @@ export function EarnNowBoard() {
               {copy.supportDialogBody}
             </p>
             <button
+              ref={supportCloseRef}
               type="button"
               className={`${ctaClass} mt-4`}
+              data-earn-support-close
               onClick={() => setSupportOpen(false)}
             >
               {copy.supportDialogClose}
