@@ -18,6 +18,13 @@ export function AccueilAdsReel() {
   const [tick, setTick] = useState(0);
   const ads = useMemo(() => listAccueilAds().filter((ad) => accueilAdImageUrl(ad)), [tick]);
   const [index, setIndex] = useState(0);
+  // Back to the first ad when the list changes (adjust state during render, no effect).
+  const resetKey = `${ads.length}:${tick}`;
+  const [seenResetKey, setSeenResetKey] = useState(resetKey);
+  if (seenResetKey !== resetKey) {
+    setSeenResetKey(resetKey);
+    setIndex(0);
+  }
   const ad = ads[index] ?? ads[0];
   const src = ad ? accueilAdImageUrl(ad) : "";
   const captions = ad?.captionLines?.filter(Boolean) ?? [];
@@ -39,10 +46,6 @@ export function AccueilAdsReel() {
     }, ACCUEIL_ADS_REEL_MS);
     return () => window.clearInterval(timer);
   }, [ads.length]);
-
-  useEffect(() => {
-    setIndex(0);
-  }, [ads.length, tick]);
 
   useEffect(() => {
     for (const item of ads) {

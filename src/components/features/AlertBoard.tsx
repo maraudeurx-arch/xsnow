@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { FormEvent, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { interpolate } from "@/lib/i18n";
 import { useI18n } from "@/lib/i18n/locale";
 import { copyText } from "@/lib/offers";
@@ -70,7 +70,6 @@ export function AlertBoard() {
   const { m } = useI18n();
   const copy = m.alerts;
   const copyRef = useRef(copy);
-  copyRef.current = copy;
   const hydrated = useHasHydrated();
   const [rawAlerts, setRawAlerts] = useStoredList<unknown>(ALERTS_KEY);
   const [rawShares, setRawShares] = useStoredList<unknown>(ALERT_SHARES_KEY);
@@ -99,11 +98,17 @@ export function AlertBoard() {
   const itemsRef = useRef(items);
   const sharesRef = useRef(shares);
   const noticesRef = useRef(notices);
-  itemsRef.current = items;
-  sharesRef.current = shares;
-  noticesRef.current = notices;
+  // Keep the latest values for callbacks; synced on every commit, not during render.
+  useLayoutEffect(() => {
+    copyRef.current = copy;
+    itemsRef.current = items;
+    sharesRef.current = shares;
+    noticesRef.current = notices;
+  });
 
   useEffect(() => {
+    // Reads the URL once after hydration (static export: no window during prerender).
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setInviteToken(parseAlertInviteSearch(window.location.search));
   }, []);
 
@@ -111,6 +116,8 @@ export function AlertBoard() {
     if (!inviteToken) return;
     const local = items.find((item) => item.token === inviteToken);
     if (local) {
+      // Same effect also fetches remote previews; keep both paths in one place.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setRemotePreview(invitePreviewFromAlert(local));
       return;
     }
