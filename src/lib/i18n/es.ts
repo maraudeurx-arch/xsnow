@@ -1080,16 +1080,10 @@ export const es: Messages = {
     neighborhoodShare: "Barrio",
     neighborhoodPh: "Hull, Aylmer, Plateau…",
     submit: "Enviar la idea",
-    submitHint: "",
-    registerHint: "La inscripción local (número OPC) se queda en este aparato:",
-    registerLink: "Inscribirse",
-    registeredHint: "Número local de este aparato:",
     thankYou: "Idea bien recibida",
     thankYouBody:
       "Gracias. Tu idea está guardada en este aparato. Un correo saneado va a opencommunity.opc@gmail.com. Otros teléfonos no la ven hasta que el equipo de desarrollo la apruebe en una versión numerada.",
     wallTitle: "Muro de ideas (este aparato)",
-    wallHint:
-      "El equipo de OPC analizará la idea y te contactará antes de implementarla.",
     wallEmpty: "Aún no hay ninguna idea aquí. La primera suele ser la más útil.",
     inboxSent: "Correo enviado a opencommunity.opc@gmail.com.",
     inboxFailed: "Guardada aquí. El correo al propietario no pudo salir (red).",
