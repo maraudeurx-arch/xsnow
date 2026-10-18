@@ -10,12 +10,16 @@ import { BrandCopy } from "@/components/BrandCopy";
 import { RotatingBrandSlogan } from "@/components/RotatingBrandSlogan";
 import { OpcLook } from "@/components/OpcLook";
 import { PagesScopeRedirect } from "@/components/PagesScopeRedirect";
+import { LastScreenResume } from "@/components/LastScreenResume";
 
 export function AppChrome({ children }: { children: ReactNode }) {
   return (
       <div className="safe-frame relative flex flex-col overflow-hidden bg-[#e8f1ff]">
       <OpcLook />
       <PagesScopeRedirect />
+      <Suspense fallback={null}>
+        <LastScreenResume />
+      </Suspense>
       <PlaceDocumentTitle />
       <Suspense fallback={<SeasonScene season="autumn" />}>
         <SeasonalBackdrop />
