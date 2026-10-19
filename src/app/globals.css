@@ -319,6 +319,15 @@ body {
   box-shadow: 0 6px 16px rgba(0, 110, 253, 0.28);
 }
 
+/* Accueil shortcuts during the welcome audio: same size, greyed, inert. */
+.home-shortcut[aria-disabled="true"] {
+  background: #cbd5e1;
+  border-color: #cbd5e1;
+  color: #475569;
+  box-shadow: none;
+  cursor: default;
+}
+
 .header-nav-chip[aria-current="page"] {
   background: #0054c8;
   border-color: #0054c8;
