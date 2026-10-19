@@ -98,9 +98,7 @@ test.describe("Open Community soft-launch smoke", () => {
       await expect(cta).toHaveAttribute("href", link.url);
       await expect(cta).toHaveAttribute("target", "_blank");
     }
-    await expect(page.locator("[data-earn-banned]")).toHaveText(
-      "* Interdit : résoudre ou contourner des captchas contre paiement.",
-    );
+    await expect(page.locator("[data-earn-banned]")).toHaveCount(0);
     await page.goto("./conditions/");
     await expect(page.getByRole("heading", { name: "Activités interdites" })).toBeVisible();
     await expect(page.getByText(/fermes de résolution de captchas/)).toBeVisible();

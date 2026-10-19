@@ -365,7 +365,6 @@ export const es: Messages = {
     supportLead:
       "",
     disclaimer: "* Estas empresas no están afiliadas a OPC. OPC no garantiza ningún ingreso.",
-    bannedNote: "* Prohibido: resolver o eludir captchas a cambio de pago.",
     supportCta: "Ayuda a un agente IA",
     supportDialogTitle: "En construcción:",
     supportDialogBody:

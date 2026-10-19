@@ -222,17 +222,15 @@ describe("vos idees copy", () => {
 });
 
 describe("captcha farms are banned (D-AL-1)", () => {
-  it("Conditions and Gagner maintenant ban captcha solving / bypass in FR/EN/ES", () => {
+  it("Conditions ban captcha solving / bypass in FR/EN/ES", () => {
     const banned = { fr: /captchas?/i, en: /captchas?/i, es: /captchas?/i };
     for (const [locale, messages] of [["fr", fr], ["en", en], ["es", es]] as const) {
       const section = messages.legal.terms.sections.find((item) => banned[locale].test(item.body));
       assert.ok(section, `${locale}: terms section`);
       assert.match(section.body, /farm|ferme|granja/i);
       assert.match(section.body, /contourn|bypass|elud/i);
-      assert.match(messages.earnNow.bannedNote, /captchas/);
     }
     assert.equal(fr.legal.terms.sections.find((item) => /captcha/.test(item.body))?.heading, "Activités interdites");
-    assert.match(fr.earnNow.bannedNote, /^\* Interdit/);
   });
 });
 
