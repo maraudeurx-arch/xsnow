@@ -108,12 +108,6 @@ export function EarnNowBoard() {
           className="rounded-2xl border border-sky-100 bg-sky-50 px-3 py-2.5 text-left text-sm leading-snug text-slate-700"
         >
           {copy.disclaimer}
-          {copy.bannedNote ? (
-            <>
-              <br />
-              <span data-earn-banned>{copy.bannedNote}</span>
-            </>
-          ) : null}
         </p>
       ) : null}
 
