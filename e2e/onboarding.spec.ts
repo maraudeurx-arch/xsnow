@@ -107,12 +107,28 @@ fresh.describe("new visitor onboarding order", () => {
 
     await page.getByRole("button", { name: "Homme, peau claire" }).click();
     await expect(page.getByText("Choisis ton avatar")).toHaveCount(0);
-    // Welcome audio still playing (past the 1.2 s autoplay grace): still no blue button.
+    // Welcome audio still playing (past the 1.2 s autoplay grace): still no blue button,
+    // only four greyed, inert placeholders that hold the space.
     await page.waitForTimeout(1_600);
     for (const locator of shortcuts) await expect(locator).toHaveCount(0);
+    const pending = page.locator("[data-home-shortcut-pending]");
+    await expect(pending).toHaveCount(4);
+    await expect(pending.first()).toHaveAttribute("aria-disabled", "true");
+    await expect(pending.first()).not.toHaveCSS("background-color", "rgb(0, 110, 253)");
+    const ads = page.locator("[data-accueil-ads-reel]");
+    const before = await ads.boundingBox();
+    const navBefore = await page.locator("#home-guide nav").boundingBox();
 
     await page.evaluate(() => (window as unknown as { __endWelcome: () => void }).__endWelcome());
     for (const locator of shortcuts) await expect(locator).toBeVisible();
+    await expect(pending).toHaveCount(0);
+    // No layout shift: the ad and the button row keep their place and size.
+    const after = await ads.boundingBox();
+    const navAfter = await page.locator("#home-guide nav").boundingBox();
+    expect(before && after).toBeTruthy();
+    expect(Math.abs((after?.y ?? 0) - (before?.y ?? 0))).toBeLessThanOrEqual(1);
+    expect(Math.abs((after?.height ?? 0) - (before?.height ?? 0))).toBeLessThanOrEqual(1);
+    expect(Math.abs((navAfter?.height ?? 0) - (navBefore?.height ?? 0))).toBeLessThanOrEqual(1);
   });
 
   fresh("returning visitor with avatar and geo choice skips picker and geo sheet", async ({ page }) => {

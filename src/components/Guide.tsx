@@ -42,6 +42,9 @@ const pickerSize =
 const shortcutClass =
   "home-shortcut inline-flex min-h-[var(--home-chip-h)] w-full items-center justify-center rounded-full border border-transparent bg-cobalt px-1 text-center text-[length:var(--home-chip-font)] font-bold leading-none text-white shadow-[0_3px_8px_rgba(0,110,253,0.18)]";
 
+const pendingShortcutClass =
+  "home-shortcut inline-flex min-h-[var(--home-chip-h)] w-full select-none items-center justify-center rounded-full border border-transparent px-1 text-center text-[length:var(--home-chip-font)] font-bold leading-none";
+
 export function Guide() {
   const [avatarId, setAvatarId] = useStoredAvatar();
   const memoryReady = useDeviceMemoryReady();
@@ -198,7 +201,20 @@ export function Guide() {
                 {m.register.cta}
               </Link>
                 </>
-              ) : null}
+              ) : (
+                // During the welcome audio: same size, greyed and inert, so the ad
+                // below keeps its height and nothing jumps when the buttons turn on.
+                [m.menu.gagnerMaintenant, m.nav.vosIdees, m.shareOpc.short, m.register.cta].map((label) => (
+                  <span
+                    key={label}
+                    aria-disabled="true"
+                    data-home-shortcut-pending
+                    className={pendingShortcutClass}
+                  >
+                    {label}
+                  </span>
+                ))
+              )}
             </nav>
           </div>
           <NeighborhoodNews onNewsChange={onNewsChange} />
