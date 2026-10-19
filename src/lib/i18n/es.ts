@@ -208,7 +208,7 @@ export const es: Messages = {
       title: "Condiciones",
       lead: "Reglas cortas del MVP comunitario.",
       draft: "Borrador para la comunidad, no un contrato de abogado.",
-      updated: "Última actualización: septiembre de 2026",
+      updated: "Última actualización: octubre de 2026",
       sections: [
         {
           heading: "La app",
@@ -229,6 +229,10 @@ export const es: Messages = {
         {
           heading: "Uso",
           body: "Sin uso ilegal, sin acoso. Respeta a tus vecinos. Sigues siendo responsable de tu contenido y tus servicios.",
+        },
+        {
+          heading: "Actividades prohibidas",
+          body: "Prohibido en OPC: granjas de resolución de captchas, eludir captchas o verificaciones anti-bot, y cualquier oferta o solicitud de este trabajo.",
         },
         {
           heading: "Publicidad business",
@@ -361,6 +365,7 @@ export const es: Messages = {
     supportLead:
       "",
     disclaimer: "* Estas empresas no están afiliadas a OPC. OPC no garantiza ningún ingreso.",
+    bannedNote: "* Prohibido: resolver o eludir captchas a cambio de pago.",
     supportCta: "Ayuda a un agente IA",
     supportDialogTitle: "En construcción:",
     supportDialogBody:

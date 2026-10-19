@@ -208,7 +208,7 @@ export const en: Messages = {
       title: "Terms",
       lead: "Short rules for the community MVP.",
       draft: "A draft for the community, not a lawyer-written contract.",
-      updated: "Last updated: September 2026",
+      updated: "Last updated: October 2026",
       sections: [
         {
           heading: "The app",
@@ -229,6 +229,10 @@ export const en: Messages = {
         {
           heading: "Use",
           body: "No illegal use, no harassment. Respect your neighbours. You remain responsible for your content and services.",
+        },
+        {
+          heading: "Banned activities",
+          body: "Banned on OPC: captcha-solving farms, bypassing captchas or anti-bot checks, and any offer or request for this work.",
         },
         {
           heading: "Business advertising",
@@ -361,6 +365,7 @@ export const en: Messages = {
     supportLead:
       "",
     disclaimer: "* These companies are not affiliated with OPC. No income is guaranteed by OPC.",
+    bannedNote: "* Banned: solving or bypassing captchas for pay.",
     supportCta: "Help an AI agent",
     supportDialogTitle: "Under construction:",
     supportDialogBody:

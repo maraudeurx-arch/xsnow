@@ -204,7 +204,7 @@ export const fr = {
       title: "Conditions",
       lead: "Règles courtes du MVP communautaire.",
       draft: "Brouillon pour la communauté, pas un contrat rédigé par un avocat.",
-      updated: "Dernière mise à jour : septembre 2026",
+      updated: "Dernière mise à jour : octobre 2026",
       sections: [
         {
           heading: "L’app",
@@ -225,6 +225,10 @@ export const fr = {
         {
           heading: "Usage",
           body: "Pas d’usage illégal, pas de harcèlement. Respecte tes voisins. Les contenus et services restent ta responsabilité.",
+        },
+        {
+          heading: "Activités interdites",
+          body: "Interdit sur OPC : fermes de résolution de captchas, contournement de captchas ou de vérifications anti-robot, et toute offre ou demande de ce travail.",
         },
         {
           heading: "Publicité business",
@@ -357,6 +361,7 @@ export const fr = {
     supportTitle: "Support technique",
     supportLead: "",
     disclaimer: "* Ces sociétés ne sont pas affiliées à OPC. Aucun revenu n’est garanti par OPC.",
+    bannedNote: "* Interdit : résoudre ou contourner des captchas contre paiement.",
     supportCta: "Aide un agent IA",
     supportDialogTitle: "En construction :",
     supportDialogBody:
