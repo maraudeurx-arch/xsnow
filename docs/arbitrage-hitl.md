@@ -1,0 +1,46 @@
+# Arbitrage HITL (Human-In-The-Loop)
+
+Page `/arbitrage/` (bouton « Devenir arbitre » dans Gagner maintenant). Backend : Worker `xsnow-chat`, routes `/arbitrage/*` (voir `workers/xsnow-chat/src/arbitrage.ts`), D1 `xsnow-opc-stats`, Workers AI déjà lié.
+
+## Flux
+1. Profil OPC local → « Devenir arbitre » → avis de vie privée + case de consentement.
+2. Nom, prénom, type de pièce, numéro, pays d’émission, date d’expiration, **une** photo de la pièce (compressée ≤ 400 Ko dans le navigateur).
+3. Scan du visage dans le navigateur (@vladmandic/human, modèles auto-hébergés `/models/human/`) : tourner la tête gauche puis droite (vivacité), score de similarité avec la photo de la pièce. **Aucune image du visage n’est envoyée** : seulement `{score, liveness, method}`.
+4. Statut `pending` → le propriétaire vérifie (`/arbitrage/admin/*`) → `verified`.
+5. Arbitre vérifié : litiges ouverts, suggestion IA (Llama 3.2 3B via Workers AI, stub si indisponible), accepter ou refuser (raison + décision humaine obligatoires).
+6. Les deux parties reçoivent un webhook HTTPS : décision, origine, attestation Ed25519 signée (id pseudonyme d’arbitre, niveau de vérification, horodatage, hash de l’identité + du résultat facial, réputation). Jamais la photo, le numéro, ni le nom. Clé publique : `GET /arbitrage/public-key`.
+
+## Sécurité / rétention
+- Identité et photo chiffrées AES-256-GCM dans D1 (`ARBITER_ENC_KEY`), lisibles seulement avec `ARBITER_ADMIN_SECRET`.
+- Données brutes effacées 90 jours après la revue ; le hash reste pour vérifier les attestations.
+- Aucun journal des champs d’identité.
+
+## Mise en route (à faire par le propriétaire)
+```bash
+node scripts/arbitrage-keys.mjs            # ~/.config/opc-arbitrage/keys.env, mode 600, rien n’est affiché
+cd workers/xsnow-chat
+npx wrangler d1 migrations apply xsnow-opc-stats --remote
+# pour chaque ligne du fichier (sans l’afficher) :
+for k in ARBITER_ENC_KEY ARBITER_SIGNING_KEY ARBITER_SIGNING_PUBLIC_KEY ARBITER_ADMIN_SECRET; do
+  grep "^$k=" ~/.config/opc-arbitrage/keys.env | cut -d= -f2- | npx wrangler secret put "$k"
+done
+npx wrangler deploy
+```
+
+## Revue admin (curl)
+```bash
+set -a; . ~/.config/opc-arbitrage/keys.env; set +a
+W=https://xsnow-chat.xsnowopc.workers.dev
+curl -s -H "Authorization: Bearer $ARBITER_ADMIN_SECRET" $W/arbitrage/admin/pending
+curl -s -H "Authorization: Bearer $ARBITER_ADMIN_SECRET" "$W/arbitrage/admin/photo?id=arb_…"   # base64, ne pas journaliser
+curl -s -X POST -H "Authorization: Bearer $ARBITER_ADMIN_SECRET" -H 'Content-Type: application/json' \
+  -d '{"arbiterId":"arb_…","approve":true,"faceReviewed":true}' $W/arbitrage/admin/review
+curl -s -X POST -H "Authorization: Bearer $ARBITER_ADMIN_SECRET" -H 'Content-Type: application/json' \
+  -d '{"claimant":{"agentId":"A","webhookUrl":"https://…"},"respondent":{"agentId":"B","webhookUrl":"https://…"},"amountUsdc":500,"claim":"…","response":"…"}' \
+  $W/arbitrage/admin/cases
+```
+
+## Limites honnêtes de la correspondance faciale
+- Non certifiée KYC ; pas d’anti-usurpation réelle : une photo imprimée ou une vidéo rejouée peut passer le test « tourner la tête ».
+- Score indicatif (seuil 0,55), sensible à la lumière, à la qualité de la photo de la pièce et aux lunettes ; taux d’erreur non mesurés sur nos données.
+- Le score est calculé côté client : un utilisateur technique peut le falsifier. D’où la revue humaine obligatoire avant `verified`.

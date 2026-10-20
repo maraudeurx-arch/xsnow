@@ -15,6 +15,7 @@
  * `POST /alerts` = guardian registers a consented proximity alert (schedule + place)
  * `GET /alerts?token=` = invite preview for the proche (no phone)
  * `POST /alerts/consent` = proche grants location sharing themselves
+ * `/arbitrage/*` = HITL arbitration (see arbitrage.ts)
  * `POST /alerts/ping` = consented GPS ping; optional Twilio SMS / Resend email
  *
  * D1: `npx wrangler d1 create xsnow-stats` then set database_id in wrangler.toml
@@ -31,6 +32,7 @@ import {
   isAlertsPingPath,
 } from "./alerts";
 import { corsHeaders } from "./cors";
+import { d1ArbStore, handleArbitrage, isArbitragePath, type D1Full } from "./arbitrage";
 import { parseLatLon, reverseGeocode } from "./geo";
 import { handleIdeasGet, handleIdeasPost, handleRegisterPost, isIdeasPath, isRegisterPath } from "./ideas";
 import { handleBusinessAdsPost, isBusinessAdsPath } from "./business-ads";
@@ -59,6 +61,11 @@ export interface Env {
   TWILIO_ACCOUNT_SID?: string;
   TWILIO_AUTH_TOKEN?: string;
   TWILIO_FROM_NUMBER?: string;
+  /** HITL arbitration secrets (`npx wrangler secret put ...`). Never commit, never log. */
+  ARBITER_ENC_KEY?: string;
+  ARBITER_SIGNING_KEY?: string;
+  ARBITER_SIGNING_PUBLIC_KEY?: string;
+  ARBITER_ADMIN_SECRET?: string;
 }
 
 const MODEL = "@cf/meta/llama-3.2-3b-instruct";
@@ -462,6 +469,15 @@ export default {
 
     if (request.method === "OPTIONS") {
       return new Response(null, { status: 204, headers: corsHeaders(origin) });
+    }
+
+    if (isArbitragePath(pathname)) {
+      if (!env.DB) return json({ error: "not_configured" }, 503, origin);
+      if (tooMany(clientIp(request))) return json({ error: "rate_limited" }, 429, origin);
+      const res = await handleArbitrage(request, env, { store: d1ArbStore(env.DB as unknown as D1Full) });
+      const headers = new Headers(res.headers);
+      for (const [k, v] of Object.entries(corsHeaders(origin))) headers.set(k, v);
+      return new Response(res.body, { status: res.status, headers });
     }
 
     if (isGeoPath(pathname)) {

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useId, useRef, useState } from "react";
 import { PAID_MISSION_LINKS } from "@/lib/paid-missions";
 import { ONLINE_WORK_LINKS } from "@/lib/online-work";
@@ -100,6 +101,9 @@ export function EarnNowBoard() {
         >
           {copy.supportCta}
         </button>
+        <Link href="/arbitrage/" className={ctaClass} data-earn-arbiter-cta>
+          {copy.arbiterCta}
+        </Link>
       </section>
 
       {copy.disclaimer ? (
