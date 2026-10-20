@@ -355,6 +355,10 @@ export const en: Messages = {
     securityMd: "Security policy (SECURITY.md)",
   },
   arbitrage: {
+    termsTitle: "Before becoming an arbiter",
+    termsItems: ["You must enter your identity and complete a biometric (face) scan to prove it’s you.", "Arbiter training is required and costs $250, free for the first 10 arbiters taking part in the test.", "Pay: $30 per arbitration and $50 per appeal; 10% goes to the OPC platform and 10% to the subscription or the prorata, depending on the chosen plan."],
+    termsAccept: "Accept",
+    termsCancel: "Cancel",
     "title": "Become an arbiter",
     "lead": "The AI suggests a decision; you accept or reject it. Your verified identity proves a human decided.",
     "needProfile": "Create your OPC profile first.",

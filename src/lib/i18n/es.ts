@@ -355,6 +355,10 @@ export const es: Messages = {
     securityMd: "Política de seguridad (SECURITY.md)",
   },
   arbitrage: {
+    termsTitle: "Antes de ser árbitro",
+    termsItems: ["Debe ingresar su identidad y hacer un escaneo biométrico (rostro) para probar que es usted.", "La formación de árbitro es obligatoria y cuesta 250 $, gratuita para los 10 primeros árbitros que participen en la prueba.", "Pago: 30 $ por arbitraje y 50 $ por apelación; el 10 % va a la plataforma OPC y el 10 % a la suscripción o al prorrateo, según el plan elegido."],
+    termsAccept: "Aceptar",
+    termsCancel: "Cancelar",
     "title": "Ser árbitro",
     "lead": "La IA propone una decisión; usted la acepta o la rechaza. Su identidad verificada prueba que decidió un humano.",
     "needProfile": "Primero cree su perfil OPC.",

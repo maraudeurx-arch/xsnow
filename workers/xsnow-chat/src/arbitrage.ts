@@ -51,6 +51,8 @@ export type ArbiterRow = {
   face_method: string | null;
   face_reviewed: number;
   reputation: number;
+  terms_version: string;
+  terms_accepted_at: string;
   created_at: number;
   reviewed_at: number | null;
   purge_after: number | null;
@@ -104,11 +106,11 @@ export function d1ArbStore(db: D1Full): ArbStore {
       await db
         .prepare(
           `INSERT INTO arbiters (id, token_hash, status, opc_id, identity_enc, photo_enc, identity_hash, doc_expiry,
-            face_score, face_liveness, face_method, face_reviewed, reputation, created_at, reviewed_at, purge_after)
-           VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+            face_score, face_liveness, face_method, face_reviewed, reputation, terms_version, terms_accepted_at, created_at, reviewed_at, purge_after)
+           VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
         )
         .bind(r.id, r.token_hash, r.status, r.opc_id, r.identity_enc, r.photo_enc, r.identity_hash, r.doc_expiry,
-          r.face_score, r.face_liveness, r.face_method, r.face_reviewed, r.reputation, r.created_at, r.reviewed_at,
+          r.face_score, r.face_liveness, r.face_method, r.face_reviewed, r.reputation, r.terms_version, r.terms_accepted_at, r.created_at, r.reviewed_at,
           r.purge_after)
         .run();
     },
@@ -368,6 +370,8 @@ export async function handleArbitrage(req: Request, env: ArbEnv, deps: ArbDeps):
       face_method: a.face.method,
       face_reviewed: 0,
       reputation: 0,
+      terms_version: a.terms.version,
+      terms_accepted_at: a.terms.acceptedAt,
       created_at: now(),
       reviewed_at: null,
       purge_after: null,
@@ -385,6 +389,7 @@ export async function handleArbitrage(req: Request, env: ArbEnv, deps: ArbDeps):
         out.push({
           arbiterId: r.id,
           identity: r.identity_enc ? JSON.parse(await decryptString(encKey, r.identity_enc)) : null,
+          terms: { version: r.terms_version, acceptedAt: r.terms_accepted_at },
           face: { score: r.face_score, liveness: r.face_liveness === 1, method: r.face_method },
           createdAt: new Date(r.created_at).toISOString(),
         });

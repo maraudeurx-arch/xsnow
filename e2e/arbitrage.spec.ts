@@ -15,9 +15,47 @@ test.describe("HITL arbitrage", () => {
     await page.locator("[data-earn-arbiter-cta]").click();
     await expect(page).toHaveURL(/arbitrage\/?$/);
     await page.locator("[data-arb-become]").click();
+    await page.locator("[data-arb-terms-accept]").click();
     await expect(page.locator("[data-arb-privacy]")).toBeVisible();
     await expect(page.locator("[data-arb-consent]")).not.toBeChecked();
     await expect(page.locator("[data-arb-submit]")).toBeDisabled();
+  });
+
+  test("explanation modal comes first, in order; Cancel closes it with no form", async ({ page }) => {
+    await skipConsent(page);
+    await seedLocalProfile(page);
+    await page.goto("arbitrage/");
+    await expect(page.locator("[data-arb-form]")).toHaveCount(0);
+    await page.locator("[data-arb-become]").click();
+    const dialog = page.getByRole("dialog");
+    await expect(dialog).toBeVisible();
+    await expect(page.locator("[data-arb-form]")).toHaveCount(0);
+    await expect(page.locator("[data-arb-terms] li")).toHaveCount(3);
+    await expect(page.locator('[data-arb-terms-item="1"]')).toContainText("biométrique");
+    await expect(page.locator('[data-arb-terms-item="2"]')).toContainText("250 $");
+    await expect(page.locator('[data-arb-terms-item="3"]')).toContainText("30 $");
+    await expect(page.locator('[data-arb-terms-item="3"]')).toContainText("50 $");
+    await expect(page.locator("[data-arb-terms-accept]")).toHaveText("Accepter");
+    await page.locator("[data-arb-terms-cancel]").click();
+    await expect(dialog).toHaveCount(0);
+    await expect(page.locator("[data-arb-form]")).toHaveCount(0);
+    await expect(page.locator("[data-arb-become]")).toBeVisible();
+    // Escape also cancels
+    await page.locator("[data-arb-become]").click();
+    await page.keyboard.press("Escape");
+    await expect(page.locator("[data-arb-terms]")).toHaveCount(0);
+    await expect(page.locator("[data-arb-form]")).toHaveCount(0);
+  });
+
+  test("Accepter starts the identity flow and the terms are sent with the application", async ({ page }) => {
+    await skipConsent(page);
+    await seedLocalProfile(page);
+    await page.goto("arbitrage/");
+    await page.locator("[data-arb-become]").click();
+    await page.locator("[data-arb-terms-accept]").click();
+    await expect(page.locator("[data-arb-terms]")).toHaveCount(0);
+    await expect(page.locator("[data-arb-form]")).toBeVisible();
+    await expect(page.locator("[data-arb-become]")).toHaveCount(0);
   });
 
   test("verified arbiter accepts the AI suggestion", async ({ page }) => {

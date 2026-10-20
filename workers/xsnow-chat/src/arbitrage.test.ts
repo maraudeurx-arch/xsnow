@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { handleArbitrage, isArbitragePath, type ArbStore, type ArbiterRow, type CaseRow } from "./arbitrage.ts";
-import { bytesToB64, importVerifyKey, verifyAttestation } from "../../../src/lib/arbitrage.ts";
+import { ARBITER_TERMS_VERSION, bytesToB64, importVerifyKey, verifyAttestation } from "../../../src/lib/arbitrage.ts";
 
 function memStore(): ArbStore & { arbiters: Map<string, ArbiterRow>; cases: Map<string, CaseRow> } {
   const arbiters = new Map<string, ArbiterRow>();
@@ -58,6 +58,7 @@ const application = {
   idPhotoBase64: "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==",
   idPhotoMime: "image/png",
   face: { score: 0.72, liveness: true, method: "human-3/faceres" },
+  terms: { version: ARBITER_TERMS_VERSION, acceptedAt: "2026-10-21T11:59:00.000Z" },
 };
 
 describe("arbitrage worker", () => {
@@ -85,6 +86,13 @@ describe("arbitrage worker", () => {
     const applied = await (await handleArbitrage(req("/arbitrage/apply", "POST", application), env, deps)).json();
     assert.equal(applied.status, "pending");
     const row = store.arbiters.get(applied.arbiterId)!;
+    assert.equal(row.terms_version, ARBITER_TERMS_VERSION);
+    assert.equal(row.terms_accepted_at, "2026-10-21T11:59:00.000Z");
+    const { terms: _t, ...noTerms } = application;
+    void _t;
+    const refused = await handleArbitrage(req("/arbitrage/apply", "POST", noTerms), env, deps);
+    assert.equal(refused.status, 400);
+    assert.equal((await refused.json()).error, "terms_required");
     assert.ok(!row.identity_enc!.includes("AB123456"), "identity encrypted at rest");
     assert.ok(!row.photo_enc!.includes(application.idPhotoBase64.slice(0, 20)), "photo encrypted at rest");
 
@@ -94,6 +102,7 @@ describe("arbitrage worker", () => {
     assert.equal((await handleArbitrage(req("/arbitrage/admin/pending", "GET", undefined, "nope"), env, deps)).status, 401);
     const pending = await (await handleArbitrage(req("/arbitrage/admin/pending", "GET", undefined, env.ARBITER_ADMIN_SECRET), env, deps)).json();
     assert.equal(pending.pending[0].identity.docNumber, "AB123456");
+    assert.equal(pending.pending[0].terms.version, ARBITER_TERMS_VERSION);
     await handleArbitrage(req("/arbitrage/admin/review", "POST", { arbiterId: applied.arbiterId, approve: true, faceReviewed: true }, env.ARBITER_ADMIN_SECRET), env, deps);
     const me = await (await handleArbitrage(req("/arbitrage/me", "GET", undefined, applied.token), env, deps)).json();
     assert.equal(me.status, "verified");

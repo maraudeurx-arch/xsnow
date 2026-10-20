@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { ID_DOC_TYPES, type FaceCheck, type IdDocType } from "@/lib/arbitrage";
+import { ARBITER_TERMS_VERSION, ID_DOC_TYPES, type FaceCheck, type IdDocType, type TermsAcceptance } from "@/lib/arbitrage";
 import { arbFetch, readArbiterToken, writeArbiterToken } from "@/lib/arbitrage-client";
 import { prepareAdImage } from "@/lib/compress-ad-image";
 import { useI18n } from "@/lib/i18n/locale";
@@ -27,7 +27,8 @@ export function ArbitrageBoard() {
   const [profile] = useLocalProfile();
   const [status, setStatus] = useState<Status>("none");
   const [token, setToken] = useState(() => (typeof window === "undefined" ? "" : readArbiterToken()));
-  const [open, setOpen] = useState(false);
+  const [modal, setModal] = useState(false);
+  const [terms, setTerms] = useState<TermsAcceptance | null>(null);
 
   useEffect(() => {
     const tk = token;
@@ -55,11 +56,18 @@ export function ArbitrageBoard() {
       {status === "rejected" ? <p data-arb-status="rejected" className="rounded-xl bg-rose-50 p-3 font-bold text-rose-900">{t.statusRejected}</p> : null}
       {status === "not_configured" ? <p className="rounded-xl bg-slate-100 p-3 text-slate-700">{t.notConfigured}</p> : null}
       {status === "verified" ? <CasesView token={token} /> : null}
-      {status === "none" && !open ? (
-        <button type="button" className={primary} data-arb-become onClick={() => setOpen(true)}>{t.title}</button>
+      {status === "none" && !terms ? (
+        <button type="button" className={primary} data-arb-become onClick={() => setModal(true)}>{t.title}</button>
       ) : null}
-      {status === "none" && open ? (
+      {modal ? (
+        <TermsModal
+          onAccept={() => { setTerms({ version: ARBITER_TERMS_VERSION, acceptedAt: new Date().toISOString() }); setModal(false); }}
+          onCancel={() => setModal(false)}
+        />
+      ) : null}
+      {status === "none" && terms ? (
         <SignupForm
+          terms={terms}
           defaults={{ firstName: profile.firstName, lastName: profile.lastName, opcId: profile.id }}
           onDone={(tk) => { writeArbiterToken(tk); setToken(tk); setStatus("pending"); }}
           onNotConfigured={() => setStatus("not_configured")}
@@ -69,7 +77,33 @@ export function ArbitrageBoard() {
   );
 }
 
-function SignupForm({ defaults, onDone, onNotConfigured }: {
+export function TermsModal({ onAccept, onCancel }: { onAccept: () => void; onCancel: () => void }) {
+  const { m } = useI18n();
+  const t = m.arbitrage;
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onCancel(); };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onCancel]);
+  return (
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 p-3 sm:items-center" onClick={onCancel}>
+      <section role="dialog" aria-modal="true" aria-labelledby="arb-terms-title" data-arb-terms
+        className="w-full max-w-md rounded-2xl bg-white p-4 text-left text-slate-900" onClick={(e) => e.stopPropagation()}>
+        <h2 id="arb-terms-title" className="text-lg font-extrabold">{t.termsTitle}</h2>
+        <ol className="mt-2 grid list-decimal gap-2 pl-5 text-sm leading-snug">
+          {t.termsItems.map((item, i) => <li key={i} data-arb-terms-item={i + 1}>{item}</li>)}
+        </ol>
+        <div className="mt-4 grid gap-2">
+          <button type="button" autoFocus className={primary} data-arb-terms-accept onClick={onAccept}>{t.termsAccept}</button>
+          <button type="button" className="tap min-h-11 rounded-2xl border border-slate-300 font-bold" data-arb-terms-cancel onClick={onCancel}>{t.termsCancel}</button>
+        </div>
+      </section>
+    </div>
+  );
+}
+
+function SignupForm({ terms, defaults, onDone, onNotConfigured }: {
+  terms: TermsAcceptance;
   defaults: { firstName: string; lastName: string; opcId: string };
   onDone: (token: string) => void;
   onNotConfigured: () => void;
@@ -102,7 +136,7 @@ function SignupForm({ defaults, onDone, onNotConfigured }: {
     try {
       const { status, data } = await arbFetch<{ token: string }>("apply", {
         method: "POST",
-        body: { consent: true, ...f, idPhotoBase64: b64, idPhotoMime: mime, face, opcId: defaults.opcId },
+        body: { consent: true, ...f, idPhotoBase64: b64, idPhotoMime: mime, face, opcId: defaults.opcId, terms },
       });
       if (status === 503) onNotConfigured();
       else if (status === 201 && data.token) onDone(data.token);

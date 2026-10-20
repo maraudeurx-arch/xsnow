@@ -352,6 +352,10 @@ export const fr = {
     securityMd: "Politique de sécurité (SECURITY.md)",
   },
   arbitrage: {
+    termsTitle: "Avant de devenir arbitre",
+    termsItems: ["Vous devez entrer votre identité et faire un scan biométrique (visage) pour prouver que c’est bien vous.", "Une formation d’arbitre est obligatoire et coûte 250 $, gratuite pour les 10 premiers arbitres qui participent au test.", "Rémunération : 30 $ par arbitrage et 50 $ par appel ; 10 % vont à la plateforme OPC et 10 % à l’abonnement ou au prorata, selon le forfait choisi."],
+    termsAccept: "Accepter",
+    termsCancel: "Annuler",
     "title": "Devenir arbitre",
     "lead": "L’IA propose une décision, vous l’acceptez ou la refusez. Votre identité vérifiée garantit qu’un humain a bien décidé.",
     "needProfile": "Créez d’abord votre profil OPC.",

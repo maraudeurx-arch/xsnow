@@ -1,6 +1,11 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
+import { en } from "./i18n/en.ts";
+import { es } from "./i18n/es.ts";
+import { fr } from "./i18n/fr.ts";
+const DICTIONARIES = { fr, en, es };
 import {
+  ARBITER_TERMS_VERSION, parseTermsAcceptance,
   assertNoPii, bytesToB64, canonicalJson, decryptString, encryptString, faceVerdict, importEncKey,
   parseArbiterApplication,
 } from "./arbitrage.ts";
@@ -9,6 +14,7 @@ const base = {
   consent: true, lastName: "Doe", firstName: "Jane", docType: "passport", docNumber: "ab 12345",
   issuingCountry: "ca", expiryDate: "2030-05-01", idPhotoBase64: "AAAA", idPhotoMime: "image/jpeg",
   face: { score: 0.8, liveness: true, method: "t" },
+  terms: { version: ARBITER_TERMS_VERSION, acceptedAt: "2026-10-21T10:00:00Z" },
 };
 
 describe("parseArbiterApplication", () => {
@@ -48,5 +54,30 @@ describe("crypto helpers", () => {
   it("assertNoPii rejects forbidden keys", () => {
     assert.throws(() => assertNoPii({ x: { docNumber: "1" } }));
     assert.doesNotThrow(() => assertNoPii({ arbiterId: "arb_1" }));
+  });
+});
+
+describe("arbiter terms", () => {
+  it("requires the current terms version and a valid timestamp", () => {
+    const d = new Date("2026-10-21");
+    assert.deepEqual(parseArbiterApplication({ ...base, terms: undefined }, d), { ok: false, error: "terms_required" });
+    assert.equal(parseTermsAcceptance({ version: "old", acceptedAt: "2026-10-21T10:00:00Z" }), null);
+    assert.equal(parseTermsAcceptance({ version: ARBITER_TERMS_VERSION, acceptedAt: "nope" }), null);
+    const r = parseArbiterApplication(base, d);
+    assert.ok(r.ok && r.value.terms.acceptedAt === "2026-10-21T10:00:00.000Z");
+  });
+  it("lists the 3 items in order (identity+face, training 250, pay 30/50 + 10%/10%) in fr/en/es", () => {
+    for (const [lang, m] of Object.entries(DICTIONARIES)) {
+      const items = m.arbitrage.termsItems;
+      assert.equal(items.length, 3, lang);
+      assert.match(items[0], /biom/i, lang);
+      assert.match(items[1], /250/, lang);
+      assert.match(items[1], /10/, lang);
+      assert.match(items[2], /30/, lang);
+      assert.match(items[2], /50/, lang);
+      assert.match(items[2], /10 ?%.*10 ?%/, lang);
+      assert.ok(m.arbitrage.termsAccept && m.arbitrage.termsCancel, lang);
+    }
+    assert.equal(DICTIONARIES.fr.arbitrage.termsAccept, "Accepter");
   });
 });

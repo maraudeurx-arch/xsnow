@@ -20,6 +20,20 @@ export const ID_RETENTION_DAYS = 90;
 /** Similarity at/above which the browser face match is considered "likely same person". */
 export const FACE_MATCH_THRESHOLD = 0.55;
 
+/** Bump when the explanation modal (training fee, pay split) changes. */
+export const ARBITER_TERMS_VERSION = "2026-10-20.v1";
+
+export type TermsAcceptance = { version: string; acceptedAt: string };
+
+export function parseTermsAcceptance(raw: unknown): TermsAcceptance | null {
+  if (!raw || typeof raw !== "object") return null;
+  const r = raw as Record<string, unknown>;
+  if (r.version !== ARBITER_TERMS_VERSION) return null;
+  const at = typeof r.acceptedAt === "string" ? r.acceptedAt : "";
+  if (Number.isNaN(Date.parse(at))) return null;
+  return { version: ARBITER_TERMS_VERSION, acceptedAt: new Date(at).toISOString() };
+}
+
 export type FaceCheck = {
   /** 0..1 similarity between selfie and ID photo embeddings, or null if unavailable. */
   score: number | null;
@@ -40,6 +54,7 @@ export type ArbiterApplication = {
   idPhotoMime: "image/jpeg" | "image/png" | "image/webp";
   face: FaceCheck;
   opcId?: string;
+  terms: TermsAcceptance;
 };
 
 export type VerificationLevel = "id_reviewed+face_auto" | "id_reviewed+face_reviewed";
@@ -69,6 +84,8 @@ export function parseArbiterApplication(raw: unknown, now: Date = new Date()): P
   if (!raw || typeof raw !== "object") return { ok: false, error: "invalid" };
   const r = raw as Record<string, unknown>;
   if (r.consent !== true) return { ok: false, error: "consent_required" };
+  const terms = parseTermsAcceptance(r.terms);
+  if (!terms) return { ok: false, error: "terms_required" };
   const lastName = cleanText(r.lastName, 80);
   const firstName = cleanText(r.firstName, 80);
   if (!lastName || !firstName) return { ok: false, error: "name_required" };
@@ -112,6 +129,7 @@ export function parseArbiterApplication(raw: unknown, now: Date = new Date()): P
       idPhotoMime,
       face,
       opcId,
+      terms,
     },
   };
 }

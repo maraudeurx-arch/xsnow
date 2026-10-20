@@ -15,6 +15,8 @@ CREATE TABLE IF NOT EXISTS arbiters (
   face_method TEXT,
   face_reviewed INTEGER NOT NULL DEFAULT 0,
   reputation INTEGER NOT NULL DEFAULT 0,
+  terms_version TEXT NOT NULL,
+  terms_accepted_at TEXT NOT NULL,
   created_at INTEGER NOT NULL,
   reviewed_at INTEGER,
   purge_after INTEGER
