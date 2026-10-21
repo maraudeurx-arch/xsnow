@@ -12,6 +12,10 @@
  *   POST /arbitrage/sim-cases/answer   Bearer <verified arbiter> {caseId, choiceId, comment?} (one per arbiter)
  * Public:
  *   GET  /arbitrage/public-key         Ed25519 SPKI to verify attestations
+ *   GET  /arbitrage/push/vapid-key     VAPID public key for Web Push (503 if not configured)
+ * Arbiter push (verified, or sim-invited):
+ *   POST /arbitrage/push/subscribe     {endpoint} opt-in; POST /arbitrage/push/unsubscribe {endpoint}
+ *   New case (verified) / new simulation (verified + invited) → payload-less push to opted-in arbiters.
  * Owner (Bearer ARBITER_ADMIN_SECRET):
  *   GET  /arbitrage/admin/pending      pending arbiters (decrypted identity, no photo)
  *   GET  /arbitrage/admin/photo?id=    the encrypted ID photo, decrypted, no-store
@@ -31,6 +35,7 @@
  * ARBITER_SIGNING_PUBLIC_KEY, ARBITER_ADMIN_SECRET. Missing secrets → 503 not_configured.
  */
 
+import { importVapidPrivate, isAllowedPushEndpoint, sendPush } from "./webpush.ts";
 import {
   ID_RETENTION_DAYS,
   assertNoPii,
@@ -115,7 +120,12 @@ export type ArbStore = {
   walletOf(arbiterId: string): Promise<WalletRow | null>;
   setWallet(row: WalletRow): Promise<void>;
   allWallets(): Promise<WalletRow[]>;
+  addPushSub(row: PushSubRow): Promise<void>;
+  removePushSub(endpoint: string, arbiterId?: string): Promise<void>;
+  allPushSubs(): Promise<PushSubRow[]>;
 };
+
+export type PushSubRow = { endpoint: string; arbiter_id: string; created_at: number };
 
 export type WalletRow = { arbiter_id: string; address: string; chain_id: number | null; connected_at: number };
 export const EVM_ADDRESS_RE = /^0x[0-9a-fA-F]{40}$/;
@@ -226,6 +236,17 @@ export function d1ArbStore(db: D1Full): ArbStore {
       const r = await db.prepare(`SELECT * FROM arb_wallets ORDER BY connected_at`).bind().all<WalletRow>();
       return r.results;
     },
+    async addPushSub(p) {
+      await db.prepare(`INSERT OR REPLACE INTO arb_push_subs (endpoint, arbiter_id, created_at) VALUES (?,?,?)`).bind(p.endpoint, p.arbiter_id, p.created_at).run();
+    },
+    async removePushSub(endpoint, arbiterId) {
+      if (arbiterId) await db.prepare(`DELETE FROM arb_push_subs WHERE endpoint = ? AND arbiter_id = ?`).bind(endpoint, arbiterId).run();
+      else await db.prepare(`DELETE FROM arb_push_subs WHERE endpoint = ?`).bind(endpoint).run();
+    },
+    async allPushSubs() {
+      const r = await db.prepare(`SELECT * FROM arb_push_subs`).bind().all<PushSubRow>();
+      return r.results;
+    },
   };
 }
 
@@ -234,6 +255,10 @@ export type ArbEnv = {
   ARBITER_SIGNING_KEY?: string;
   ARBITER_SIGNING_PUBLIC_KEY?: string;
   ARBITER_ADMIN_SECRET?: string;
+  /** Web Push (VAPID). Private key is a worker secret; public key and subject are plain vars. */
+  VAPID_PUBLIC_KEY?: string;
+  VAPID_PRIVATE_KEY?: string;
+  VAPID_SUBJECT?: string;
   AI?: { run: (model: string, inputs: Record<string, unknown>) => Promise<unknown> };
 };
 
@@ -469,6 +494,11 @@ export async function handleArbitrage(req: Request, env: ArbEnv, deps: ArbDeps):
     return j({ alg: "Ed25519", format: "spki-base64", key: env.ARBITER_SIGNING_PUBLIC_KEY });
   }
 
+  if (path === "/arbitrage/push/vapid-key" && req.method === "GET") {
+    if (!env.VAPID_PUBLIC_KEY || !env.VAPID_PRIVATE_KEY) return j({ error: "not_configured" }, 503);
+    return j({ key: env.VAPID_PUBLIC_KEY });
+  }
+
   if (!env.ARBITER_ENC_KEY || !env.ARBITER_SIGNING_KEY || !env.ARBITER_ADMIN_SECRET) {
     return j({ error: "not_configured" }, 503);
   }
@@ -582,7 +612,8 @@ export async function handleArbitrage(req: Request, env: ArbEnv, deps: ArbDeps):
         id, status: "open", case_json: JSON.stringify(c), suggestion_json: null, decision_json: null,
         arbiter_id: null, created_at: now(), decided_at: null,
       });
-      return j({ ok: true, caseId: id }, 201);
+      const pushed = await notifyArbiters(env, store, "real", now(), fetchImpl);
+      return j({ ok: true, caseId: id, pushed }, 201);
     }
     if (path === "/arbitrage/admin/sim-cases" && req.method === "POST") {
       const p = parseSimCase(body);
@@ -594,7 +625,8 @@ export async function handleArbitrage(req: Request, env: ArbEnv, deps: ArbDeps):
         decision_json: null, arbiter_id: null, created_at: now(), decided_at: null,
         simulation: 1, choices_json: JSON.stringify(p.value.choices),
       });
-      return j({ ok: true, caseId: id, simulation: true, title: p.value.title }, 201);
+      const pushed = await notifyArbiters(env, store, "sim", now(), fetchImpl);
+      return j({ ok: true, caseId: id, simulation: true, title: p.value.title, pushed }, 201);
     }
     if (path === "/arbitrage/admin/sim-close" && req.method === "POST") {
       const row = await store.caseById(clip((body as Record<string, unknown> | null)?.caseId, 60));
@@ -688,7 +720,7 @@ export async function handleArbitrage(req: Request, env: ArbEnv, deps: ArbDeps):
   }
 
   // SIMULATION endpoints: verified arbiters, or non-rejected arbiters the owner invited for simulations only.
-  if (path.startsWith("/arbitrage/sim-cases")) {
+  if (path.startsWith("/arbitrage/sim-cases") || path.startsWith("/arbitrage/push/")) {
     const allowed = me.status === "verified" || (me.status !== "rejected" && (await store.isSimInvited(me.id)));
     if (!allowed) return j({ error: "not_verified", status: me.status }, 403);
   } else if (me.status !== "verified") return j({ error: "not_verified", status: me.status }, 403);
@@ -714,6 +746,17 @@ export async function handleArbitrage(req: Request, env: ArbEnv, deps: ArbDeps):
       });
     }
     return j({ cases });
+  }
+
+  if (path === "/arbitrage/push/subscribe" && req.method === "POST") {
+    const endpoint = String((body as Record<string, unknown> | null)?.endpoint ?? "");
+    if (!isAllowedPushEndpoint(endpoint)) return j({ error: "invalid_endpoint" }, 400);
+    await store.addPushSub({ endpoint, arbiter_id: me.id, created_at: now() });
+    return j({ ok: true });
+  }
+  if (path === "/arbitrage/push/unsubscribe" && req.method === "POST") {
+    await store.removePushSub(String((body as Record<string, unknown> | null)?.endpoint ?? ""), me.id);
+    return j({ ok: true });
   }
 
   if (path === "/arbitrage/wallet" && req.method === "GET") {
@@ -833,4 +876,28 @@ export async function handleArbitrage(req: Request, env: ArbEnv, deps: ArbDeps):
   }
 
   return j({ error: "not_found" }, 404);
+}
+
+/**
+ * Payload-less push to opted-in arbiters. Real cases: verified only. Simulations: verified + sim-invited
+ * (never rejected). Expired subscriptions are removed. Returns the number of accepted pushes.
+ */
+export async function notifyArbiters(env: ArbEnv, store: ArbStore, kind: "real" | "sim", nowMs: number, fetchImpl: typeof fetch): Promise<number> {
+  if (!env.VAPID_PUBLIC_KEY || !env.VAPID_PRIVATE_KEY) return 0;
+  let key: CryptoKey;
+  try { key = await importVapidPrivate(env.VAPID_PUBLIC_KEY, env.VAPID_PRIVATE_KEY); } catch { return 0; }
+  const subject = env.VAPID_SUBJECT || "https://opencommunity.app";
+  const ok = new Map<string, boolean>();
+  let sent = 0;
+  for (const sub of await store.allPushSubs()) {
+    if (!ok.has(sub.arbiter_id)) {
+      const a = await store.arbiterById(sub.arbiter_id);
+      ok.set(sub.arbiter_id, !!a && (a.status === "verified" || (kind === "sim" && a.status !== "rejected" && (await store.isSimInvited(a.id)))));
+    }
+    if (!ok.get(sub.arbiter_id)) continue;
+    const r = await sendPush(sub.endpoint, key, env.VAPID_PUBLIC_KEY, subject, nowMs, fetchImpl);
+    if (r.gone) await store.removePushSub(sub.endpoint);
+    else if (r.status >= 200 && r.status < 300) sent++;
+  }
+  return sent;
 }

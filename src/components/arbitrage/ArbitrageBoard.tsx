@@ -10,6 +10,8 @@ import { useI18n } from "@/lib/i18n/locale";
 import { useLocalProfile } from "@/lib/useLocalProfile";
 import { useAccount } from "wagmi";
 import { ConnectWallet } from "@/components/ConnectWallet";
+import { assetUrl } from "@/lib/paths";
+import { b64uToUint8, pushSupport, type PushSupport } from "@/lib/push-client";
 import { FaceScan } from "./FaceScan";
 
 type Status = "none" | "pending" | "verified" | "rejected" | "rescan_requested" | "not_configured";
@@ -63,6 +65,7 @@ export function ArbitrageBoard() {
       {status === "pending" ? <p data-arb-status="pending" className="rounded-xl bg-amber-50 p-3 font-bold text-amber-900">{t.statusPending}</p> : null}
       {status === "rejected" ? <p data-arb-status="rejected" className="rounded-xl bg-rose-50 p-3 font-bold text-rose-900">{t.statusRejected}</p> : null}
       {status === "not_configured" ? <p className="rounded-xl bg-slate-100 p-3 text-slate-700">{t.notConfigured}</p> : null}
+      {token && (status === "verified" || status === "pending" || status === "rescan_requested") ? <NotifyCard token={token} /> : null}
       {status === "verified" ? <CasesView token={token} /> : null}
       {status === "rescan_requested" ? <RescanView token={token} onDone={() => setStatus("pending")} /> : null}
       {/* SIMULATION cases for owner-invited, non-verified arbiters (hidden when the server says 403) */}
@@ -287,6 +290,56 @@ function SimCaseCard({ c, token, onAnswered }: { c: SimCase; token: string; onAn
         </fieldset>
       )}
     </article>
+  );
+}
+
+/** Opt-in Web Push: the phone rings when a case or simulation is waiting. iOS: Home Screen app only. */
+function NotifyCard({ token }: { token: string }) {
+  const { m } = useI18n();
+  const t = m.arbitrage.notify;
+  const [support, setSupport] = useState<PushSupport | null>(null);
+  const [state, setState] = useState<"idle" | "on" | "denied" | "forbidden" | "error" | "not_configured">("idle");
+  useEffect(() => {
+    const nav = navigator as Navigator & { standalone?: boolean };
+    const detected = pushSupport({
+      ua: nav.userAgent,
+      standalone: window.matchMedia?.("(display-mode: standalone)").matches || nav.standalone === true,
+      hasPush: "PushManager" in window, hasSw: "serviceWorker" in nav, hasNotification: "Notification" in window,
+    });
+    void Promise.resolve().then(() => setSupport(detected));
+    if ("Notification" in window && Notification.permission === "granted" && "serviceWorker" in nav) {
+      void nav.serviceWorker.getRegistration(assetUrl("/")).then((reg) => reg?.pushManager.getSubscription()).then((s) => { if (s) setState("on"); });
+    }
+  }, []);
+  async function enable() {
+    try {
+      const { status, data } = await arbFetch<{ key?: string }>("push/vapid-key");
+      if (status !== 200 || !data.key) { setState("not_configured"); return; }
+      if ((await Notification.requestPermission()) !== "granted") { setState("denied"); return; }
+      const reg = await navigator.serviceWorker.register(assetUrl("/arb-push-sw.js"), { scope: assetUrl("/") });
+      await navigator.serviceWorker.ready;
+      const sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: b64uToUint8(data.key) as BufferSource });
+      const r = await arbFetch("push/subscribe", { method: "POST", token, body: { endpoint: sub.endpoint } });
+      setState(r.status === 200 ? "on" : r.status === 403 ? "forbidden" : "error");
+    } catch { setState("error"); }
+  }
+  if (!support) return null;
+  return (
+    <section className="grid gap-2 rounded-2xl border-2 border-violet-400 bg-violet-50 p-3 text-sm text-slate-800" data-arb-notify>
+      <h3 className="font-extrabold">{t.title}</h3>
+      {support === "ios-install" ? <p data-arb-notify-ios>{t.iosInstall}</p> : null}
+      {support === "unsupported" ? <p data-arb-notify-unsupported>{t.unsupported}</p> : null}
+      {support === "ok" && state === "on" ? <p className="font-bold text-emerald-800" data-arb-notify-on>{t.on}</p> : null}
+      {support === "ok" && state !== "on" ? (
+        <>
+          <p>{t.body}</p>
+          <button type="button" className={primary} onClick={() => void enable()} data-arb-notify-enable>{t.enable}</button>
+          {state === "denied" ? <p className="text-rose-800">{t.denied}</p> : null}
+          {state === "forbidden" ? <p className="text-rose-800">{t.forbidden}</p> : null}
+          {state === "error" || state === "not_configured" ? <p className="text-rose-800">{t.error}</p> : null}
+        </>
+      ) : null}
+    </section>
   );
 }
 

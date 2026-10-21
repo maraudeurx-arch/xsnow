@@ -415,6 +415,17 @@ export const es: Messages = {
       "body": "¡Bravo por tu primera simulación! Para recibir más tarde tu pago de árbitro, haz clic en Connect. Connect también te propone crear un wallet si no tienes uno.",
       "connected": "Wallet conectado:"
     },
+    "notify": {
+      "title": "Notificaciones de arbitraje",
+      "body": "Activa las notificaciones: tu teléfono suena cuando un caso de arbitraje (o una simulación) te espera.",
+      "enable": "Activar las notificaciones",
+      "on": "Notificaciones activadas en este dispositivo.",
+      "iosInstall": "En iPhone: toca Compartir y luego «Agregar a inicio». Abre OPC desde el icono y vuelve aquí para activar las notificaciones (iOS 16.4 o posterior).",
+      "unsupported": "Este navegador no admite notificaciones. Prueba Chrome en Android o la app OPC en la pantalla de inicio del iPhone.",
+      "denied": "Notificaciones bloqueadas. Permítelas en los ajustes del navegador e inténtalo de nuevo.",
+      "forbidden": "Las notificaciones son solo para árbitros verificados o invitados.",
+      "error": "No se pudieron activar las notificaciones ahora. Inténtalo más tarde."
+    },
     "sim": {
       "manualTip": "Familiarízate con el Manual de justicia: guía cada decisión de árbitro.",
       "manualPdf": "Descargar el Manual de justicia (PDF)",

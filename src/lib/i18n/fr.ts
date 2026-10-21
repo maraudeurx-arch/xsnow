@@ -412,6 +412,17 @@ export const fr = {
       "body": "Bravo pour ta première simulation ! Pour recevoir plus tard ta rémunération d’arbitre, clique sur Connect. Connect te propose aussi de créer un wallet si tu n’en as pas.",
       "connected": "Wallet connecté :"
     },
+    "notify": {
+      "title": "Notifications d’arbitrage",
+      "body": "Active les notifications : ton téléphone sonne quand un dossier d’arbitrage (ou une simulation) t’attend.",
+      "enable": "Activer les notifications",
+      "on": "Notifications activées sur cet appareil.",
+      "iosInstall": "Sur iPhone : touche Partager, puis « Sur l’écran d’accueil ». Ouvre OPC depuis l’icône, puis reviens ici pour activer les notifications (iOS 16.4 ou plus).",
+      "unsupported": "Ce navigateur ne gère pas les notifications. Essaie Chrome sur Android, ou l’app OPC sur l’écran d’accueil de l’iPhone.",
+      "denied": "Notifications refusées. Autorise-les dans les réglages du navigateur, puis réessaie.",
+      "forbidden": "Les notifications sont réservées aux arbitres vérifiés ou invités.",
+      "error": "Impossible d’activer les notifications pour le moment. Réessaie plus tard."
+    },
     "sim": {
       "manualTip": "Familiarise-toi avec le Manuel de justice : il guide chaque décision d’arbitre.",
       "manualPdf": "Télécharger le Manuel de justice (PDF)",
