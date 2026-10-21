@@ -428,6 +428,42 @@ describe("arbitrage worker", () => {
     assert.ok(store.arbiters.get(ok.arbiterId)!.email_enc);
   });
 
+  it("red flag: 3 contradicted suggestions block real cases; owner clears; data kept", async () => {
+    const env = await makeEnv();
+    const store = memStore();
+    let t = 1_000;
+    const deps = { store, now: () => (t += 1000) };
+    const S = env.ARBITER_ADMIN_SECRET;
+    const a = await (await handleArbitrage(req("/arbitrage/apply", "POST", application), env, deps)).json();
+    await handleArbitrage(req("/arbitrage/admin/review", "POST", { arbiterId: a.arbiterId, approve: true }, S), env, deps);
+    const mk = async () => (await (await handleArbitrage(req("/arbitrage/admin/sim-cases", "POST", { title: "t", scenario: "s", choices: ["x", "y"], suggestion: { letter: "A", text: "Je suggère A.", reasoning: "M-5.3." } }, S), env, deps)).json()).caseId;
+    const answer = async (id: string, choiceId: string) => (await (await handleArbitrage(req("/arbitrage/sim-cases/answer", "POST", { caseId: id, choiceId }, a.token), env, deps)).json());
+    assert.equal((await answer(await mk(), "a")).red, false); // followed
+    assert.equal((await answer(await mk(), "b")).red, false); // 1
+    assert.equal((await answer(await mk(), "b")).red, false); // 2
+    assert.equal((await handleArbitrage(req("/arbitrage/cases", "GET", undefined, a.token), env, deps)).status, 200);
+    assert.equal((await answer(await mk(), "b")).red, true); // 3 → red
+    const me = await (await handleArbitrage(req("/arbitrage/me", "GET", undefined, a.token), env, deps)).json();
+    assert.equal(me.red, true);
+    assert.equal(me.contradictions, 3);
+    assert.equal(me.status, "verified");
+    assert.equal((await handleArbitrage(req("/arbitrage/cases", "GET", undefined, a.token), env, deps)).status, 403);
+    assert.equal((await handleArbitrage(req("/arbitrage/cases/decide", "POST", { caseId: "x", accept: true }, a.token), env, deps)).status, 403);
+    // simulations still allowed
+    assert.equal((await handleArbitrage(req("/arbitrage/sim-cases", "GET", undefined, a.token), env, deps)).status, 200);
+    const list = await (await handleArbitrage(req("/arbitrage/admin/arbiters", "GET", undefined, S), env, deps)).json();
+    assert.deepEqual(list.arbiters.map((x: { arbiterId: string; red: boolean }) => [x.arbiterId, x.red]), [[a.arbiterId, true]]);
+    assert.ok(!JSON.stringify(list).includes("Politzer"));
+    // owner clears → unblocked, counter restarts, all answers kept
+    assert.equal((await handleArbitrage(req("/arbitrage/admin/red-clear", "POST", { arbiterId: a.arbiterId }, a.token), env, deps)).status, 401);
+    await handleArbitrage(req("/arbitrage/admin/red-clear", "POST", { arbiterId: a.arbiterId }, S), env, deps);
+    const me2 = await (await handleArbitrage(req("/arbitrage/me", "GET", undefined, a.token), env, deps)).json();
+    assert.equal(me2.red, false);
+    assert.equal(me2.contradictions, 0);
+    assert.equal((await handleArbitrage(req("/arbitrage/cases", "GET", undefined, a.token), env, deps)).status, 200);
+    assert.equal(store.simAns.length, 4);
+  });
+
   it("rescan: admin requests it, candidate redoes only the face scan, back to pending", async () => {
     const env = await makeEnv();
     const store = memStore();

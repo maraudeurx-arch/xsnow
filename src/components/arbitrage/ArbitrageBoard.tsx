@@ -40,13 +40,14 @@ export function ArbitrageBoard() {
   const [modal, setModal] = useState(false);
   const [terms, setTerms] = useState<TermsAcceptance | null>(null);
   const [hasEmail, setHasEmail] = useState<boolean | null>(null);
+  const [red, setRed] = useState(false);
 
   useEffect(() => {
     const tk = token;
     if (!tk) return;
-    arbFetch<{ status: Status; hasEmail?: boolean }>("me", { token: tk }).then(({ status: code, data }) => {
+    arbFetch<{ status: Status; hasEmail?: boolean; red?: boolean }>("me", { token: tk }).then(({ status: code, data }) => {
       if (code === 503) setStatus("not_configured");
-      else if (code === 200) { setStatus(data.status); setHasEmail(data.hasEmail === true); }
+      else if (code === 200) { setStatus(data.status); setHasEmail(data.hasEmail === true); setRed(data.red === true); }
       else if (code === 401) writeArbiterToken("");
     }).catch(() => {});
   }, [token]);
@@ -66,9 +67,15 @@ export function ArbitrageBoard() {
       {status === "pending" ? <p data-arb-status="pending" className="rounded-xl bg-amber-50 p-3 font-bold text-amber-900">{t.statusPending}</p> : null}
       {status === "rejected" ? <p data-arb-status="rejected" className="rounded-xl bg-rose-50 p-3 font-bold text-rose-900">{t.statusRejected}</p> : null}
       {status === "not_configured" ? <p className="rounded-xl bg-slate-100 p-3 text-slate-700">{t.notConfigured}</p> : null}
+      {red ? (
+        <div role="alert" className="grid gap-1 rounded-2xl border-2 border-red-600 bg-red-50 p-3 text-sm text-red-900" data-arb-red>
+          <p className="font-extrabold">{t.red.title}</p>
+          <p>{t.red.message}</p>
+        </div>
+      ) : null}
       {token && hasEmail === false && (status === "verified" || status === "pending" || status === "rescan_requested") ? <EmailCard token={token} onDone={() => setHasEmail(true)} /> : null}
       {token && (status === "verified" || status === "pending" || status === "rescan_requested") ? <NotifyCard token={token} /> : null}
-      {status === "verified" ? <CasesView token={token} /> : null}
+      {status === "verified" ? <CasesView token={token} red={red} /> : null}
       {status === "rescan_requested" ? <RescanView token={token} onDone={() => setStatus("pending")} /> : null}
       {/* SIMULATION cases for owner-invited, non-verified arbiters (hidden when the server says 403) */}
       {token && (status === "pending" || status === "rescan_requested") ? <SimCasesView token={token} /> : null}
@@ -208,7 +215,7 @@ function SignupForm({ terms, defaults, onDone, onNotConfigured }: {
   );
 }
 
-function CasesView({ token }: { token: string }) {
+function CasesView({ token, red = false }: { token: string; red?: boolean }) {
   const { m } = useI18n();
   const t = m.arbitrage;
   const [cases, setCases] = useState<ArbCase[] | null>(null);
@@ -221,7 +228,7 @@ function CasesView({ token }: { token: string }) {
     <section className="grid gap-3" data-arb-cases>
       <p data-arb-status="verified" className="rounded-xl bg-emerald-50 p-3 font-bold text-emerald-900">{t.statusVerified}</p>
       <h2 className="text-lg font-extrabold text-slate-900">{t.casesTitle}</h2>
-      {cases?.map((c) => <CaseCard key={c.caseId} c={c} token={token} onDecided={reload} />)}
+      {red ? null : cases?.map((c) => <CaseCard key={c.caseId} c={c} token={token} onDecided={reload} />)}
       <SimCasesView token={token} onCount={setSimCount} />
       {cases && cases.length === 0 && simCount === 0 ? <p className="font-bold text-slate-700" data-arb-empty>{t.sim.noPending}</p> : null}
       <ManualCard />

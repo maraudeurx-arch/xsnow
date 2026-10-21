@@ -432,6 +432,10 @@ export const es: Messages = {
       "why": "Recibirás por correo una copia de cada decisión que tomes. Tu correo está cifrado y nunca se muestra.",
       "invalid": "Correo electrónico no válido."
     },
+    "red": {
+      "title": "Estado rojo: casos reales bloqueados",
+      "message": "Tres de tus respuestas de simulación contradicen la sugerencia de Indiana. Los casos reales de arbitraje están bloqueados. Para desbloquearlos, debes completar la formación de árbitro (2 500 $). Puedes seguir con las simulaciones."
+    },
     "sim": {
       "noPending": "Ningún arbitraje pendiente.",
       "manualTip": "Familiarízate con el Manual de justicia: guía cada decisión de árbitro.",

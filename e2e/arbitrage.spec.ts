@@ -123,6 +123,24 @@ test.describe("HITL arbitrage", () => {
     expect(saved).toEqual({ email: "arbitre@opc.test", lang: "fr" });
   });
 
+  test("red arbiter: banner with the training message, no real cases", async ({ page }) => {
+    await skipConsent(page);
+    await seedLocalProfile(page);
+    await page.addInitScript(() => window.localStorage.setItem("opc.arbiter.token.v1", "tok-e2e"));
+    await page.route(/\/arbitrage\/(me|cases|sim-cases)/, async (route) => {
+      const req = route.request();
+      if (req.method() === "OPTIONS") return route.fulfill({ status: 204, headers: cors });
+      const path = new URL(req.url()).pathname;
+      if (path.endsWith("/me")) return route.fulfill({ headers: cors, json: { status: "verified", arbiterId: "arb_1", reputation: 0, hasEmail: true, red: true } });
+      if (path.endsWith("/sim-cases")) return route.fulfill({ headers: cors, json: { simulation: true, cases: [] } });
+      if (path.endsWith("/cases")) return route.fulfill({ status: 403, headers: cors, json: { error: "red_flag" } });
+      return route.fulfill({ status: 404, headers: cors, json: {} });
+    });
+    await page.goto("arbitrage/");
+    await expect(page.locator("[data-arb-red]")).toContainText("2 500 $");
+    await expect(page.locator("[data-arb-red]")).toContainText("formation");
+  });
+
   test("nothing pending: clean screen with empty state and the Manuel de justice card", async ({ page }) => {
     await skipConsent(page);
     await seedLocalProfile(page);

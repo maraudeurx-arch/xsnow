@@ -432,6 +432,10 @@ export const en: Messages = {
       "why": "You will get an email copy of each decision you make. Your email is encrypted and never shown.",
       "invalid": "Invalid email address."
     },
+    "red": {
+      "title": "Red status: real cases blocked",
+      "message": "Three of your simulation answers contradict Indiana’s suggestion. Real arbitration cases are blocked. To unlock them, you must complete the arbiter training ($2,500). You can keep doing simulations."
+    },
     "sim": {
       "noPending": "No arbitration pending.",
       "manualTip": "Get familiar with the Justice Manual: it guides every arbiter decision.",
