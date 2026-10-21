@@ -8,6 +8,8 @@ import { arbFetch, readArbiterToken, writeArbiterToken } from "@/lib/arbitrage-c
 import { prepareAdImage } from "@/lib/compress-ad-image";
 import { useI18n } from "@/lib/i18n/locale";
 import { useLocalProfile } from "@/lib/useLocalProfile";
+import { useAccount } from "wagmi";
+import { ConnectWallet } from "@/components/ConnectWallet";
 import { FaceScan } from "./FaceScan";
 
 type Status = "none" | "pending" | "verified" | "rejected" | "rescan_requested" | "not_configured";
@@ -222,6 +224,7 @@ function SimCasesView({ token }: { token: string }) {
   const { m } = useI18n();
   const t = m.arbitrage.sim;
   const [cases, setCases] = useState<SimCase[]>([]);
+  const [tick, setTick] = useState(0);
   const reload = () => arbFetch<{ cases: SimCase[] }>("sim-cases", { token }).then(({ data }) => setCases(data.cases ?? [])).catch(() => setCases([]));
   useEffect(() => { void reload(); // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token]);
@@ -229,12 +232,13 @@ function SimCasesView({ token }: { token: string }) {
   return (
     <div className="grid gap-3" data-arb-sim-cases>
       <h2 className="text-lg font-extrabold text-slate-900">{t.title}</h2>
-      {cases.map((c) => <SimCaseCard key={c.caseId} c={c} token={token} />)}
+      {cases.map((c) => <SimCaseCard key={c.caseId} c={c} token={token} onAnswered={() => setTick((n) => n + 1)} />)}
+      <WalletCard token={token} tick={tick} />
     </div>
   );
 }
 
-function SimCaseCard({ c, token }: { c: SimCase; token: string }) {
+function SimCaseCard({ c, token, onAnswered }: { c: SimCase; token: string; onAnswered?: () => void }) {
   const { m } = useI18n();
   const t = m.arbitrage.sim;
   const [choice, setChoice] = useState("");
@@ -243,7 +247,7 @@ function SimCaseCard({ c, token }: { c: SimCase; token: string }) {
   const [msg, setMsg] = useState("");
   async function send() {
     const { status } = await arbFetch("sim-cases/answer", { method: "POST", token, body: { caseId: c.caseId, choiceId: choice, ...(comment.trim() ? { comment } : {}) } });
-    if (status === 200) { setAnswer(choice); setMsg(t.sent); }
+    if (status === 200) { setAnswer(choice); setMsg(t.sent); onAnswered?.(); }
     else if (status === 409) { setAnswer(choice); setMsg(t.already); }
   }
   const letterOf = (i: number) => c.choices[i]?.letter || "ABCD"[i] || String(i + 1);
@@ -276,6 +280,33 @@ function SimCaseCard({ c, token }: { c: SimCase; token: string }) {
         </fieldset>
       )}
     </article>
+  );
+}
+
+/** After the first simulated answer: ask the arbiter to connect a wallet (Connect offers to create one). No payment here. */
+function WalletCard({ token, tick }: { token: string; tick: number }) {
+  const { m } = useI18n();
+  const t = m.arbitrage.wallet;
+  const { address, chainId, isConnected } = useAccount();
+  const [state, setState] = useState<{ address: string | null; needsWallet: boolean } | null>(null);
+  useEffect(() => {
+    arbFetch<{ address: string | null; needsWallet: boolean }>("wallet", { token }).then(({ data }) => setState(data)).catch(() => setState(null));
+  }, [token, tick]);
+  useEffect(() => {
+    if (!isConnected || !address || !state || state.address || !state.needsWallet) return;
+    void arbFetch("wallet", { method: "POST", token, body: { address, chainId } }).then(({ status }) => {
+      if (status === 200) setState({ address, needsWallet: false });
+    });
+  }, [isConnected, address, chainId, state, token]);
+  if (!state) return null;
+  if (state.address) return <p className="text-sm text-slate-700" data-arb-wallet-connected>{t.connected} {state.address.slice(0, 6)}…{state.address.slice(-4)}</p>;
+  if (!state.needsWallet) return null;
+  return (
+    <section className="grid gap-2 rounded-2xl border-2 border-sky-400 bg-sky-50 p-3 text-sm text-slate-800" data-arb-wallet-card>
+      <h3 className="font-extrabold">{t.title}</h3>
+      <p>{t.body}</p>
+      <ConnectWallet compact />
+    </section>
   );
 }
 

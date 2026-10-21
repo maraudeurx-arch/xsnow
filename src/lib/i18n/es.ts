@@ -410,6 +410,11 @@ export const es: Messages = {
       "send": "Enviar el nuevo escaneo",
       "error": "No se pudo enviar el nuevo escaneo. Inténtalo de nuevo."
     },
+    "wallet": {
+      "title": "Conecta tu wallet",
+      "body": "¡Bravo por tu primera simulación! Para recibir más tarde tu pago de árbitro, haz clic en Connect. Connect también te propone crear un wallet si no tienes uno.",
+      "connected": "Wallet conectado:"
+    },
     "sim": {
       "suggestionTitle": "Sugerencia de {author}",
       "reasoning": "Razonamiento",

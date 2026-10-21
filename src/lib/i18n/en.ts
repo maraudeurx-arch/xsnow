@@ -410,6 +410,11 @@ export const en: Messages = {
       "send": "Send the new scan",
       "error": "The new scan could not be sent. Try again."
     },
+    "wallet": {
+      "title": "Connect your wallet",
+      "body": "Well done on your first simulation! To receive your arbiter pay later, click Connect. Connect also offers to create a wallet if you don’t have one.",
+      "connected": "Wallet connected:"
+    },
     "sim": {
       "suggestionTitle": "{author}’s suggestion",
       "reasoning": "Reasoning",
