@@ -403,6 +403,13 @@ export const es: Messages = {
     "statusRejected": "Solicitud rechazada.",
     "casesTitle": "Disputas por decidir",
     "noCases": "Ninguna disputa abierta.",
+    "rescan": {
+      "status": "Se solicita un nuevo escaneo facial.",
+      "message": "Se solicita un nuevo escaneo facial: tu primer escaneo no pudo validarse. Repite solo el escaneo facial (gira la cabeza a la izquierda y luego a la derecha). Tus otros datos se conservan.",
+      "howto": "Usa la cámara frontal en un lugar bien iluminado. Nada sale de tu dispositivo salvo la puntuación.",
+      "send": "Enviar el nuevo escaneo",
+      "error": "No se pudo enviar el nuevo escaneo. Inténtalo de nuevo."
+    },
     "sim": {
       "banner": "SIMULACIÓN (SIMULATION) — ejercicio de prueba. Ninguna disputa real, ningún pago, ninguna firma.",
       "title": "Casos de simulación",

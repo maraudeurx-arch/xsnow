@@ -67,3 +67,12 @@ curl -X POST "$API/arbitrage/admin/sim-cases" -H "Authorization: Bearer $ARBITER
   -d '{"title":"Fichier non livré","scenario":"L’agent A dit que B n’a pas livré.","choices":["Rembourser A","Donner raison à B","Partager"]}'
 curl "$API/arbitrage/admin/sim-results" -H "Authorization: Bearer $ARBITER_ADMIN_SECRET"
 ```
+
+## Rescan du visage (`rescan_requested`)
+
+No migration: `arbiters.status` is TEXT.
+
+- Admin: `POST /arbitrage/admin/review {arbiterId, action: "rescan"}` → status `rescan_requested` (only from `pending`; 409 otherwise or if identity was purged). Identity and ID photo are kept.
+- Candidate app (`/arbitrage`, same device/token): clear message, no identity form, only `FaceScan` (head turn left/right liveness, `playsinline` video for iOS Safari) against the ID photo on file.
+  - `GET /arbitrage/rescan/photo` (own token, only in `rescan_requested`) returns the candidate's own ID photo for the in-browser match (no-store).
+  - `POST /arbitrage/rescan {face:{score, liveness, method}}` updates the SAME application: new face result, `face_reviewed = 0`, `identity_hash` recomputed, status back to `pending`. One shot: another rescan needs a new admin request.

@@ -6,6 +6,8 @@
  *   GET  /arbitrage/me                 Bearer <arbiter token> → status
  *   GET  /arbitrage/cases              Bearer <verified arbiter> → open cases + AI suggestion
  *   POST /arbitrage/cases/decide       Bearer <verified arbiter> {caseId, accept, reason?, overrideDecision?}
+ *   GET  /arbitrage/rescan/photo       Bearer <arbiter in rescan_requested> → own ID photo (for the in-browser match)
+ *   POST /arbitrage/rescan             Bearer <arbiter in rescan_requested> {face} → back to pending with new score
  *   GET  /arbitrage/sim-cases          Bearer <verified arbiter> → open SIMULATION cases + my answer
  *   POST /arbitrage/sim-cases/answer   Bearer <verified arbiter> {caseId, choiceId, comment?} (one per arbiter)
  * Public:
@@ -13,7 +15,7 @@
  * Owner (Bearer ARBITER_ADMIN_SECRET):
  *   GET  /arbitrage/admin/pending      pending arbiters (decrypted identity, no photo)
  *   GET  /arbitrage/admin/photo?id=    the encrypted ID photo, decrypted, no-store
- *   POST /arbitrage/admin/review       {arbiterId, approve, faceReviewed}
+ *   POST /arbitrage/admin/review       {arbiterId, approve, faceReviewed} or {arbiterId, action: "rescan"}
  *   POST /arbitrage/admin/cases        create a case between two AI parties
  *   POST /arbitrage/admin/sim-cases    create a SIMULATION case {title, scenario, choices[2..4]}
  *   GET  /arbitrage/admin/sim-results  answers per simulation case (arbiter ids only, no identity)
@@ -34,6 +36,7 @@ import {
   importEncKey,
   importSigningKey,
   parseArbiterApplication,
+  parseFaceCheck,
   sha256Hex,
   signAttestation,
   type DecisionOrigin,
@@ -112,6 +115,7 @@ export type D1Full = { prepare: (q: string) => D1Stmt };
 
 const ARB_COLS = new Set([
   "status", "identity_enc", "photo_enc", "face_reviewed", "reputation", "reviewed_at", "purge_after",
+  "face_score", "face_liveness", "face_method", "identity_hash",
 ]);
 const CASE_COLS = new Set(["status", "suggestion_json", "decision_json", "arbiter_id", "decided_at"]);
 
@@ -499,6 +503,13 @@ export async function handleArbitrage(req: Request, env: ArbEnv, deps: ArbDeps):
       const b = (body ?? {}) as Record<string, unknown>;
       const r = await store.arbiterById(clip(b.arbiterId, 60));
       if (!r) return j({ error: "not_found" }, 404);
+      if (b.action === "rescan") {
+        // Ask the candidate to redo ONLY the face scan + liveness. Identity and ID photo are kept.
+        if (r.status !== "pending" && r.status !== "rescan_requested") return j({ error: "not_pending" }, 409);
+        if (!r.photo_enc || !r.identity_enc) return j({ error: "identity_purged" }, 409);
+        await store.updateArbiter(r.id, { status: "rescan_requested", face_reviewed: 0 });
+        return j({ ok: true, arbiterId: r.id, status: "rescan_requested" });
+      }
       const approve = b.approve === true;
       await store.updateArbiter(r.id, {
         status: approve ? "verified" : "rejected",
@@ -573,6 +584,31 @@ export async function handleArbitrage(req: Request, env: ArbEnv, deps: ArbDeps):
   if (path === "/arbitrage/me" && req.method === "GET") {
     return j({ arbiterId: me.id, status: me.status, reputation: me.reputation });
   }
+  if (path.startsWith("/arbitrage/rescan")) {
+    if (me.status !== "rescan_requested" || !me.photo_enc || !me.identity_enc) return j({ error: "no_rescan_requested", status: me.status }, 409);
+    if (path === "/arbitrage/rescan/photo" && req.method === "GET") {
+      // The candidate's own ID photo, so the browser can compare it to the live face. no-store.
+      const [mime, b64] = (await decryptString(encKey, me.photo_enc)).split(";");
+      return j({ mime, base64: b64 });
+    }
+    if (path === "/arbitrage/rescan" && req.method === "POST") {
+      const face = parseFaceCheck((body as Record<string, unknown> | null)?.face);
+      const identity = await decryptString(encKey, me.identity_enc);
+      const photoSha = await sha256Hex((await decryptString(encKey, me.photo_enc)).split(";")[1] ?? "");
+      const identityHash = await sha256Hex(canonicalJson({ identity: await sha256Hex(identity), photo: photoSha, face }));
+      await store.updateArbiter(me.id, {
+        status: "pending",
+        face_score: face.score,
+        face_liveness: face.liveness ? 1 : 0,
+        face_method: face.method,
+        face_reviewed: 0,
+        identity_hash: identityHash,
+      });
+      return j({ ok: true, status: "pending", faceVerdict: faceVerdict(face) });
+    }
+    return j({ error: "not_found" }, 404);
+  }
+
   if (me.status !== "verified") return j({ error: "not_verified", status: me.status }, 403);
 
   if (path === "/arbitrage/cases" && req.method === "GET") {

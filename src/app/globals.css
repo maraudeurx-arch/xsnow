@@ -1139,3 +1139,37 @@ footer.opc-glass-soft,
   -webkit-box-shadow: 0 0 0 1000px #0f172a inset;
   box-shadow: 0 0 0 1000px #0f172a inset;
 }
+
+/* Arbitrage cards (real + SIMULATION): solid backing, full-opacity dark text, any look.
+   Beats the Look A rule that turns .text-slate-* into snow on dark glass. */
+.arb-card {
+  background: #ffffff !important;
+  color: #1a1a1a !important;
+  -webkit-text-fill-color: currentColor;
+  opacity: 1;
+  backdrop-filter: none;
+}
+.arb-card.arb-card-sim {
+  background: #fffbeb !important;
+}
+.arb-card :is(h3, p, span, label, b, legend, strong) {
+  color: #1a1a1a !important;
+  -webkit-text-fill-color: #1a1a1a;
+  opacity: 1;
+}
+.arb-card .arb-sim-banner {
+  background: #fcd34d !important;
+  color: #1a1a1a !important;
+  -webkit-text-fill-color: #1a1a1a;
+}
+.arb-card .arb-ok {
+  color: #065f46 !important;
+  -webkit-text-fill-color: #065f46;
+}
+.arb-card .arb-suggestion {
+  background: #f1f5f9 !important;
+}
+.arb-card :is(input[type="radio"], input[type="checkbox"]) {
+  background: #ffffff;
+  accent-color: #0f172a;
+}

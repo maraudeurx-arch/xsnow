@@ -132,5 +132,30 @@ test.describe("HITL arbitrage", () => {
     await expect(card.locator("[data-arb-sim-done]")).toContainText("Donner raison à B");
     expect(answered).toEqual({ caseId: "sim_1", choiceId: "b" });
   });
+
+  test("rescan requested: clear message and only the face scan (no identity form)", async ({ page }) => {
+    await skipConsent(page);
+    await seedLocalProfile(page);
+    await page.addInitScript(() => window.localStorage.setItem("opc.arbiter.token.v1", "tok-e2e"));
+    let sent: unknown = null;
+    const png = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==";
+    await page.route(/\/arbitrage\/(me|rescan)/, async (route) => {
+      const req = route.request();
+      if (req.method() === "OPTIONS") return route.fulfill({ status: 204, headers: cors });
+      const path = new URL(req.url()).pathname;
+      if (path.endsWith("/me")) return route.fulfill({ headers: cors, json: { status: sent ? "pending" : "rescan_requested", arbiterId: "arb_1", reputation: 0 } });
+      if (path.endsWith("/rescan/photo")) return route.fulfill({ headers: cors, json: { mime: "image/png", base64: png } });
+      if (path.endsWith("/rescan")) { sent = req.postDataJSON(); return route.fulfill({ headers: cors, json: { ok: true, status: "pending" } }); }
+      return route.fulfill({ status: 404, headers: cors, json: {} });
+    });
+    await page.goto("arbitrage/");
+    await expect(page.locator('[data-arb-status="rescan_requested"]')).toContainText("Nouveau scan du visage");
+    await expect(page.locator("[data-arb-form]")).toHaveCount(0);
+    await expect(page.locator("[data-arb-become]")).toHaveCount(0);
+    await expect(page.locator("[data-arb-face-start]")).toBeEnabled();
+    await expect(page.locator("[data-arb-rescan-send]")).toBeDisabled();
+    // the camera element keeps playsinline for iOS Safari
+    await expect(page.locator("[data-arb-rescan] [data-arb-face-video]")).toHaveAttribute("playsinline", "");
+  });
 });
 
