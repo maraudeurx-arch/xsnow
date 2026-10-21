@@ -22,6 +22,10 @@
  *   POST /arbitrage/admin/sim-close    {caseId} close a simulation case
  *   POST /arbitrage/admin/sim-invite   {arbiterId, invite} SIMULATION-only access for a non-verified
  *                                      arbiter (status unchanged; rejected arbiters never get access)
+ *   GET  /arbitrage/admin/wallets      connected arbiter wallet addresses (ids + public address only)
+ * Arbiter wallet (verified):
+ *   GET  /arbitrage/wallet             {address, needsWallet} (needsWallet = ≥1 simulated answer and no wallet)
+ *   POST /arbitrage/wallet             {address, chainId?} store the address connected with Connect. No payment.
  *
  * Secrets (never in git, never logged): ARBITER_ENC_KEY, ARBITER_SIGNING_KEY,
  * ARBITER_SIGNING_PUBLIC_KEY, ARBITER_ADMIN_SECRET. Missing secrets → 503 not_configured.
@@ -107,7 +111,14 @@ export type ArbStore = {
   simAnswers(caseId: string): Promise<SimAnswerRow[]>;
   isSimInvited(arbiterId: string): Promise<boolean>;
   setSimInvite(arbiterId: string, invite: boolean, at: number): Promise<void>;
+  simAnswerCountBy(arbiterId: string): Promise<number>;
+  walletOf(arbiterId: string): Promise<WalletRow | null>;
+  setWallet(row: WalletRow): Promise<void>;
+  allWallets(): Promise<WalletRow[]>;
 };
+
+export type WalletRow = { arbiter_id: string; address: string; chain_id: number | null; connected_at: number };
+export const EVM_ADDRESS_RE = /^0x[0-9a-fA-F]{40}$/;
 
 type D1Stmt = {
   bind: (...a: unknown[]) => D1Stmt;
@@ -201,6 +212,19 @@ export function d1ArbStore(db: D1Full): ArbStore {
     async setSimInvite(arbiterId, invite, at) {
       if (invite) await db.prepare(`INSERT OR REPLACE INTO arb_sim_invites (arbiter_id, invited_at) VALUES (?,?)`).bind(arbiterId, at).run();
       else await db.prepare(`DELETE FROM arb_sim_invites WHERE arbiter_id = ?`).bind(arbiterId).run();
+    },
+    async simAnswerCountBy(arbiterId) {
+      const r = await db.prepare(`SELECT COUNT(*) AS n FROM arb_sim_answers WHERE arbiter_id = ?`).bind(arbiterId).first<{ n: number }>();
+      return r?.n ?? 0;
+    },
+    walletOf: (id) => db.prepare(`SELECT * FROM arb_wallets WHERE arbiter_id = ?`).bind(id).first<WalletRow>(),
+    async setWallet(w) {
+      await db.prepare(`INSERT OR REPLACE INTO arb_wallets (arbiter_id, address, chain_id, connected_at) VALUES (?,?,?,?)`)
+        .bind(w.arbiter_id, w.address, w.chain_id, w.connected_at).run();
+    },
+    async allWallets() {
+      const r = await db.prepare(`SELECT * FROM arb_wallets ORDER BY connected_at`).bind().all<WalletRow>();
+      return r.results;
     },
   };
 }
@@ -587,6 +611,10 @@ export async function handleArbitrage(req: Request, env: ArbEnv, deps: ArbDeps):
       await store.setSimInvite(r.id, invite, now()); // arbiters.status is never touched here
       return j({ ok: true, simulation: true, arbiterId: r.id, simInvited: invite, status: r.status });
     }
+    if (path === "/arbitrage/admin/wallets" && req.method === "GET") {
+      const ws = await store.allWallets();
+      return j({ wallets: ws.map((w) => ({ arbiterId: w.arbiter_id, address: w.address, chainId: w.chain_id, connectedAt: new Date(w.connected_at).toISOString() })) });
+    }
     if (path === "/arbitrage/admin/sim-results" && req.method === "GET") {
       const out = [];
       for (const row of await store.allSimCases()) {
@@ -686,6 +714,20 @@ export async function handleArbitrage(req: Request, env: ArbEnv, deps: ArbDeps):
       });
     }
     return j({ cases });
+  }
+
+  if (path === "/arbitrage/wallet" && req.method === "GET") {
+    const w = await store.walletOf(me.id);
+    const answered = await store.simAnswerCountBy(me.id);
+    return j({ address: w?.address ?? null, chainId: w?.chain_id ?? null, needsWallet: answered > 0 && !w });
+  }
+  if (path === "/arbitrage/wallet" && req.method === "POST") {
+    const b = (body ?? {}) as Record<string, unknown>;
+    const address = clip(b.address, 42);
+    if (!EVM_ADDRESS_RE.test(address)) return j({ error: "invalid_address" }, 400);
+    const chainId = typeof b.chainId === "number" && Number.isInteger(b.chainId) && b.chainId > 0 ? b.chainId : null;
+    await store.setWallet({ arbiter_id: me.id, address, chain_id: chainId, connected_at: now() });
+    return j({ ok: true, address, chainId });
   }
 
   if (path === "/arbitrage/sim-cases" && req.method === "GET") {

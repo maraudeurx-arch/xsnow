@@ -407,6 +407,11 @@ export const fr = {
       "send": "Envoyer le nouveau scan",
       "error": "Le nouveau scan n’a pas pu être envoyé. Réessaie."
     },
+    "wallet": {
+      "title": "Connecte ton wallet",
+      "body": "Bravo pour ta première simulation ! Pour recevoir plus tard ta rémunération d’arbitre, clique sur Connect. Connect te propose aussi de créer un wallet si tu n’en as pas.",
+      "connected": "Wallet connecté :"
+    },
     "sim": {
       "suggestionTitle": "Suggestion d’{author}",
       "reasoning": "Raisonnement",

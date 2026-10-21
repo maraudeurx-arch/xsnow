@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { handleArbitrage, isArbitragePath, parseSimCase, simTextError, type ArbStore, type ArbiterRow, type CaseRow, type SimAnswerRow } from "./arbitrage.ts";
+import { handleArbitrage, isArbitragePath, parseSimCase, simTextError, type ArbStore, type ArbiterRow, type CaseRow, type SimAnswerRow, type WalletRow } from "./arbitrage.ts";
 import { ARBITER_TERMS_VERSION, bytesToB64, importVerifyKey, verifyAttestation } from "../../../src/lib/arbitrage.ts";
 
 function memStore(): ArbStore & { arbiters: Map<string, ArbiterRow>; cases: Map<string, CaseRow>; simAns: SimAnswerRow[] } {
@@ -8,6 +8,7 @@ function memStore(): ArbStore & { arbiters: Map<string, ArbiterRow>; cases: Map<
   const cases = new Map<string, CaseRow>();
   const simAns: SimAnswerRow[] = [];
   const simInvites = new Set<string>();
+  const wallets = new Map<string, WalletRow>();
   return {
     arbiters,
     cases,
@@ -21,6 +22,10 @@ function memStore(): ArbStore & { arbiters: Map<string, ArbiterRow>; cases: Map<
     async simAnswers(id) { return simAns.filter((a) => a.case_id === id); },
     async isSimInvited(id) { return simInvites.has(id); },
     async setSimInvite(id, on) { if (on) simInvites.add(id); else simInvites.delete(id); },
+    async simAnswerCountBy(id) { return simAns.filter((a) => a.arbiter_id === id).length; },
+    async walletOf(id) { return wallets.get(id) ?? null; },
+    async setWallet(w) { wallets.set(w.arbiter_id, { ...w }); },
+    async allWallets() { return [...wallets.values()]; },
     async insertArbiter(r) { arbiters.set(r.id, { ...r }); },
     async arbiterByToken(h) { return [...arbiters.values()].find((a) => a.token_hash === h) ?? null; },
     async arbiterById(id) { return arbiters.get(id) ?? null; },
@@ -282,6 +287,34 @@ describe("arbitrage worker", () => {
     // rejected arbiters cannot be invited
     await handleArbitrage(req("/arbitrage/admin/review", "POST", { arbiterId: a.arbiterId, approve: false }, S), env, deps);
     assert.equal((await handleArbitrage(req("/arbitrage/admin/sim-invite", "POST", { arbiterId: a.arbiterId }, S), env, deps)).status, 409);
+  });
+  it("wallet: after the first simulated answer the arbiter is asked to connect; address stored, owner-readable, no payment", async () => {
+    const env = await makeEnv();
+    const store = memStore();
+    let fetches = 0;
+    const deps = { store, fetchImpl: (async () => { fetches++; return new Response(""); }) as typeof fetch };
+    const S = env.ARBITER_ADMIN_SECRET;
+    const a = await (await handleArbitrage(req("/arbitrage/apply", "POST", application), env, deps)).json();
+    // not verified: no wallet endpoint
+    assert.equal((await handleArbitrage(req("/arbitrage/wallet", "GET", undefined, a.token), env, deps)).status, 403);
+    await handleArbitrage(req("/arbitrage/admin/review", "POST", { arbiterId: a.arbiterId, approve: true }, S), env, deps);
+    const c = await (await handleArbitrage(req("/arbitrage/admin/sim-cases", "POST", { title: "t", scenario: "s", choices: ["x", "y"] }, S), env, deps)).json();
+    let w = await (await handleArbitrage(req("/arbitrage/wallet", "GET", undefined, a.token), env, deps)).json();
+    assert.equal(w.needsWallet, false);
+    await handleArbitrage(req("/arbitrage/sim-cases/answer", "POST", { caseId: c.caseId, choiceId: "a" }, a.token), env, deps);
+    w = await (await handleArbitrage(req("/arbitrage/wallet", "GET", undefined, a.token), env, deps)).json();
+    assert.equal(w.needsWallet, true);
+    assert.equal((await handleArbitrage(req("/arbitrage/wallet", "POST", { address: "0x123" }, a.token), env, deps)).status, 400);
+    const addr = "0x000000000000000000000000000000000000dEaD";
+    assert.equal((await handleArbitrage(req("/arbitrage/wallet", "POST", { address: addr, chainId: 84532 }, a.token), env, deps)).status, 200);
+    w = await (await handleArbitrage(req("/arbitrage/wallet", "GET", undefined, a.token), env, deps)).json();
+    assert.equal(w.needsWallet, false);
+    assert.equal(w.address, addr);
+    assert.equal((await handleArbitrage(req("/arbitrage/admin/wallets", "GET", undefined, a.token), env, deps)).status, 401);
+    const list = await (await handleArbitrage(req("/arbitrage/admin/wallets", "GET", undefined, S), env, deps)).json();
+    assert.deepEqual(list.wallets.map((x: { arbiterId: string; address: string }) => [x.arbiterId, x.address]), [[a.arbiterId, addr]]);
+    assert.ok(!JSON.stringify(list).includes("Politzer"));
+    assert.equal(fetches, 0);
   });
 
   it("rescan: admin requests it, candidate redoes only the face scan, back to pending", async () => {
