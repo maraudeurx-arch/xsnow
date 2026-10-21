@@ -117,7 +117,22 @@ test.describe("HITL arbitrage", () => {
     await page.goto("arbitrage/");
     const card = page.locator("[data-arb-email-card]");
     await expect(card).toContainText("Ajouter mon e-mail");
-    await card.locator("[data-arb-email-field]").fill("arbitre@opc.test");
+    // order: explanation, label, input, button
+    const order = await card.evaluate((el) => [...el.querySelectorAll("p, label, input, button")].map((n) => n.getAttribute("data-arb-email-label") !== null ? "label" : n.tagName.toLowerCase()));
+    expect(order.slice(0, 4)).toEqual(["p", "label", "input", "button"]);
+    await expect(card.locator("[data-arb-email-label]")).toHaveText("Entre ton e-mail ici bas");
+    // empty → focus the input + short hint, nothing sent
+    await card.locator("[data-arb-email-save]").click();
+    await expect(card.locator('[data-arb-email-error="empty"]')).toBeVisible();
+    await expect(card.locator("[data-arb-email-field]")).toBeFocused();
+    expect(saved).toBeNull();
+    // invalid → visible message, nothing sent
+    await card.locator("[data-arb-email-field]").fill("pas-un-email");
+    await card.locator("[data-arb-email-save]").click();
+    await expect(card.locator('[data-arb-email-error="invalid"]')).toBeVisible();
+    expect(saved).toBeNull();
+    // iOS autofill: value set without any input/change event, with capitals and a trailing space
+    await card.locator("[data-arb-email-field]").evaluate((el) => { (el as HTMLInputElement).value = " Arbitre@OPC.test "; });
     await card.locator("[data-arb-email-save]").click();
     await expect(card).toHaveCount(0);
     expect(saved).toEqual({ email: "arbitre@opc.test", lang: "fr" });

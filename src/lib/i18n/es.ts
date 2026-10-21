@@ -427,6 +427,10 @@ export const es: Messages = {
       "error": "No se pudieron activar las notificaciones ahora. Inténtalo más tarde."
     },
     "email": {
+      "enterBelow": "Escribe tu correo aquí abajo",
+      "emptyHint": "Escribe tu correo en la casilla de arriba y luego toca el botón.",
+      "session": "Sesión caducada: cierra y vuelve a abrir OPC, y luego inténtalo de nuevo.",
+      "network": "No se pudo conectar con el servidor. Inténtalo de nuevo en un momento.",
       "label": "Tu correo",
       "add": "Agregar mi correo",
       "why": "Recibirás por correo una copia de cada decisión que tomes. Tu correo está cifrado y nunca se muestra.",
