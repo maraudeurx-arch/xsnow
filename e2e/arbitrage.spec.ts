@@ -115,7 +115,8 @@ test.describe("HITL arbitrage", () => {
       if (path.endsWith("/sim-cases")) {
         return route.fulfill({ headers: cors, json: { simulation: true, cases: [{
           simulation: true, caseId: "sim_1", title: "SIMULATION — Fichier non livré", scenario: "L'agent A dit que B n'a pas livré.",
-          choices: [{ id: "a", label: "Rembourser A" }, { id: "b", label: "Donner raison à B" }, { id: "c", label: "Partager" }], myAnswer: null,
+          choices: [{ id: "a", letter: "A", label: "Rembourser A" }, { id: "b", letter: "B", label: "Donner raison à B" }, { id: "c", letter: "C", label: "Partager" }], myAnswer: null,
+          suggestion: { letter: "B", text: "Je suggère B.", reasoning: "M-5.3 charge.", author: "Indiana" },
         }] } });
       }
       if (path.endsWith("/cases")) return route.fulfill({ headers: cors, json: { cases: [] } });
@@ -125,11 +126,14 @@ test.describe("HITL arbitrage", () => {
     const card = page.locator('[data-arb-sim-case="sim_1"]');
     await expect(card.locator("[data-arb-sim-banner]")).toContainText("SIMULATION");
     await expect(card.locator('input[type="radio"]')).toHaveCount(3);
+    await expect(card.locator("[data-arb-sim-letter]")).toHaveText(["A.", "B.", "C."]);
+    await expect(card.locator("[data-arb-sim-suggestion]")).toContainText("Suggestion d’Indiana : B");
+    await expect(card.locator("[data-arb-sim-suggestion]")).toContainText("M-5.3");
     await expect(card.locator("[data-arb-sim-send]")).toBeDisabled();
     await expect(card).not.toContainText(/tribunal|\bcour\b/i);
     await card.locator('[data-arb-sim-choice="b"]').check();
     await card.locator("[data-arb-sim-send]").click();
-    await expect(card.locator("[data-arb-sim-done]")).toContainText("Donner raison à B");
+    await expect(card.locator("[data-arb-sim-done]")).toContainText("B. Donner raison à B");
     expect(answered).toEqual({ caseId: "sim_1", choiceId: "b" });
   });
 

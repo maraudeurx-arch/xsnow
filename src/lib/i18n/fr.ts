@@ -408,6 +408,8 @@ export const fr = {
       "error": "Le nouveau scan n’a pas pu être envoyé. Réessaie."
     },
     "sim": {
+      "suggestionTitle": "Suggestion d’{author}",
+      "reasoning": "Raisonnement",
       "banner": "SIMULATION — exercice de test. Aucun vrai litige, aucun paiement, aucune signature.",
       "title": "Dossiers de simulation",
       "comment": "Commentaire (facultatif)",

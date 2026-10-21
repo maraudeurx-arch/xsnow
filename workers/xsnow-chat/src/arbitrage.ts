@@ -299,8 +299,18 @@ export function parseDecision(raw: unknown): Decision | null {
 // ---------- simulation model ----------
 
 export const SIM_LABEL = "SIMULATION";
-export type SimChoice = { id: string; label: string };
-export type SimCaseInput = { title: string; scenario: string; choices: SimChoice[] };
+export type SimChoice = { id: string; letter: string; label: string };
+/** Static, admin-written suggestion (no AI call, no cost). */
+export type SimSuggestion = { letter: string; text: string; reasoning: string; author: string };
+export type SimCaseInput = { title: string; scenario: string; choices: SimChoice[]; suggestion: SimSuggestion | null };
+export const SIM_LETTERS = ["A", "B", "C", "D"] as const;
+export const SIM_SUGGESTION_AUTHOR = "Indiana";
+
+/** Choices from storage, with letters A–D by position (older cases stored no letter). */
+export function simChoicesFromRow(json: string | null | undefined): SimChoice[] {
+  const raw = JSON.parse(json || "[]") as { id: string; label: string; letter?: string }[];
+  return raw.map((c, i) => ({ id: c.id, label: c.label, letter: c.letter || SIM_LETTERS[i] || String(i + 1) }));
+}
 
 /** Words never used for our service (FR/EN). "cours" (= course / en cours) stays allowed. */
 const FORBIDDEN_WORDS = /(^|[^\p{L}])(cour|courts?|tribunal|tribunaux|tribunals)(?![\p{L}])/iu;
@@ -337,16 +347,26 @@ export function parseSimCase(raw: unknown): { ok: true; value: SimCaseInput } | 
     const o = (c && typeof c === "object" ? c : { label: c }) as Record<string, unknown>;
     const label = clip(o.label, 300);
     const id = clip(o.id, 20).replace(/[^a-zA-Z0-9_-]/g, "") || String.fromCharCode(97 + i);
-    if (label && !seen.has(id)) { seen.add(id); choices.push({ id, label }); }
+    if (label && !seen.has(id)) { seen.add(id); choices.push({ id, letter: SIM_LETTERS[i], label }); }
   });
   if (choices.length !== r.choices.length) return { ok: false, error: "invalid_choice" };
   title = title.replace(/^\s*SIMULATION\s*[—:-]?\s*/i, "");
   title = `${SIM_LABEL} — ${title}`;
-  for (const t of [title, scenario, ...choices.map((c) => c.label)]) {
+  let suggestion: SimSuggestion | null = null;
+  if (r.suggestion !== undefined && r.suggestion !== null) {
+    const sg = (typeof r.suggestion === "object" ? r.suggestion : {}) as Record<string, unknown>;
+    const letter = clip(sg.letter, 2).toUpperCase();
+    const text = clip(sg.text, 600);
+    const reasoning = clip(sg.reasoning, 1500);
+    if (!text || !reasoning || !choices.some((c) => c.letter === letter)) return { ok: false, error: "invalid_suggestion" };
+    suggestion = { letter, text, reasoning, author: SIM_SUGGESTION_AUTHOR };
+  }
+  const texts = [title, scenario, ...choices.map((c) => c.label), ...(suggestion ? [suggestion.text, suggestion.reasoning] : [])];
+  for (const t of texts) {
     const e = simTextError(t);
     if (e) return { ok: false, error: e };
   }
-  return { ok: true, value: { title, scenario, choices } };
+  return { ok: true, value: { title, scenario, choices, suggestion } };
 }
 
 /** Ask Workers AI for a suggestion. Falls back to a clearly-labelled stub. */
@@ -535,7 +555,8 @@ export async function handleArbitrage(req: Request, env: ArbEnv, deps: ArbDeps):
       const id = randomId("sim", 9);
       await store.insertCase({
         id, status: "open", case_json: JSON.stringify({ title: p.value.title, scenario: p.value.scenario }),
-        suggestion_json: null, decision_json: null, arbiter_id: null, created_at: now(), decided_at: null,
+        suggestion_json: p.value.suggestion ? JSON.stringify(p.value.suggestion) : null,
+        decision_json: null, arbiter_id: null, created_at: now(), decided_at: null,
         simulation: 1, choices_json: JSON.stringify(p.value.choices),
       });
       return j({ ok: true, caseId: id, simulation: true, title: p.value.title }, 201);
@@ -550,22 +571,29 @@ export async function handleArbitrage(req: Request, env: ArbEnv, deps: ArbDeps):
       const out = [];
       for (const row of await store.allSimCases()) {
         const c = JSON.parse(row.case_json) as { title: string; scenario: string };
-        const choices = JSON.parse(row.choices_json || "[]") as SimChoice[];
+        const choices = simChoicesFromRow(row.choices_json);
+        const sugg = row.suggestion_json ? (JSON.parse(row.suggestion_json) as SimSuggestion) : null;
+        const letterOf = (id: string) => choices.find((ch) => ch.id === id)?.letter ?? null;
         const answers = await store.simAnswers(row.id);
-        const tally: Record<string, number> = Object.fromEntries(choices.map((ch) => [ch.id, 0]));
-        for (const a of answers) tally[a.choice_id] = (tally[a.choice_id] ?? 0) + 1;
+        const tally: Record<string, number> = Object.fromEntries(choices.map((ch) => [ch.letter, 0]));
+        for (const a of answers) { const l = letterOf(a.choice_id) ?? a.choice_id; tally[l] = (tally[l] ?? 0) + 1; }
+        const followed = sugg ? answers.filter((a) => letterOf(a.choice_id) === sugg.letter).length : null;
         out.push({
           simulation: true,
           caseId: row.id,
           status: row.status,
           title: c.title,
           choices,
+          suggestion: sugg,
           createdAt: new Date(row.created_at).toISOString(),
           answerCount: answers.length,
           tally,
+          followedSuggestion: followed,
+          contradictedSuggestion: followed === null ? null : answers.length - followed,
           // arbiter ids only — never identity data
           answers: answers.map((a) => ({
-            arbiterId: a.arbiter_id, choiceId: a.choice_id, comment: a.comment,
+            arbiterId: a.arbiter_id, choiceId: a.choice_id, letter: letterOf(a.choice_id), comment: a.comment,
+            followedSuggestion: sugg ? letterOf(a.choice_id) === sugg.letter : null,
             answeredAt: new Date(a.answered_at).toISOString(),
             responseSeconds: Math.round((a.answered_at - row.created_at) / 1000),
           })),
@@ -641,7 +669,8 @@ export async function handleArbitrage(req: Request, env: ArbEnv, deps: ArbDeps):
       const mine = (await store.simAnswers(row.id)).find((a) => a.arbiter_id === me.id);
       cases.push({
         simulation: true, caseId: row.id, title: c.title, scenario: c.scenario,
-        choices: JSON.parse(row.choices_json || "[]") as SimChoice[],
+        choices: simChoicesFromRow(row.choices_json),
+        suggestion: row.suggestion_json ? (JSON.parse(row.suggestion_json) as SimSuggestion) : null,
         myAnswer: mine ? mine.choice_id : null,
       });
     }
@@ -652,14 +681,16 @@ export async function handleArbitrage(req: Request, env: ArbEnv, deps: ArbDeps):
     const b = (body ?? {}) as Record<string, unknown>;
     const row = await store.caseById(clip(b.caseId, 60));
     if (!row || row.simulation !== 1 || row.status !== "open") return j({ error: "not_found" }, 404);
-    const choices = JSON.parse(row.choices_json || "[]") as SimChoice[];
+    const choices = simChoicesFromRow(row.choices_json);
     const choiceId = clip(b.choiceId, 20);
     if (!choices.some((c) => c.id === choiceId)) return j({ error: "invalid_choice" }, 400);
     const comment = clip(b.comment, 500) || null;
     const ok = await store.insertSimAnswer({ case_id: row.id, arbiter_id: me.id, choice_id: choiceId, comment, answered_at: now() });
     if (!ok) return j({ error: "already_answered" }, 409);
     // No AI, no webhook, no signature, no reputation change.
-    return j({ ok: true, simulation: true, caseId: row.id, choiceId });
+    const sugg = row.suggestion_json ? (JSON.parse(row.suggestion_json) as SimSuggestion) : null;
+    const letter = choices.find((c) => c.id === choiceId)!.letter;
+    return j({ ok: true, simulation: true, caseId: row.id, choiceId, letter, followedSuggestion: sugg ? sugg.letter === letter : null });
   }
 
   if (path === "/arbitrage/cases/decide" && req.method === "POST") {

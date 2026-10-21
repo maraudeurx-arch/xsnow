@@ -21,6 +21,7 @@ async function mockVerifiedWithSim(page: Page) {
         simulation: true, caseId: "sim_1", title: "SIMULATION — Traduction livrée en retard et incomplète",
         scenario: "L'agent Alpha (client) a commandé à l'agent Bêta la traduction en anglais d'un guide de 20 pages, pour un montant fictif de deux cents dollars.",
         choices: [{ id: "a", label: "Rembourser Alpha en totalité" }, { id: "b", label: "Donner raison à Bêta : paiement complet" }, { id: "c", label: "Partager : Bêta traduit les légendes et reçoit la moitié du montant" }], myAnswer: null,
+        suggestion: { letter: "C", text: "Je suggère C.", reasoning: "M-5.3 charge ; M-5.5 norme ; M-4.4 ambiguïté.", author: "Indiana" },
       }] } });
     }
     if (path.endsWith("/cases")) {

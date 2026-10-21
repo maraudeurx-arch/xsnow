@@ -188,6 +188,7 @@ describe("arbitrage worker", () => {
     const ok = parseSimCase({ title: "Colis non reçu", scenario: "Un agent dit ne pas avoir reçu le fichier.", choices: ["Rembourser", "Refuser"] });
     assert.ok(ok.ok && ok.value.title === "SIMULATION — Colis non reçu");
     assert.deepEqual(ok.ok && ok.value.choices.map((c) => c.id), ["a", "b"]);
+    assert.deepEqual(ok.ok && ok.value.choices.map((c) => c.letter), ["A", "B"]);
     assert.equal((parseSimCase({ title: "x", scenario: "y", choices: ["a"] }) as { error: string }).error, "choices_2_to_4");
     assert.equal((parseSimCase({ title: "x", scenario: "y", choices: ["a", "b", "c", "d", "e"] }) as { error: string }).error, "choices_2_to_4");
     assert.equal((parseSimCase({ title: "x", scenario: "y", choices: ["a", "le tribunal"] }) as { error: string }).error, "forbidden_word");
@@ -237,7 +238,9 @@ describe("arbitrage worker", () => {
     assert.equal((await (await handleArbitrage(req("/arbitrage/sim-cases", "GET", undefined, toks[2]), env, deps)).json()).cases[0].myAnswer, "b");
     const res = await (await handleArbitrage(req("/arbitrage/admin/sim-results", "GET", undefined, S), env, deps)).json();
     assert.equal(res.cases[0].answerCount, 5);
-    assert.deepEqual(res.cases[0].tally, { a: 3, b: 1, c: 1 });
+    assert.deepEqual(res.cases[0].tally, { A: 3, B: 1, C: 1 });
+    assert.equal(res.cases[0].answers[0].letter, "A");
+    assert.equal(res.cases[0].followedSuggestion, null);
     assert.equal(res.cases[0].answers[0].responseSeconds, 60);
     const dump = JSON.stringify(res);
     for (const leak of ["Estigene", "Politzer", "AB12345", "passport"]) assert.ok(!dump.includes(leak), `no ${leak} in sim-results`);
@@ -285,6 +288,58 @@ describe("arbitrage worker", () => {
     // verified/rejected arbiters cannot be sent to rescan
     await handleArbitrage(req("/arbitrage/admin/review", "POST", { arbiterId: a.arbiterId, approve: true }, S), env, deps);
     assert.equal((await handleArbitrage(req("/arbitrage/admin/review", "POST", { arbiterId: a.arbiterId, action: "rescan" }, S), env, deps)).status, 409);
+  });
+
+  it("simulation: static Indiana suggestion (guarded), letters A–D, followed/contradicted in results", async () => {
+    const env = await makeEnv();
+    let aiCalls = 0;
+    env.AI = { run: async () => { aiCalls++; return { response: "{}" }; } };
+    const store = memStore();
+    const deps = { store };
+    const S = env.ARBITER_ADMIN_SECRET;
+    const base = { title: "Rapport", scenario: "Un agent a livré un rapport.", choices: ["Un", "Deux", "Trois", "Quatre"] };
+    const bad = async (suggestion: unknown) => (await (await handleArbitrage(req("/arbitrage/admin/sim-cases", "POST", { ...base, suggestion }, S), env, deps)).json()).error;
+    assert.equal(await bad({ letter: "E", text: "x", reasoning: "y" }), "invalid_suggestion");
+    assert.equal(await bad({ letter: "B", text: "x" }), "invalid_suggestion");
+    assert.equal(await bad({ letter: "B", text: "Comme un tribunal", reasoning: "y" }), "forbidden_word");
+    assert.equal(await bad({ letter: "B", text: "x", reasoning: "L'arbitre touche 25 $" }), "pay_figure_not_allowed");
+    const c = await (await handleArbitrage(req("/arbitrage/admin/sim-cases", "POST", {
+      ...base, suggestion: { letter: "b", text: "Je suggère B.", reasoning: "M-5.3 charge ; M-5.5 norme ; M-4.4 ambiguïté." },
+    }, S), env, deps)).json();
+    assert.equal(c.ok, true);
+    const toks: string[] = [];
+    for (let i = 0; i < 3; i++) {
+      const a = await (await handleArbitrage(req("/arbitrage/apply", "POST", { ...application, docNumber: `CD12345${i}` }), env, deps)).json();
+      await handleArbitrage(req("/arbitrage/admin/review", "POST", { arbiterId: a.arbiterId, approve: true }, S), env, deps);
+      toks.push(a.token);
+    }
+    const list = await (await handleArbitrage(req("/arbitrage/sim-cases", "GET", undefined, toks[0]), env, deps)).json();
+    assert.deepEqual(list.cases[0].choices.map((x: { letter: string }) => x.letter), ["A", "B", "C", "D"]);
+    assert.equal(list.cases[0].suggestion.letter, "B");
+    assert.equal(list.cases[0].suggestion.author, "Indiana");
+    const r0 = await (await handleArbitrage(req("/arbitrage/sim-cases/answer", "POST", { caseId: c.caseId, choiceId: "b" }, toks[0]), env, deps)).json();
+    assert.equal(r0.letter, "B");
+    assert.equal(r0.followedSuggestion, true);
+    await handleArbitrage(req("/arbitrage/sim-cases/answer", "POST", { caseId: c.caseId, choiceId: "b" }, toks[1]), env, deps);
+    const r2 = await (await handleArbitrage(req("/arbitrage/sim-cases/answer", "POST", { caseId: c.caseId, choiceId: "d" }, toks[2]), env, deps)).json();
+    assert.equal(r2.followedSuggestion, false);
+    const res = await (await handleArbitrage(req("/arbitrage/admin/sim-results", "GET", undefined, S), env, deps)).json();
+    const rc = res.cases.find((x: { caseId: string }) => x.caseId === c.caseId);
+    assert.deepEqual(rc.tally, { A: 0, B: 2, C: 0, D: 1 });
+    assert.equal(rc.followedSuggestion, 2);
+    assert.equal(rc.contradictedSuggestion, 1);
+    assert.deepEqual(rc.answers.map((a: { letter: string; followedSuggestion: boolean }) => [a.letter, a.followedSuggestion]), [["B", true], ["B", true], ["D", false]]);
+    assert.equal(aiCalls, 0);
+  });
+
+  it("simulation: older cases without stored letters get A–D by position", async () => {
+    const env = await makeEnv();
+    const store = memStore();
+    store.cases.set("sim_old", { id: "sim_old", status: "open", case_json: JSON.stringify({ title: "SIMULATION — x", scenario: "y" }), suggestion_json: null,
+      decision_json: null, arbiter_id: null, created_at: 0, decided_at: null, simulation: 1, choices_json: JSON.stringify([{ id: "a", label: "1" }, { id: "b", label: "2" }, { id: "c", label: "3" }]) });
+    const res = await (await handleArbitrage(req("/arbitrage/admin/sim-results", "GET", undefined, env.ARBITER_ADMIN_SECRET), env, { store })).json();
+    assert.deepEqual(res.cases[0].choices.map((c: { letter: string }) => c.letter), ["A", "B", "C"]);
+    assert.equal(res.cases[0].suggestion, null);
   });
 });
 

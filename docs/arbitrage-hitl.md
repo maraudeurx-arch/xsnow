@@ -76,3 +76,9 @@ No migration: `arbiters.status` is TEXT.
 - Candidate app (`/arbitrage`, same device/token): clear message, no identity form, only `FaceScan` (head turn left/right liveness, `playsinline` video for iOS Safari) against the ID photo on file.
   - `GET /arbitrage/rescan/photo` (own token, only in `rescan_requested`) returns the candidate's own ID photo for the in-browser match (no-store).
   - `POST /arbitrage/rescan {face:{score, liveness, method}}` updates the SAME application: new face result, `face_reviewed = 0`, `identity_hash` recomputed, status back to `pending`. One shot: another rescan needs a new admin request.
+
+### Letters and Indiana's suggestion (simulation)
+
+- Choices carry letters A–D by position (stored in `choices_json`; older cases get them at read time). Results tally by letter and give each answer's `letter`.
+- Optional `suggestion: {letter, text, reasoning}` on `POST /arbitrage/admin/sim-cases`: static, admin-written ("Suggestion d'Indiana"), stored in `arb_cases.suggestion_json`, no AI call. Same text guard as the rest. Arbiters see it before answering.
+- `sim-results` adds `suggestion`, `followedSuggestion` / `contradictedSuggestion` counts, and `followedSuggestion` per answer. No migration.
