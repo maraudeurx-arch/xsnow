@@ -416,6 +416,9 @@ export const en: Messages = {
       "connected": "Wallet connected:"
     },
     "sim": {
+      "manualTip": "Get familiar with the Justice Manual: it guides every arbiter decision.",
+      "manualPdf": "Download the Justice Manual (PDF)",
+      "manualPage": "Read online",
       "suggestionTitle": "{author}’s suggestion",
       "reasoning": "Reasoning",
       "banner": "SIMULATION — test exercise. No real dispute, no payment, no signature.",

@@ -135,6 +135,10 @@ test.describe("HITL arbitrage", () => {
     await card.locator("[data-arb-sim-send]").click();
     await expect(card.locator("[data-arb-sim-done]")).toContainText("B. Donner raison à B");
     expect(answered).toEqual({ caseId: "sim_1", choiceId: "b" });
+    const manual = card.locator("[data-arb-sim-manual]");
+    await expect(manual).toBeVisible();
+    await expect(manual.locator("[data-arb-manual-pdf]")).toHaveAttribute("href", "https://essaim-agents.com/manuel-justice-v2.3.2.pdf");
+    await expect(manual.locator("[data-arb-manual-page]")).toHaveAttribute("href", "https://essaim-agents.com/manuel-justice");
   });
 
   test("rescan requested: clear message and only the face scan (no identity form)", async ({ page }) => {

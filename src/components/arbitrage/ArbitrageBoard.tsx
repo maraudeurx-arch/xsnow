@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { ARBITER_TERMS_VERSION, ID_DOC_TYPES, type FaceCheck, type IdDocType, type TermsAcceptance } from "@/lib/arbitrage";
+import { MANUEL_JUSTICE_PAGE_URL, MANUEL_JUSTICE_PDF_URL, ARBITER_TERMS_VERSION, ID_DOC_TYPES, type FaceCheck, type IdDocType, type TermsAcceptance } from "@/lib/arbitrage";
 import { arbFetch, readArbiterToken, writeArbiterToken } from "@/lib/arbitrage-client";
 import { prepareAdImage } from "@/lib/compress-ad-image";
 import { useI18n } from "@/lib/i18n/locale";
@@ -266,7 +266,14 @@ function SimCaseCard({ c, token, onAnswered }: { c: SimCase; token: string; onAn
         </div>
       ) : null}
       {answer ? (
-        <p className="arb-ok font-bold text-emerald-800" data-arb-sim-done>{msg || t.already} {chosen ? `${t.yours} ${chosen}` : ""}</p>
+        <>
+          <p className="arb-ok font-bold text-emerald-800" data-arb-sim-done>{msg || t.already} {chosen ? `${t.yours} ${chosen}` : ""}</p>
+          <div className="grid gap-1 rounded-xl border border-sky-300 bg-sky-50 p-2" data-arb-sim-manual>
+            <p className="font-bold">{t.manualTip}</p>
+            <a className="font-bold text-sky-800 underline" href={MANUEL_JUSTICE_PDF_URL} target="_blank" rel="noopener" download data-arb-manual-pdf>{t.manualPdf}</a>
+            <a className="text-sky-800 underline" href={MANUEL_JUSTICE_PAGE_URL} target="_blank" rel="noopener" data-arb-manual-page>{t.manualPage}</a>
+          </div>
+        </>
       ) : (
         <fieldset className="grid gap-2">
           {c.choices.map((ch, i) => (
