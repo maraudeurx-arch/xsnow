@@ -403,6 +403,15 @@ export const es: Messages = {
     "statusRejected": "Solicitud rechazada.",
     "casesTitle": "Disputas por decidir",
     "noCases": "Ninguna disputa abierta.",
+    "sim": {
+      "banner": "SIMULACIÓN (SIMULATION) — ejercicio de prueba. Ninguna disputa real, ningún pago, ninguna firma.",
+      "title": "Casos de simulación",
+      "comment": "Comentario (opcional)",
+      "send": "Enviar mi respuesta",
+      "sent": "Respuesta guardada. ¡Gracias!",
+      "already": "Ya respondiste a este caso.",
+      "yours": "Tu respuesta:"
+    },
     "claim": "Reclamación",
     "response": "Respuesta",
     "amount": "Monto",

@@ -403,6 +403,15 @@ export const en: Messages = {
     "statusRejected": "Application rejected.",
     "casesTitle": "Disputes to decide",
     "noCases": "No open dispute.",
+    "sim": {
+      "banner": "SIMULATION — test exercise. No real dispute, no payment, no signature.",
+      "title": "Simulation cases",
+      "comment": "Comment (optional)",
+      "send": "Send my answer",
+      "sent": "Answer saved. Thank you!",
+      "already": "You already answered this case.",
+      "yours": "Your answer:"
+    },
     "claim": "Claim",
     "response": "Response",
     "amount": "Amount",

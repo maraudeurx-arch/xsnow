@@ -97,4 +97,40 @@ test.describe("HITL arbitrage", () => {
     await expect(page.getByText(/signée et envoyée/)).toBeVisible();
     expect(decided).toEqual({ caseId: "case_1", accept: true });
   });
+
+  test("verified arbiter answers a SIMULATION case with radio choices", async ({ page }) => {
+    await skipConsent(page);
+    await seedLocalProfile(page);
+    await page.addInitScript(() => window.localStorage.setItem("opc.arbiter.token.v1", "tok-e2e"));
+    let answered: unknown = null;
+    await page.route(/\/arbitrage\/(me|cases|sim-cases)/, async (route) => {
+      const req = route.request();
+      if (req.method() === "OPTIONS") return route.fulfill({ status: 204, headers: cors });
+      const path = new URL(req.url()).pathname;
+      if (path.endsWith("/me")) return route.fulfill({ headers: cors, json: { status: "verified", arbiterId: "arb_1", reputation: 0 } });
+      if (path.endsWith("/sim-cases/answer")) {
+        answered = req.postDataJSON();
+        return route.fulfill({ headers: cors, json: { ok: true, simulation: true } });
+      }
+      if (path.endsWith("/sim-cases")) {
+        return route.fulfill({ headers: cors, json: { simulation: true, cases: [{
+          simulation: true, caseId: "sim_1", title: "SIMULATION — Fichier non livré", scenario: "L'agent A dit que B n'a pas livré.",
+          choices: [{ id: "a", label: "Rembourser A" }, { id: "b", label: "Donner raison à B" }, { id: "c", label: "Partager" }], myAnswer: null,
+        }] } });
+      }
+      if (path.endsWith("/cases")) return route.fulfill({ headers: cors, json: { cases: [] } });
+      return route.fulfill({ status: 404, headers: cors, json: {} });
+    });
+    await page.goto("arbitrage/");
+    const card = page.locator('[data-arb-sim-case="sim_1"]');
+    await expect(card.locator("[data-arb-sim-banner]")).toContainText("SIMULATION");
+    await expect(card.locator('input[type="radio"]')).toHaveCount(3);
+    await expect(card.locator("[data-arb-sim-send]")).toBeDisabled();
+    await expect(card).not.toContainText(/tribunal|\bcour\b/i);
+    await card.locator('[data-arb-sim-choice="b"]').check();
+    await card.locator("[data-arb-sim-send]").click();
+    await expect(card.locator("[data-arb-sim-done]")).toContainText("Donner raison à B");
+    expect(answered).toEqual({ caseId: "sim_1", choiceId: "b" });
+  });
 });
+

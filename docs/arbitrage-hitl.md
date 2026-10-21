@@ -44,3 +44,26 @@ curl -s -X POST -H "Authorization: Bearer $ARBITER_ADMIN_SECRET" -H 'Content-Typ
 - Non certifiée KYC ; pas d’anti-usurpation réelle : une photo imprimée ou une vidéo rejouée peut passer le test « tourner la tête ».
 - Score indicatif (seuil 0,55), sensible à la lumière, à la qualité de la photo de la pièce et aux lunettes ; taux d’erreur non mesurés sur nos données.
 - Le score est calculé côté client : un utilisateur technique peut le falsifier. D’où la revue humaine obligatoire avant `verified`.
+
+## Simulation de dossier (test only)
+
+Purpose: check the arbiter flow end to end with fictitious cases, several arbiters at once.
+
+- Migration `0004_arb_simulation.sql`: `arb_cases.simulation`, `arb_cases.choices_json`, table `arb_sim_answers` (PK `case_id, arbiter_id` → one answer per arbiter per case).
+- Admin (Bearer `ARBITER_ADMIN_SECRET`):
+  - `POST /arbitrage/admin/sim-cases` `{title, scenario, choices: [2..4 strings or {id,label}]}` → title is always prefixed `SIMULATION — `.
+  - `GET /arbitrage/admin/sim-results` → per case: choices, tally, answers (arbiter id, choice, comment, time, response seconds). No identity data.
+  - `POST /arbitrage/admin/sim-close` `{caseId}`.
+- Verified arbiter: `GET /arbitrage/sim-cases`, `POST /arbitrage/sim-cases/answer` `{caseId, choiceId, comment?}` (409 if already answered).
+- Simulation cases never appear in `/arbitrage/cases` and are refused by `/cases/decide`. No AI suggestion, no webhook, no signature, no reputation change, no email.
+- Server-side text guard (title, scenario, choices): refuses `cour`, `court(s)`, `tribunal(aux)` and any money/percent figure except `30 $`, `50 $`, `10 %`. Describe disputed amounts in words.
+- UI: `/arbitrage` shows a SIMULATION banner and radio choices under the real cases list.
+
+Example:
+
+```bash
+curl -X POST "$API/arbitrage/admin/sim-cases" -H "Authorization: Bearer $ARBITER_ADMIN_SECRET" \
+  -H 'Content-Type: application/json' \
+  -d '{"title":"Fichier non livré","scenario":"L’agent A dit que B n’a pas livré.","choices":["Rembourser A","Donner raison à B","Partager"]}'
+curl "$API/arbitrage/admin/sim-results" -H "Authorization: Bearer $ARBITER_ADMIN_SECRET"
+```

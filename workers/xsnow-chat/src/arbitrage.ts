@@ -6,6 +6,8 @@
  *   GET  /arbitrage/me                 Bearer <arbiter token> → status
  *   GET  /arbitrage/cases              Bearer <verified arbiter> → open cases + AI suggestion
  *   POST /arbitrage/cases/decide       Bearer <verified arbiter> {caseId, accept, reason?, overrideDecision?}
+ *   GET  /arbitrage/sim-cases          Bearer <verified arbiter> → open SIMULATION cases + my answer
+ *   POST /arbitrage/sim-cases/answer   Bearer <verified arbiter> {caseId, choiceId, comment?} (one per arbiter)
  * Public:
  *   GET  /arbitrage/public-key         Ed25519 SPKI to verify attestations
  * Owner (Bearer ARBITER_ADMIN_SECRET):
@@ -13,6 +15,9 @@
  *   GET  /arbitrage/admin/photo?id=    the encrypted ID photo, decrypted, no-store
  *   POST /arbitrage/admin/review       {arbiterId, approve, faceReviewed}
  *   POST /arbitrage/admin/cases        create a case between two AI parties
+ *   POST /arbitrage/admin/sim-cases    create a SIMULATION case {title, scenario, choices[2..4]}
+ *   GET  /arbitrage/admin/sim-results  answers per simulation case (arbiter ids only, no identity)
+ *   POST /arbitrage/admin/sim-close    {caseId} close a simulation case
  *
  * Secrets (never in git, never logged): ARBITER_ENC_KEY, ARBITER_SIGNING_KEY,
  * ARBITER_SIGNING_PUBLIC_KEY, ARBITER_ADMIN_SECRET. Missing secrets → 503 not_configured.
@@ -67,6 +72,16 @@ export type CaseRow = {
   arbiter_id: string | null;
   created_at: number;
   decided_at: number | null;
+  simulation?: number;
+  choices_json?: string | null;
+};
+
+export type SimAnswerRow = {
+  case_id: string;
+  arbiter_id: string;
+  choice_id: string;
+  comment: string | null;
+  answered_at: number;
 };
 
 export type ArbStore = {
@@ -80,6 +95,11 @@ export type ArbStore = {
   caseById(id: string): Promise<CaseRow | null>;
   openCases(): Promise<CaseRow[]>;
   updateCase(id: string, patch: Partial<CaseRow>): Promise<void>;
+  openSimCases(): Promise<CaseRow[]>;
+  allSimCases(): Promise<CaseRow[]>;
+  /** Insert one answer; returns false if this arbiter already answered this case. */
+  insertSimAnswer(row: SimAnswerRow): Promise<boolean>;
+  simAnswers(caseId: string): Promise<SimAnswerRow[]>;
 };
 
 type D1Stmt = {
@@ -133,19 +153,39 @@ export function d1ArbStore(db: D1Full): ArbStore {
     },
     async insertCase(c) {
       await db
-        .prepare(`INSERT INTO arb_cases (id, status, case_json, suggestion_json, decision_json, arbiter_id, created_at, decided_at) VALUES (?,?,?,?,?,?,?,?)`)
-        .bind(c.id, c.status, c.case_json, c.suggestion_json, c.decision_json, c.arbiter_id, c.created_at, c.decided_at)
+        .prepare(`INSERT INTO arb_cases (id, status, case_json, suggestion_json, decision_json, arbiter_id, created_at, decided_at, simulation, choices_json) VALUES (?,?,?,?,?,?,?,?,?,?)`)
+        .bind(c.id, c.status, c.case_json, c.suggestion_json, c.decision_json, c.arbiter_id, c.created_at, c.decided_at,
+          c.simulation ?? 0, c.choices_json ?? null)
         .run();
     },
     caseById: (id) => db.prepare(`SELECT * FROM arb_cases WHERE id = ?`).bind(id).first<CaseRow>(),
     async openCases() {
-      const r = await db.prepare(`SELECT * FROM arb_cases WHERE status = 'open' ORDER BY created_at LIMIT 50`).bind().all<CaseRow>();
+      const r = await db.prepare(`SELECT * FROM arb_cases WHERE status = 'open' AND simulation = 0 ORDER BY created_at LIMIT 50`).bind().all<CaseRow>();
       return r.results;
     },
     async updateCase(id, patch) {
       const p = patchSql(patch, CASE_COLS);
       if (!p.set) return;
       await db.prepare(`UPDATE arb_cases SET ${p.set} WHERE id = ?`).bind(...p.values, id).run();
+    },
+    async openSimCases() {
+      const r = await db.prepare(`SELECT * FROM arb_cases WHERE status = 'open' AND simulation = 1 ORDER BY created_at LIMIT 50`).bind().all<CaseRow>();
+      return r.results;
+    },
+    async allSimCases() {
+      const r = await db.prepare(`SELECT * FROM arb_cases WHERE simulation = 1 ORDER BY created_at DESC LIMIT 100`).bind().all<CaseRow>();
+      return r.results;
+    },
+    async insertSimAnswer(a) {
+      const r = (await db
+        .prepare(`INSERT OR IGNORE INTO arb_sim_answers (case_id, arbiter_id, choice_id, comment, answered_at) VALUES (?,?,?,?,?)`)
+        .bind(a.case_id, a.arbiter_id, a.choice_id, a.comment, a.answered_at)
+        .run()) as { meta?: { changes?: number } };
+      return (r?.meta?.changes ?? 0) > 0;
+    },
+    async simAnswers(caseId) {
+      const r = await db.prepare(`SELECT * FROM arb_sim_answers WHERE case_id = ? ORDER BY answered_at`).bind(caseId).all<SimAnswerRow>();
+      return r.results;
     },
   };
 }
@@ -250,6 +290,59 @@ export function parseDecision(raw: unknown): Decision | null {
   const rationale = clip(r.rationale, 1500);
   if (!rationale) return null;
   return { outcome, refundPercent, rationale };
+}
+
+// ---------- simulation model ----------
+
+export const SIM_LABEL = "SIMULATION";
+export type SimChoice = { id: string; label: string };
+export type SimCaseInput = { title: string; scenario: string; choices: SimChoice[] };
+
+/** Words never used for our service (FR/EN). "cours" (= course / en cours) stays allowed. */
+const FORBIDDEN_WORDS = /(^|[^\p{L}])(cour|courts?|tribunal|tribunaux|tribunals)(?![\p{L}])/iu;
+/** Money / percent figures. Only the approved modal figures are allowed. */
+const MONEY_RE =
+  /(\$\s*\d[\d\s.,]*|\d[\d\s.,]*\s*(\$|%|€|usdc|usd|cad|eur|dollars?|pour\s*cent|percent))/giu;
+const ALLOWED_FIGURES = new Set(["30$", "50$", "10%"]);
+
+function normFigure(f: string): string {
+  const t = f.toLowerCase().replace(/\s+/g, "");
+  const m = t.match(/^\$(\d+)$/);
+  return m ? `${m[1]}$` : t;
+}
+
+/** Returns an error code, or null if the text is acceptable for a simulation message. */
+export function simTextError(text: string): string | null {
+  if (FORBIDDEN_WORDS.test(text)) return "forbidden_word";
+  for (const m of text.matchAll(MONEY_RE)) {
+    if (!ALLOWED_FIGURES.has(normFigure(m[0]))) return "pay_figure_not_allowed";
+  }
+  return null;
+}
+
+export function parseSimCase(raw: unknown): { ok: true; value: SimCaseInput } | { ok: false; error: string } {
+  if (!raw || typeof raw !== "object") return { ok: false, error: "invalid_sim_case" };
+  const r = raw as Record<string, unknown>;
+  let title = clip(r.title, 160);
+  const scenario = clip(r.scenario, 4000);
+  if (!title || !scenario || !Array.isArray(r.choices)) return { ok: false, error: "invalid_sim_case" };
+  if (r.choices.length < 2 || r.choices.length > 4) return { ok: false, error: "choices_2_to_4" };
+  const choices: SimChoice[] = [];
+  const seen = new Set<string>();
+  r.choices.forEach((c, i) => {
+    const o = (c && typeof c === "object" ? c : { label: c }) as Record<string, unknown>;
+    const label = clip(o.label, 300);
+    const id = clip(o.id, 20).replace(/[^a-zA-Z0-9_-]/g, "") || String.fromCharCode(97 + i);
+    if (label && !seen.has(id)) { seen.add(id); choices.push({ id, label }); }
+  });
+  if (choices.length !== r.choices.length) return { ok: false, error: "invalid_choice" };
+  title = title.replace(/^\s*SIMULATION\s*[—:-]?\s*/i, "");
+  title = `${SIM_LABEL} — ${title}`;
+  for (const t of [title, scenario, ...choices.map((c) => c.label)]) {
+    const e = simTextError(t);
+    if (e) return { ok: false, error: e };
+  }
+  return { ok: true, value: { title, scenario, choices } };
 }
 
 /** Ask Workers AI for a suggestion. Falls back to a clearly-labelled stub. */
@@ -425,6 +518,50 @@ export async function handleArbitrage(req: Request, env: ArbEnv, deps: ArbDeps):
       });
       return j({ ok: true, caseId: id }, 201);
     }
+    if (path === "/arbitrage/admin/sim-cases" && req.method === "POST") {
+      const p = parseSimCase(body);
+      if (!p.ok) return j({ error: p.error }, 400);
+      const id = randomId("sim", 9);
+      await store.insertCase({
+        id, status: "open", case_json: JSON.stringify({ title: p.value.title, scenario: p.value.scenario }),
+        suggestion_json: null, decision_json: null, arbiter_id: null, created_at: now(), decided_at: null,
+        simulation: 1, choices_json: JSON.stringify(p.value.choices),
+      });
+      return j({ ok: true, caseId: id, simulation: true, title: p.value.title }, 201);
+    }
+    if (path === "/arbitrage/admin/sim-close" && req.method === "POST") {
+      const row = await store.caseById(clip((body as Record<string, unknown> | null)?.caseId, 60));
+      if (!row || row.simulation !== 1) return j({ error: "not_found" }, 404);
+      await store.updateCase(row.id, { status: "closed", decided_at: now() });
+      return j({ ok: true, caseId: row.id, status: "closed" });
+    }
+    if (path === "/arbitrage/admin/sim-results" && req.method === "GET") {
+      const out = [];
+      for (const row of await store.allSimCases()) {
+        const c = JSON.parse(row.case_json) as { title: string; scenario: string };
+        const choices = JSON.parse(row.choices_json || "[]") as SimChoice[];
+        const answers = await store.simAnswers(row.id);
+        const tally: Record<string, number> = Object.fromEntries(choices.map((ch) => [ch.id, 0]));
+        for (const a of answers) tally[a.choice_id] = (tally[a.choice_id] ?? 0) + 1;
+        out.push({
+          simulation: true,
+          caseId: row.id,
+          status: row.status,
+          title: c.title,
+          choices,
+          createdAt: new Date(row.created_at).toISOString(),
+          answerCount: answers.length,
+          tally,
+          // arbiter ids only — never identity data
+          answers: answers.map((a) => ({
+            arbiterId: a.arbiter_id, choiceId: a.choice_id, comment: a.comment,
+            answeredAt: new Date(a.answered_at).toISOString(),
+            responseSeconds: Math.round((a.answered_at - row.created_at) / 1000),
+          })),
+        });
+      }
+      return j({ simulation: true, cases: out });
+    }
     return j({ error: "not_found" }, 404);
   }
 
@@ -461,10 +598,38 @@ export async function handleArbitrage(req: Request, env: ArbEnv, deps: ArbDeps):
     return j({ cases });
   }
 
+  if (path === "/arbitrage/sim-cases" && req.method === "GET") {
+    const cases = [];
+    for (const row of await store.openSimCases()) {
+      const c = JSON.parse(row.case_json) as { title: string; scenario: string };
+      const mine = (await store.simAnswers(row.id)).find((a) => a.arbiter_id === me.id);
+      cases.push({
+        simulation: true, caseId: row.id, title: c.title, scenario: c.scenario,
+        choices: JSON.parse(row.choices_json || "[]") as SimChoice[],
+        myAnswer: mine ? mine.choice_id : null,
+      });
+    }
+    return j({ simulation: true, cases });
+  }
+
+  if (path === "/arbitrage/sim-cases/answer" && req.method === "POST") {
+    const b = (body ?? {}) as Record<string, unknown>;
+    const row = await store.caseById(clip(b.caseId, 60));
+    if (!row || row.simulation !== 1 || row.status !== "open") return j({ error: "not_found" }, 404);
+    const choices = JSON.parse(row.choices_json || "[]") as SimChoice[];
+    const choiceId = clip(b.choiceId, 20);
+    if (!choices.some((c) => c.id === choiceId)) return j({ error: "invalid_choice" }, 400);
+    const comment = clip(b.comment, 500) || null;
+    const ok = await store.insertSimAnswer({ case_id: row.id, arbiter_id: me.id, choice_id: choiceId, comment, answered_at: now() });
+    if (!ok) return j({ error: "already_answered" }, 409);
+    // No AI, no webhook, no signature, no reputation change.
+    return j({ ok: true, simulation: true, caseId: row.id, choiceId });
+  }
+
   if (path === "/arbitrage/cases/decide" && req.method === "POST") {
     const b = (body ?? {}) as Record<string, unknown>;
     const row = await store.caseById(clip(b.caseId, 60));
-    if (!row || row.status !== "open") return j({ error: "not_found" }, 404);
+    if (!row || row.status !== "open" || row.simulation === 1) return j({ error: "not_found" }, 404);
     if (!row.suggestion_json) return j({ error: "no_suggestion" }, 409);
     const c = JSON.parse(row.case_json) as CaseInput;
     const suggestion = JSON.parse(row.suggestion_json) as Decision & { model: string };

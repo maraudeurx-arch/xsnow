@@ -17,6 +17,10 @@ type ArbCase = {
   caseId: string; amountUsdc: number; claimant: string; respondent: string;
   claim: string; response: string; suggestion: Suggestion;
 };
+type SimCase = {
+  simulation: true; caseId: string; title: string; scenario: string;
+  choices: { id: string; label: string }[]; myAnswer: string | null;
+};
 
 const input = "arb-input min-h-11 w-full rounded-xl border border-slate-600 bg-slate-900 px-3 text-[15px] text-white caret-white placeholder:text-white/60";
 const label = "grid gap-1 text-left text-sm font-bold text-slate-800";
@@ -204,7 +208,61 @@ function CasesView({ token }: { token: string }) {
       <h2 className="text-lg font-extrabold text-slate-900">{t.casesTitle}</h2>
       {cases && cases.length === 0 ? <p className="text-slate-700">{t.noCases}</p> : null}
       {cases?.map((c) => <CaseCard key={c.caseId} c={c} token={token} onDecided={reload} />)}
+      <SimCasesView token={token} />
     </section>
+  );
+}
+
+/** SIMULATION cases: test only — no AI suggestion, no signature, no payment. */
+function SimCasesView({ token }: { token: string }) {
+  const { m } = useI18n();
+  const t = m.arbitrage.sim;
+  const [cases, setCases] = useState<SimCase[]>([]);
+  const reload = () => arbFetch<{ cases: SimCase[] }>("sim-cases", { token }).then(({ data }) => setCases(data.cases ?? [])).catch(() => setCases([]));
+  useEffect(() => { void reload(); // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token]);
+  if (cases.length === 0) return null;
+  return (
+    <div className="grid gap-3" data-arb-sim-cases>
+      <h2 className="text-lg font-extrabold text-slate-900">{t.title}</h2>
+      {cases.map((c) => <SimCaseCard key={c.caseId} c={c} token={token} />)}
+    </div>
+  );
+}
+
+function SimCaseCard({ c, token }: { c: SimCase; token: string }) {
+  const { m } = useI18n();
+  const t = m.arbitrage.sim;
+  const [choice, setChoice] = useState("");
+  const [comment, setComment] = useState("");
+  const [answer, setAnswer] = useState<string | null>(c.myAnswer);
+  const [msg, setMsg] = useState("");
+  async function send() {
+    const { status } = await arbFetch("sim-cases/answer", { method: "POST", token, body: { caseId: c.caseId, choiceId: choice, ...(comment.trim() ? { comment } : {}) } });
+    if (status === 200) { setAnswer(choice); setMsg(t.sent); }
+    else if (status === 409) { setAnswer(choice); setMsg(t.already); }
+  }
+  const chosen = c.choices.find((x) => x.id === answer);
+  return (
+    <article className="grid gap-2 rounded-2xl border-2 border-amber-400 bg-amber-50 p-3 text-sm text-slate-800" data-arb-sim-case={c.caseId}>
+      <p role="note" className="rounded-xl bg-amber-300 p-2 font-extrabold text-slate-900" data-arb-sim-banner>{t.banner}</p>
+      <h3 className="font-extrabold">{c.title}</h3>
+      <p className="whitespace-pre-line">{c.scenario}</p>
+      {answer ? (
+        <p className="font-bold text-emerald-800" data-arb-sim-done>{msg || t.already} {chosen ? `${t.yours} ${chosen.label}` : ""}</p>
+      ) : (
+        <fieldset className="grid gap-2">
+          {c.choices.map((ch) => (
+            <label key={ch.id} className="flex min-h-11 items-center gap-2 rounded-xl border border-slate-300 bg-white px-3">
+              <input type="radio" name={`sim-${c.caseId}`} value={ch.id} checked={choice === ch.id} onChange={() => setChoice(ch.id)} data-arb-sim-choice={ch.id} />
+              <span>{ch.label}</span>
+            </label>
+          ))}
+          <label className={label}>{t.comment}<textarea className={input} maxLength={500} value={comment} onChange={(e) => setComment(e.target.value)} /></label>
+          <button type="button" className={primary} disabled={!choice} onClick={() => void send()} data-arb-sim-send>{t.send}</button>
+        </fieldset>
+      )}
+    </article>
   );
 }
 

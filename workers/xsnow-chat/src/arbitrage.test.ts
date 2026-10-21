@@ -1,14 +1,23 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { handleArbitrage, isArbitragePath, type ArbStore, type ArbiterRow, type CaseRow } from "./arbitrage.ts";
+import { handleArbitrage, isArbitragePath, parseSimCase, simTextError, type ArbStore, type ArbiterRow, type CaseRow, type SimAnswerRow } from "./arbitrage.ts";
 import { ARBITER_TERMS_VERSION, bytesToB64, importVerifyKey, verifyAttestation } from "../../../src/lib/arbitrage.ts";
 
-function memStore(): ArbStore & { arbiters: Map<string, ArbiterRow>; cases: Map<string, CaseRow> } {
+function memStore(): ArbStore & { arbiters: Map<string, ArbiterRow>; cases: Map<string, CaseRow>; simAns: SimAnswerRow[] } {
   const arbiters = new Map<string, ArbiterRow>();
   const cases = new Map<string, CaseRow>();
+  const simAns: SimAnswerRow[] = [];
   return {
     arbiters,
     cases,
+    simAns,
+    async openSimCases() { return [...cases.values()].filter((c) => c.status === "open" && c.simulation === 1); },
+    async allSimCases() { return [...cases.values()].filter((c) => c.simulation === 1); },
+    async insertSimAnswer(a) {
+      if (simAns.some((x) => x.case_id === a.case_id && x.arbiter_id === a.arbiter_id)) return false;
+      simAns.push({ ...a }); return true;
+    },
+    async simAnswers(id) { return simAns.filter((a) => a.case_id === id); },
     async insertArbiter(r) { arbiters.set(r.id, { ...r }); },
     async arbiterByToken(h) { return [...arbiters.values()].find((a) => a.token_hash === h) ?? null; },
     async arbiterById(id) { return arbiters.get(id) ?? null; },
@@ -19,7 +28,7 @@ function memStore(): ArbStore & { arbiters: Map<string, ArbiterRow>; cases: Map<
     },
     async insertCase(c) { cases.set(c.id, { ...c }); },
     async caseById(id) { return cases.get(id) ?? null; },
-    async openCases() { return [...cases.values()].filter((c) => c.status === "open"); },
+    async openCases() { return [...cases.values()].filter((c) => c.status === "open" && c.simulation !== 1); },
     async updateCase(id, p) { const c = cases.get(id); if (c) cases.set(id, { ...c, ...p }); },
   };
 }
@@ -164,5 +173,80 @@ describe("arbitrage worker", () => {
     await handleArbitrage(req("/arbitrage/me", "GET", undefined, a.token), env, deps);
     assert.equal(store.arbiters.get(a.arbiterId)!.photo_enc, null);
     assert.ok(store.arbiters.get(a.arbiterId)!.identity_hash);
+  });
+
+  it("simulation text guard: no authority words, only approved figures", () => {
+    assert.equal(simTextError("Le tribunal décide"), "forbidden_word");
+    assert.equal(simTextError("Devant la Cour"), "forbidden_word");
+    assert.equal(simTextError("small claims court"), "forbidden_word");
+    assert.equal(simTextError("Dossier en cours, voir le courriel"), null);
+    assert.equal(simTextError("Payé 30 $ par arbitrage, 50 $ par appel, 10 % OPC"), null);
+    assert.equal(simTextError("$30 per case"), null);
+    assert.equal(simTextError("Litige de 500 USDC"), "pay_figure_not_allowed");
+    assert.equal(simTextError("L'arbitre touche 25 $"), "pay_figure_not_allowed");
+    assert.equal(simTextError("part de 40 %"), "pay_figure_not_allowed");
+    const ok = parseSimCase({ title: "Colis non reçu", scenario: "Un agent dit ne pas avoir reçu le fichier.", choices: ["Rembourser", "Refuser"] });
+    assert.ok(ok.ok && ok.value.title === "SIMULATION — Colis non reçu");
+    assert.deepEqual(ok.ok && ok.value.choices.map((c) => c.id), ["a", "b"]);
+    assert.equal((parseSimCase({ title: "x", scenario: "y", choices: ["a"] }) as { error: string }).error, "choices_2_to_4");
+    assert.equal((parseSimCase({ title: "x", scenario: "y", choices: ["a", "b", "c", "d", "e"] }) as { error: string }).error, "choices_2_to_4");
+    assert.equal((parseSimCase({ title: "x", scenario: "y", choices: ["a", "le tribunal"] }) as { error: string }).error, "forbidden_word");
+  });
+
+  it("simulation: several arbiters answer the same case independently; no AI, webhook, signature or reputation", async () => {
+    const env = await makeEnv();
+    let aiCalls = 0;
+    env.AI = { run: async () => { aiCalls++; return { response: "{}" }; } };
+    const store = memStore();
+    let fetches = 0;
+    let t = Date.parse("2026-10-21T22:00:00Z");
+    const deps = { store, now: () => t, fetchImpl: (async () => { fetches++; return new Response(""); }) as typeof fetch };
+    const S = env.ARBITER_ADMIN_SECRET;
+    const toks: string[] = [];
+    for (let i = 0; i < 5; i++) {
+      const a = await (await handleArbitrage(req("/arbitrage/apply", "POST", { ...application, docNumber: `AB12345${i}` }), env, deps)).json();
+      await handleArbitrage(req("/arbitrage/admin/review", "POST", { arbiterId: a.arbiterId, approve: true }, S), env, deps);
+      toks.push(a.token);
+    }
+    // pending arbiter cannot see simulations
+    const p = await (await handleArbitrage(req("/arbitrage/apply", "POST", { ...application, docNumber: "ZZ999999" }), env, deps)).json();
+    assert.equal((await handleArbitrage(req("/arbitrage/sim-cases", "GET", undefined, p.token), env, deps)).status, 403);
+    // non-admin cannot create
+    assert.equal((await handleArbitrage(req("/arbitrage/admin/sim-cases", "POST", {}, toks[0]), env, deps)).status, 401);
+    assert.equal((await (await handleArbitrage(req("/arbitrage/admin/sim-cases", "POST", { title: "x", scenario: "Le tribunal", choices: ["a", "b"] }, S), env, deps)).json()).error, "forbidden_word");
+    const c = await (await handleArbitrage(req("/arbitrage/admin/sim-cases", "POST", {
+      title: "Fichier non livré", scenario: "L'agent A dit que l'agent B n'a pas livré.",
+      choices: [{ id: "a", label: "Rembourser A" }, { id: "b", label: "Donner raison à B" }, { id: "c", label: "Partager" }],
+    }, S), env, deps)).json();
+    assert.equal(c.simulation, true);
+    assert.match(c.title, /^SIMULATION — /);
+    // simulation never shows in the real case list nor accepts real decisions
+    assert.equal((await (await handleArbitrage(req("/arbitrage/cases", "GET", undefined, toks[0]), env, deps)).json()).cases.length, 0);
+    assert.equal((await handleArbitrage(req("/arbitrage/cases/decide", "POST", { caseId: c.caseId, accept: true }, toks[0]), env, deps)).status, 404);
+    const list = await (await handleArbitrage(req("/arbitrage/sim-cases", "GET", undefined, toks[0]), env, deps)).json();
+    assert.equal(list.cases[0].choices.length, 3);
+    assert.equal(list.cases[0].myAnswer, null);
+    assert.equal((await handleArbitrage(req("/arbitrage/sim-cases/answer", "POST", { caseId: c.caseId, choiceId: "z" }, toks[0]), env, deps)).status, 400);
+    const picks = ["a", "a", "b", "c", "a"];
+    for (let i = 0; i < 5; i++) {
+      t += 60_000;
+      const r = await handleArbitrage(req("/arbitrage/sim-cases/answer", "POST", { caseId: c.caseId, choiceId: picks[i] }, toks[i]), env, deps);
+      assert.equal(r.status, 200);
+    }
+    assert.equal((await handleArbitrage(req("/arbitrage/sim-cases/answer", "POST", { caseId: c.caseId, choiceId: "b" }, toks[0]), env, deps)).status, 409);
+    assert.equal((await (await handleArbitrage(req("/arbitrage/sim-cases", "GET", undefined, toks[2]), env, deps)).json()).cases[0].myAnswer, "b");
+    const res = await (await handleArbitrage(req("/arbitrage/admin/sim-results", "GET", undefined, S), env, deps)).json();
+    assert.equal(res.cases[0].answerCount, 5);
+    assert.deepEqual(res.cases[0].tally, { a: 3, b: 1, c: 1 });
+    assert.equal(res.cases[0].answers[0].responseSeconds, 60);
+    const dump = JSON.stringify(res);
+    for (const leak of ["Estigene", "Politzer", "AB12345", "passport"]) assert.ok(!dump.includes(leak), `no ${leak} in sim-results`);
+    assert.equal(aiCalls, 0);
+    assert.equal(fetches, 0);
+    for (const a of store.arbiters.values()) assert.equal(a.reputation, 0);
+    assert.equal(store.cases.get(c.caseId)!.decision_json, null);
+    // close
+    await handleArbitrage(req("/arbitrage/admin/sim-close", "POST", { caseId: c.caseId }, S), env, deps);
+    assert.equal((await (await handleArbitrage(req("/arbitrage/sim-cases", "GET", undefined, toks[0]), env, deps)).json()).cases.length, 0);
   });
 });

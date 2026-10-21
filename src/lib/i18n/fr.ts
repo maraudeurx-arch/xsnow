@@ -400,6 +400,15 @@ export const fr = {
     "statusRejected": "Demande refusée.",
     "casesTitle": "Litiges à trancher",
     "noCases": "Aucun litige ouvert.",
+    "sim": {
+      "banner": "SIMULATION — exercice de test. Aucun vrai litige, aucun paiement, aucune signature.",
+      "title": "Dossiers de simulation",
+      "comment": "Commentaire (facultatif)",
+      "send": "Envoyer ma réponse",
+      "sent": "Réponse enregistrée. Merci !",
+      "already": "Tu as déjà répondu à ce dossier.",
+      "yours": "Ta réponse :"
+    },
     "claim": "Plainte",
     "response": "Réponse",
     "amount": "Montant",
