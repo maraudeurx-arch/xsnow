@@ -47,10 +47,20 @@ export function decisionMail(d: DecisionCopy, lang: MailLang): { subject: string
 
 export type MailEnv = { ARBITER_DECISION_EMAILS?: string; RESEND_API_KEY?: string; IDEAS_FROM_EMAIL?: string };
 
-/** Returns "off" | "no_email" | "sent" | "failed". Never throws. */
-export async function sendDecisionCopy(env: MailEnv, to: string | null, lang: MailLang, d: DecisionCopy, fetchImpl: typeof fetch): Promise<string> {
-  if (env.ARBITER_DECISION_EMAILS !== "on" || !env.RESEND_API_KEY) return "off";
-  if (!to) return "no_email";
+/** Log-safe text: no email addresses, no bearer/API keys, single line, truncated. */
+export function redactForLog(s: string, max = 300): string {
+  return s.replace(/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/g, "[email]")
+    .replace(/re_[A-Za-z0-9_]{8,}/g, "[key]").replace(/Bearer\s+\S+/gi, "Bearer [key]")
+    .replace(/\s+/g, " ").slice(0, max);
+}
+
+/** Returns "off" | "no_email" | "sent" | "failed". Never throws. Logs one redacted line per attempt. */
+export async function sendDecisionCopy(env: MailEnv, to: string | null, lang: MailLang, d: DecisionCopy, fetchImpl: typeof fetch,
+  log: (line: string) => void = (l) => console.log(l)): Promise<string> {
+  const tag = `decision-copy case=${d.caseId} sim=${d.simulation ? 1 : 0}`;
+  if (env.ARBITER_DECISION_EMAILS !== "on") { log(`${tag} result=off reason=flag`); return "off"; }
+  if (!env.RESEND_API_KEY) { log(`${tag} result=off reason=no_resend_key`); return "off"; }
+  if (!to) { log(`${tag} result=no_email`); return "no_email"; }
   const m = decisionMail(d, lang);
   try {
     const r = await fetchImpl(RESEND_API_URL, {
@@ -58,6 +68,11 @@ export async function sendDecisionCopy(env: MailEnv, to: string | null, lang: Ma
       headers: { Authorization: `Bearer ${env.RESEND_API_KEY}`, "Content-Type": "application/json" },
       body: JSON.stringify({ from: resolveFromAddress(env.IDEAS_FROM_EMAIL), to: [to], subject: m.subject, text: m.text }),
     });
+    const body = redactForLog(await r.text().catch(() => ""));
+    log(`${tag} result=${r.ok ? "sent" : "failed"} resend_status=${r.status} body=${body}`);
     return r.ok ? "sent" : "failed";
-  } catch { return "failed"; }
+  } catch (e) {
+    log(`${tag} result=failed resend_status=0 error=${redactForLog(String(e))}`);
+    return "failed";
+  }
 }
