@@ -322,12 +322,13 @@ function EmailCard({ token, onDone }: { token: string; onDone: () => void }) {
   const { m, locale } = useI18n();
   const t = m.arbitrage.email;
   const ref = useRef<HTMLInputElement>(null);
-  const [err, setErr] = useState<"" | "invalid" | "session" | "network">("");
+  const [err, setErr] = useState<"" | "empty" | "invalid" | "session" | "network">("");
   const [busy, setBusy] = useState(false);
   async function save(e?: { preventDefault(): void }) {
     e?.preventDefault();
     // Read the DOM value: iOS autofill / QuickType may not fire onChange on a controlled input.
     const email = normalizeEmailInput(ref.current?.value ?? "");
+    if (!email) { setErr("empty"); ref.current?.focus(); return; }
     if (!/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/.test(email)) { setErr("invalid"); return; }
     setBusy(true); setErr("");
     try {
@@ -340,9 +341,10 @@ function EmailCard({ token, onDone }: { token: string; onDone: () => void }) {
     <form className="grid gap-2 rounded-2xl border-2 border-emerald-400 bg-emerald-50 p-3 text-sm text-slate-800" data-arb-email-card onSubmit={(e) => void save(e)} noValidate>
       <h3 className="font-extrabold">{t.add}</h3>
       <p>{t.why}</p>
-      <input ref={ref} className={input} type="email" name="email" inputMode="email" autoCapitalize="none" autoCorrect="off" spellCheck={false} autoComplete="email" aria-label={t.label} onInput={() => setErr("")} data-arb-email-field />
+      <label htmlFor="arb-email-field" className="font-bold" data-arb-email-label>{t.enterBelow}</label>
+      <input id="arb-email-field" ref={ref} className={input} type="email" name="email" inputMode="email" autoCapitalize="none" autoCorrect="off" spellCheck={false} autoComplete="email" onInput={() => setErr("")} data-arb-email-field />
       <button type="submit" className={primary} disabled={busy} data-arb-email-save>{t.add}</button>
-      {err ? <p role="alert" className="text-rose-800" data-arb-email-error={err}>{err === "invalid" ? t.invalid : err === "session" ? t.session : t.network}</p> : null}
+      {err ? <p role="alert" className="text-rose-800" data-arb-email-error={err}>{err === "empty" ? t.emptyHint : err === "invalid" ? t.invalid : err === "session" ? t.session : t.network}</p> : null}
     </form>
   );
 }

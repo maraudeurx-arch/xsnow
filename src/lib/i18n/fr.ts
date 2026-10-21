@@ -424,6 +424,8 @@ export const fr = {
       "error": "Impossible d’activer les notifications pour le moment. Réessaie plus tard."
     },
     "email": {
+      "enterBelow": "Entre ton e-mail ici bas",
+      "emptyHint": "Écris ton e-mail dans la case ci-dessus, puis touche le bouton.",
       "session": "Session expirée : ferme et rouvre OPC, puis réessaie.",
       "network": "Pas de connexion au serveur. Réessaie dans un instant.",
       "label": "Ton e-mail",

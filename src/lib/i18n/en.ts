@@ -427,6 +427,8 @@ export const en: Messages = {
       "error": "Could not turn on notifications right now. Try again later."
     },
     "email": {
+      "enterBelow": "Enter your email below",
+      "emptyHint": "Type your email in the box above, then tap the button.",
       "session": "Session expired: close and reopen OPC, then try again.",
       "network": "Could not reach the server. Try again in a moment.",
       "label": "Your email",
