@@ -53,3 +53,6 @@ next-env.d.ts
 # next dev agent stubs
 /AGENTS.md
 /CLAUDE.md
+
+# face models copied at build (scripts/copy-human-models.mjs)
+/public/models/human/
