@@ -1,3 +1,4 @@
+import { MANUEL_JUSTICE_PAGE_URL, MANUEL_JUSTICE_PDF_URL } from "./arbitrage.ts";
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { en } from "./i18n/en.ts";
@@ -80,4 +81,9 @@ describe("arbiter terms", () => {
     }
     assert.equal(DICTIONARIES.fr.arbitrage.termsAccept, "Accepter");
   });
+});
+
+it("manual links: exact existing essaim-agents.com URLs (https, PDF download)", () => {
+  assert.equal(MANUEL_JUSTICE_PAGE_URL, "https://essaim-agents.com/manuel-justice");
+  assert.equal(MANUEL_JUSTICE_PDF_URL, "https://essaim-agents.com/manuel-justice-v2.3.2.pdf");
 });

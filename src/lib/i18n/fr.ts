@@ -413,6 +413,9 @@ export const fr = {
       "connected": "Wallet connecté :"
     },
     "sim": {
+      "manualTip": "Familiarise-toi avec le Manuel de justice : il guide chaque décision d’arbitre.",
+      "manualPdf": "Télécharger le Manuel de justice (PDF)",
+      "manualPage": "Lire en ligne",
       "suggestionTitle": "Suggestion d’{author}",
       "reasoning": "Raisonnement",
       "banner": "SIMULATION — exercice de test. Aucun vrai litige, aucun paiement, aucune signature.",

@@ -262,3 +262,7 @@ export function assertNoPii(payload: unknown): void {
     if (text.includes(`"${k}"`)) throw new Error(`PII key in party payload: ${k}`);
   }
 }
+
+/** Existing, verified links (essaim-agents.com site). The arbiters' manual has no published link yet. */
+export const MANUEL_JUSTICE_PAGE_URL = "https://essaim-agents.com/manuel-justice";
+export const MANUEL_JUSTICE_PDF_URL = "https://essaim-agents.com/manuel-justice-v2.3.2.pdf";

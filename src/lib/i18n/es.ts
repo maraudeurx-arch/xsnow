@@ -416,6 +416,9 @@ export const es: Messages = {
       "connected": "Wallet conectado:"
     },
     "sim": {
+      "manualTip": "Familiarízate con el Manual de justicia: guía cada decisión de árbitro.",
+      "manualPdf": "Descargar el Manual de justicia (PDF)",
+      "manualPage": "Leer en línea",
       "suggestionTitle": "Sugerencia de {author}",
       "reasoning": "Razonamiento",
       "banner": "SIMULACIÓN (SIMULATION) — ejercicio de prueba. Ninguna disputa real, ningún pago, ninguna firma.",
