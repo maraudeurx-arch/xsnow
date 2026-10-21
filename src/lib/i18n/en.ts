@@ -427,6 +427,7 @@ export const en: Messages = {
       "error": "Could not turn on notifications right now. Try again later."
     },
     "sim": {
+      "noPending": "No arbitration pending.",
       "manualTip": "Get familiar with the Justice Manual: it guides every arbiter decision.",
       "manualPdf": "Download the Justice Manual (PDF)",
       "manualPage": "Read online",

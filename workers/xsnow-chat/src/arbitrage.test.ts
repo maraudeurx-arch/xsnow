@@ -247,7 +247,10 @@ describe("arbitrage worker", () => {
       assert.equal(r.status, 200);
     }
     assert.equal((await handleArbitrage(req("/arbitrage/sim-cases/answer", "POST", { caseId: c.caseId, choiceId: "b" }, toks[0]), env, deps)).status, 409);
-    assert.equal((await (await handleArbitrage(req("/arbitrage/sim-cases", "GET", undefined, toks[2]), env, deps)).json()).cases[0].myAnswer, "b");
+    // answered → hidden from the arbiter's pending list, but kept as evidence (owner results, ?include=answered)
+    assert.equal((await (await handleArbitrage(req("/arbitrage/sim-cases", "GET", undefined, toks[2]), env, deps)).json()).cases.length, 0);
+    assert.equal((await (await handleArbitrage(req("/arbitrage/sim-cases?include=answered", "GET", undefined, toks[2]), env, deps)).json()).cases[0].myAnswer, "b");
+    assert.equal(store.simAns.length, 5);
     const res = await (await handleArbitrage(req("/arbitrage/admin/sim-results", "GET", undefined, S), env, deps)).json();
     assert.equal(res.cases[0].answerCount, 5);
     assert.deepEqual(res.cases[0].tally, { A: 3, B: 1, C: 1 });

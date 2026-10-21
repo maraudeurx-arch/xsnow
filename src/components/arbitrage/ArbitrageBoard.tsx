@@ -70,6 +70,7 @@ export function ArbitrageBoard() {
       {status === "rescan_requested" ? <RescanView token={token} onDone={() => setStatus("pending")} /> : null}
       {/* SIMULATION cases for owner-invited, non-verified arbiters (hidden when the server says 403) */}
       {token && (status === "pending" || status === "rescan_requested") ? <SimCasesView token={token} /> : null}
+      {token && (status === "pending" || status === "rescan_requested") ? <ManualCard /> : null}
       {status === "none" && !terms ? (
         <button type="button" className={primary} data-arb-become onClick={() => setModal(true)}>{t.title}</button>
       ) : null}
@@ -207,6 +208,7 @@ function CasesView({ token }: { token: string }) {
   const { m } = useI18n();
   const t = m.arbitrage;
   const [cases, setCases] = useState<ArbCase[] | null>(null);
+  const [simCount, setSimCount] = useState<number | null>(null);
   const reload = () => arbFetch<{ cases: ArbCase[] }>("cases", { token }).then(({ data }) => setCases(data.cases ?? [])).catch(() => setCases([]));
   useEffect(() => { void reload(); // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token]);
@@ -215,20 +217,21 @@ function CasesView({ token }: { token: string }) {
     <section className="grid gap-3" data-arb-cases>
       <p data-arb-status="verified" className="rounded-xl bg-emerald-50 p-3 font-bold text-emerald-900">{t.statusVerified}</p>
       <h2 className="text-lg font-extrabold text-slate-900">{t.casesTitle}</h2>
-      {cases && cases.length === 0 ? <p className="text-slate-700">{t.noCases}</p> : null}
       {cases?.map((c) => <CaseCard key={c.caseId} c={c} token={token} onDecided={reload} />)}
-      <SimCasesView token={token} />
+      <SimCasesView token={token} onCount={setSimCount} />
+      {cases && cases.length === 0 && simCount === 0 ? <p className="font-bold text-slate-700" data-arb-empty>{t.sim.noPending}</p> : null}
+      <ManualCard />
     </section>
   );
 }
 
 /** SIMULATION cases: test only — no AI suggestion, no signature, no payment. */
-function SimCasesView({ token }: { token: string }) {
+function SimCasesView({ token, onCount }: { token: string; onCount?: (n: number) => void }) {
   const { m } = useI18n();
   const t = m.arbitrage.sim;
   const [cases, setCases] = useState<SimCase[]>([]);
   const [tick, setTick] = useState(0);
-  const reload = () => arbFetch<{ cases: SimCase[] }>("sim-cases", { token }).then(({ data }) => setCases(data.cases ?? [])).catch(() => setCases([]));
+  const reload = () => arbFetch<{ cases: SimCase[] }>("sim-cases", { token }).then(({ data }) => { const list = data.cases ?? []; setCases(list); onCount?.(list.length); }).catch(() => { setCases([]); onCount?.(0); });
   useEffect(() => { void reload(); // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token]);
   if (cases.length === 0) return null;
@@ -237,6 +240,19 @@ function SimCasesView({ token }: { token: string }) {
       <h2 className="text-lg font-extrabold text-slate-900">{t.title}</h2>
       {cases.map((c) => <SimCaseCard key={c.caseId} c={c} token={token} onAnswered={() => setTick((n) => n + 1)} />)}
       <WalletCard token={token} tick={tick} />
+    </div>
+  );
+}
+
+/** Manuel de justice reading suggestion (existing, verified links). Always visible on the arbiter screen. */
+function ManualCard({ inline = false }: { inline?: boolean }) {
+  const { m } = useI18n();
+  const t = m.arbitrage.sim;
+  return (
+    <div className="grid gap-1 rounded-xl border border-sky-300 bg-sky-50 p-2 text-sm text-slate-800" {...(inline ? { "data-arb-sim-manual": "" } : { "data-arb-manual-standing": "" })}>
+      <p className="font-bold">{t.manualTip}</p>
+      <a className="font-bold text-sky-800 underline" href={MANUEL_JUSTICE_PDF_URL} target="_blank" rel="noopener" download data-arb-manual-pdf>{t.manualPdf}</a>
+      <a className="text-sky-800 underline" href={MANUEL_JUSTICE_PAGE_URL} target="_blank" rel="noopener" data-arb-manual-page>{t.manualPage}</a>
     </div>
   );
 }
@@ -271,11 +287,7 @@ function SimCaseCard({ c, token, onAnswered }: { c: SimCase; token: string; onAn
       {answer ? (
         <>
           <p className="arb-ok font-bold text-emerald-800" data-arb-sim-done>{msg || t.already} {chosen ? `${t.yours} ${chosen}` : ""}</p>
-          <div className="grid gap-1 rounded-xl border border-sky-300 bg-sky-50 p-2" data-arb-sim-manual>
-            <p className="font-bold">{t.manualTip}</p>
-            <a className="font-bold text-sky-800 underline" href={MANUEL_JUSTICE_PDF_URL} target="_blank" rel="noopener" download data-arb-manual-pdf>{t.manualPdf}</a>
-            <a className="text-sky-800 underline" href={MANUEL_JUSTICE_PAGE_URL} target="_blank" rel="noopener" data-arb-manual-page>{t.manualPage}</a>
-          </div>
+          <ManualCard inline />
         </>
       ) : (
         <fieldset className="grid gap-2">
