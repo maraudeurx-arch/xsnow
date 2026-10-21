@@ -26,6 +26,8 @@
  *   POST /arbitrage/admin/sim-close    {caseId} close a simulation case
  *   POST /arbitrage/admin/sim-invite   {arbiterId, invite} SIMULATION-only access for a non-verified
  *                                      arbiter (status unchanged; rejected arbiters never get access)
+ *   GET  /arbitrage/admin/arbiters     id, status, red flag, contradictions (no identity)
+ *   POST /arbitrage/admin/red-clear    {arbiterId} clear the red flag (after the training). Answers are kept.
  *   GET  /arbitrage/admin/wallets      connected arbiter wallet addresses (ids + public address only)
  * Arbiter wallet (verified):
  *   GET  /arbitrage/wallet             {address, needsWallet} (needsWallet = ≥1 simulated answer and no wallet)
@@ -66,6 +68,9 @@ export type ArbiterRow = {
   photo_enc: string | null;
   email_enc?: string | null;
   email_lang?: string | null;
+  red_flag?: number;
+  red_at?: number | null;
+  red_cleared_at?: number | null;
   identity_hash: string;
   doc_expiry: string;
   face_score: number | null;
@@ -143,7 +148,7 @@ export type D1Full = { prepare: (q: string) => D1Stmt };
 
 const ARB_COLS = new Set([
   "status", "identity_enc", "photo_enc", "face_reviewed", "reputation", "reviewed_at", "purge_after",
-  "face_score", "face_liveness", "face_method", "identity_hash", "email_enc", "email_lang",
+  "face_score", "face_liveness", "face_method", "identity_hash", "email_enc", "email_lang", "red_flag", "red_at", "red_cleared_at",
 ]);
 const CASE_COLS = new Set(["status", "suggestion_json", "decision_json", "arbiter_id", "decided_at"]);
 
@@ -582,6 +587,7 @@ export async function handleArbitrage(req: Request, env: ArbEnv, deps: ArbDeps):
           identity: r.identity_enc ? JSON.parse(await decryptString(encKey, r.identity_enc)) : null,
           terms: { version: r.terms_version, acceptedAt: r.terms_accepted_at },
           face: { score: r.face_score, liveness: r.face_liveness === 1, method: r.face_method },
+          red: r.red_flag === 1,
           createdAt: new Date(r.created_at).toISOString(),
         });
       }
@@ -652,6 +658,27 @@ export async function handleArbitrage(req: Request, env: ArbEnv, deps: ArbDeps):
       await store.setSimInvite(r.id, invite, now()); // arbiters.status is never touched here
       return j({ ok: true, simulation: true, arbiterId: r.id, simInvited: invite, status: r.status });
     }
+    if (path === "/arbitrage/admin/arbiters" && req.method === "GET") {
+      const ids = new Set<string>();
+      for (const row of await store.allSimCases()) for (const a of await store.simAnswers(row.id)) ids.add(a.arbiter_id);
+      for (const r of await store.pendingArbiters()) ids.add(r.id);
+      for (const s of await store.allPushSubs()) ids.add(s.arbiter_id);
+      for (const w of await store.allWallets()) ids.add(w.arbiter_id);
+      const out = [];
+      for (const id of ids) {
+        const r = await store.arbiterById(id);
+        if (!r) continue;
+        out.push({ arbiterId: r.id, status: r.status, red: r.red_flag === 1, redAt: r.red_at ? new Date(r.red_at).toISOString() : null,
+          contradictions: await countContradictions(store, r.id, r.red_cleared_at ?? 0) });
+      }
+      return j({ arbiters: out });
+    }
+    if (path === "/arbitrage/admin/red-clear" && req.method === "POST") {
+      const r = await store.arbiterById(clip((body as Record<string, unknown> | null)?.arbiterId, 60));
+      if (!r) return j({ error: "not_found" }, 404);
+      await store.updateArbiter(r.id, { red_flag: 0, red_cleared_at: now() });
+      return j({ ok: true, arbiterId: r.id, red: false });
+    }
     if (path === "/arbitrage/admin/wallets" && req.method === "GET") {
       const ws = await store.allWallets();
       return j({ wallets: ws.map((w) => ({ arbiterId: w.arbiter_id, address: w.address, chainId: w.chain_id, connectedAt: new Date(w.connected_at).toISOString() })) });
@@ -701,7 +728,8 @@ export async function handleArbitrage(req: Request, env: ArbEnv, deps: ArbDeps):
   if (!me) return j({ error: "unauthorized" }, 401);
 
   if (path === "/arbitrage/me" && req.method === "GET") {
-    return j({ arbiterId: me.id, status: me.status, reputation: me.reputation, hasEmail: !!me.email_enc });
+    return j({ arbiterId: me.id, status: me.status, reputation: me.reputation, hasEmail: !!me.email_enc, red: me.red_flag === 1,
+      contradictions: await countContradictions(store, me.id, me.red_cleared_at ?? 0), redThreshold: RED_THRESHOLD });
   }
   if (path === "/arbitrage/email" && req.method === "POST") {
     // Existing arbiters add / change their contact email ("Ajouter mon e-mail"). Encrypted; never returned.
@@ -742,6 +770,10 @@ export async function handleArbitrage(req: Request, env: ArbEnv, deps: ArbDeps):
     const allowed = me.status === "verified" || (me.status !== "rejected" && (await store.isSimInvited(me.id)));
     if (!allowed) return j({ error: "not_verified", status: me.status }, 403);
   } else if (me.status !== "verified") return j({ error: "not_verified", status: me.status }, 403);
+
+  if ((path === "/arbitrage/cases" || path === "/arbitrage/cases/decide") && me.red_flag === 1) {
+    return j({ error: "red_flag", red: true }, 403);
+  }
 
   if (path === "/arbitrage/cases" && req.method === "GET") {
     const rows = await store.openCases();
@@ -822,12 +854,17 @@ export async function handleArbitrage(req: Request, env: ArbEnv, deps: ArbDeps):
     const sugg = row.suggestion_json ? (JSON.parse(row.suggestion_json) as SimSuggestion) : null;
     const letter = choices.find((c) => c.id === choiceId)!.letter;
     const picked = choices.find((c) => c.id === choiceId)!;
+    let red = me.red_flag === 1;
+    if (!red && sugg && sugg.letter !== letter && (await countContradictions(store, me.id, me.red_cleared_at ?? 0)) >= RED_THRESHOLD) {
+      await store.updateArbiter(me.id, { red_flag: 1, red_at: now() });
+      red = true;
+    }
     const mail = await sendDecisionCopy(env, me.email_enc ? await decryptString(encKey, me.email_enc) : null, parseMailLang(me.email_lang) as MailLang, {
       caseId: row.id, title: (JSON.parse(row.case_json) as { title: string }).title, simulation: true,
       choice: `${letter}. ${picked.label}`, suggestion: sugg ? `${sugg.letter}. ${sugg.text}` : null,
       followedSuggestion: sugg ? sugg.letter === letter : null, decidedAt: new Date(now()).toISOString(),
     }, fetchImpl);
-    return j({ ok: true, simulation: true, caseId: row.id, choiceId, letter, followedSuggestion: sugg ? sugg.letter === letter : null, emailCopy: mail });
+    return j({ ok: true, simulation: true, caseId: row.id, choiceId, letter, followedSuggestion: sugg ? sugg.letter === letter : null, emailCopy: mail, red });
   }
 
   if (path === "/arbitrage/cases/decide" && req.method === "POST") {
@@ -932,4 +969,20 @@ export async function notifyArbiters(env: ArbEnv, store: ArbStore, kind: "real" 
     else if (r.status >= 200 && r.status < 300) sent++;
   }
   return sent;
+}
+
+/** Simulated answers contradicting Indiana's suggestion that flag an arbiter "red". */
+export const RED_THRESHOLD = 3;
+
+/** Contradicted suggestions by this arbiter, counting only answers after `since` (last clear). */
+export async function countContradictions(store: ArbStore, arbiterId: string, since: number): Promise<number> {
+  let n = 0;
+  for (const row of await store.allSimCases()) {
+    if (!row.suggestion_json) continue;
+    const sugg = JSON.parse(row.suggestion_json) as SimSuggestion;
+    const choices = simChoicesFromRow(row.choices_json);
+    const mine = (await store.simAnswers(row.id)).find((a) => a.arbiter_id === arbiterId && a.answered_at > since);
+    if (mine && choices.find((c) => c.id === mine.choice_id)?.letter !== sugg.letter) n++;
+  }
+  return n;
 }

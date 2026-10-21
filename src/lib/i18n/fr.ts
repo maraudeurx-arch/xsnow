@@ -429,6 +429,10 @@ export const fr = {
       "why": "Tu recevras par e-mail une copie de chaque décision que tu prends. Ton e-mail est chiffré et n’est jamais affiché.",
       "invalid": "Adresse e-mail invalide."
     },
+    "red": {
+      "title": "Statut rouge : vrais dossiers bloqués",
+      "message": "Trois de tes réponses de simulation contredisent la suggestion d’Indiana. Les vrais dossiers d’arbitrage sont bloqués. Pour les débloquer, tu dois suivre la formation d’arbitre (2 500 $). Tu peux continuer les simulations."
+    },
     "sim": {
       "noPending": "Aucun arbitrage en attente.",
       "manualTip": "Familiarise-toi avec le Manuel de justice : il guide chaque décision d’arbitre.",
