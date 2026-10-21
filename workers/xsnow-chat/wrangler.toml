@@ -32,3 +32,5 @@ migrations_dir = "migrations"
 [vars]
 VAPID_PUBLIC_KEY = "BKc4SYnZdmsjhQ5kHHJpJE4PfsT3BYhKts6V0_pGvk8Y2KEo5oWTXLGMRraEYJyH62HveWQalgdYsO8aSkiGxlI"
 VAPID_SUBJECT = "https://opencommunity.app"
+# Decision copies emailed to arbiters (Resend). "on" = GO de Popol 21/10; anything else = OFF.
+ARBITER_DECISION_EMAILS = "on"

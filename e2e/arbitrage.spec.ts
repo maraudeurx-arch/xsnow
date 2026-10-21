@@ -66,6 +66,7 @@ test.describe("HITL arbitrage", () => {
     await page.locator("[data-arb-terms-accept]").click();
     await expect(page.locator("[data-arb-terms]")).toHaveCount(0);
     await expect(page.locator("[data-arb-form]")).toBeVisible();
+    await expect(page.locator("[data-arb-email-input]")).toHaveAttribute("required", "");
     await expect(page.locator("[data-arb-become]")).toHaveCount(0);
   });
 
@@ -96,6 +97,30 @@ test.describe("HITL arbitrage", () => {
     await page.locator("[data-arb-accept]").click();
     await expect(page.getByText(/signée et envoyée/)).toBeVisible();
     expect(decided).toEqual({ caseId: "case_1", accept: true });
+  });
+
+  test("existing arbiter without email: 'Ajouter mon e-mail' saves it", async ({ page }) => {
+    await skipConsent(page);
+    await seedLocalProfile(page);
+    await page.addInitScript(() => window.localStorage.setItem("opc.arbiter.token.v1", "tok-e2e"));
+    let saved: unknown = null;
+    await page.route(/\/arbitrage\/(me|cases|sim-cases|email)/, async (route) => {
+      const req = route.request();
+      if (req.method() === "OPTIONS") return route.fulfill({ status: 204, headers: cors });
+      const path = new URL(req.url()).pathname;
+      if (path.endsWith("/me")) return route.fulfill({ headers: cors, json: { status: "verified", arbiterId: "arb_1", reputation: 0, hasEmail: false } });
+      if (path.endsWith("/email")) { saved = req.postDataJSON(); return route.fulfill({ headers: cors, json: { ok: true, hasEmail: true } }); }
+      if (path.endsWith("/sim-cases")) return route.fulfill({ headers: cors, json: { simulation: true, cases: [] } });
+      if (path.endsWith("/cases")) return route.fulfill({ headers: cors, json: { cases: [] } });
+      return route.fulfill({ status: 404, headers: cors, json: {} });
+    });
+    await page.goto("arbitrage/");
+    const card = page.locator("[data-arb-email-card]");
+    await expect(card).toContainText("Ajouter mon e-mail");
+    await card.locator("[data-arb-email-field]").fill("arbitre@opc.test");
+    await card.locator("[data-arb-email-save]").click();
+    await expect(card).toHaveCount(0);
+    expect(saved).toEqual({ email: "arbitre@opc.test", lang: "fr" });
   });
 
   test("nothing pending: clean screen with empty state and the Manuel de justice card", async ({ page }) => {

@@ -39,13 +39,14 @@ export function ArbitrageBoard() {
   const [token, setToken] = useState(() => (typeof window === "undefined" ? "" : readArbiterToken()));
   const [modal, setModal] = useState(false);
   const [terms, setTerms] = useState<TermsAcceptance | null>(null);
+  const [hasEmail, setHasEmail] = useState<boolean | null>(null);
 
   useEffect(() => {
     const tk = token;
     if (!tk) return;
-    arbFetch<{ status: Status }>("me", { token: tk }).then(({ status: code, data }) => {
+    arbFetch<{ status: Status; hasEmail?: boolean }>("me", { token: tk }).then(({ status: code, data }) => {
       if (code === 503) setStatus("not_configured");
-      else if (code === 200) setStatus(data.status);
+      else if (code === 200) { setStatus(data.status); setHasEmail(data.hasEmail === true); }
       else if (code === 401) writeArbiterToken("");
     }).catch(() => {});
   }, [token]);
@@ -65,6 +66,7 @@ export function ArbitrageBoard() {
       {status === "pending" ? <p data-arb-status="pending" className="rounded-xl bg-amber-50 p-3 font-bold text-amber-900">{t.statusPending}</p> : null}
       {status === "rejected" ? <p data-arb-status="rejected" className="rounded-xl bg-rose-50 p-3 font-bold text-rose-900">{t.statusRejected}</p> : null}
       {status === "not_configured" ? <p className="rounded-xl bg-slate-100 p-3 text-slate-700">{t.notConfigured}</p> : null}
+      {token && hasEmail === false && (status === "verified" || status === "pending" || status === "rescan_requested") ? <EmailCard token={token} onDone={() => setHasEmail(true)} /> : null}
       {token && (status === "verified" || status === "pending" || status === "rescan_requested") ? <NotifyCard token={token} /> : null}
       {status === "verified" ? <CasesView token={token} /> : null}
       {status === "rescan_requested" ? <RescanView token={token} onDone={() => setStatus("pending")} /> : null}
@@ -83,7 +85,7 @@ export function ArbitrageBoard() {
       {status === "none" && terms ? (
         <SignupForm
           terms={terms}
-          defaults={{ firstName: profile.firstName, lastName: profile.lastName, opcId: profile.id }}
+          defaults={{ firstName: profile.firstName, lastName: profile.lastName, opcId: profile.id, email: profile.email ?? "" }}
           onDone={(tk) => { writeArbiterToken(tk); setToken(tk); setStatus("pending"); }}
           onNotConfigured={() => setStatus("not_configured")}
         />
@@ -130,13 +132,14 @@ export function TermsModal({ onAccept, onCancel }: { onAccept: () => void; onCan
 
 function SignupForm({ terms, defaults, onDone, onNotConfigured }: {
   terms: TermsAcceptance;
-  defaults: { firstName: string; lastName: string; opcId: string };
+  defaults: { firstName: string; lastName: string; opcId: string; email: string };
   onDone: (token: string) => void;
   onNotConfigured: () => void;
 }) {
   const { m } = useI18n();
   const t = m.arbitrage;
-  const [f, setF] = useState({ lastName: defaults.lastName, firstName: defaults.firstName, docType: "passport" as IdDocType, docNumber: "", issuingCountry: "", expiryDate: "" });
+  const { locale } = useI18n();
+  const [f, setF] = useState({ email: defaults.email, lastName: defaults.lastName, firstName: defaults.firstName, docType: "passport" as IdDocType, docNumber: "", issuingCountry: "", expiryDate: "" });
   const [photo, setPhoto] = useState<string | null>(null);
   const [face, setFace] = useState<FaceCheck | null>(null);
   const [consent, setConsent] = useState(false);
@@ -162,7 +165,7 @@ function SignupForm({ terms, defaults, onDone, onNotConfigured }: {
     try {
       const { status, data } = await arbFetch<{ token: string }>("apply", {
         method: "POST",
-        body: { consent: true, ...f, idPhotoBase64: b64, idPhotoMime: mime, face, opcId: defaults.opcId, terms },
+        body: { consent: true, ...f, lang: locale, idPhotoBase64: b64, idPhotoMime: mime, face, opcId: defaults.opcId, terms },
       });
       if (status === 503) onNotConfigured();
       else if (status === 201 && data.token) onDone(data.token);
@@ -180,6 +183,7 @@ function SignupForm({ terms, defaults, onDone, onNotConfigured }: {
         <p className="font-extrabold text-slate-900">{t.privacyTitle}</p>
         <p>{t.privacy}</p>
       </section>
+      <label className={label}>{t.email.label}<input className={input} type="email" value={f.email} onChange={set("email")} required autoComplete="email" data-arb-email-input /></label>
       <label className={label}>{t.lastName}<input className={input} value={f.lastName} onChange={set("lastName")} required autoComplete="family-name" /></label>
       <label className={label}>{t.firstName}<input className={input} value={f.firstName} onChange={set("firstName")} required autoComplete="given-name" /></label>
       <label className={label}>{t.docType}
@@ -302,6 +306,27 @@ function SimCaseCard({ c, token, onAnswered }: { c: SimCase; token: string; onAn
         </fieldset>
       )}
     </article>
+  );
+}
+
+/** Existing arbiters without a contact email: "Ajouter mon e-mail" (stored encrypted, used for decision copies). */
+function EmailCard({ token, onDone }: { token: string; onDone: () => void }) {
+  const { m, locale } = useI18n();
+  const t = m.arbitrage.email;
+  const [email, setEmail] = useState("");
+  const [err, setErr] = useState(false);
+  async function save() {
+    const { status } = await arbFetch("email", { method: "POST", token, body: { email, lang: locale } });
+    if (status === 200) onDone(); else setErr(true);
+  }
+  return (
+    <section className="grid gap-2 rounded-2xl border-2 border-emerald-400 bg-emerald-50 p-3 text-sm text-slate-800" data-arb-email-card>
+      <h3 className="font-extrabold">{t.add}</h3>
+      <p>{t.why}</p>
+      <input className={input} type="email" value={email} onChange={(e) => { setEmail(e.target.value); setErr(false); }} autoComplete="email" aria-label={t.label} data-arb-email-field />
+      <button type="button" className={primary} disabled={!email.includes("@")} onClick={() => void save()} data-arb-email-save>{t.add}</button>
+      {err ? <p className="text-rose-800">{t.invalid}</p> : null}
+    </section>
   );
 }
 

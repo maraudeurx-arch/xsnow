@@ -12,7 +12,7 @@ import {
 } from "./arbitrage.ts";
 
 const base = {
-  consent: true, lastName: "Doe", firstName: "Jane", docType: "passport", docNumber: "ab 12345",
+  consent: true, email: "Jane@Example.org", lastName: "Doe", firstName: "Jane", docType: "passport", docNumber: "ab 12345",
   issuingCountry: "ca", expiryDate: "2030-05-01", idPhotoBase64: "AAAA", idPhotoMime: "image/jpeg",
   face: { score: 0.8, liveness: true, method: "t" },
   terms: { version: ARBITER_TERMS_VERSION, acceptedAt: "2026-10-21T10:00:00Z" },
@@ -86,4 +86,13 @@ describe("arbiter terms", () => {
 it("manual links: exact existing essaim-agents.com URLs (https, PDF download)", () => {
   assert.equal(MANUEL_JUSTICE_PAGE_URL, "https://essaim-agents.com/manuel-justice");
   assert.equal(MANUEL_JUSTICE_PDF_URL, "https://essaim-agents.com/manuel-justice-v2.3.2.pdf");
+});
+
+describe("arbiter email", () => {
+  it("is required, validated and normalised", () => {
+    const ok = parseArbiterApplication(base, new Date("2026-10-21T12:00:00Z"));
+    assert.ok(ok.ok && ok.value.email === "jane@example.org" && ok.value.lang === "fr");
+    assert.deepEqual(parseArbiterApplication({ ...base, email: "" }, new Date("2026-10-21T12:00:00Z")), { ok: false, error: "email" });
+    assert.deepEqual(parseArbiterApplication({ ...base, email: "not-an-email" }, new Date("2026-10-21T12:00:00Z")), { ok: false, error: "email" });
+  });
 });

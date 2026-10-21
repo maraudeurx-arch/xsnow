@@ -70,6 +70,7 @@ const req = (path: string, method = "GET", body?: unknown, token?: string) =>
 
 const application = {
   consent: true,
+  email: "arbitre@opc.test",
   lastName: "Estigene",
   firstName: "Politzer",
   docType: "passport",
@@ -379,6 +380,52 @@ describe("arbitrage worker", () => {
     const s2 = await (await handleArbitrage(req("/arbitrage/admin/sim-cases", "POST", { title: "t2", scenario: "s", choices: ["x", "y"] }, S), env, deps)).json();
     assert.equal(s2.pushed, 0);
     assert.equal(calls.length, 0);
+  });
+
+  it("decision copy by email: OFF by default; when on, the arbiter gets their own choice; email stays encrypted", async () => {
+    const env = await makeEnv();
+    const store = memStore();
+    const mails: { url: string; body: Record<string, unknown> }[] = [];
+    const fetchImpl = (async (url: string | URL, init?: RequestInit) => {
+      if (String(url).includes("resend")) mails.push({ url: String(url), body: JSON.parse(String(init?.body)) });
+      return new Response("{}", { status: 200 });
+    }) as typeof fetch;
+    const deps = { store, fetchImpl };
+    const S = env.ARBITER_ADMIN_SECRET;
+    const a = await (await handleArbitrage(req("/arbitrage/apply", "POST", { ...application, email: "" }), env, deps)).json();
+    assert.equal(a.error, "email");
+    const ok = await (await handleArbitrage(req("/arbitrage/apply", "POST", application), env, deps)).json();
+    const row = store.arbiters.get(ok.arbiterId)!;
+    assert.ok(row.email_enc && !row.email_enc.includes("arbitre@opc.test"), "email encrypted at rest");
+    await handleArbitrage(req("/arbitrage/admin/review", "POST", { arbiterId: ok.arbiterId, approve: true }, S), env, deps);
+    assert.equal((await (await handleArbitrage(req("/arbitrage/me", "GET", undefined, ok.token), env, deps)).json()).hasEmail, true);
+    const c1 = await (await handleArbitrage(req("/arbitrage/admin/sim-cases", "POST", { title: "Logo en retard", scenario: "s", choices: ["x", "y"], suggestion: { letter: "B", text: "Je suggère B.", reasoning: "M-5.3." } }, S), env, deps)).json();
+    // flag OFF (default): nothing emailed, D1 keeps the answer
+    const r1 = await (await handleArbitrage(req("/arbitrage/sim-cases/answer", "POST", { caseId: c1.caseId, choiceId: "a" }, ok.token), env, deps)).json();
+    assert.equal(r1.emailCopy, "off");
+    assert.equal(mails.length, 0);
+    assert.equal(store.simAns.length, 1);
+    // flag ON
+    const on = { ...env, ARBITER_DECISION_EMAILS: "on", RESEND_API_KEY: "re_test" };
+    const c2 = await (await handleArbitrage(req("/arbitrage/admin/sim-cases", "POST", { title: "Traduction", scenario: "s", choices: ["x", "y"], suggestion: { letter: "B", text: "Je suggère B.", reasoning: "M-5.3." } }, S), on, deps)).json();
+    const r2 = await (await handleArbitrage(req("/arbitrage/sim-cases/answer", "POST", { caseId: c2.caseId, choiceId: "b" }, ok.token), on, deps)).json();
+    assert.equal(r2.emailCopy, "sent");
+    assert.deepEqual(mails[0].body.to, ["arbitre@opc.test"]);
+    const text = String(mails[0].body.text);
+    for (const want of [c2.caseId, "SIMULATION — Traduction", "B. y", "Tu as suivi la suggestion", "https://essaim-agents.com/manuel-justice-v2.3.2.pdf"]) assert.ok(text.includes(want), want);
+    // "Ajouter mon e-mail" for an existing arbiter + language
+    assert.equal((await handleArbitrage(req("/arbitrage/email", "POST", { email: "bad" }, ok.token), on, deps)).status, 400);
+    assert.equal((await handleArbitrage(req("/arbitrage/email", "POST", { email: "New@Opc.Test", lang: "en" }, ok.token), on, deps)).status, 200);
+    const c3 = await (await handleArbitrage(req("/arbitrage/admin/sim-cases", "POST", { title: "t3", scenario: "s", choices: ["x", "y"] }, S), on, deps)).json();
+    await handleArbitrage(req("/arbitrage/sim-cases/answer", "POST", { caseId: c3.caseId, choiceId: "a" }, ok.token), on, deps);
+    assert.deepEqual(mails[1].body.to, ["new@opc.test"]);
+    assert.ok(String(mails[1].body.subject).includes("Copy of your arbitration decision"));
+    // never exposed to owner listings
+    const dump = JSON.stringify(await (await handleArbitrage(req("/arbitrage/admin/sim-results", "GET", undefined, S), on, deps)).json());
+    assert.ok(!dump.includes("opc.test"));
+    // purge of ID data keeps the contact email
+    await store.purgeExpired(Number.MAX_SAFE_INTEGER);
+    assert.ok(store.arbiters.get(ok.arbiterId)!.email_enc);
   });
 
   it("rescan: admin requests it, candidate redoes only the face scan, back to pending", async () => {
