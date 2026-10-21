@@ -36,6 +36,17 @@ test.describe("HITL arbitrage", () => {
     await expect(page.locator('[data-arb-terms-item="3"]')).toContainText("30 $");
     await expect(page.locator('[data-arb-terms-item="3"]')).toContainText("50 $");
     await expect(page.locator("[data-arb-terms-accept]")).toHaveText("Accepter");
+    // Whole modal on screen: title and point 1 not under the sticky header, buttons reachable.
+    const vh = page.viewportSize()!.height;
+    const title = await page.locator("#arb-terms-title").boundingBox();
+    expect(title!.y).toBeGreaterThanOrEqual(0);
+    const topEl = await page.evaluate(() => {
+      const r = document.querySelector("#arb-terms-title")!.getBoundingClientRect();
+      return document.elementFromPoint(r.left + 4, r.top + r.height / 2)?.closest("[data-arb-terms]") !== null;
+    });
+    expect(topEl).toBe(true);
+    const box = await page.locator("[data-arb-terms]").boundingBox();
+    expect(box!.y + box!.height).toBeLessThanOrEqual(vh + 1);
     await page.locator("[data-arb-terms-cancel]").click();
     await expect(dialog).toHaveCount(0);
     await expect(page.locator("[data-arb-form]")).toHaveCount(0);
