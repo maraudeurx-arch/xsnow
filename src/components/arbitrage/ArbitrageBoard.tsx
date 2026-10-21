@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { ARBITER_TERMS_VERSION, ID_DOC_TYPES, type FaceCheck, type IdDocType, type TermsAcceptance } from "@/lib/arbitrage";
 import { arbFetch, readArbiterToken, writeArbiterToken } from "@/lib/arbitrage-client";
 import { prepareAdImage } from "@/lib/compress-ad-image";
@@ -17,7 +18,7 @@ type ArbCase = {
   claim: string; response: string; suggestion: Suggestion;
 };
 
-const input = "min-h-11 w-full rounded-xl border border-slate-300 bg-white px-3 text-[15px] text-slate-900";
+const input = "arb-input min-h-11 w-full rounded-xl border border-slate-600 bg-slate-900 px-3 text-[15px] text-white caret-white placeholder:text-white/60";
 const label = "grid gap-1 text-left text-sm font-bold text-slate-800";
 const primary = "tap min-h-12 rounded-2xl bg-slate-900 px-4 font-extrabold text-white disabled:opacity-50";
 
@@ -80,25 +81,36 @@ export function ArbitrageBoard() {
 export function TermsModal({ onAccept, onCancel }: { onAccept: () => void; onCancel: () => void }) {
   const { m } = useI18n();
   const t = m.arbitrage;
+  const boxRef = useRef<HTMLElement | null>(null);
+  useEffect(() => {
+    boxRef.current?.scrollTo({ top: 0 });
+    boxRef.current?.querySelector<HTMLButtonElement>("[data-arb-terms-accept]")?.focus({ preventScroll: true });
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = prev; };
+  }, []);
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onCancel(); };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [onCancel]);
-  return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 p-3 sm:items-center" onClick={onCancel}>
-      <section role="dialog" aria-modal="true" aria-labelledby="arb-terms-title" data-arb-terms
-        className="w-full max-w-md rounded-2xl bg-white p-4 text-left text-slate-900" onClick={(e) => e.stopPropagation()}>
+  if (typeof document === "undefined") return null;
+  // Portal to <body>: a transformed/blurred ancestor would otherwise trap `fixed` under the sticky header.
+  return createPortal(
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-[max(0.75rem,env(safe-area-inset-top))]" onClick={onCancel}>
+      <section ref={boxRef} role="dialog" aria-modal="true" aria-labelledby="arb-terms-title" data-arb-terms
+        className="max-h-full w-full max-w-md overflow-y-auto overscroll-contain rounded-2xl bg-white p-4 text-left text-slate-900" onClick={(e) => e.stopPropagation()}>
         <h2 id="arb-terms-title" className="text-lg font-extrabold">{t.termsTitle}</h2>
         <ol className="mt-2 grid list-decimal gap-2 pl-5 text-sm leading-snug">
           {t.termsItems.map((item, i) => <li key={i} data-arb-terms-item={i + 1}>{item}</li>)}
         </ol>
         <div className="mt-4 grid gap-2">
-          <button type="button" autoFocus className={primary} data-arb-terms-accept onClick={onAccept}>{t.termsAccept}</button>
+          <button type="button" className={primary} data-arb-terms-accept onClick={onAccept}>{t.termsAccept}</button>
           <button type="button" className="tap min-h-11 rounded-2xl border border-slate-300 font-bold" data-arb-terms-cancel onClick={onCancel}>{t.termsCancel}</button>
         </div>
       </section>
-    </div>
+    </div>,
+    document.body,
   );
 }
 

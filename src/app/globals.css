@@ -1117,3 +1117,25 @@ footer.opc-glass-soft,
   animation-timing-function: linear;
   animation-fill-mode: forwards;
 }
+
+/* Arbiter form: light text on dark inputs, also inside glass wrappers and iOS autofill. */
+:is(.opc-glass, .home-stage, .opc-glass-menu, body) .arb-input {
+  background: #0f172a;
+  color: #fff;
+  -webkit-text-fill-color: #fff;
+  caret-color: #fff;
+  border-color: #475569;
+  color-scheme: dark;
+}
+.arb-input::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+  -webkit-text-fill-color: rgba(255, 255, 255, 0.6);
+  opacity: 1;
+}
+.arb-input:-webkit-autofill,
+.arb-input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #fff;
+  caret-color: #fff;
+  -webkit-box-shadow: 0 0 0 1000px #0f172a inset;
+  box-shadow: 0 0 0 1000px #0f172a inset;
+}
