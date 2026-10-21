@@ -111,7 +111,7 @@ export function parseArbiterApplication(raw: unknown, now: Date = new Date()): P
   if (bytes < 1 || bytes > ID_PHOTO_MAX_BYTES) return { ok: false, error: "photo_size" };
   const face = parseFaceCheck(r.face);
   const opcId = cleanText(r.opcId, 40) || undefined;
-  const email = typeof r.email === "string" ? r.email.trim().toLowerCase() : "";
+  const email = typeof r.email === "string" ? normalizeEmailInput(r.email) : "";
   if (email.length > 254 || !/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/.test(email)) return { ok: false, error: "email" };
   const lang = r.lang === "en" || r.lang === "es" ? r.lang : "fr";
   return {
@@ -274,3 +274,8 @@ export function assertNoPii(payload: unknown): void {
 /** Existing, verified links (essaim-agents.com site). The arbiters' manual has no published link yet. */
 export const MANUEL_JUSTICE_PAGE_URL = "https://essaim-agents.com/manuel-justice";
 export const MANUEL_JUSTICE_PDF_URL = "https://essaim-agents.com/manuel-justice-v2.3.2.pdf";
+
+/** Email typed or autofilled on a phone: drop spaces/zero-width chars, "mailto:", lowercase, NFKC. */
+export function normalizeEmailInput(raw: string): string {
+  return raw.normalize("NFKC").replace(/^mailto:/i, "").replace(/[\s\u200B-\u200D\u2060\uFEFF]/g, "").toLowerCase();
+}

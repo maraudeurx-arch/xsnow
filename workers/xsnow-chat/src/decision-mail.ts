@@ -3,7 +3,7 @@
  * OFF unless env ARBITER_DECISION_EMAILS === "on". D1 keeps the record either way.
  */
 import { RESEND_API_URL, resolveFromAddress } from "../../../src/lib/owner-mail.ts";
-import { MANUEL_JUSTICE_PAGE_URL, MANUEL_JUSTICE_PDF_URL } from "../../../src/lib/arbitrage.ts";
+import { MANUEL_JUSTICE_PAGE_URL, MANUEL_JUSTICE_PDF_URL, normalizeEmailInput } from "../../../src/lib/arbitrage.ts";
 
 export type MailLang = "fr" | "en" | "es";
 export type DecisionCopy = {
@@ -19,7 +19,7 @@ const L = {
 
 export const ARB_EMAIL_RE = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/;
 export function parseArbiterEmail(raw: unknown): string {
-  const e = typeof raw === "string" ? raw.trim().toLowerCase() : "";
+  const e = typeof raw === "string" ? normalizeEmailInput(raw) : "";
   return e.length <= 254 && ARB_EMAIL_RE.test(e) ? e : "";
 }
 export function parseMailLang(raw: unknown): MailLang {

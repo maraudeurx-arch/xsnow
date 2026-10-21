@@ -424,6 +424,8 @@ export const fr = {
       "error": "Impossible d’activer les notifications pour le moment. Réessaie plus tard."
     },
     "email": {
+      "session": "Session expirée : ferme et rouvre OPC, puis réessaie.",
+      "network": "Pas de connexion au serveur. Réessaie dans un instant.",
       "label": "Ton e-mail",
       "add": "Ajouter mon e-mail",
       "why": "Tu recevras par e-mail une copie de chaque décision que tu prends. Ton e-mail est chiffré et n’est jamais affiché.",

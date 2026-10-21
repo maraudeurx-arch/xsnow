@@ -117,7 +117,13 @@ test.describe("HITL arbitrage", () => {
     await page.goto("arbitrage/");
     const card = page.locator("[data-arb-email-card]");
     await expect(card).toContainText("Ajouter mon e-mail");
-    await card.locator("[data-arb-email-field]").fill("arbitre@opc.test");
+    // invalid → visible message, nothing sent
+    await card.locator("[data-arb-email-field]").fill("pas-un-email");
+    await card.locator("[data-arb-email-save]").click();
+    await expect(card.locator('[data-arb-email-error="invalid"]')).toBeVisible();
+    expect(saved).toBeNull();
+    // iOS autofill: value set without any input/change event, with capitals and a trailing space
+    await card.locator("[data-arb-email-field]").evaluate((el) => { (el as HTMLInputElement).value = " Arbitre@OPC.test "; });
     await card.locator("[data-arb-email-save]").click();
     await expect(card).toHaveCount(0);
     expect(saved).toEqual({ email: "arbitre@opc.test", lang: "fr" });

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { normalizeEmailInput } from "@/lib/arbitrage";
 import { createPortal } from "react-dom";
 import { MANUEL_JUSTICE_PAGE_URL, MANUEL_JUSTICE_PDF_URL, ARBITER_TERMS_VERSION, ID_DOC_TYPES, type FaceCheck, type IdDocType, type TermsAcceptance } from "@/lib/arbitrage";
 import { arbFetch, readArbiterToken, writeArbiterToken } from "@/lib/arbitrage-client";
@@ -320,20 +321,29 @@ function SimCaseCard({ c, token, onAnswered }: { c: SimCase; token: string; onAn
 function EmailCard({ token, onDone }: { token: string; onDone: () => void }) {
   const { m, locale } = useI18n();
   const t = m.arbitrage.email;
-  const [email, setEmail] = useState("");
-  const [err, setErr] = useState(false);
-  async function save() {
-    const { status } = await arbFetch("email", { method: "POST", token, body: { email, lang: locale } });
-    if (status === 200) onDone(); else setErr(true);
+  const ref = useRef<HTMLInputElement>(null);
+  const [err, setErr] = useState<"" | "invalid" | "session" | "network">("");
+  const [busy, setBusy] = useState(false);
+  async function save(e?: { preventDefault(): void }) {
+    e?.preventDefault();
+    // Read the DOM value: iOS autofill / QuickType may not fire onChange on a controlled input.
+    const email = normalizeEmailInput(ref.current?.value ?? "");
+    if (!/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/.test(email)) { setErr("invalid"); return; }
+    setBusy(true); setErr("");
+    try {
+      const { status } = await arbFetch("email", { method: "POST", token, body: { email, lang: locale } });
+      if (status === 200) onDone();
+      else setErr(status === 400 ? "invalid" : status === 401 || status === 403 ? "session" : "network");
+    } catch { setErr("network"); } finally { setBusy(false); }
   }
   return (
-    <section className="grid gap-2 rounded-2xl border-2 border-emerald-400 bg-emerald-50 p-3 text-sm text-slate-800" data-arb-email-card>
+    <form className="grid gap-2 rounded-2xl border-2 border-emerald-400 bg-emerald-50 p-3 text-sm text-slate-800" data-arb-email-card onSubmit={(e) => void save(e)} noValidate>
       <h3 className="font-extrabold">{t.add}</h3>
       <p>{t.why}</p>
-      <input className={input} type="email" value={email} onChange={(e) => { setEmail(e.target.value); setErr(false); }} autoComplete="email" aria-label={t.label} data-arb-email-field />
-      <button type="button" className={primary} disabled={!email.includes("@")} onClick={() => void save()} data-arb-email-save>{t.add}</button>
-      {err ? <p className="text-rose-800">{t.invalid}</p> : null}
-    </section>
+      <input ref={ref} className={input} type="email" name="email" inputMode="email" autoCapitalize="none" autoCorrect="off" spellCheck={false} autoComplete="email" aria-label={t.label} onInput={() => setErr("")} data-arb-email-field />
+      <button type="submit" className={primary} disabled={busy} data-arb-email-save>{t.add}</button>
+      {err ? <p role="alert" className="text-rose-800" data-arb-email-error={err}>{err === "invalid" ? t.invalid : err === "session" ? t.session : t.network}</p> : null}
+    </form>
   );
 }
 
