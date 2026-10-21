@@ -20,6 +20,8 @@
  *   POST /arbitrage/admin/sim-cases    create a SIMULATION case {title, scenario, choices[2..4]}
  *   GET  /arbitrage/admin/sim-results  answers per simulation case (arbiter ids only, no identity)
  *   POST /arbitrage/admin/sim-close    {caseId} close a simulation case
+ *   POST /arbitrage/admin/sim-invite   {arbiterId, invite} SIMULATION-only access for a non-verified
+ *                                      arbiter (status unchanged; rejected arbiters never get access)
  *
  * Secrets (never in git, never logged): ARBITER_ENC_KEY, ARBITER_SIGNING_KEY,
  * ARBITER_SIGNING_PUBLIC_KEY, ARBITER_ADMIN_SECRET. Missing secrets → 503 not_configured.
@@ -103,6 +105,8 @@ export type ArbStore = {
   /** Insert one answer; returns false if this arbiter already answered this case. */
   insertSimAnswer(row: SimAnswerRow): Promise<boolean>;
   simAnswers(caseId: string): Promise<SimAnswerRow[]>;
+  isSimInvited(arbiterId: string): Promise<boolean>;
+  setSimInvite(arbiterId: string, invite: boolean, at: number): Promise<void>;
 };
 
 type D1Stmt = {
@@ -190,6 +194,13 @@ export function d1ArbStore(db: D1Full): ArbStore {
     async simAnswers(caseId) {
       const r = await db.prepare(`SELECT * FROM arb_sim_answers WHERE case_id = ? ORDER BY answered_at`).bind(caseId).all<SimAnswerRow>();
       return r.results;
+    },
+    async isSimInvited(arbiterId) {
+      return !!(await db.prepare(`SELECT arbiter_id FROM arb_sim_invites WHERE arbiter_id = ?`).bind(arbiterId).first<{ arbiter_id: string }>());
+    },
+    async setSimInvite(arbiterId, invite, at) {
+      if (invite) await db.prepare(`INSERT OR REPLACE INTO arb_sim_invites (arbiter_id, invited_at) VALUES (?,?)`).bind(arbiterId, at).run();
+      else await db.prepare(`DELETE FROM arb_sim_invites WHERE arbiter_id = ?`).bind(arbiterId).run();
     },
   };
 }
@@ -567,6 +578,15 @@ export async function handleArbitrage(req: Request, env: ArbEnv, deps: ArbDeps):
       await store.updateCase(row.id, { status: "closed", decided_at: now() });
       return j({ ok: true, caseId: row.id, status: "closed" });
     }
+    if (path === "/arbitrage/admin/sim-invite" && req.method === "POST") {
+      const b = (body ?? {}) as Record<string, unknown>;
+      const r = await store.arbiterById(clip(b.arbiterId, 60));
+      if (!r) return j({ error: "not_found" }, 404);
+      if (r.status === "rejected") return j({ error: "rejected" }, 409);
+      const invite = b.invite !== false;
+      await store.setSimInvite(r.id, invite, now()); // arbiters.status is never touched here
+      return j({ ok: true, simulation: true, arbiterId: r.id, simInvited: invite, status: r.status });
+    }
     if (path === "/arbitrage/admin/sim-results" && req.method === "GET") {
       const out = [];
       for (const row of await store.allSimCases()) {
@@ -575,6 +595,8 @@ export async function handleArbitrage(req: Request, env: ArbEnv, deps: ArbDeps):
         const sugg = row.suggestion_json ? (JSON.parse(row.suggestion_json) as SimSuggestion) : null;
         const letterOf = (id: string) => choices.find((ch) => ch.id === id)?.letter ?? null;
         const answers = await store.simAnswers(row.id);
+        const statusOf: Record<string, string> = {};
+        for (const a of answers) statusOf[a.arbiter_id] ??= (await store.arbiterById(a.arbiter_id))?.status ?? "unknown";
         const tally: Record<string, number> = Object.fromEntries(choices.map((ch) => [ch.letter, 0]));
         for (const a of answers) { const l = letterOf(a.choice_id) ?? a.choice_id; tally[l] = (tally[l] ?? 0) + 1; }
         const followed = sugg ? answers.filter((a) => letterOf(a.choice_id) === sugg.letter).length : null;
@@ -592,7 +614,7 @@ export async function handleArbitrage(req: Request, env: ArbEnv, deps: ArbDeps):
           contradictedSuggestion: followed === null ? null : answers.length - followed,
           // arbiter ids only — never identity data
           answers: answers.map((a) => ({
-            arbiterId: a.arbiter_id, choiceId: a.choice_id, letter: letterOf(a.choice_id), comment: a.comment,
+            arbiterId: a.arbiter_id, arbiterStatus: statusOf[a.arbiter_id] ?? null, choiceId: a.choice_id, letter: letterOf(a.choice_id), comment: a.comment,
             followedSuggestion: sugg ? letterOf(a.choice_id) === sugg.letter : null,
             answeredAt: new Date(a.answered_at).toISOString(),
             responseSeconds: Math.round((a.answered_at - row.created_at) / 1000),
@@ -637,7 +659,11 @@ export async function handleArbitrage(req: Request, env: ArbEnv, deps: ArbDeps):
     return j({ error: "not_found" }, 404);
   }
 
-  if (me.status !== "verified") return j({ error: "not_verified", status: me.status }, 403);
+  // SIMULATION endpoints: verified arbiters, or non-rejected arbiters the owner invited for simulations only.
+  if (path.startsWith("/arbitrage/sim-cases")) {
+    const allowed = me.status === "verified" || (me.status !== "rejected" && (await store.isSimInvited(me.id)));
+    if (!allowed) return j({ error: "not_verified", status: me.status }, 403);
+  } else if (me.status !== "verified") return j({ error: "not_verified", status: me.status }, 403);
 
   if (path === "/arbitrage/cases" && req.method === "GET") {
     const rows = await store.openCases();

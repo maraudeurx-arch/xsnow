@@ -7,6 +7,7 @@ function memStore(): ArbStore & { arbiters: Map<string, ArbiterRow>; cases: Map<
   const arbiters = new Map<string, ArbiterRow>();
   const cases = new Map<string, CaseRow>();
   const simAns: SimAnswerRow[] = [];
+  const simInvites = new Set<string>();
   return {
     arbiters,
     cases,
@@ -18,6 +19,8 @@ function memStore(): ArbStore & { arbiters: Map<string, ArbiterRow>; cases: Map<
       simAns.push({ ...a }); return true;
     },
     async simAnswers(id) { return simAns.filter((a) => a.case_id === id); },
+    async isSimInvited(id) { return simInvites.has(id); },
+    async setSimInvite(id, on) { if (on) simInvites.add(id); else simInvites.delete(id); },
     async insertArbiter(r) { arbiters.set(r.id, { ...r }); },
     async arbiterByToken(h) { return [...arbiters.values()].find((a) => a.token_hash === h) ?? null; },
     async arbiterById(id) { return arbiters.get(id) ?? null; },
@@ -251,6 +254,34 @@ describe("arbitrage worker", () => {
     // close
     await handleArbitrage(req("/arbitrage/admin/sim-close", "POST", { caseId: c.caseId }, S), env, deps);
     assert.equal((await (await handleArbitrage(req("/arbitrage/sim-cases", "GET", undefined, toks[0]), env, deps)).json()).cases.length, 0);
+  });
+
+  it("sim-invite: a rescan_requested arbiter sees and answers simulations only; status unchanged", async () => {
+    const env = await makeEnv();
+    const store = memStore();
+    const deps = { store };
+    const S = env.ARBITER_ADMIN_SECRET;
+    const a = await (await handleArbitrage(req("/arbitrage/apply", "POST", application), env, deps)).json();
+    await handleArbitrage(req("/arbitrage/admin/review", "POST", { arbiterId: a.arbiterId, action: "rescan" }, S), env, deps);
+    const c = await (await handleArbitrage(req("/arbitrage/admin/sim-cases", "POST", { title: "t", scenario: "s", choices: ["x", "y"] }, S), env, deps)).json();
+    assert.equal((await handleArbitrage(req("/arbitrage/sim-cases", "GET", undefined, a.token), env, deps)).status, 403);
+    assert.equal((await handleArbitrage(req("/arbitrage/admin/sim-invite", "POST", { arbiterId: a.arbiterId }, a.token), env, deps)).status, 401);
+    const inv = await (await handleArbitrage(req("/arbitrage/admin/sim-invite", "POST", { arbiterId: a.arbiterId, invite: true }, S), env, deps)).json();
+    assert.equal(inv.status, "rescan_requested");
+    assert.equal(store.arbiters.get(a.arbiterId)!.status, "rescan_requested");
+    assert.equal((await (await handleArbitrage(req("/arbitrage/sim-cases", "GET", undefined, a.token), env, deps)).json()).cases.length, 1);
+    assert.equal((await handleArbitrage(req("/arbitrage/sim-cases/answer", "POST", { caseId: c.caseId, choiceId: "a" }, a.token), env, deps)).status, 200);
+    // still no real cases, rescan flow still available
+    assert.equal((await handleArbitrage(req("/arbitrage/cases", "GET", undefined, a.token), env, deps)).status, 403);
+    assert.equal((await handleArbitrage(req("/arbitrage/rescan/photo", "GET", undefined, a.token), env, deps)).status, 200);
+    const res = await (await handleArbitrage(req("/arbitrage/admin/sim-results", "GET", undefined, S), env, deps)).json();
+    assert.equal(res.cases[0].answers[0].arbiterStatus, "rescan_requested");
+    // revoke
+    await handleArbitrage(req("/arbitrage/admin/sim-invite", "POST", { arbiterId: a.arbiterId, invite: false }, S), env, deps);
+    assert.equal((await handleArbitrage(req("/arbitrage/sim-cases", "GET", undefined, a.token), env, deps)).status, 403);
+    // rejected arbiters cannot be invited
+    await handleArbitrage(req("/arbitrage/admin/review", "POST", { arbiterId: a.arbiterId, approve: false }, S), env, deps);
+    assert.equal((await handleArbitrage(req("/arbitrage/admin/sim-invite", "POST", { arbiterId: a.arbiterId }, S), env, deps)).status, 409);
   });
 
   it("rescan: admin requests it, candidate redoes only the face scan, back to pending", async () => {

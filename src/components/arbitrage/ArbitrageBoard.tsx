@@ -63,6 +63,8 @@ export function ArbitrageBoard() {
       {status === "not_configured" ? <p className="rounded-xl bg-slate-100 p-3 text-slate-700">{t.notConfigured}</p> : null}
       {status === "verified" ? <CasesView token={token} /> : null}
       {status === "rescan_requested" ? <RescanView token={token} onDone={() => setStatus("pending")} /> : null}
+      {/* SIMULATION cases for owner-invited, non-verified arbiters (hidden when the server says 403) */}
+      {token && (status === "pending" || status === "rescan_requested") ? <SimCasesView token={token} /> : null}
       {status === "none" && !terms ? (
         <button type="button" className={primary} data-arb-become onClick={() => setModal(true)}>{t.title}</button>
       ) : null}
