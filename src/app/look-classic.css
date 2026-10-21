@@ -211,6 +211,21 @@ html[data-opc-look="a"] footer > p + p {
   font-weight: 800;
 }
 
+/* The gold slogan uses line-height 1 + a text-shadow: give its descenders room so the
+   legal links row never sits under it (seen on iPhone /arbitrage). */
+html[data-opc-look="a"] footer .footer-slogan-line {
+  line-height: 1.18;
+  padding-bottom: 0.12rem;
+}
+
+html[data-opc-look="a"] footer > p + p {
+  position: relative;
+  z-index: 1;
+  margin-top: 0.3rem;
+  padding-bottom: 0.15rem;
+  line-height: 1.35;
+}
+
 html[data-opc-look="a"] .chrome-panel {
   border-radius: 0.75rem;
   padding: 0 0.375rem;

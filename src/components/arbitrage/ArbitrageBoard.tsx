@@ -245,12 +245,12 @@ function SimCaseCard({ c, token }: { c: SimCase; token: string }) {
   }
   const chosen = c.choices.find((x) => x.id === answer);
   return (
-    <article className="grid gap-2 rounded-2xl border-2 border-amber-400 bg-amber-50 p-3 text-sm text-slate-800" data-arb-sim-case={c.caseId}>
-      <p role="note" className="rounded-xl bg-amber-300 p-2 font-extrabold text-slate-900" data-arb-sim-banner>{t.banner}</p>
+    <article className="arb-card arb-card-sim grid gap-2 rounded-2xl border-2 border-amber-400 bg-amber-50 p-3 text-sm text-slate-800" data-arb-sim-case={c.caseId}>
+      <p role="note" className="arb-sim-banner rounded-xl bg-amber-300 p-2 font-extrabold text-slate-900" data-arb-sim-banner>{t.banner}</p>
       <h3 className="font-extrabold">{c.title}</h3>
       <p className="whitespace-pre-line">{c.scenario}</p>
       {answer ? (
-        <p className="font-bold text-emerald-800" data-arb-sim-done>{msg || t.already} {chosen ? `${t.yours} ${chosen.label}` : ""}</p>
+        <p className="arb-ok font-bold text-emerald-800" data-arb-sim-done>{msg || t.already} {chosen ? `${t.yours} ${chosen.label}` : ""}</p>
       ) : (
         <fieldset className="grid gap-2">
           {c.choices.map((ch) => (
@@ -289,16 +289,16 @@ function CaseCard({ c, token, onDecided }: { c: ArbCase; token: string; onDecide
   }
 
   return (
-    <article className="grid gap-2 rounded-2xl border border-slate-200 bg-white p-3 text-sm text-slate-800" data-arb-case={c.caseId}>
+    <article className="arb-card grid gap-2 rounded-2xl border border-slate-200 bg-white p-3 text-sm text-slate-800" data-arb-case={c.caseId}>
       <p><b>{t.amount} :</b> {c.amountUsdc} USDC — {c.claimant} / {c.respondent}</p>
       <p><b>{t.claim} :</b> {c.claim}</p>
       <p><b>{t.response} :</b> {c.response}</p>
-      <div className="rounded-xl bg-slate-50 p-2">
+      <div className="arb-suggestion rounded-xl bg-slate-50 p-2">
         <p className="font-extrabold">{t.suggestion} ({c.suggestion.model})</p>
         <p>{t.outcome[c.suggestion.outcome]} — {t.refund} {c.suggestion.refundPercent} %</p>
         <p>{c.suggestion.rationale}</p>
       </div>
-      {done ? <p className="font-bold text-emerald-800">{t.decided}</p> : rejecting ? (
+      {done ? <p className="arb-ok font-bold text-emerald-800">{t.decided}</p> : rejecting ? (
         <div className="grid gap-2">
           <label className={label}>{t.reason}<textarea className={input} value={reason} onChange={(e) => setReason(e.target.value)} /></label>
           <label className={label}>{t.myDecision}
