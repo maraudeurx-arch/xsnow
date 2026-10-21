@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { handleArbitrage, isArbitragePath, parseSimCase, simTextError, type ArbStore, type ArbiterRow, type CaseRow, type SimAnswerRow, type WalletRow } from "./arbitrage.ts";
+import { handleArbitrage, isArbitragePath, parseSimCase, simTextError, type ArbStore, type ArbiterRow, type CaseRow, type SimAnswerRow, type WalletRow, type PushSubRow } from "./arbitrage.ts";
 import { ARBITER_TERMS_VERSION, bytesToB64, importVerifyKey, verifyAttestation } from "../../../src/lib/arbitrage.ts";
 
 function memStore(): ArbStore & { arbiters: Map<string, ArbiterRow>; cases: Map<string, CaseRow>; simAns: SimAnswerRow[] } {
@@ -9,6 +9,7 @@ function memStore(): ArbStore & { arbiters: Map<string, ArbiterRow>; cases: Map<
   const simAns: SimAnswerRow[] = [];
   const simInvites = new Set<string>();
   const wallets = new Map<string, WalletRow>();
+  const pushSubs = new Map<string, PushSubRow>();
   return {
     arbiters,
     cases,
@@ -26,6 +27,9 @@ function memStore(): ArbStore & { arbiters: Map<string, ArbiterRow>; cases: Map<
     async walletOf(id) { return wallets.get(id) ?? null; },
     async setWallet(w) { wallets.set(w.arbiter_id, { ...w }); },
     async allWallets() { return [...wallets.values()]; },
+    async addPushSub(x) { pushSubs.set(x.endpoint, { ...x }); },
+    async removePushSub(e, a) { const x = pushSubs.get(e); if (x && (!a || x.arbiter_id === a)) pushSubs.delete(e); },
+    async allPushSubs() { return [...pushSubs.values()]; },
     async insertArbiter(r) { arbiters.set(r.id, { ...r }); },
     async arbiterByToken(h) { return [...arbiters.values()].find((a) => a.token_hash === h) ?? null; },
     async arbiterById(id) { return arbiters.get(id) ?? null; },
@@ -315,6 +319,63 @@ describe("arbitrage worker", () => {
     assert.deepEqual(list.wallets.map((x: { arbiterId: string; address: string }) => [x.arbiterId, x.address]), [[a.arbiterId, addr]]);
     assert.ok(!JSON.stringify(list).includes("Politzer"));
     assert.equal(fetches, 0);
+  });
+
+  it("push: opted-in arbiters get a payload-less VAPID push on new cases (real → verified; sim → verified + invited)", async () => {
+    const env = await makeEnv();
+    const kp = (await crypto.subtle.generateKey({ name: "ECDSA", namedCurve: "P-256" }, true, ["sign", "verify"])) as CryptoKeyPair;
+    const raw = new Uint8Array(await crypto.subtle.exportKey("raw", kp.publicKey));
+    const b64u = (u: Uint8Array) => btoa(String.fromCharCode(...u)).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+    const jwk = await crypto.subtle.exportKey("jwk", kp.privateKey);
+    const E = { ...env, VAPID_PUBLIC_KEY: b64u(raw), VAPID_PRIVATE_KEY: jwk.d!, VAPID_SUBJECT: "mailto:test@example.org" };
+    const store = memStore();
+    const calls: { url: string; init?: RequestInit }[] = [];
+    const fetchImpl = (async (url: string | URL, init?: RequestInit) => {
+      calls.push({ url: String(url), init });
+      return new Response("", { status: String(url).includes("gone") ? 410 : 201 });
+    }) as typeof fetch;
+    const deps = { store, fetchImpl };
+    const S = env.ARBITER_ADMIN_SECRET;
+    const mk = async (n: string) => (await (await handleArbitrage(req("/arbitrage/apply", "POST", { ...application, docNumber: n }), E, deps)).json());
+    const v = await mk("AA000001"), inv = await mk("AA000002"), pend = await mk("AA000003");
+    await handleArbitrage(req("/arbitrage/admin/review", "POST", { arbiterId: v.arbiterId, approve: true }, S), E, deps);
+    await handleArbitrage(req("/arbitrage/admin/review", "POST", { arbiterId: inv.arbiterId, action: "rescan" }, S), E, deps);
+    await handleArbitrage(req("/arbitrage/admin/sim-invite", "POST", { arbiterId: inv.arbiterId }, S), E, deps);
+    assert.equal((await (await handleArbitrage(req("/arbitrage/push/vapid-key", "GET"), E, deps)).json()).key, E.VAPID_PUBLIC_KEY);
+    // pending, not invited: cannot subscribe
+    assert.equal((await handleArbitrage(req("/arbitrage/push/subscribe", "POST", { endpoint: "https://fcm.googleapis.com/fcm/send/p" }, pend.token), E, deps)).status, 403);
+    // SSRF guard
+    assert.equal((await handleArbitrage(req("/arbitrage/push/subscribe", "POST", { endpoint: "https://evil.example/x" }, v.token), E, deps)).status, 400);
+    assert.equal((await handleArbitrage(req("/arbitrage/push/subscribe", "POST", { endpoint: "https://fcm.googleapis.com/fcm/send/v" }, v.token), E, deps)).status, 200);
+    assert.equal((await handleArbitrage(req("/arbitrage/push/subscribe", "POST", { endpoint: "https://web.push.apple.com/inv" }, inv.token), E, deps)).status, 200);
+    await handleArbitrage(req("/arbitrage/push/subscribe", "POST", { endpoint: "https://fcm.googleapis.com/fcm/send/gone" }, v.token), E, deps);
+    const sim = await (await handleArbitrage(req("/arbitrage/admin/sim-cases", "POST", { title: "t", scenario: "s", choices: ["x", "y"] }, S), E, deps)).json();
+    assert.equal(sim.pushed, 2);
+    assert.deepEqual(calls.map((c) => new URL(c.url).pathname).sort(), ["/fcm/send/gone", "/fcm/send/v", "/inv"]);
+    assert.ok(!store.allPushSubs || !(await store.allPushSubs()).some((x) => x.endpoint.includes("gone")), "expired sub removed");
+    // VAPID header verifies with the public key; no body
+    const c0 = calls.find((c) => c.url.includes("/v"))!;
+    const auth = String((c0.init!.headers as Record<string, string>).Authorization);
+    const jwt = auth.match(/t=([^,]+)/)![1];
+    const [h, p, sg] = jwt.split(".");
+    const d = (x: string) => Uint8Array.from(atob(x.replace(/-/g, "+").replace(/_/g, "/") + "===".slice((x.length + 3) % 4)), (ch) => ch.charCodeAt(0));
+    assert.ok(await crypto.subtle.verify({ name: "ECDSA", hash: "SHA-256" }, kp.publicKey, d(sg), new TextEncoder().encode(`${h}.${p}`)));
+    assert.equal(JSON.parse(new TextDecoder().decode(d(p))).aud, "https://fcm.googleapis.com");
+    assert.equal(c0.init!.body, undefined);
+    // real case: verified only
+    calls.length = 0;
+    const real = await (await handleArbitrage(req("/arbitrage/admin/cases", "POST", { amountUsdc: 5, claimant: { agentId: "a", webhookUrl: "https://a.example/h" }, respondent: { agentId: "b", webhookUrl: "https://b.example/h" }, claim: "c", response: "r" }, S), E, deps)).json();
+    assert.equal(real.ok, true);
+    assert.equal(real.pushed, 1);
+    assert.deepEqual(calls.map((c) => new URL(c.url).pathname), ["/fcm/send/v"]);
+    // unsubscribe
+    await handleArbitrage(req("/arbitrage/push/unsubscribe", "POST", { endpoint: "https://web.push.apple.com/inv" }, inv.token), E, deps);
+    assert.equal((await store.allPushSubs()).length, 1);
+    // not configured → no push, no error
+    calls.length = 0;
+    const s2 = await (await handleArbitrage(req("/arbitrage/admin/sim-cases", "POST", { title: "t2", scenario: "s", choices: ["x", "y"] }, S), env, deps)).json();
+    assert.equal(s2.pushed, 0);
+    assert.equal(calls.length, 0);
   });
 
   it("rescan: admin requests it, candidate redoes only the face scan, back to pending", async () => {

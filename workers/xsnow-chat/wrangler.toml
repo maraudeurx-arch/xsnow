@@ -27,3 +27,8 @@ binding = "DB"
 database_name = "xsnow-opc-stats"
 database_id = "c3453c09-78f8-477a-bb31-5f5ee9611bdb"
 migrations_dir = "migrations"
+
+# Web Push (VAPID). Public values only; VAPID_PRIVATE_KEY is a worker secret (wrangler secret put).
+[vars]
+VAPID_PUBLIC_KEY = "BKc4SYnZdmsjhQ5kHHJpJE4PfsT3BYhKts6V0_pGvk8Y2KEo5oWTXLGMRraEYJyH62HveWQalgdYsO8aSkiGxlI"
+VAPID_SUBJECT = "https://opencommunity.app"

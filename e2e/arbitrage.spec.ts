@@ -125,6 +125,8 @@ test.describe("HITL arbitrage", () => {
     await page.goto("arbitrage/");
     const card = page.locator('[data-arb-sim-case="sim_1"]');
     await expect(card.locator("[data-arb-sim-banner]")).toContainText("SIMULATION");
+    await expect(page.locator("[data-arb-notify]")).toContainText("notifications");
+    await expect(page.locator("[data-arb-notify-enable]")).toHaveText("Activer les notifications");
     await expect(card.locator('input[type="radio"]')).toHaveCount(3);
     await expect(card.locator("[data-arb-sim-letter]")).toHaveText(["A.", "B.", "C."]);
     await expect(card.locator("[data-arb-sim-suggestion]")).toContainText("Suggestion d’Indiana : B");

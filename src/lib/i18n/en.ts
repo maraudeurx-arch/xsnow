@@ -415,6 +415,17 @@ export const en: Messages = {
       "body": "Well done on your first simulation! To receive your arbiter pay later, click Connect. Connect also offers to create a wallet if you don’t have one.",
       "connected": "Wallet connected:"
     },
+    "notify": {
+      "title": "Arbitration notifications",
+      "body": "Turn on notifications: your phone rings when an arbitration case (or a simulation) is waiting for you.",
+      "enable": "Turn on notifications",
+      "on": "Notifications are on for this device.",
+      "iosInstall": "On iPhone: tap Share, then “Add to Home Screen”. Open OPC from the icon, then come back here to turn on notifications (iOS 16.4 or later).",
+      "unsupported": "This browser does not support notifications. Try Chrome on Android, or the OPC app on the iPhone Home Screen.",
+      "denied": "Notifications blocked. Allow them in your browser settings, then try again.",
+      "forbidden": "Notifications are for verified or invited arbiters only.",
+      "error": "Could not turn on notifications right now. Try again later."
+    },
     "sim": {
       "manualTip": "Get familiar with the Justice Manual: it guides every arbiter decision.",
       "manualPdf": "Download the Justice Manual (PDF)",
