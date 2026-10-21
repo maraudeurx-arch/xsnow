@@ -778,6 +778,8 @@ export async function handleArbitrage(req: Request, env: ArbEnv, deps: ArbDeps):
     for (const row of await store.openSimCases()) {
       const c = JSON.parse(row.case_json) as { title: string; scenario: string };
       const mine = (await store.simAnswers(row.id)).find((a) => a.arbiter_id === me.id);
+      // Already answered: hidden from this arbiter's view only. The answer stays in D1 (owner sees it in sim-results).
+      if (mine && url.searchParams.get("include") !== "answered") continue;
       cases.push({
         simulation: true, caseId: row.id, title: c.title, scenario: c.scenario,
         choices: simChoicesFromRow(row.choices_json),

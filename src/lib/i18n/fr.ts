@@ -424,6 +424,7 @@ export const fr = {
       "error": "Impossible d’activer les notifications pour le moment. Réessaie plus tard."
     },
     "sim": {
+      "noPending": "Aucun arbitrage en attente.",
       "manualTip": "Familiarise-toi avec le Manuel de justice : il guide chaque décision d’arbitre.",
       "manualPdf": "Télécharger le Manuel de justice (PDF)",
       "manualPage": "Lire en ligne",

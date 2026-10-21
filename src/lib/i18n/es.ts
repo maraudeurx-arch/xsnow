@@ -427,6 +427,7 @@ export const es: Messages = {
       "error": "No se pudieron activar las notificaciones ahora. Inténtalo más tarde."
     },
     "sim": {
+      "noPending": "Ningún arbitraje pendiente.",
       "manualTip": "Familiarízate con el Manual de justicia: guía cada decisión de árbitro.",
       "manualPdf": "Descargar el Manual de justicia (PDF)",
       "manualPage": "Leer en línea",
