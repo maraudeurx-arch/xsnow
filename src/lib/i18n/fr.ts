@@ -423,6 +423,12 @@ export const fr = {
       "forbidden": "Les notifications sont réservées aux arbitres vérifiés ou invités.",
       "error": "Impossible d’activer les notifications pour le moment. Réessaie plus tard."
     },
+    "email": {
+      "label": "Ton e-mail",
+      "add": "Ajouter mon e-mail",
+      "why": "Tu recevras par e-mail une copie de chaque décision que tu prends. Ton e-mail est chiffré et n’est jamais affiché.",
+      "invalid": "Adresse e-mail invalide."
+    },
     "sim": {
       "noPending": "Aucun arbitrage en attente.",
       "manualTip": "Familiarise-toi avec le Manuel de justice : il guide chaque décision d’arbitre.",

@@ -35,6 +35,7 @@
  * ARBITER_SIGNING_PUBLIC_KEY, ARBITER_ADMIN_SECRET. Missing secrets → 503 not_configured.
  */
 
+import { parseArbiterEmail, parseMailLang, sendDecisionCopy, type MailLang } from "./decision-mail.ts";
 import { importVapidPrivate, isAllowedPushEndpoint, sendPush } from "./webpush.ts";
 import {
   ID_RETENTION_DAYS,
@@ -63,6 +64,8 @@ export type ArbiterRow = {
   opc_id: string | null;
   identity_enc: string | null;
   photo_enc: string | null;
+  email_enc?: string | null;
+  email_lang?: string | null;
   identity_hash: string;
   doc_expiry: string;
   face_score: number | null;
@@ -140,7 +143,7 @@ export type D1Full = { prepare: (q: string) => D1Stmt };
 
 const ARB_COLS = new Set([
   "status", "identity_enc", "photo_enc", "face_reviewed", "reputation", "reviewed_at", "purge_after",
-  "face_score", "face_liveness", "face_method", "identity_hash",
+  "face_score", "face_liveness", "face_method", "identity_hash", "email_enc", "email_lang",
 ]);
 const CASE_COLS = new Set(["status", "suggestion_json", "decision_json", "arbiter_id", "decided_at"]);
 
@@ -155,12 +158,12 @@ export function d1ArbStore(db: D1Full): ArbStore {
       await db
         .prepare(
           `INSERT INTO arbiters (id, token_hash, status, opc_id, identity_enc, photo_enc, identity_hash, doc_expiry,
-            face_score, face_liveness, face_method, face_reviewed, reputation, terms_version, terms_accepted_at, created_at, reviewed_at, purge_after)
-           VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+            face_score, face_liveness, face_method, face_reviewed, reputation, terms_version, terms_accepted_at, created_at, reviewed_at, purge_after, email_enc, email_lang)
+           VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
         )
         .bind(r.id, r.token_hash, r.status, r.opc_id, r.identity_enc, r.photo_enc, r.identity_hash, r.doc_expiry,
           r.face_score, r.face_liveness, r.face_method, r.face_reviewed, r.reputation, r.terms_version, r.terms_accepted_at, r.created_at, r.reviewed_at,
-          r.purge_after)
+          r.purge_after, r.email_enc ?? null, r.email_lang ?? null)
         .run();
     },
     arbiterByToken: (h) => db.prepare(`SELECT * FROM arbiters WHERE token_hash = ?`).bind(h).first<ArbiterRow>(),
@@ -255,6 +258,10 @@ export type ArbEnv = {
   ARBITER_SIGNING_KEY?: string;
   ARBITER_SIGNING_PUBLIC_KEY?: string;
   ARBITER_ADMIN_SECRET?: string;
+  /** Decision copy by email: OFF unless "on". Uses the OPC Resend key and From. */
+  ARBITER_DECISION_EMAILS?: string;
+  RESEND_API_KEY?: string;
+  IDEAS_FROM_EMAIL?: string;
   /** Web Push (VAPID). Private key is a worker secret; public key and subject are plain vars. */
   VAPID_PUBLIC_KEY?: string;
   VAPID_PRIVATE_KEY?: string;
@@ -544,6 +551,8 @@ export async function handleArbitrage(req: Request, env: ArbEnv, deps: ArbDeps):
       status: "pending",
       opc_id: a.opcId ?? null,
       identity_enc: await encryptString(encKey, identity),
+      email_enc: await encryptString(encKey, a.email),
+      email_lang: a.lang,
       photo_enc: await encryptString(encKey, `${a.idPhotoMime};${a.idPhotoBase64}`),
       identity_hash: identityHash,
       doc_expiry: a.expiryDate,
@@ -692,7 +701,16 @@ export async function handleArbitrage(req: Request, env: ArbEnv, deps: ArbDeps):
   if (!me) return j({ error: "unauthorized" }, 401);
 
   if (path === "/arbitrage/me" && req.method === "GET") {
-    return j({ arbiterId: me.id, status: me.status, reputation: me.reputation });
+    return j({ arbiterId: me.id, status: me.status, reputation: me.reputation, hasEmail: !!me.email_enc });
+  }
+  if (path === "/arbitrage/email" && req.method === "POST") {
+    // Existing arbiters add / change their contact email ("Ajouter mon e-mail"). Encrypted; never returned.
+    if (me.status === "rejected") return j({ error: "rejected" }, 403);
+    const b = (body ?? {}) as Record<string, unknown>;
+    const email = parseArbiterEmail(b.email);
+    if (!email) return j({ error: "email" }, 400);
+    await store.updateArbiter(me.id, { email_enc: await encryptString(encKey, email), email_lang: parseMailLang(b.lang) });
+    return j({ ok: true, hasEmail: true });
   }
   if (path.startsWith("/arbitrage/rescan")) {
     if (me.status !== "rescan_requested" || !me.photo_enc || !me.identity_enc) return j({ error: "no_rescan_requested", status: me.status }, 409);
@@ -803,7 +821,13 @@ export async function handleArbitrage(req: Request, env: ArbEnv, deps: ArbDeps):
     // No AI, no webhook, no signature, no reputation change.
     const sugg = row.suggestion_json ? (JSON.parse(row.suggestion_json) as SimSuggestion) : null;
     const letter = choices.find((c) => c.id === choiceId)!.letter;
-    return j({ ok: true, simulation: true, caseId: row.id, choiceId, letter, followedSuggestion: sugg ? sugg.letter === letter : null });
+    const picked = choices.find((c) => c.id === choiceId)!;
+    const mail = await sendDecisionCopy(env, me.email_enc ? await decryptString(encKey, me.email_enc) : null, parseMailLang(me.email_lang) as MailLang, {
+      caseId: row.id, title: (JSON.parse(row.case_json) as { title: string }).title, simulation: true,
+      choice: `${letter}. ${picked.label}`, suggestion: sugg ? `${sugg.letter}. ${sugg.text}` : null,
+      followedSuggestion: sugg ? sugg.letter === letter : null, decidedAt: new Date(now()).toISOString(),
+    }, fetchImpl);
+    return j({ ok: true, simulation: true, caseId: row.id, choiceId, letter, followedSuggestion: sugg ? sugg.letter === letter : null, emailCopy: mail });
   }
 
   if (path === "/arbitrage/cases/decide" && req.method === "POST") {
@@ -874,7 +898,13 @@ export async function handleArbitrage(req: Request, env: ArbEnv, deps: ArbDeps):
       notifyParty(fetchImpl, c.claimant.webhookUrl, payload),
       notifyParty(fetchImpl, c.respondent.webhookUrl, payload),
     ]);
-    return j({ ok: true, payload, delivery: { claimant: claimantStatus, respondent: respondentStatus } });
+    const mail = await sendDecisionCopy(env, me.email_enc ? await decryptString(encKey, me.email_enc) : null, parseMailLang(me.email_lang) as MailLang, {
+      caseId: row.id, title: `${c.claimant.agentId} / ${c.respondent.agentId}`, simulation: false,
+      choice: `${decision.outcome}, ${decision.refundPercent}% — ${decision.rationale}`,
+      suggestion: `${suggestion.outcome}, ${suggestion.refundPercent}% — ${suggestion.rationale}`,
+      followedSuggestion: accept, decidedAt,
+    }, fetchImpl);
+    return j({ ok: true, payload, delivery: { claimant: claimantStatus, respondent: respondentStatus }, emailCopy: mail });
   }
 
   return j({ error: "not_found" }, 404);

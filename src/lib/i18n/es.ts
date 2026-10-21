@@ -426,6 +426,12 @@ export const es: Messages = {
       "forbidden": "Las notificaciones son solo para árbitros verificados o invitados.",
       "error": "No se pudieron activar las notificaciones ahora. Inténtalo más tarde."
     },
+    "email": {
+      "label": "Tu correo",
+      "add": "Agregar mi correo",
+      "why": "Recibirás por correo una copia de cada decisión que tomes. Tu correo está cifrado y nunca se muestra.",
+      "invalid": "Correo electrónico no válido."
+    },
     "sim": {
       "noPending": "Ningún arbitraje pendiente.",
       "manualTip": "Familiarízate con el Manual de justicia: guía cada decisión de árbitro.",

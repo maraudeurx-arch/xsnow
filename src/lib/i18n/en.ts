@@ -426,6 +426,12 @@ export const en: Messages = {
       "forbidden": "Notifications are for verified or invited arbiters only.",
       "error": "Could not turn on notifications right now. Try again later."
     },
+    "email": {
+      "label": "Your email",
+      "add": "Add my email",
+      "why": "You will get an email copy of each decision you make. Your email is encrypted and never shown.",
+      "invalid": "Invalid email address."
+    },
     "sim": {
       "noPending": "No arbitration pending.",
       "manualTip": "Get familiar with the Justice Manual: it guides every arbiter decision.",

@@ -55,6 +55,9 @@ export type ArbiterApplication = {
   face: FaceCheck;
   opcId?: string;
   terms: TermsAcceptance;
+  /** Contact email (required), stored encrypted apart from identity. */
+  email: string;
+  lang: "fr" | "en" | "es";
 };
 
 export type VerificationLevel = "id_reviewed+face_auto" | "id_reviewed+face_reviewed";
@@ -108,6 +111,9 @@ export function parseArbiterApplication(raw: unknown, now: Date = new Date()): P
   if (bytes < 1 || bytes > ID_PHOTO_MAX_BYTES) return { ok: false, error: "photo_size" };
   const face = parseFaceCheck(r.face);
   const opcId = cleanText(r.opcId, 40) || undefined;
+  const email = typeof r.email === "string" ? r.email.trim().toLowerCase() : "";
+  if (email.length > 254 || !/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/.test(email)) return { ok: false, error: "email" };
+  const lang = r.lang === "en" || r.lang === "es" ? r.lang : "fr";
   return {
     ok: true,
     value: {
@@ -123,6 +129,8 @@ export function parseArbiterApplication(raw: unknown, now: Date = new Date()): P
       face,
       opcId,
       terms,
+      email,
+      lang,
     },
   };
 }
