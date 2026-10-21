@@ -411,6 +411,8 @@ export const es: Messages = {
       "error": "No se pudo enviar el nuevo escaneo. Inténtalo de nuevo."
     },
     "sim": {
+      "suggestionTitle": "Sugerencia de {author}",
+      "reasoning": "Razonamiento",
       "banner": "SIMULACIÓN (SIMULATION) — ejercicio de prueba. Ninguna disputa real, ningún pago, ninguna firma.",
       "title": "Casos de simulación",
       "comment": "Comentario (opcional)",

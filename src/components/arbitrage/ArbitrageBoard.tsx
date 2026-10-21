@@ -19,7 +19,8 @@ type ArbCase = {
 };
 type SimCase = {
   simulation: true; caseId: string; title: string; scenario: string;
-  choices: { id: string; label: string }[]; myAnswer: string | null;
+  choices: { id: string; letter?: string; label: string }[]; myAnswer: string | null;
+  suggestion?: { letter: string; text: string; reasoning: string; author: string } | null;
 };
 
 const input = "arb-input min-h-11 w-full rounded-xl border border-slate-600 bg-slate-900 px-3 text-[15px] text-white caret-white placeholder:text-white/60";
@@ -243,20 +244,29 @@ function SimCaseCard({ c, token }: { c: SimCase; token: string }) {
     if (status === 200) { setAnswer(choice); setMsg(t.sent); }
     else if (status === 409) { setAnswer(choice); setMsg(t.already); }
   }
-  const chosen = c.choices.find((x) => x.id === answer);
+  const letterOf = (i: number) => c.choices[i]?.letter || "ABCD"[i] || String(i + 1);
+  const chosenIdx = c.choices.findIndex((x) => x.id === answer);
+  const chosen = chosenIdx >= 0 ? `${letterOf(chosenIdx)}. ${c.choices[chosenIdx].label}` : "";
   return (
     <article className="arb-card arb-card-sim grid gap-2 rounded-2xl border-2 border-amber-400 bg-amber-50 p-3 text-sm text-slate-800" data-arb-sim-case={c.caseId}>
       <p role="note" className="arb-sim-banner rounded-xl bg-amber-300 p-2 font-extrabold text-slate-900" data-arb-sim-banner>{t.banner}</p>
       <h3 className="font-extrabold">{c.title}</h3>
       <p className="whitespace-pre-line">{c.scenario}</p>
+      {c.suggestion ? (
+        <div className="arb-suggestion grid gap-1 rounded-xl bg-slate-50 p-2" data-arb-sim-suggestion>
+          <p className="font-extrabold">{t.suggestionTitle.replace("{author}", c.suggestion.author)} : {c.suggestion.letter}</p>
+          <p>{c.suggestion.text}</p>
+          <p className="text-[13px]"><b>{t.reasoning} :</b> {c.suggestion.reasoning}</p>
+        </div>
+      ) : null}
       {answer ? (
-        <p className="arb-ok font-bold text-emerald-800" data-arb-sim-done>{msg || t.already} {chosen ? `${t.yours} ${chosen.label}` : ""}</p>
+        <p className="arb-ok font-bold text-emerald-800" data-arb-sim-done>{msg || t.already} {chosen ? `${t.yours} ${chosen}` : ""}</p>
       ) : (
         <fieldset className="grid gap-2">
-          {c.choices.map((ch) => (
+          {c.choices.map((ch, i) => (
             <label key={ch.id} className="flex min-h-11 items-center gap-2 rounded-xl border border-slate-300 bg-white px-3">
               <input type="radio" name={`sim-${c.caseId}`} value={ch.id} checked={choice === ch.id} onChange={() => setChoice(ch.id)} data-arb-sim-choice={ch.id} />
-              <span>{ch.label}</span>
+              <span><b data-arb-sim-letter>{letterOf(i)}.</b> {ch.label}</span>
             </label>
           ))}
           <label className={label}>{t.comment}<textarea className={input} maxLength={500} value={comment} onChange={(e) => setComment(e.target.value)} /></label>

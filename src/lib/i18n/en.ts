@@ -411,6 +411,8 @@ export const en: Messages = {
       "error": "The new scan could not be sent. Try again."
     },
     "sim": {
+      "suggestionTitle": "{author}’s suggestion",
+      "reasoning": "Reasoning",
       "banner": "SIMULATION — test exercise. No real dispute, no payment, no signature.",
       "title": "Simulation cases",
       "comment": "Comment (optional)",
