@@ -10,7 +10,7 @@ import { useI18n } from "@/lib/i18n/locale";
 import { useLocalProfile } from "@/lib/useLocalProfile";
 import { FaceScan } from "./FaceScan";
 
-type Status = "none" | "pending" | "verified" | "rejected" | "not_configured";
+type Status = "none" | "pending" | "verified" | "rejected" | "rescan_requested" | "not_configured";
 type Outcome = "claimant" | "respondent" | "split";
 type Suggestion = { outcome: Outcome; refundPercent: number; rationale: string; model: string };
 type ArbCase = {
@@ -61,6 +61,7 @@ export function ArbitrageBoard() {
       {status === "rejected" ? <p data-arb-status="rejected" className="rounded-xl bg-rose-50 p-3 font-bold text-rose-900">{t.statusRejected}</p> : null}
       {status === "not_configured" ? <p className="rounded-xl bg-slate-100 p-3 text-slate-700">{t.notConfigured}</p> : null}
       {status === "verified" ? <CasesView token={token} /> : null}
+      {status === "rescan_requested" ? <RescanView token={token} onDone={() => setStatus("pending")} /> : null}
       {status === "none" && !terms ? (
         <button type="button" className={primary} data-arb-become onClick={() => setModal(true)}>{t.title}</button>
       ) : null}
@@ -316,5 +317,38 @@ function CaseCard({ c, token, onDecided }: { c: ArbCase; token: string; onDecide
         </div>
       )}
     </article>
+  );
+}
+
+/** Admin asked for a new face scan: redo ONLY the face scan + liveness, against the ID photo already on file. */
+function RescanView({ token, onDone }: { token: string; onDone: () => void }) {
+  const { m } = useI18n();
+  const t = m.arbitrage.rescan;
+  const [photo, setPhoto] = useState<string | null>(null);
+  const [face, setFace] = useState<FaceCheck | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState(false);
+  useEffect(() => {
+    arbFetch<{ mime: string; base64: string }>("rescan/photo", { token }).then(({ status, data }) => {
+      if (status === 200 && data.base64) setPhoto(`data:${data.mime};base64,${data.base64}`);
+      else setError(true);
+    }).catch(() => setError(true));
+  }, [token]);
+  async function send() {
+    if (!face) return;
+    setBusy(true);
+    const { status } = await arbFetch("rescan", { method: "POST", token, body: { face } });
+    setBusy(false);
+    if (status === 200) onDone();
+    else setError(true);
+  }
+  return (
+    <section className="grid gap-3" data-arb-rescan>
+      <p data-arb-status="rescan_requested" role="status" className="rounded-xl bg-amber-50 p-3 font-bold text-amber-900">{t.message}</p>
+      <p className="text-sm text-slate-700">{t.howto}</p>
+      {photo ? <FaceScan idPhoto={photo} onResult={setFace} /> : null}
+      {error ? <p role="alert" className="text-sm font-bold text-rose-700">{t.error}</p> : null}
+      <button type="button" className={primary} disabled={!face || busy} onClick={() => void send()} data-arb-rescan-send>{busy ? m.arbitrage.sending : t.send}</button>
+    </section>
   );
 }

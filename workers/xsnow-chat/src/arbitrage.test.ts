@@ -249,4 +249,42 @@ describe("arbitrage worker", () => {
     await handleArbitrage(req("/arbitrage/admin/sim-close", "POST", { caseId: c.caseId }, S), env, deps);
     assert.equal((await (await handleArbitrage(req("/arbitrage/sim-cases", "GET", undefined, toks[0]), env, deps)).json()).cases.length, 0);
   });
+
+  it("rescan: admin requests it, candidate redoes only the face scan, back to pending", async () => {
+    const env = await makeEnv();
+    const store = memStore();
+    const deps = { store };
+    const S = env.ARBITER_ADMIN_SECRET;
+    const a = await (await handleArbitrage(req("/arbitrage/apply", "POST", { ...application, face: { score: null, liveness: false, method: "unavailable" } }), env, deps)).json();
+    const before = { ...store.arbiters.get(a.arbiterId)! };
+    // not requested yet
+    assert.equal((await handleArbitrage(req("/arbitrage/rescan/photo", "GET", undefined, a.token), env, deps)).status, 409);
+    // only admin can request
+    assert.equal((await handleArbitrage(req("/arbitrage/admin/review", "POST", { arbiterId: a.arbiterId, action: "rescan" }, a.token), env, deps)).status, 401);
+    const r = await (await handleArbitrage(req("/arbitrage/admin/review", "POST", { arbiterId: a.arbiterId, action: "rescan" }, S), env, deps)).json();
+    assert.equal(r.status, "rescan_requested");
+    assert.equal((await (await handleArbitrage(req("/arbitrage/me", "GET", undefined, a.token), env, deps)).json()).status, "rescan_requested");
+    // not verified: no cases
+    assert.equal((await handleArbitrage(req("/arbitrage/cases", "GET", undefined, a.token), env, deps)).status, 403);
+    const photo = await (await handleArbitrage(req("/arbitrage/rescan/photo", "GET", undefined, a.token), env, deps)).json();
+    assert.equal(photo.base64, application.idPhotoBase64);
+    assert.equal(photo.mime, "image/png");
+    const done = await (await handleArbitrage(req("/arbitrage/rescan", "POST", { face: { score: 0.81, liveness: true, method: "human-3.3/faceres+yaw-liveness" } }, a.token), env, deps)).json();
+    assert.equal(done.status, "pending");
+    assert.equal(done.faceVerdict, "likely_match");
+    const after = store.arbiters.get(a.arbiterId)!;
+    assert.equal(after.status, "pending");
+    assert.equal(after.face_score, 0.81);
+    assert.equal(after.face_liveness, 1);
+    assert.equal(after.identity_enc, before.identity_enc, "identity unchanged");
+    assert.equal(after.photo_enc, before.photo_enc, "photo unchanged");
+    assert.notEqual(after.identity_hash, before.identity_hash, "hash covers the new face result");
+    assert.equal(store.arbiters.size, 1, "same application, no new row");
+    // one-shot: a second rescan needs a new admin request
+    assert.equal((await handleArbitrage(req("/arbitrage/rescan", "POST", { face: { score: 0.9, liveness: true } }, a.token), env, deps)).status, 409);
+    // verified/rejected arbiters cannot be sent to rescan
+    await handleArbitrage(req("/arbitrage/admin/review", "POST", { arbiterId: a.arbiterId, approve: true }, S), env, deps);
+    assert.equal((await handleArbitrage(req("/arbitrage/admin/review", "POST", { arbiterId: a.arbiterId, action: "rescan" }, S), env, deps)).status, 409);
+  });
 });
+

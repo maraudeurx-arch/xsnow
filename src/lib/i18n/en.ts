@@ -403,6 +403,13 @@ export const en: Messages = {
     "statusRejected": "Application rejected.",
     "casesTitle": "Disputes to decide",
     "noCases": "No open dispute.",
+    "rescan": {
+      "status": "New face scan requested.",
+      "message": "New face scan requested: your first scan could not be validated. Redo only the face scan (turn your head left, then right). Your other details are kept.",
+      "howto": "Use the front camera in a well-lit place. Nothing leaves your device except the score.",
+      "send": "Send the new scan",
+      "error": "The new scan could not be sent. Try again."
+    },
     "sim": {
       "banner": "SIMULATION — test exercise. No real dispute, no payment, no signature.",
       "title": "Simulation cases",

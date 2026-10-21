@@ -400,6 +400,13 @@ export const fr = {
     "statusRejected": "Demande refusée.",
     "casesTitle": "Litiges à trancher",
     "noCases": "Aucun litige ouvert.",
+    "rescan": {
+      "status": "Nouveau scan du visage demandé.",
+      "message": "Nouveau scan du visage demandé : ton premier scan n’a pas pu être validé. Refais seulement le scan du visage (tourne la tête à gauche puis à droite). Tes autres informations sont gardées.",
+      "howto": "Utilise la caméra avant, dans un endroit bien éclairé. Rien ne quitte ton appareil sauf le score.",
+      "send": "Envoyer le nouveau scan",
+      "error": "Le nouveau scan n’a pas pu être envoyé. Réessaie."
+    },
     "sim": {
       "banner": "SIMULATION — exercice de test. Aucun vrai litige, aucun paiement, aucune signature.",
       "title": "Dossiers de simulation",

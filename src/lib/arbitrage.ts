@@ -106,14 +106,7 @@ export function parseArbiterApplication(raw: unknown, now: Date = new Date()): P
   if (!/^[A-Za-z0-9+/]+={0,2}$/.test(idPhotoBase64)) return { ok: false, error: "photo" };
   const bytes = base64ByteLength(idPhotoBase64);
   if (bytes < 1 || bytes > ID_PHOTO_MAX_BYTES) return { ok: false, error: "photo_size" };
-  const f = (r.face && typeof r.face === "object" ? r.face : {}) as Record<string, unknown>;
-  const score =
-    typeof f.score === "number" && Number.isFinite(f.score) ? Math.min(1, Math.max(0, f.score)) : null;
-  const face: FaceCheck = {
-    score,
-    liveness: f.liveness === true,
-    method: cleanText(f.method, 60) || "none",
-  };
+  const face = parseFaceCheck(r.face);
   const opcId = cleanText(r.opcId, 40) || undefined;
   return {
     ok: true,
@@ -132,6 +125,14 @@ export function parseArbiterApplication(raw: unknown, now: Date = new Date()): P
       terms,
     },
   };
+}
+
+/** Browser face result {score, liveness, method}; never a face image. */
+export function parseFaceCheck(raw: unknown): FaceCheck {
+  const f = (raw && typeof raw === "object" ? raw : {}) as Record<string, unknown>;
+  const score =
+    typeof f.score === "number" && Number.isFinite(f.score) ? Math.min(1, Math.max(0, f.score)) : null;
+  return { score, liveness: f.liveness === true, method: cleanText(f.method, 60) || "none" };
 }
 
 /** Automatic face verdict. Never final: an admin always reviews before "verified". */
