@@ -511,6 +511,13 @@ export const fr = {
         }
       }
     },
+    "training": {
+      "followedTitle": "Bien joué ! Pourquoi c’est juste",
+      "contradictedTitle": "On apprend ensemble",
+      "manualLabel": "Manuel de justice",
+      "learnedTitle": "Ce que j’ai appris (explications d’Indiana)",
+      "frenchNote": ""
+    },
     "sim": {
       "noPending": "Aucun arbitrage en attente.",
       "manualTip": "Familiarise-toi avec le Manuel de justice : il guide chaque décision d’arbitre.",

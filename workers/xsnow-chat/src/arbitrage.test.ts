@@ -1,16 +1,21 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { handleArbitrage, isArbitragePath, parseSimCase, simTextError, type ArbStore, type ArbiterRow, type CaseRow, type SimAnswerRow, type WalletRow, type PushSubRow } from "./arbitrage.ts";
+import { handleArbitrage, isArbitragePath, parseSimCase, simTextError, type ArbStore, type ArbiterRow, type CaseRow, type SimAnswerRow, type WalletRow, type PushSubRow, type ExplanationRow } from "./arbitrage.ts";
 import { ARBITER_TERMS_VERSION, bytesToB64, importVerifyKey, verifyAttestation } from "../../../src/lib/arbitrage.ts";
 
-function memStore(): ArbStore & { arbiters: Map<string, ArbiterRow>; cases: Map<string, CaseRow>; simAns: SimAnswerRow[] } {
+function memStore(): ArbStore & { arbiters: Map<string, ArbiterRow>; cases: Map<string, CaseRow>; simAns: SimAnswerRow[]; explanations: ExplanationRow[] } {
   const arbiters = new Map<string, ArbiterRow>();
   const cases = new Map<string, CaseRow>();
   const simAns: SimAnswerRow[] = [];
   const simInvites = new Set<string>();
   const wallets = new Map<string, WalletRow>();
   const pushSubs = new Map<string, PushSubRow>();
+  const explanations: ExplanationRow[] = [];
   return {
+    explanations,
+    async insertExplanation(e) { if (!explanations.some((x) => x.case_id === e.case_id && x.arbiter_id === e.arbiter_id)) explanations.push({ ...e }); },
+    async explanationsBy(id, limit) { return explanations.filter((x) => x.arbiter_id === id).sort((a, b) => b.created_at - a.created_at).slice(0, limit); },
+    async explanationsForCase(id) { return explanations.filter((x) => x.case_id === id); },
     arbiters,
     cases,
     simAns,
@@ -589,6 +594,77 @@ describe("arbitrage worker", () => {
     await store.updateArbiter(a.arbiterId, { status: "rejected" });
     assert.equal((await handleArbitrage(req("/arbitrage/checklist", "GET", undefined, a.token), env, deps)).status, 403);
     assert.equal((await handleArbitrage(req("/arbitrage/checklist", "GET"), env, deps)).status, 401);
+  });
+  it("training explanation: followed → why it was right, contradicted → gentle reasoning; Manuel excerpt; stored per case; in the email copy; no authority words or figures", async () => {
+    const env = { ...(await makeEnv()), ARBITER_DECISION_EMAILS: "on", RESEND_API_KEY: "re_test" };
+    const store = memStore();
+    const mails: Record<string, unknown>[] = [];
+    // Stubbed Resend: nothing leaves the test.
+    const fetchImpl = (async (url: string | URL, init?: RequestInit) => {
+      if (String(url).includes("resend")) mails.push(JSON.parse(String(init?.body)));
+      return new Response("{}", { status: 200 });
+    }) as typeof fetch;
+    let t = 10_000;
+    const deps = { store, fetchImpl, now: () => (t += 1000) };
+    const S = env.ARBITER_ADMIN_SECRET;
+    const a = await (await handleArbitrage(req("/arbitrage/apply", "POST", application), env, deps)).json();
+    await handleArbitrage(req("/arbitrage/admin/review", "POST", { arbiterId: a.arbiterId, approve: true }, S), env, deps);
+    const mk = async () => (await (await handleArbitrage(req("/arbitrage/admin/sim-cases", "POST", {
+      title: "Fichier non livré", scenario: "A dit que B n'a pas livré.", choices: ["Rembourser A", "Donner raison à B"],
+      suggestion: { letter: "B", text: "Je suggère B.", reasoning: "M-5.3 : B montre le reçu signé de livraison." },
+    }, S), env, deps)).json()).caseId;
+    const banned = /(^|[^\p{L}])(cour|courts?|tribunal|tribunaux|tribunals|juridictions?|magistrats?|judges?|jury|jurés?)(?![\p{L}])/iu;
+    const figures = /\d[\d\s.,]*\s*(\$|%|€|usdc|usd|dollars?)/iu;
+
+    // followed
+    const c1 = await mk();
+    const r1 = await (await handleArbitrage(req("/arbitrage/sim-cases/answer", "POST", { caseId: c1, choiceId: "b" }, a.token), env, deps)).json();
+    assert.equal(r1.explanation.followed, true);
+    assert.equal(r1.explanation.manualRef, "M-5.3");
+    assert.match(r1.explanation.text, /^Bravo ! Tu as choisi B\. Donner raison à B/);
+    assert.ok(r1.explanation.text.includes("« Le fournisseur prouve la livraison."));
+    const mail1 = String(mails[0].text);
+    assert.ok(mail1.includes("Pourquoi — la formation d’Indiana :"), mail1);
+    assert.ok(mail1.includes(r1.explanation.text));
+
+    // contradicted
+    const c2 = await mk();
+    const r2 = await (await handleArbitrage(req("/arbitrage/sim-cases/answer", "POST", { caseId: c2, choiceId: "a" }, a.token), env, deps)).json();
+    assert.equal(r2.explanation.followed, false);
+    assert.match(r2.explanation.text, /Tu as choisi A\. Rembourser A\. Indiana suggérait B\. Donner raison à B\. Ce n’est pas grave/);
+    assert.match(r2.explanation.text, /La prochaine fois, demande-toi/);
+    assert.ok(String(mails[1].text).includes(r2.explanation.text));
+
+    // stored per case as evidence; answering again does not overwrite
+    assert.equal(store.explanations.length, 2);
+    assert.deepEqual(store.explanations.map((e) => [e.case_id, e.followed, e.manual_ref, e.manual_version]), [[c1, 1, "M-5.3", "v2.3.2"], [c2, 0, "M-5.3", "v2.3.2"]]);
+    assert.equal((await handleArbitrage(req("/arbitrage/sim-cases/answer", "POST", { caseId: c2, choiceId: "b" }, a.token), env, deps)).status, 409);
+    assert.equal(store.explanations.length, 2);
+    const mine = await (await handleArbitrage(req("/arbitrage/explanations", "GET", undefined, a.token), env, deps)).json();
+    assert.deepEqual(mine.explanations.map((e: { caseId: string }) => e.caseId), [c2, c1]);
+    const results = await (await handleArbitrage(req("/arbitrage/admin/sim-results", "GET", undefined, S), env, deps)).json();
+    assert.ok(results.cases.every((c: { answers: { explanation: { text: string } | null }[] }) => c.answers.every((x) => x.explanation?.text)));
+
+    // no suggestion → no explanation (nothing invented)
+    const c3 = (await (await handleArbitrage(req("/arbitrage/admin/sim-cases", "POST", { title: "t", scenario: "s", choices: ["x", "y"] }, S), env, deps)).json()).caseId;
+    const r3 = await (await handleArbitrage(req("/arbitrage/sim-cases/answer", "POST", { caseId: c3, choiceId: "a" }, a.token), env, deps)).json();
+    assert.equal(r3.explanation, null);
+
+    // real case: outcome in words only, no percentages
+    const rc = await (await handleArbitrage(req("/arbitrage/admin/cases", "POST", {
+      claimant: { agentId: "agent-A", webhookUrl: "https://a.test/hook" }, respondent: { agentId: "agent-B", webhookUrl: "https://b.test/hook" },
+      amountUsdc: 500, claim: "Service non livré", response: "Livré",
+    }, S), env, deps)).json();
+    await handleArbitrage(req("/arbitrage/cases", "GET", undefined, a.token), env, deps);
+    const d = await (await handleArbitrage(req("/arbitrage/cases/decide", "POST", { caseId: rc.caseId, accept: true }, a.token), env, deps)).json();
+    assert.equal(d.explanation.followed, true);
+    assert.match(d.explanation.text, /en faveur du plaignant/);
+
+    // the words cour/tribunal/court (and pay figures) never appear in any generated explanation
+    for (const text of [r1.explanation.text, r2.explanation.text, d.explanation.text, ...store.explanations.map((e) => e.text)]) {
+      assert.doesNotMatch(text, banned, text);
+      assert.doesNotMatch(text, figures, text);
+    }
   });
 });
 

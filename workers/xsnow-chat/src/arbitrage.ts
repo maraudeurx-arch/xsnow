@@ -9,6 +9,7 @@
  *   GET  /arbitrage/rescan/photo       Bearer <arbiter in rescan_requested> → own ID photo (for the in-browser match)
  *   POST /arbitrage/rescan             Bearer <arbiter in rescan_requested> {face} → back to pending with new score
  *   GET  /arbitrage/sim-cases          Bearer <verified arbiter> → open SIMULATION cases + my answer
+ *   GET  /arbitrage/explanations       Bearer <arbiter, not rejected> → my last training explanations (evidence)
  *   GET  /arbitrage/checklist          Bearer <arbiter, not rejected> → onboarding checklist (done/missing per item)
  *   POST /arbitrage/manual-read        Bearer <arbiter, not rejected> → "J'ai lu le Manuel" (manual_read_at)
  *   POST /arbitrage/sim-cases/answer   Bearer <verified arbiter> {caseId, choiceId, comment?} (one per arbiter)
@@ -61,6 +62,7 @@ import {
   type VerificationLevel,
 } from "../../../src/lib/arbitrage.ts";
 import { computeChecklist } from "../../../src/lib/arb-checklist.ts";
+import { OUTCOME_WORDS, buildExplanation, type TrainingExplanation } from "../../../src/lib/arb-training.ts";
 
 export type ArbiterRow = {
   id: string;
@@ -135,6 +137,15 @@ export type ArbStore = {
   addPushSub(row: PushSubRow): Promise<void>;
   removePushSub(endpoint: string, arbiterId?: string): Promise<void>;
   allPushSubs(): Promise<PushSubRow[]>;
+  /** Training explanation, one per (case, arbiter); kept as evidence. Insert-or-ignore. */
+  insertExplanation(row: ExplanationRow): Promise<void>;
+  explanationsBy(arbiterId: string, limit: number): Promise<ExplanationRow[]>;
+  explanationsForCase(caseId: string): Promise<ExplanationRow[]>;
+};
+
+export type ExplanationRow = {
+  case_id: string; arbiter_id: string; simulation: number; followed: number; chosen: string | null; suggested: string | null;
+  manual_ref: string; manual_version: string; text: string; created_at: number;
 };
 
 export type PushSubRow = { endpoint: string; arbiter_id: string; created_at: number };
@@ -258,6 +269,18 @@ export function d1ArbStore(db: D1Full): ArbStore {
     },
     async allPushSubs() {
       const r = await db.prepare(`SELECT * FROM arb_push_subs`).bind().all<PushSubRow>();
+      return r.results;
+    },
+    async insertExplanation(e) {
+      await db.prepare(`INSERT OR IGNORE INTO arb_explanations (case_id, arbiter_id, simulation, followed, chosen, suggested, manual_ref, manual_version, text, created_at) VALUES (?,?,?,?,?,?,?,?,?,?)`)
+        .bind(e.case_id, e.arbiter_id, e.simulation, e.followed, e.chosen, e.suggested, e.manual_ref, e.manual_version, e.text, e.created_at).run();
+    },
+    async explanationsBy(arbiterId, limit) {
+      const r = await db.prepare(`SELECT * FROM arb_explanations WHERE arbiter_id = ? ORDER BY created_at DESC LIMIT ?`).bind(arbiterId, limit).all<ExplanationRow>();
+      return r.results;
+    },
+    async explanationsForCase(caseId) {
+      const r = await db.prepare(`SELECT * FROM arb_explanations WHERE case_id = ? ORDER BY created_at`).bind(caseId).all<ExplanationRow>();
       return r.results;
     },
   };
@@ -497,6 +520,23 @@ async function notifyParty(fetchImpl: typeof fetch, url: string, payload: unknow
   }
 }
 
+/** Store the training explanation (evidence). A storage failure never blocks the decision itself. */
+async function keepExplanation(store: ArbStore, caseId: string, arbiterId: string, simulation: boolean, chosen: string, suggested: string,
+  e: TrainingExplanation, at: number): Promise<boolean> {
+  try {
+    await store.insertExplanation({ case_id: caseId, arbiter_id: arbiterId, simulation: simulation ? 1 : 0, followed: e.followed ? 1 : 0,
+      chosen, suggested, manual_ref: e.manualRef, manual_version: e.manualVersion, text: e.text, created_at: at });
+    return true;
+  } catch (err) {
+    console.log(`explanation-store case=${caseId} result=failed error=${String(err).slice(0, 120)}`);
+    return false;
+  }
+}
+
+function explanationJson(e: TrainingExplanation | null) {
+  return e ? { followed: e.followed, manualRef: e.manualRef, manualVersion: e.manualVersion, excerpt: e.excerpt, text: e.text } : null;
+}
+
 // ---------- handler ----------
 
 export async function handleArbitrage(req: Request, env: ArbEnv, deps: ArbDeps): Promise<Response> {
@@ -696,6 +736,7 @@ export async function handleArbitrage(req: Request, env: ArbEnv, deps: ArbDeps):
         const sugg = row.suggestion_json ? (JSON.parse(row.suggestion_json) as SimSuggestion) : null;
         const letterOf = (id: string) => choices.find((ch) => ch.id === id)?.letter ?? null;
         const answers = await store.simAnswers(row.id);
+        const explOf = new Map((await store.explanationsForCase(row.id)).map((e) => [e.arbiter_id, e]));
         const statusOf: Record<string, string> = {};
         for (const a of answers) statusOf[a.arbiter_id] ??= (await store.arbiterById(a.arbiter_id))?.status ?? "unknown";
         const tally: Record<string, number> = Object.fromEntries(choices.map((ch) => [ch.letter, 0]));
@@ -717,6 +758,7 @@ export async function handleArbitrage(req: Request, env: ArbEnv, deps: ArbDeps):
           answers: answers.map((a) => ({
             arbiterId: a.arbiter_id, arbiterStatus: statusOf[a.arbiter_id] ?? null, choiceId: a.choice_id, letter: letterOf(a.choice_id), comment: a.comment,
             followedSuggestion: sugg ? letterOf(a.choice_id) === sugg.letter : null,
+            explanation: explOf.get(a.arbiter_id) ? { manualRef: explOf.get(a.arbiter_id)!.manual_ref, text: explOf.get(a.arbiter_id)!.text } : null,
             answeredAt: new Date(a.answered_at).toISOString(),
             responseSeconds: Math.round((a.answered_at - row.created_at) / 1000),
           })),
@@ -744,6 +786,13 @@ export async function handleArbitrage(req: Request, env: ArbEnv, deps: ArbDeps):
     if (!email) return j({ error: "email" }, 400);
     await store.updateArbiter(me.id, { email_enc: await encryptString(encKey, email), email_lang: parseMailLang(b.lang) });
     return j({ ok: true, hasEmail: true });
+  }
+  if (path === "/arbitrage/explanations" && req.method === "GET") {
+    if (me.status === "rejected") return j({ error: "rejected" }, 403);
+    const rows = await store.explanationsBy(me.id, 20);
+    return j({ explanations: rows.map((r) => ({ caseId: r.case_id, simulation: r.simulation === 1, followed: r.followed === 1,
+      chosen: r.chosen, suggested: r.suggested, manualRef: r.manual_ref, manualVersion: r.manual_version, text: r.text,
+      createdAt: new Date(r.created_at).toISOString() })) });
   }
   if ((path === "/arbitrage/checklist" && req.method === "GET") || (path === "/arbitrage/manual-read" && req.method === "POST")) {
     // Onboarding checklist: every non-rejected arbiter (pending, rescan, verified) sees what is still missing.
@@ -886,12 +935,23 @@ export async function handleArbitrage(req: Request, env: ArbEnv, deps: ArbDeps):
       await store.updateArbiter(me.id, { red_flag: 1, red_at: now() });
       red = true;
     }
+    // Training explanation (Indiana): only when there is a suggestion to compare with. Kept in D1 as evidence.
+    let explanation: TrainingExplanation | null = null;
+    if (sugg) {
+      const suggested = choices.find((c) => c.letter === sugg.letter);
+      const chosenLabel = `${letter}. ${picked.label}`;
+      const suggestedLabel = `${sugg.letter}. ${suggested?.label ?? sugg.text}`;
+      explanation = buildExplanation({ followed: sugg.letter === letter, chosen: chosenLabel, suggested: suggestedLabel, reasoning: sugg.reasoning, refHints: [sugg.text] });
+      await keepExplanation(store, row.id, me.id, true, chosenLabel, suggestedLabel, explanation, now());
+    }
     const mail = await sendDecisionCopy(env, me.email_enc ? await decryptString(encKey, me.email_enc) : null, parseMailLang(me.email_lang) as MailLang, {
       caseId: row.id, title: (JSON.parse(row.case_json) as { title: string }).title, simulation: true,
       choice: `${letter}. ${picked.label}`, suggestion: sugg ? `${sugg.letter}. ${sugg.text}` : null,
       followedSuggestion: sugg ? sugg.letter === letter : null, decidedAt: new Date(now()).toISOString(),
+      explanation: explanation?.text ?? null,
     }, fetchImpl);
-    return j({ ok: true, simulation: true, caseId: row.id, choiceId, letter, followedSuggestion: sugg ? sugg.letter === letter : null, emailCopy: mail, red });
+    return j({ ok: true, simulation: true, caseId: row.id, choiceId, letter, followedSuggestion: sugg ? sugg.letter === letter : null, emailCopy: mail, red,
+      explanation: explanationJson(explanation) });
   }
 
   if (path === "/arbitrage/cases/decide" && req.method === "POST") {
@@ -962,13 +1022,18 @@ export async function handleArbitrage(req: Request, env: ArbEnv, deps: ArbDeps):
       notifyParty(fetchImpl, c.claimant.webhookUrl, payload),
       notifyParty(fetchImpl, c.respondent.webhookUrl, payload),
     ]);
+    // Training explanation: outcomes in words only (no amounts, no percentages); the AI rationale is only a hint for the Manuel article.
+    const chosenWords = OUTCOME_WORDS[decision.outcome] ?? decision.outcome;
+    const suggestedWords = OUTCOME_WORDS[suggestion.outcome] ?? suggestion.outcome;
+    const explanation = buildExplanation({ followed: accept, chosen: chosenWords, suggested: suggestedWords, refHints: [suggestion.rationale] });
+    await keepExplanation(store, row.id, me.id, false, chosenWords, suggestedWords, explanation, now());
     const mail = await sendDecisionCopy(env, me.email_enc ? await decryptString(encKey, me.email_enc) : null, parseMailLang(me.email_lang) as MailLang, {
       caseId: row.id, title: `${c.claimant.agentId} / ${c.respondent.agentId}`, simulation: false,
       choice: `${decision.outcome}, ${decision.refundPercent}% — ${decision.rationale}`,
       suggestion: `${suggestion.outcome}, ${suggestion.refundPercent}% — ${suggestion.rationale}`,
-      followedSuggestion: accept, decidedAt,
+      followedSuggestion: accept, decidedAt, explanation: explanation.text,
     }, fetchImpl);
-    return j({ ok: true, payload, delivery: { claimant: claimantStatus, respondent: respondentStatus }, emailCopy: mail });
+    return j({ ok: true, payload, delivery: { claimant: claimantStatus, respondent: respondentStatus }, emailCopy: mail, explanation: explanationJson(explanation) });
   }
 
   return j({ error: "not_found" }, 404);
