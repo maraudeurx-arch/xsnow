@@ -9,7 +9,8 @@ import { arbFetch, readArbiterToken, writeArbiterToken } from "@/lib/arbitrage-c
 import { prepareAdImage } from "@/lib/compress-ad-image";
 import { useI18n } from "@/lib/i18n/locale";
 import { useLocalProfile } from "@/lib/useLocalProfile";
-import { useAccount } from "wagmi";
+import { useAccount, useSwitchChain } from "wagmi";
+import { BASE_SEPOLIA_CHAIN_ID, type Checklist, type ChecklistItemId } from "@/lib/arb-checklist";
 import { ConnectWallet } from "@/components/ConnectWallet";
 import { assetUrl } from "@/lib/paths";
 import { b64uToUint8, pushSupport, type PushSupport } from "@/lib/push-client";
@@ -74,7 +75,8 @@ export function ArbitrageBoard() {
           <p>{t.red.message}</p>
         </div>
       ) : null}
-      {token && hasEmail === false && (status === "verified" || status === "pending" || status === "rescan_requested") ? <EmailCard token={token} onDone={() => setHasEmail(true)} /> : null}
+      {token && (status === "verified" || status === "pending" || status === "rescan_requested") ? <ChecklistCard token={token} status={status} /> : null}
+      {token && hasEmail === false && (status === "verified" || status === "pending" || status === "rescan_requested") ? <EmailCard token={token} onDone={() => { setHasEmail(true); refreshChecklist(); }} /> : null}
       {token && (status === "verified" || status === "pending" || status === "rescan_requested") ? <NotifyCard token={token} /> : null}
       {status === "verified" ? <CasesView token={token} red={red} /> : null}
       {status === "rescan_requested" ? <RescanView token={token} onDone={() => setStatus("pending")} /> : null}
@@ -278,7 +280,7 @@ function SimCaseCard({ c, token, onAnswered }: { c: SimCase; token: string; onAn
   const [msg, setMsg] = useState("");
   async function send() {
     const { status } = await arbFetch("sim-cases/answer", { method: "POST", token, body: { caseId: c.caseId, choiceId: choice, ...(comment.trim() ? { comment } : {}) } });
-    if (status === 200) { setAnswer(choice); setMsg(t.sent); onAnswered?.(); }
+    if (status === 200) { setAnswer(choice); setMsg(t.sent); onAnswered?.(); refreshChecklist(); }
     else if (status === 409) { setAnswer(choice); setMsg(t.already); }
   }
   const letterOf = (i: number) => c.choices[i]?.letter || "ABCD"[i] || String(i + 1);
@@ -338,7 +340,7 @@ function EmailCard({ token, onDone }: { token: string; onDone: () => void }) {
     } catch { setErr("network"); } finally { setBusy(false); }
   }
   return (
-    <form className="grid gap-2 rounded-2xl border-2 border-emerald-400 bg-emerald-50 p-3 text-sm text-slate-800" data-arb-email-card onSubmit={(e) => void save(e)} noValidate>
+    <form id="arb-email-card" className="grid gap-2 rounded-2xl border-2 border-emerald-400 bg-emerald-50 p-3 text-sm text-slate-800" data-arb-email-card onSubmit={(e) => void save(e)} noValidate>
       <h3 className="font-extrabold">{t.add}</h3>
       <p>{t.why}</p>
       <label htmlFor="arb-email-field" className="font-bold" data-arb-email-label>{t.enterBelow}</label>
@@ -346,6 +348,104 @@ function EmailCard({ token, onDone }: { token: string; onDone: () => void }) {
       <button type="submit" className={primary} disabled={busy} data-arb-email-save>{t.add}</button>
       {err ? <p role="alert" className="text-rose-800" data-arb-email-error={err}>{err === "empty" ? t.emptyHint : err === "invalid" ? t.invalid : err === "session" ? t.session : t.network}</p> : null}
     </form>
+  );
+}
+
+/** Ask the onboarding checklist to reload (after an email, a push opt-in, a wallet or an answer). */
+const CHECKLIST_EVENT = "opc-arb-checklist";
+function refreshChecklist() {
+  if (typeof window !== "undefined") window.dispatchEvent(new Event(CHECKLIST_EVENT));
+}
+
+/**
+ * Onboarding checklist (Popol, 21/10/2026): Indiana trains and approves every arbiter, so the arbiter
+ * sees what is still missing, each item with a done/missing state and short, simple steps.
+ */
+function ChecklistCard({ token, status }: { token: string; status: Status }) {
+  const { m } = useI18n();
+  const t = m.arbitrage.checklist;
+  const [data, setData] = useState<Checklist | null>(null);
+  const [saved, setSaved] = useState(false);
+  useEffect(() => {
+    const load = () => arbFetch<Checklist>("checklist", { token }).then(({ status: code, data: d }) => { if (code === 200 && Array.isArray(d.items)) setData(d); }).catch(() => {});
+    void load();
+    window.addEventListener(CHECKLIST_EVENT, load);
+    return () => window.removeEventListener(CHECKLIST_EVENT, load);
+  }, [token]);
+  if (!data) return null;
+  async function markRead() {
+    const { status: code, data: d } = await arbFetch<Checklist>("manual-read", { method: "POST", token, body: {} });
+    if (code === 200 && Array.isArray(d.items)) { setData(d); setSaved(true); }
+  }
+  const pct = Math.round((data.doneCount / Math.max(1, data.total)) * 100);
+  return (
+    <section className="grid gap-2 rounded-2xl border-2 border-emerald-500 bg-white p-3 text-sm text-slate-800" data-arb-checklist data-arb-checklist-done={data.doneCount}>
+      <h2 className="text-base font-extrabold text-slate-900">{t.title}</h2>
+      <p>{t.lead}</p>
+      <div className="grid gap-1">
+        <p className="font-bold" data-arb-checklist-progress>{t.progress.replace("{done}", String(data.doneCount)).replace("{total}", String(data.total))}</p>
+        <div className="h-2 w-full overflow-hidden rounded-full bg-slate-200" aria-hidden="true"><div className="h-full rounded-full bg-emerald-600" style={{ width: `${pct}%` }} /></div>
+        <p className="font-bold text-emerald-800" data-arb-checklist-cheer>{data.complete ? t.allDone : t.keepGoing}</p>
+      </div>
+      <ul className="grid gap-2">
+        {data.items.map((it) => {
+          const copy = t.items[it.id as ChecklistItemId];
+          return (
+            <li key={it.id} className={`grid gap-1 rounded-xl border p-2 ${it.done ? "border-emerald-300 bg-emerald-50" : "border-amber-300 bg-amber-50"}`}
+              data-arb-checklist-item={it.id} data-arb-checklist-state={it.done ? "done" : "missing"}>
+              <p className="flex items-center gap-2 font-extrabold">
+                <span aria-hidden="true">{it.done ? "✅" : "⏳"}</span>
+                <span>{copy.title}</span>
+                <span className={`ml-auto shrink-0 whitespace-nowrap rounded-full px-2 text-[12px] ${it.done ? "bg-emerald-700 text-white" : "bg-amber-300 text-slate-900"}`}>{it.done ? t.doneLabel : t.missingLabel}</span>
+              </p>
+              {it.done ? <p className="text-[13px]">{copy.done}</p> : (
+                <>
+                  {it.id === "wallet" && it.state === "wrong_chain" ? <p className="text-[13px] font-bold" data-arb-checklist-wrong-chain>{t.items.wallet.wrongChain}</p> : null}
+                  <ol className="list-decimal pl-5 text-[13px]" data-arb-checklist-steps>
+                    {copy.steps.map((step, i) => <li key={i}>{step}</li>)}
+                  </ol>
+                  {it.id === "email" ? <a className="text-[13px] font-bold text-sky-800 underline" href="#arb-email-card">{t.goEmail}</a> : null}
+                  {it.id === "notifications" ? <a className="text-[13px] font-bold text-sky-800 underline" href="#arb-notify-card">{t.goNotify}</a> : null}
+                  {it.id === "wallet" ? (status === "verified" ? <ChecklistWallet token={token} /> : <p className="text-[13px]">{t.walletAfterVerify}</p>) : null}
+                  {it.id === "manual" ? (
+                    <div className="grid gap-1">
+                      <a className="font-bold text-sky-800 underline" href={MANUEL_JUSTICE_PAGE_URL} target="_blank" rel="noopener" data-arb-checklist-manual-link>{t.manualLink}</a>
+                      <button type="button" className={primary} onClick={() => void markRead()} data-arb-checklist-manual-read>{t.manualRead}</button>
+                    </div>
+                  ) : null}
+                </>
+              )}
+              {it.id === "manual" && it.done && saved ? <p className="text-[13px] font-bold text-emerald-800">{t.manualSaved}</p> : null}
+            </li>
+          );
+        })}
+      </ul>
+    </section>
+  );
+}
+
+/** Wallet step of the checklist: Connect, then switch to Base Sepolia (test network). No payment. */
+function ChecklistWallet({ token }: { token: string }) {
+  const { m } = useI18n();
+  const t = m.arbitrage.checklist;
+  const { address, chainId, isConnected } = useAccount();
+  const { switchChain } = useSwitchChain();
+  const [posted, setPosted] = useState("");
+  useEffect(() => {
+    if (!isConnected || !address || !chainId) return;
+    const key = `${address}:${chainId}`;
+    if (posted === key) return;
+    void arbFetch("wallet", { method: "POST", token, body: { address, chainId } }).then(({ status }) => {
+      if (status === 200) { setPosted(key); refreshChecklist(); }
+    });
+  }, [isConnected, address, chainId, posted, token]);
+  return (
+    <div className="grid gap-1" data-arb-checklist-wallet>
+      <ConnectWallet compact />
+      {isConnected && chainId !== BASE_SEPOLIA_CHAIN_ID ? (
+        <button type="button" className={primary} onClick={() => switchChain({ chainId: BASE_SEPOLIA_CHAIN_ID })} data-arb-checklist-switch>{t.switchChain}</button>
+      ) : null}
+    </div>
   );
 }
 
@@ -377,11 +477,12 @@ function NotifyCard({ token }: { token: string }) {
       const sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: b64uToUint8(data.key) as BufferSource });
       const r = await arbFetch("push/subscribe", { method: "POST", token, body: { endpoint: sub.endpoint } });
       setState(r.status === 200 ? "on" : r.status === 403 ? "forbidden" : "error");
+      if (r.status === 200) refreshChecklist();
     } catch { setState("error"); }
   }
   if (!support) return null;
   return (
-    <section className="grid gap-2 rounded-2xl border-2 border-violet-400 bg-violet-50 p-3 text-sm text-slate-800" data-arb-notify>
+    <section id="arb-notify-card" className="grid gap-2 rounded-2xl border-2 border-violet-400 bg-violet-50 p-3 text-sm text-slate-800" data-arb-notify>
       <h3 className="font-extrabold">{t.title}</h3>
       {support === "ios-install" ? <p data-arb-notify-ios>{t.iosInstall}</p> : null}
       {support === "unsupported" ? <p data-arb-notify-unsupported>{t.unsupported}</p> : null}
@@ -411,7 +512,7 @@ function WalletCard({ token, tick }: { token: string; tick: number }) {
   useEffect(() => {
     if (!isConnected || !address || !state || state.address || !state.needsWallet) return;
     void arbFetch("wallet", { method: "POST", token, body: { address, chainId } }).then(({ status }) => {
-      if (status === 200) setState({ address, needsWallet: false });
+      if (status === 200) { setState({ address, needsWallet: false }); refreshChecklist(); }
     });
   }, [isConnected, address, chainId, state, token]);
   if (!state) return null;

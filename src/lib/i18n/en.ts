@@ -440,6 +440,80 @@ export const en: Messages = {
       "title": "Red status: real cases blocked",
       "message": "Three of your simulation answers contradict Indiana’s suggestion. Real arbitration cases are blocked. To unlock them, you must complete the arbiter training ($2,500). You can keep doing simulations."
     },
+    "checklist": {
+      "title": "Your checklist to become an arbiter",
+      "lead": "Indiana guides you step by step: every arbiter can make it. Complete what is missing, at your own pace.",
+      "progress": "{done} of {total} done",
+      "allDone": "Well done, everything is ready! You are a complete arbiter. Thank you!",
+      "keepGoing": "Keep going, you are doing well!",
+      "doneLabel": "Done",
+      "missingLabel": "To do",
+      "manualLink": "Open the Justice Manual",
+      "manualRead": "I read the Manual",
+      "manualSaved": "Thanks! Manual reading saved.",
+      "switchChain": "Switch to Base Sepolia",
+      "walletAfterVerify": "You can connect your wallet as soon as your application is verified.",
+      "goNotify": "See the Notifications card",
+      "goEmail": "See the Email card",
+      "items": {
+        "email": {
+          "title": "Email confirmed",
+          "done": "Your email is saved: you get a copy of your decisions.",
+          "steps": [
+            "Go to the “Add my email” card on this page.",
+            "Type your email in the box.",
+            "Tap “Add my email”."
+          ]
+        },
+        "notifications": {
+          "title": "Notifications on",
+          "done": "Your phone rings when a case is waiting.",
+          "steps": [
+            "Go to the “Arbitration notifications” card.",
+            "Tap “Turn on notifications”.",
+            "Answer “Allow” when your phone asks."
+          ]
+        },
+        "wallet": {
+          "title": "Wallet connected on Base Sepolia",
+          "done": "Your wallet is connected on Base Sepolia (test network).",
+          "steps": [
+            "Tap “Connect”.",
+            "Pick your wallet, or create one (it is free).",
+            "Choose the Base Sepolia network (test network, no real money)."
+          ],
+          "wrongChain": "Your wallet is connected, but not on Base Sepolia. Tap the button to switch networks."
+        },
+        "face": {
+          "title": "Face check done",
+          "done": "Your face is verified.",
+          "steps": [
+            "Stand in a well-lit place.",
+            "Tap “Start camera”.",
+            "Turn your head left, then right."
+          ]
+        },
+        "test_case": {
+          "title": "One test case answered",
+          "done": "You answered at least one simulation case.",
+          "steps": [
+            "Open a “Simulation case” on this page.",
+            "Read the story and Indiana’s suggestion.",
+            "Pick a letter, then tap “Send my answer”."
+          ],
+          "none": "No test case right now: Indiana will send you one soon."
+        },
+        "manual": {
+          "title": "Justice Manual read",
+          "done": "You read the Justice Manual.",
+          "steps": [
+            "Open the Justice Manual (link below).",
+            "Read at least the chapters on evidence and on the decision.",
+            "Come back and tap “I read the Manual”."
+          ]
+        }
+      }
+    },
     "sim": {
       "noPending": "No arbitration pending.",
       "manualTip": "Get familiar with the Justice Manual: it guides every arbiter decision.",

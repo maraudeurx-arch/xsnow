@@ -437,6 +437,80 @@ export const fr = {
       "title": "Statut rouge : vrais dossiers bloqués",
       "message": "Trois de tes réponses de simulation contredisent la suggestion d’Indiana. Les vrais dossiers d’arbitrage sont bloqués. Pour les débloquer, tu dois suivre la formation d’arbitre (2 500 $). Tu peux continuer les simulations."
     },
+    "checklist": {
+      "title": "Ta liste pour devenir arbitre",
+      "lead": "Indiana t’accompagne pas à pas : chaque arbitre peut y arriver. Coche ce qui manque, à ton rythme.",
+      "progress": "{done} sur {total} faits",
+      "allDone": "Bravo, tout est prêt ! Tu es un arbitre complet. Merci !",
+      "keepGoing": "Continue, tu avances bien !",
+      "doneLabel": "Fait",
+      "missingLabel": "À faire",
+      "manualLink": "Ouvrir le Manuel de justice",
+      "manualRead": "J’ai lu le Manuel",
+      "manualSaved": "Merci ! Lecture du Manuel notée.",
+      "switchChain": "Passer sur Base Sepolia",
+      "walletAfterVerify": "Tu pourras connecter ton wallet dès que ta demande sera vérifiée.",
+      "goNotify": "Voir la carte Notifications",
+      "goEmail": "Voir la carte E-mail",
+      "items": {
+        "email": {
+          "title": "E-mail confirmé",
+          "done": "Ton e-mail est enregistré : tu reçois la copie de tes décisions.",
+          "steps": [
+            "Va à la carte « Ajouter mon e-mail » sur cette page.",
+            "Écris ton e-mail dans la case.",
+            "Touche le bouton « Ajouter mon e-mail »."
+          ]
+        },
+        "notifications": {
+          "title": "Notifications activées",
+          "done": "Ton téléphone sonne quand un dossier t’attend.",
+          "steps": [
+            "Va à la carte « Notifications d’arbitrage ».",
+            "Touche « Activer les notifications ».",
+            "Réponds « Autoriser » quand le téléphone le demande."
+          ]
+        },
+        "wallet": {
+          "title": "Wallet connecté sur Base Sepolia",
+          "done": "Ton wallet est connecté sur Base Sepolia (réseau de test).",
+          "steps": [
+            "Touche « Connect ».",
+            "Choisis ton wallet, ou crée-en un (c’est gratuit).",
+            "Choisis le réseau Base Sepolia (réseau de test, aucun vrai argent)."
+          ],
+          "wrongChain": "Ton wallet est connecté, mais pas sur Base Sepolia. Touche le bouton pour changer de réseau."
+        },
+        "face": {
+          "title": "Vérification du visage faite",
+          "done": "Ton visage est vérifié.",
+          "steps": [
+            "Mets-toi dans un endroit bien éclairé.",
+            "Touche « Démarrer la caméra ».",
+            "Tourne la tête à gauche, puis à droite."
+          ]
+        },
+        "test_case": {
+          "title": "Un dossier test répondu",
+          "done": "Tu as répondu à au moins un dossier de simulation.",
+          "steps": [
+            "Ouvre un « Dossier de simulation » sur cette page.",
+            "Lis l’histoire et la suggestion d’Indiana.",
+            "Choisis une lettre, puis touche « Envoyer ma réponse »."
+          ],
+          "none": "Aucun dossier test pour l’instant : Indiana t’en enverra un bientôt."
+        },
+        "manual": {
+          "title": "Manuel de justice lu",
+          "done": "Tu as lu le Manuel de justice.",
+          "steps": [
+            "Ouvre le Manuel de justice (lien ci-dessous).",
+            "Lis au moins les chapitres sur les preuves et la décision.",
+            "Reviens ici et touche « J’ai lu le Manuel »."
+          ]
+        }
+      }
+    },
     "sim": {
       "noPending": "Aucun arbitrage en attente.",
       "manualTip": "Familiarise-toi avec le Manuel de justice : il guide chaque décision d’arbitre.",

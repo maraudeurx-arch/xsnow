@@ -1,0 +1,57 @@
+/**
+ * Arbiter onboarding checklist (Popol, 21/10/2026: Indiana trains and approves every arbiter).
+ * Pure logic shared by the Worker (GET /arbitrage/checklist) and the arbiter space.
+ * Each item is "done" or "missing"; the UI shows short, simple steps for what is missing.
+ */
+
+/** Base Sepolia (test network only — no mainnet, no payment). */
+export const BASE_SEPOLIA_CHAIN_ID = 84532;
+
+export const CHECKLIST_ITEMS = ["email", "notifications", "wallet", "face", "test_case", "manual"] as const;
+export type ChecklistItemId = (typeof CHECKLIST_ITEMS)[number];
+
+export type WalletState = "missing" | "wrong_chain" | "done";
+export type ChecklistItem = { id: ChecklistItemId; done: boolean; state?: WalletState };
+export type Checklist = { items: ChecklistItem[]; doneCount: number; total: number; complete: boolean };
+
+export type ChecklistInput = {
+  status: string;
+  hasEmail: boolean;
+  pushSubscriptions: number;
+  wallet: { address: string; chainId: number | null } | null;
+  faceScore: number | null;
+  faceLiveness: boolean;
+  faceReviewed: boolean;
+  simAnswers: number;
+  manualReadAt: number | null;
+};
+
+export function walletState(w: ChecklistInput["wallet"]): WalletState {
+  if (!w || !w.address) return "missing";
+  return w.chainId === BASE_SEPOLIA_CHAIN_ID ? "done" : "wrong_chain";
+}
+
+/**
+ * Face check: a pending rescan means it is NOT done. An approved (verified) arbiter or a scan the owner
+ * reviewed counts as done; otherwise we need a live scan (liveness) with a score.
+ */
+export function faceCheckDone(i: Pick<ChecklistInput, "status" | "faceScore" | "faceLiveness" | "faceReviewed">): boolean {
+  if (i.status === "rescan_requested") return false;
+  if (i.status === "verified" || i.faceReviewed) return true;
+  return i.faceLiveness && typeof i.faceScore === "number";
+}
+
+export function computeChecklist(i: ChecklistInput): Checklist {
+  const ws = walletState(i.wallet);
+  const done: Record<ChecklistItemId, boolean> = {
+    email: i.hasEmail,
+    notifications: i.pushSubscriptions > 0,
+    wallet: ws === "done",
+    face: faceCheckDone(i),
+    test_case: i.simAnswers > 0,
+    manual: typeof i.manualReadAt === "number" && i.manualReadAt > 0,
+  };
+  const items: ChecklistItem[] = CHECKLIST_ITEMS.map((id) => (id === "wallet" ? { id, done: done[id], state: ws } : { id, done: done[id] }));
+  const doneCount = items.filter((x) => x.done).length;
+  return { items, doneCount, total: items.length, complete: doneCount === items.length };
+}
