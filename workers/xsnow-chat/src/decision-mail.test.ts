@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { redactForLog, sendDecisionCopy } from "./decision-mail.ts";
+import { decisionMail, redactForLog, sendDecisionCopy } from "./decision-mail.ts";
 
 const d = { caseId: "sim_x", title: "t", simulation: true, choice: "A. x", suggestion: null, followedSuggestion: null, decidedAt: "2026-10-21T22:00:00Z" };
 
@@ -23,5 +23,15 @@ describe("decision-copy log line", () => {
     await sendDecisionCopy(env, "who@opc.test", "fr", d, boom, (l) => lines.push(l));
     assert.ok(/resend_status=0/.test(lines[4]) && !lines[4].includes("@"));
     assert.equal(redactForLog("Bearer abc.def x@y.co"), "Bearer [key] [email]");
+  });
+});
+
+describe("decision-copy training explanation", () => {
+  it("adds Indiana's explanation under a heading, only when there is one", () => {
+    const withE = decisionMail({ ...d, explanation: "Bravo ! Tu as choisi A.\nCe que dit le Manuel de justice (M-5.3) : « Le fournisseur prouve la livraison. »" }, "fr").text;
+    assert.ok(withE.includes("Pourquoi — la formation d’Indiana :\nBravo ! Tu as choisi A."));
+    assert.ok(withE.indexOf("Pourquoi") < withE.indexOf("https://essaim-agents.com/manuel-justice-v2.3.2.pdf"));
+    assert.ok(!decisionMail(d, "fr").text.includes("Pourquoi"));
+    assert.ok(decisionMail({ ...d, explanation: "x" }, "en").text.includes("Indiana’s training (in French)"));
   });
 });

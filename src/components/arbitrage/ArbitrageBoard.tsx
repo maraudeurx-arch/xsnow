@@ -23,6 +23,7 @@ type ArbCase = {
   caseId: string; amountUsdc: number; claimant: string; respondent: string;
   claim: string; response: string; suggestion: Suggestion;
 };
+type Explanation = { followed: boolean; manualRef: string; manualVersion?: string; excerpt?: string; text: string };
 type SimCase = {
   simulation: true; caseId: string; title: string; scenario: string;
   choices: { id: string; letter?: string; label: string }[]; myAnswer: string | null;
@@ -79,6 +80,7 @@ export function ArbitrageBoard() {
       {token && hasEmail === false && (status === "verified" || status === "pending" || status === "rescan_requested") ? <EmailCard token={token} onDone={() => { setHasEmail(true); refreshChecklist(); }} /> : null}
       {token && (status === "verified" || status === "pending" || status === "rescan_requested") ? <NotifyCard token={token} /> : null}
       {status === "verified" ? <CasesView token={token} red={red} /> : null}
+      {token && (status === "verified" || status === "pending" || status === "rescan_requested") ? <LearnedList token={token} /> : null}
       {status === "rescan_requested" ? <RescanView token={token} onDone={() => setStatus("pending")} /> : null}
       {/* SIMULATION cases for owner-invited, non-verified arbiters (hidden when the server says 403) */}
       {token && (status === "pending" || status === "rescan_requested") ? <SimCasesView token={token} /> : null}
@@ -278,9 +280,10 @@ function SimCaseCard({ c, token, onAnswered }: { c: SimCase; token: string; onAn
   const [comment, setComment] = useState("");
   const [answer, setAnswer] = useState<string | null>(c.myAnswer);
   const [msg, setMsg] = useState("");
+  const [explanation, setExplanation] = useState<Explanation | null>(null);
   async function send() {
-    const { status } = await arbFetch("sim-cases/answer", { method: "POST", token, body: { caseId: c.caseId, choiceId: choice, ...(comment.trim() ? { comment } : {}) } });
-    if (status === 200) { setAnswer(choice); setMsg(t.sent); onAnswered?.(); refreshChecklist(); }
+    const { status, data } = await arbFetch<{ explanation?: Explanation | null }>("sim-cases/answer", { method: "POST", token, body: { caseId: c.caseId, choiceId: choice, ...(comment.trim() ? { comment } : {}) } });
+    if (status === 200) { setAnswer(choice); setMsg(t.sent); setExplanation(data.explanation ?? null); onAnswered?.(); refreshChecklist(); }
     else if (status === 409) { setAnswer(choice); setMsg(t.already); }
   }
   const letterOf = (i: number) => c.choices[i]?.letter || "ABCD"[i] || String(i + 1);
@@ -301,6 +304,7 @@ function SimCaseCard({ c, token, onAnswered }: { c: SimCase; token: string; onAn
       {answer ? (
         <>
           <p className="arb-ok font-bold text-emerald-800" data-arb-sim-done>{msg || t.already} {chosen ? `${t.yours} ${chosen}` : ""}</p>
+          {explanation ? <ExplanationBox e={explanation} /> : null}
           <ManualCard inline />
         </>
       ) : (
@@ -449,6 +453,44 @@ function ChecklistWallet({ token }: { token: string }) {
   );
 }
 
+/** Indiana's training explanation after a decision (followed → why it was right; contradicted → the suggested reasoning). */
+function ExplanationBox({ e }: { e: Explanation }) {
+  const { m } = useI18n();
+  const t = m.arbitrage.training;
+  return (
+    <div role="status" className={`grid gap-1 rounded-xl border-2 p-2 text-[13px] text-slate-900 ${e.followed ? "border-emerald-500 bg-emerald-50" : "border-sky-400 bg-sky-50"}`}
+      data-arb-explanation={e.followed ? "followed" : "contradicted"}>
+      <p className="font-extrabold">{e.followed ? t.followedTitle : t.contradictedTitle}</p>
+      {t.frenchNote ? <p className="italic">{t.frenchNote}</p> : null}
+      <p className="whitespace-pre-line" lang="fr" data-arb-explanation-text>{e.text}</p>
+      <a className="font-bold text-sky-800 underline" href={MANUEL_JUSTICE_PAGE_URL} target="_blank" rel="noopener" data-arb-explanation-manual>{t.manualLabel} — {e.manualRef}</a>
+    </div>
+  );
+}
+
+/** The arbiter's past explanations (kept in D1 as evidence that each decision was explained). */
+function LearnedList({ token }: { token: string }) {
+  const { m } = useI18n();
+  const t = m.arbitrage.training;
+  const [list, setList] = useState<(Explanation & { caseId: string; createdAt: string })[]>([]);
+  useEffect(() => {
+    const load = () => arbFetch<{ explanations?: (Explanation & { caseId: string; createdAt: string })[] }>("explanations", { token })
+      .then(({ status, data }) => { if (status === 200) setList(data.explanations ?? []); }).catch(() => {});
+    void load();
+    window.addEventListener(CHECKLIST_EVENT, load);
+    return () => window.removeEventListener(CHECKLIST_EVENT, load);
+  }, [token]);
+  if (list.length === 0) return null;
+  return (
+    <details className="grid gap-2 rounded-2xl border border-slate-300 bg-white p-3 text-sm text-slate-800" data-arb-learned>
+      <summary className="cursor-pointer font-extrabold">{t.learnedTitle} ({list.length})</summary>
+      <div className="mt-2 grid gap-2">
+        {list.map((e) => <ExplanationBox key={e.caseId} e={e} />)}
+      </div>
+    </details>
+  );
+}
+
 /** Opt-in Web Push: the phone rings when a case or simulation is waiting. iOS: Home Screen app only. */
 function NotifyCard({ token }: { token: string }) {
   const { m } = useI18n();
@@ -536,16 +578,22 @@ function CaseCard({ c, token, onDecided }: { c: ArbCase; token: string; onDecide
   const [refund, setRefund] = useState(50);
   const [rationale, setRationale] = useState("");
   const [done, setDone] = useState(false);
+  const [explanation, setExplanation] = useState<Explanation | null>(null);
 
   async function decide(accept: boolean) {
-    const { status } = await arbFetch("cases/decide", {
+    const { status, data } = await arbFetch<{ explanation?: Explanation | null }>("cases/decide", {
       method: "POST",
       token,
       body: accept
         ? { caseId: c.caseId, accept: true }
         : { caseId: c.caseId, accept: false, reason, overrideDecision: { outcome, refundPercent: refund, rationale } },
     });
-    if (status === 200) { setDone(true); setTimeout(onDecided, 1500); }
+    if (status === 200) {
+      setDone(true);
+      refreshChecklist();
+      if (data.explanation) setExplanation(data.explanation); // keep the card open so the arbiter can read it
+      else setTimeout(onDecided, 1500);
+    }
   }
 
   return (
@@ -558,7 +606,12 @@ function CaseCard({ c, token, onDecided }: { c: ArbCase; token: string; onDecide
         <p>{t.outcome[c.suggestion.outcome]} — {t.refund} {c.suggestion.refundPercent} %</p>
         <p>{c.suggestion.rationale}</p>
       </div>
-      {done ? <p className="arb-ok font-bold text-emerald-800">{t.decided}</p> : rejecting ? (
+      {done ? (
+        <>
+          <p className="arb-ok font-bold text-emerald-800">{t.decided}</p>
+          {explanation ? <ExplanationBox e={explanation} /> : null}
+        </>
+      ) : rejecting ? (
         <div className="grid gap-2">
           <label className={label}>{t.reason}<textarea className={input} value={reason} onChange={(e) => setReason(e.target.value)} /></label>
           <label className={label}>{t.myDecision}

@@ -514,6 +514,13 @@ export const es: Messages = {
         }
       }
     },
+    "training": {
+      "followedTitle": "¡Bien hecho! Por qué es correcto",
+      "contradictedTitle": "Aprendemos juntos",
+      "manualLabel": "Manual de justicia",
+      "learnedTitle": "Lo que aprendí (explicaciones de Indiana)",
+      "frenchNote": "La explicación de Indiana está en francés."
+    },
     "sim": {
       "noPending": "Ningún arbitraje pendiente.",
       "manualTip": "Familiarízate con el Manual de justicia: guía cada decisión de árbitro.",

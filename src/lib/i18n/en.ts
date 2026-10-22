@@ -514,6 +514,13 @@ export const en: Messages = {
         }
       }
     },
+    "training": {
+      "followedTitle": "Well done! Why it was right",
+      "contradictedTitle": "Let’s learn together",
+      "manualLabel": "Justice Manual",
+      "learnedTitle": "What I learned (Indiana’s explanations)",
+      "frenchNote": "Indiana’s explanation is in French."
+    },
     "sim": {
       "noPending": "No arbitration pending.",
       "manualTip": "Get familiar with the Justice Manual: it guides every arbiter decision.",
