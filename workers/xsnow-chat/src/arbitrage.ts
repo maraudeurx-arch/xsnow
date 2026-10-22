@@ -9,6 +9,8 @@
  *   GET  /arbitrage/rescan/photo       Bearer <arbiter in rescan_requested> → own ID photo (for the in-browser match)
  *   POST /arbitrage/rescan             Bearer <arbiter in rescan_requested> {face} → back to pending with new score
  *   GET  /arbitrage/sim-cases          Bearer <verified arbiter> → open SIMULATION cases + my answer
+ *   GET  /arbitrage/checklist          Bearer <arbiter, not rejected> → onboarding checklist (done/missing per item)
+ *   POST /arbitrage/manual-read        Bearer <arbiter, not rejected> → "J'ai lu le Manuel" (manual_read_at)
  *   POST /arbitrage/sim-cases/answer   Bearer <verified arbiter> {caseId, choiceId, comment?} (one per arbiter)
  * Public:
  *   GET  /arbitrage/public-key         Ed25519 SPKI to verify attestations
@@ -58,6 +60,7 @@ import {
   type SignedAttestation,
   type VerificationLevel,
 } from "../../../src/lib/arbitrage.ts";
+import { computeChecklist } from "../../../src/lib/arb-checklist.ts";
 
 export type ArbiterRow = {
   id: string;
@@ -71,6 +74,7 @@ export type ArbiterRow = {
   red_flag?: number;
   red_at?: number | null;
   red_cleared_at?: number | null;
+  manual_read_at?: number | null;
   identity_hash: string;
   doc_expiry: string;
   face_score: number | null;
@@ -149,6 +153,7 @@ export type D1Full = { prepare: (q: string) => D1Stmt };
 const ARB_COLS = new Set([
   "status", "identity_enc", "photo_enc", "face_reviewed", "reputation", "reviewed_at", "purge_after",
   "face_score", "face_liveness", "face_method", "identity_hash", "email_enc", "email_lang", "red_flag", "red_at", "red_cleared_at",
+  "manual_read_at",
 ]);
 const CASE_COLS = new Set(["status", "suggestion_json", "decision_json", "arbiter_id", "decided_at"]);
 
@@ -739,6 +744,28 @@ export async function handleArbitrage(req: Request, env: ArbEnv, deps: ArbDeps):
     if (!email) return j({ error: "email" }, 400);
     await store.updateArbiter(me.id, { email_enc: await encryptString(encKey, email), email_lang: parseMailLang(b.lang) });
     return j({ ok: true, hasEmail: true });
+  }
+  if ((path === "/arbitrage/checklist" && req.method === "GET") || (path === "/arbitrage/manual-read" && req.method === "POST")) {
+    // Onboarding checklist: every non-rejected arbiter (pending, rescan, verified) sees what is still missing.
+    if (me.status === "rejected") return j({ error: "rejected" }, 403);
+    let manualReadAt = me.manual_read_at ?? null;
+    if (path === "/arbitrage/manual-read") {
+      manualReadAt = manualReadAt || now();
+      await store.updateArbiter(me.id, { manual_read_at: manualReadAt });
+    }
+    const w = await store.walletOf(me.id);
+    const checklist = computeChecklist({
+      status: me.status,
+      hasEmail: !!me.email_enc,
+      pushSubscriptions: (await store.allPushSubs()).filter((s) => s.arbiter_id === me.id).length,
+      wallet: w ? { address: w.address, chainId: w.chain_id } : null,
+      faceScore: me.face_score,
+      faceLiveness: me.face_liveness === 1,
+      faceReviewed: me.face_reviewed === 1,
+      simAnswers: await store.simAnswerCountBy(me.id),
+      manualReadAt,
+    });
+    return j({ ok: true, status: me.status, ...checklist });
   }
   if (path.startsWith("/arbitrage/rescan")) {
     if (me.status !== "rescan_requested" || !me.photo_enc || !me.identity_enc) return j({ error: "no_rescan_requested", status: me.status }, 409);

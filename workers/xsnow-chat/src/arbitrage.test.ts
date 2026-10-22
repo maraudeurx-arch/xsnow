@@ -552,5 +552,43 @@ describe("arbitrage worker", () => {
     assert.deepEqual(res.cases[0].choices.map((c: { letter: string }) => c.letter), ["A", "B", "C"]);
     assert.equal(res.cases[0].suggestion, null);
   });
+  it("checklist: each item done/missing for the arbiter; manual-read stored; rejected → 403", async () => {
+    const env = await makeEnv();
+    const store = memStore();
+    const deps = { store, now: () => 5_000 };
+    const S = env.ARBITER_ADMIN_SECRET;
+    const a = await (await handleArbitrage(req("/arbitrage/apply", "POST", application), env, deps)).json();
+    const get = async () => (await (await handleArbitrage(req("/arbitrage/checklist", "GET", undefined, a.token), env, deps)).json());
+    const doneOf = (c: { items: { id: string; done: boolean }[] }) => Object.fromEntries(c.items.map((x) => [x.id, x.done]));
+    // pending arbiter (email given at signup, live face scan) already sees the checklist
+    let c = await get();
+    assert.equal(c.status, "pending");
+    assert.deepEqual(doneOf(c), { email: true, notifications: false, wallet: false, face: true, test_case: false, manual: false });
+    assert.equal(c.doneCount, 2);
+    assert.equal(c.total, 6);
+    await handleArbitrage(req("/arbitrage/admin/review", "POST", { arbiterId: a.arbiterId, approve: true }, S), env, deps);
+    // wallet on Ethereum mainnet → wrong chain; on Base Sepolia → done
+    await handleArbitrage(req("/arbitrage/wallet", "POST", { address: "0x" + "1".repeat(40), chainId: 1 }, a.token), env, deps);
+    c = await get();
+    assert.equal(c.items.find((x: { id: string }) => x.id === "wallet").state, "wrong_chain");
+    await handleArbitrage(req("/arbitrage/wallet", "POST", { address: "0x" + "1".repeat(40), chainId: 84532 }, a.token), env, deps);
+    await store.addPushSub({ endpoint: "https://fcm.googleapis.com/x", arbiter_id: a.arbiterId, created_at: 1 });
+    const sim = await (await handleArbitrage(req("/arbitrage/admin/sim-cases", "POST", { title: "t", scenario: "s", choices: ["x", "y"] }, S), env, deps)).json();
+    await handleArbitrage(req("/arbitrage/sim-cases/answer", "POST", { caseId: sim.caseId, choiceId: "a" }, a.token), env, deps);
+    const m = await (await handleArbitrage(req("/arbitrage/manual-read", "POST", {}, a.token), env, deps)).json();
+    assert.equal(m.complete, true);
+    assert.equal(store.arbiters.get(a.arbiterId)!.manual_read_at, 5_000);
+    c = await get();
+    assert.deepEqual(doneOf(c), { email: true, notifications: true, wallet: true, face: true, test_case: true, manual: true });
+    // rescan requested → face missing again
+    await store.updateArbiter(a.arbiterId, { status: "rescan_requested" });
+    assert.equal(doneOf(await get()).face, false);
+    // no identity data in the checklist
+    assert.ok(!JSON.stringify(c).includes("Politzer") && !JSON.stringify(c).includes("opc.test"));
+    // rejected and unauthenticated
+    await store.updateArbiter(a.arbiterId, { status: "rejected" });
+    assert.equal((await handleArbitrage(req("/arbitrage/checklist", "GET", undefined, a.token), env, deps)).status, 403);
+    assert.equal((await handleArbitrage(req("/arbitrage/checklist", "GET"), env, deps)).status, 401);
+  });
 });
 

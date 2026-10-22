@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { base, mainnet, sepolia } from "wagmi/chains";
+import { base, baseSepolia, mainnet, sepolia } from "wagmi/chains";
 import { primaryChain, resolveWalletChains } from "./wallet-chains.ts";
 
 describe("resolveWalletChains", () => {
@@ -20,12 +20,14 @@ describe("resolveWalletChains", () => {
 
     assert.deepEqual(
       withTestnets.map((chain) => chain.id),
-      [mainnet.id, base.id, sepolia.id],
+      [mainnet.id, base.id, sepolia.id, baseSepolia.id],
     );
     assert.deepEqual(
       withoutTestnets.map((chain) => chain.id),
       [mainnet.id, base.id],
     );
     assert.ok(!withoutTestnets.some((chain) => chain.id === sepolia.id));
+    assert.ok(!withoutTestnets.some((chain) => chain.id === baseSepolia.id));
+    assert.equal(baseSepolia.id, 84532);
   });
 });

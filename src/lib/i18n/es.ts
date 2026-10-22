@@ -440,6 +440,80 @@ export const es: Messages = {
       "title": "Estado rojo: casos reales bloqueados",
       "message": "Tres de tus respuestas de simulación contradicen la sugerencia de Indiana. Los casos reales de arbitraje están bloqueados. Para desbloquearlos, debes completar la formación de árbitro (2 500 $). Puedes seguir con las simulaciones."
     },
+    "checklist": {
+      "title": "Tu lista para ser árbitro",
+      "lead": "Indiana te acompaña paso a paso: todo árbitro puede lograrlo. Completa lo que falta, a tu ritmo.",
+      "progress": "{done} de {total} hechos",
+      "allDone": "¡Bravo, todo está listo! Eres un árbitro completo. ¡Gracias!",
+      "keepGoing": "¡Sigue así, vas muy bien!",
+      "doneLabel": "Hecho",
+      "missingLabel": "Por hacer",
+      "manualLink": "Abrir el Manual de justicia",
+      "manualRead": "Leí el Manual",
+      "manualSaved": "¡Gracias! Lectura del Manual registrada.",
+      "switchChain": "Cambiar a Base Sepolia",
+      "walletAfterVerify": "Podrás conectar tu wallet en cuanto tu solicitud sea verificada.",
+      "goNotify": "Ver la tarjeta Notificaciones",
+      "goEmail": "Ver la tarjeta Correo",
+      "items": {
+        "email": {
+          "title": "Correo confirmado",
+          "done": "Tu correo está guardado: recibes la copia de tus decisiones.",
+          "steps": [
+            "Ve a la tarjeta « Agregar mi correo » en esta página.",
+            "Escribe tu correo en la casilla.",
+            "Toca « Agregar mi correo »."
+          ]
+        },
+        "notifications": {
+          "title": "Notificaciones activadas",
+          "done": "Tu teléfono suena cuando un caso te espera.",
+          "steps": [
+            "Ve a la tarjeta « Notificaciones de arbitraje ».",
+            "Toca « Activar las notificaciones ».",
+            "Responde « Permitir » cuando el teléfono lo pida."
+          ]
+        },
+        "wallet": {
+          "title": "Wallet conectada en Base Sepolia",
+          "done": "Tu wallet está conectada en Base Sepolia (red de prueba).",
+          "steps": [
+            "Toca « Connect ».",
+            "Elige tu wallet, o crea una (es gratis).",
+            "Elige la red Base Sepolia (red de prueba, sin dinero real)."
+          ],
+          "wrongChain": "Tu wallet está conectada, pero no en Base Sepolia. Toca el botón para cambiar de red."
+        },
+        "face": {
+          "title": "Verificación del rostro hecha",
+          "done": "Tu rostro está verificado.",
+          "steps": [
+            "Ponte en un lugar bien iluminado.",
+            "Toca « Iniciar la cámara ».",
+            "Gira la cabeza a la izquierda y luego a la derecha."
+          ]
+        },
+        "test_case": {
+          "title": "Un caso de prueba respondido",
+          "done": "Respondiste al menos un caso de simulación.",
+          "steps": [
+            "Abre un « Caso de simulación » en esta página.",
+            "Lee la historia y la sugerencia de Indiana.",
+            "Elige una letra y toca « Enviar mi respuesta »."
+          ],
+          "none": "No hay caso de prueba por ahora: Indiana te enviará uno pronto."
+        },
+        "manual": {
+          "title": "Manual de justicia leído",
+          "done": "Leíste el Manual de justicia.",
+          "steps": [
+            "Abre el Manual de justicia (enlace abajo).",
+            "Lee al menos los capítulos sobre las pruebas y la decisión.",
+            "Vuelve aquí y toca « Leí el Manual »."
+          ]
+        }
+      }
+    },
     "sim": {
       "noPending": "Ningún arbitraje pendiente.",
       "manualTip": "Familiarízate con el Manual de justicia: guía cada decisión de árbitro.",
