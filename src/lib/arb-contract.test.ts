@@ -10,9 +10,12 @@ describe("OPC arbiter agreement", () => {
     assert.equal(ARB_CONTRACT_TEXT, file);
     assert.equal(createHash("sha256").update(ARB_CONTRACT_TEXT, "utf8").digest("hex"), ARB_CONTRACT_SHA256);
   });
-  it("draft banner, signature, required clauses; no authority words, no founder", () => {
+  it("in-force banner, signature, required clauses; no authority words, no founder", () => {
     const t = ARB_CONTRACT_TEXT;
-    assert.match(t, /PROJET — à faire relire par un avocat avant usage/);
+    assert.match(t, /Version 1\.0 du 23\/10\/2026 — en vigueur/);
+    assert.doesNotMatch(t, /PROJET|DRAFT|Non en vigueur/);
+    assert.match(t, /Loi 25/);
+    assert.match(t, /15\.6 OPC's decisions/);
     assert.match(t, /La direction d'OPC/);
     assert.match(t, /Aucun revenu garanti/);
     assert.match(t, /1001770650/);

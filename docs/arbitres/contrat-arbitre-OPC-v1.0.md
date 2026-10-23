@@ -1,7 +1,7 @@
-> **PROJET — à faire relire par un avocat avant usage.** Version 0.1 du 23/10/2026. Non en vigueur.
-> **DRAFT — to be reviewed by a lawyer before use.** Version 0.1, 2026-10-23. Not in force.
+> **Version 1.0 du 23/10/2026 — en vigueur.**
+> **Version 1.0, 2026-10-23 — in force.**
 
-# Contrat d'arbitre OPC — version 0.1
+# Contrat d'arbitre OPC — version 1.0
 
 **Entre :** ESSAIM-AGENTS INC., société constituée sous le régime fédéral canadien et enregistrée en Ontario (numéro de société ontarienne 1001770650), qui exploite la plateforme Open Community (« **OPC** »),
 **et :** la personne qui accepte le présent contrat dans son espace arbitre (l'« **Arbitre** »).
@@ -29,7 +29,7 @@
 
 ## 5. Confidentialité et données personnelles
 5.1 Tout le contenu des Dossiers, l'identité des parties, les données et les outils d'OPC sont **confidentiels**, pendant le contrat et sans limite de durée après sa fin.
-5.2 L'Arbitre traite les données personnelles seulement pour le Dossier, selon la **LPRPDE (PIPEDA)** et, lorsqu'il s'applique, le **RGPD** de l'Union européenne ainsi que toute loi locale applicable.
+5.2 L'Arbitre traite les données personnelles seulement pour le Dossier, selon la **LPRPDE (PIPEDA)**, la **Loi 25** du Québec (*Loi sur la protection des renseignements personnels dans le secteur privé*) lorsqu'elle s'applique et, lorsqu'il s'applique, le **RGPD** de l'Union européenne ainsi que toute loi locale applicable.
 5.3 Il est interdit de copier, télécharger, photographier, conserver ou partager des données d'un Dossier hors d'OPC. Toute fuite ou incident est signalé à OPC dans les 24 heures.
 5.4 OPC traite les données de l'Arbitre (identité, vérification du visage, wallet, e-mail) pour vérifier son identité, prévenir la fraude et payer, selon sa politique de confidentialité.
 
@@ -82,7 +82,7 @@ OPC peut modifier le contrat ou le barème avec un **avis d'au moins 15 jours** 
 
 ---
 
-# OPC Arbiter Agreement — version 0.1 (English)
+# OPC Arbiter Agreement — version 1.0 (English)
 
 **Between:** ESSAIM-AGENTS INC., a federally incorporated Canadian company registered in Ontario (Ontario corporation number 1001770650), operator of the Open Community platform ("**OPC**"),
 **and:** the person who accepts this agreement in their arbiter space (the "**Arbiter**").
@@ -110,7 +110,7 @@ OPC peut modifier le contrat ou le barème avec un **avis d'au moins 15 jours** 
 
 ## 5. Confidentiality and personal data
 5.1 All Case content, party identities, data and OPC tools are **confidential**, during this agreement and without time limit after it ends.
-5.2 The Arbiter processes personal data only for the Case, in line with **PIPEDA** and, where it applies, the EU **GDPR** and any applicable local law.
+5.2 The Arbiter processes personal data only for the Case, in line with **PIPEDA**, Québec's **Law 25** (*Act respecting the protection of personal information in the private sector*) where it applies, and, where it applies, the EU **GDPR** and any applicable local law.
 5.3 Copying, downloading, photographing, keeping or sharing Case data outside OPC is forbidden. Any leak or incident is reported to OPC within 24 hours.
 5.4 OPC processes the Arbiter's data (identity, face check, wallet, email) to verify identity, prevent fraud and pay, under its privacy policy.
 
@@ -157,5 +157,6 @@ OPC may amend this agreement or the schedule with **at least 15 days' notice** i
 15.3 **Electronic signature**: the Arbiter accepts by ticking "I accept the OPC arbiter agreement". OPC records the date and time, the version and the SHA-256 hash of the accepted text. This acceptance has the same effect as a handwritten signature under Ontario's *Electronic Commerce Act, 2000* and PIPEDA.
 15.4 **Language**: this agreement exists in French and English; both versions are equally valid. In case of discrepancy, the French version prevails.
 15.5 The Arbiter may not assign this agreement. OPC may assign it to an affiliate or successor.
+15.6 OPC's decisions under this agreement are made by the team of ESSAIM-AGENTS INC.
 
 *La direction d'OPC* — ESSAIM-AGENTS INC.
