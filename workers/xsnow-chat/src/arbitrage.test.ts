@@ -666,5 +666,46 @@ describe("arbitrage worker", () => {
       assert.doesNotMatch(text, figures, text);
     }
   });
-});
 
+  it("admin arbiter-mail: invitation and wallet reminder, signed by OPC management, owner only", async () => {
+    const env = { ...(await makeEnv()), RESEND_API_KEY: "re_test_key_123456" };
+    const store = memStore();
+    const mails: Record<string, unknown>[] = [];
+    const fetchImpl = (async (url: string | URL, init?: RequestInit) => {
+      if (String(url).includes("resend")) mails.push(JSON.parse(String(init?.body)));
+      return new Response("{}", { status: 200 });
+    }) as typeof fetch;
+    const deps = { store, fetchImpl };
+    const S = env.ARBITER_ADMIN_SECRET;
+    const a = await (await handleArbitrage(req("/arbitrage/apply", "POST", application), env, deps)).json();
+    assert.equal((await handleArbitrage(req("/arbitrage/admin/arbiter-mail", "POST", { arbiterId: a.arbiterId, kind: "invite" }, a.token), env, deps)).status, 401);
+    assert.equal((await handleArbitrage(req("/arbitrage/admin/arbiter-mail", "POST", { arbiterId: a.arbiterId, kind: "nope" }, S), env, deps)).status, 400);
+    assert.equal((await handleArbitrage(req("/arbitrage/admin/arbiter-mail", "POST", { arbiterId: "arb_x", kind: "invite" }, S), env, deps)).status, 404);
+    const inv = await handleArbitrage(req("/arbitrage/admin/arbiter-mail", "POST", { arbiterId: a.arbiterId, kind: "invite" }, S), env, deps);
+    assert.equal(inv.status, 200);
+    const invBody = await inv.json();
+    assert.equal(invBody.result, "sent");
+    assert.ok(!JSON.stringify(invBody).includes("arbitre@opc.test"), "address never returned");
+    assert.deepEqual(mails[0].to, ["arbitre@opc.test"]);
+    const wal = await (await handleArbitrage(req("/arbitrage/admin/arbiter-mail", "POST", { arbiterId: a.arbiterId, kind: "wallet" }, S), env, deps)).json();
+    assert.equal(wal.result, "sent");
+    for (const m of mails) {
+      const text = String(m.text);
+      assert.match(text, /La direction d’OPC/);
+      assert.match(text, /https:\/\/opencommunity\.app\/arbitrage\//);
+      assert.doesNotMatch(text + String(m.subject), /tribunal|\bcour\b|\bcourt\b|%|\$|USDC|Indiana Lane|Popol|Knicks/i);
+    }
+    assert.match(String(mails[0].text), /SIMULATION/);
+    assert.match(String(mails[1].text), /Pas besoin de changer de réseau/);
+    // wallet already connected → nothing sent
+    await store.setWallet({ arbiter_id: a.arbiterId, address: "0x" + "1".repeat(40), chain_id: 1, connected_at: 1 });
+    const again = await (await handleArbitrage(req("/arbitrage/admin/arbiter-mail", "POST", { arbiterId: a.arbiterId, kind: "wallet" }, S), env, deps)).json();
+    assert.equal(again.result, "already_done");
+    assert.equal(mails.length, 2);
+    // no email on file → 409, rejected → 409
+    store.arbiters.get(a.arbiterId)!.email_enc = null;
+    assert.equal((await handleArbitrage(req("/arbitrage/admin/arbiter-mail", "POST", { arbiterId: a.arbiterId, kind: "invite" }, S), env, deps)).status, 409);
+    store.arbiters.get(a.arbiterId)!.status = "rejected";
+    assert.equal((await handleArbitrage(req("/arbitrage/admin/arbiter-mail", "POST", { arbiterId: a.arbiterId, kind: "invite" }, S), env, deps)).status, 409);
+  });
+});
