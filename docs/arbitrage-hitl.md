@@ -73,7 +73,7 @@ curl "$API/arbitrage/admin/sim-results" -H "Authorization: Bearer $ARBITER_ADMIN
 No migration: `arbiters.status` is TEXT.
 
 - Admin: `POST /arbitrage/admin/review {arbiterId, action: "rescan"}` → status `rescan_requested` (from `pending`; 409 if rejected or identity was purged). Identity and ID photo are kept.
-- **Arbitre déjà `verified`** (Popol, 23/10/2026): the same call only sets `rescan_requested_at` (migration 0013). Status, approval and access stay `verified`. `/arbitrage/me` returns `rescanRequested: true`, the app shows the face scan step, the checklist face item is open. `POST /arbitrage/rescan` stores the new score + liveness + hash, clears the flag, status stays `verified`. One shot.
+- **Arbitre déjà `verified`** (Popol, 23/10/2026): the same call only sets `rescan_requested_at` (migration 0014). Status, approval and access stay `verified`. `/arbitrage/me` returns `rescanRequested: true`, the app shows the face scan step, the checklist face item is open. `POST /arbitrage/rescan` stores the new score + liveness + hash, clears the flag, status stays `verified`. One shot.
 - Candidate app (`/arbitrage`, same device/token): clear message, no identity form, only `FaceScan` (head turn left/right liveness, `playsinline` video for iOS Safari) against the ID photo on file.
   - `GET /arbitrage/rescan/photo` (own token, only in `rescan_requested`) returns the candidate's own ID photo for the in-browser match (no-store).
   - `POST /arbitrage/rescan {face:{score, liveness, method}}` updates the SAME application: new face result, `face_reviewed = 0`, `identity_hash` recomputed, status back to `pending`. One shot: another rescan needs a new admin request.
