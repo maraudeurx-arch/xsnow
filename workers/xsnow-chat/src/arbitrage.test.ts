@@ -1,3 +1,4 @@
+import { ARB_CONTRACT_SHA256, ARB_CONTRACT_VERSION } from "../../../src/lib/arb-contract.ts";
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { handleArbitrage, isArbitragePath, parseSimCase, simTextError, type ArbStore, type ArbiterRow, type CaseRow, type SimAnswerRow, type WalletRow, type PushSubRow, type ExplanationRow, type LoginCodeRow, type DeviceTokenRow } from "./arbitrage.ts";
@@ -610,9 +611,9 @@ describe("arbitrage worker", () => {
     // pending arbiter (email given at signup, live face scan) already sees the checklist
     let c = await get();
     assert.equal(c.status, "pending");
-    assert.deepEqual(doneOf(c), { email: true, notifications: false, wallet: false, face: true, test_case: false, manual: false });
+    assert.deepEqual(doneOf(c), { email: true, notifications: false, wallet: false, face: true, test_case: false, manual: false, contract: false });
     assert.equal(c.doneCount, 2);
-    assert.equal(c.total, 6);
+    assert.equal(c.total, 7);
     await handleArbitrage(req("/arbitrage/admin/review", "POST", { arbiterId: a.arbiterId, approve: true }, S), env, deps);
     // wallet reported on chain_id 1 (phone wallet) → already done: no network switch required (22/10)
     await handleArbitrage(req("/arbitrage/wallet", "POST", { address: "0x" + "1".repeat(40), chainId: 1 }, a.token), env, deps);
@@ -624,10 +625,22 @@ describe("arbitrage worker", () => {
     const sim = await (await handleArbitrage(req("/arbitrage/admin/sim-cases", "POST", { title: "t", scenario: "s", choices: ["x", "y"] }, S), env, deps)).json();
     await handleArbitrage(req("/arbitrage/sim-cases/answer", "POST", { caseId: sim.caseId, choiceId: "a" }, a.token), env, deps);
     const m = await (await handleArbitrage(req("/arbitrage/manual-read", "POST", {}, a.token), env, deps)).json();
-    assert.equal(m.complete, true);
+    assert.equal(m.complete, false);
+    assert.equal(m.doneCount, 6, "existing arbiter sees 6/7 until the contract is accepted");
     assert.equal(store.arbiters.get(a.arbiterId)!.manual_read_at, 5_000);
+    // contract: wrong version / hash / no tick → 409, nothing stored
+    const acc = (b: unknown) => handleArbitrage(req("/arbitrage/contract-accept", "POST", b, a.token), env, deps);
+    assert.equal((await acc({ accept: true, version: ARB_CONTRACT_VERSION, hash: "0".repeat(64) })).status, 409);
+    assert.equal((await acc({ accept: false, version: ARB_CONTRACT_VERSION, hash: ARB_CONTRACT_SHA256 })).status, 409);
+    assert.equal(store.arbiters.get(a.arbiterId)!.contract_hash ?? null, null);
+    const k = await (await acc({ accept: true, version: ARB_CONTRACT_VERSION, hash: ARB_CONTRACT_SHA256 })).json();
+    assert.equal(k.complete, true);
+    const row = store.arbiters.get(a.arbiterId)!;
+    assert.equal(row.contract_accepted_at, 5_000);
+    assert.equal(row.contract_version, ARB_CONTRACT_VERSION);
+    assert.equal(row.contract_hash, ARB_CONTRACT_SHA256);
     c = await get();
-    assert.deepEqual(doneOf(c), { email: true, notifications: true, wallet: true, face: true, test_case: true, manual: true });
+    assert.deepEqual(doneOf(c), { email: true, notifications: true, wallet: true, face: true, test_case: true, manual: true, contract: true });
     // rescan requested → face missing again
     await store.updateArbiter(a.arbiterId, { status: "rescan_requested" });
     assert.equal(doneOf(await get()).face, false);

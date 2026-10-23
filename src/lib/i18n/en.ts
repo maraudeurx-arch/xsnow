@@ -467,6 +467,11 @@ export const en: Messages = {
       "manualLink": "Open the Justice Manual",
       "manualRead": "I read the Manual",
       "manualSaved": "Thanks! Manual reading saved.",
+      "contractLabel": "OPC arbiter agreement",
+      "contractAccept": "I accept the OPC arbiter agreement",
+      "contractScrollHint": "Scroll the agreement to the bottom to tick the box.",
+      "contractSaved": "Thanks! Agreement acceptance saved.",
+      "contractStale": "The agreement changed: reload the page, then try again.",
       "walletAfterVerify": "You can connect your wallet as soon as your application is verified.",
       "goNotify": "See the Notifications card",
       "goEmail": "See the Email card",
@@ -525,6 +530,11 @@ export const en: Messages = {
             "Read at least the chapters on evidence and on the decision.",
             "Come back and tap “I read the Manual”."
           ]
+        },
+        "contract": {
+          "title": "Arbiter agreement accepted",
+          "done": "You accepted the OPC arbiter agreement.",
+          "steps": ["Scroll the agreement to the bottom.", "Read it in full.", "Tick “I accept the OPC arbiter agreement”."]
         }
       }
     },

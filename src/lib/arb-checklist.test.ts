@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { BASE_SEPOLIA_CHAIN_ID, CHECKLIST_ITEMS, computeChecklist, faceCheckDone, walletState, type ChecklistInput } from "./arb-checklist.ts";
+import { ARB_CONTRACT_SHA256 } from "./arb-contract.ts";
 import { en } from "./i18n/en.ts";
 import { es } from "./i18n/es.ts";
 import { fr } from "./i18n/fr.ts";
@@ -11,11 +12,11 @@ const empty: ChecklistInput = {
 };
 
 describe("arbiter onboarding checklist", () => {
-  it("lists the six items in order, all missing for a brand-new arbiter", () => {
+  it("lists the seven items in order, all missing for a brand-new arbiter", () => {
     const c = computeChecklist(empty);
-    assert.deepEqual(c.items.map((x) => x.id), ["email", "notifications", "wallet", "face", "test_case", "manual"]);
+    assert.deepEqual(c.items.map((x) => x.id), ["email", "notifications", "wallet", "face", "test_case", "manual", "contract"]);
     assert.equal(c.doneCount, 0);
-    assert.equal(c.total, 6);
+    assert.equal(c.total, 7);
     assert.equal(c.complete, false);
     assert.equal(c.items.find((x) => x.id === "wallet")!.state, "missing");
   });
@@ -24,10 +25,10 @@ describe("arbiter onboarding checklist", () => {
     const c = computeChecklist({
       status: "verified", hasEmail: true, pushSubscriptions: 1,
       wallet: { address: "0x" + "a".repeat(40), chainId: BASE_SEPOLIA_CHAIN_ID },
-      faceScore: 0.8, faceLiveness: true, faceReviewed: true, simAnswers: 2, manualReadAt: 1,
+      faceScore: 0.8, faceLiveness: true, faceReviewed: true, simAnswers: 2, manualReadAt: 1, contractHash: ARB_CONTRACT_SHA256,
     });
     assert.equal(c.complete, true);
-    assert.equal(c.doneCount, 6);
+    assert.equal(c.doneCount, 7);
   });
 
   it("wallet: any connected address is done, whatever the network (chain_id 1 bug, 22/10)", () => {
@@ -75,4 +76,17 @@ import _assert from "node:assert/strict";
 _t("arbiter contact mailto prefills subject with arbiter id", () => {
   _assert.equal(_ach("Arbitre", "OPC-5X78"), "mailto:opencommunity.opc@gmail.com?subject=Arbitre%20OPC-5X78");
   _assert.equal(_ach("Arbitre", "<x>"), "mailto:opencommunity.opc@gmail.com?subject=Arbitre");
+});
+
+describe("arbiter checklist: contract step (7th)", () => {
+  it("existing arbiter with 6 done sees 6/7 until the CURRENT contract is accepted", () => {
+    const six: ChecklistInput = { status: "verified", hasEmail: true, pushSubscriptions: 1, wallet: { address: "0x" + "a".repeat(40), chainId: 1 },
+      faceScore: 0.8, faceLiveness: true, faceReviewed: true, simAnswers: 1, manualReadAt: 1 };
+    let c = computeChecklist(six);
+    assert.equal(c.doneCount, 6); assert.equal(c.total, 7); assert.equal(c.complete, false);
+    c = computeChecklist({ ...six, contractHash: "0".repeat(64) });
+    assert.equal(c.complete, false, "an older version does not count");
+    c = computeChecklist({ ...six, contractHash: ARB_CONTRACT_SHA256 });
+    assert.equal(c.complete, true);
+  });
 });
