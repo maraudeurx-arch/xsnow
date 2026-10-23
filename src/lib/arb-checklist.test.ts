@@ -41,6 +41,7 @@ describe("arbiter onboarding checklist", () => {
 
   it("face check: rescan requested is missing; verified/reviewed or live scan with score is done", () => {
     assert.equal(faceCheckDone({ status: "rescan_requested", faceScore: 0.9, faceLiveness: true, faceReviewed: true }), false);
+    assert.equal(faceCheckDone({ status: "verified", faceScore: 0.9, faceLiveness: true, faceReviewed: true, rescanRequested: true }), false);
     assert.equal(faceCheckDone({ status: "verified", faceScore: null, faceLiveness: false, faceReviewed: false }), true);
     assert.equal(faceCheckDone({ status: "pending", faceScore: 0.7, faceLiveness: true, faceReviewed: false }), true);
     assert.equal(faceCheckDone({ status: "pending", faceScore: null, faceLiveness: true, faceReviewed: false }), false);

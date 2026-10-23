@@ -84,6 +84,7 @@ export type ArbiterRow = {
   red_at?: number | null;
   red_cleared_at?: number | null;
   manual_read_at?: number | null;
+  rescan_requested_at?: number | null;
   identity_hash: string;
   doc_expiry: string;
   face_score: number | null;
@@ -181,7 +182,7 @@ export type D1Full = { prepare: (q: string) => D1Stmt };
 const ARB_COLS = new Set([
   "status", "identity_enc", "photo_enc", "face_reviewed", "reputation", "reviewed_at", "purge_after",
   "face_score", "face_liveness", "face_method", "identity_hash", "email_enc", "email_lang", "red_flag", "red_at", "red_cleared_at",
-  "manual_read_at",
+  "manual_read_at", "rescan_requested_at",
 ]);
 const CASE_COLS = new Set(["status", "suggestion_json", "decision_json", "arbiter_id", "decided_at"]);
 
@@ -722,8 +723,13 @@ export async function handleArbitrage(req: Request, env: ArbEnv, deps: ArbDeps):
       if (!r) return j({ error: "not_found" }, 404);
       if (b.action === "rescan") {
         // Ask the candidate to redo ONLY the face scan + liveness. Identity and ID photo are kept.
-        if (r.status !== "pending" && r.status !== "rescan_requested") return j({ error: "not_pending" }, 409);
         if (!r.photo_enc || !r.identity_enc) return j({ error: "identity_purged" }, 409);
+        if (r.status === "verified") {
+          // Verified arbiter: flag only. Status, approval and access are kept.
+          await store.updateArbiter(r.id, { rescan_requested_at: now() });
+          return j({ ok: true, arbiterId: r.id, status: "verified", rescanRequested: true });
+        }
+        if (r.status !== "pending" && r.status !== "rescan_requested") return j({ error: "not_pending" }, 409);
         await store.updateArbiter(r.id, { status: "rescan_requested", face_reviewed: 0 });
         return j({ ok: true, arbiterId: r.id, status: "rescan_requested" });
       }
@@ -860,6 +866,7 @@ export async function handleArbitrage(req: Request, env: ArbEnv, deps: ArbDeps):
 
   if (path === "/arbitrage/me" && req.method === "GET") {
     return j({ arbiterId: me.id, status: me.status, reputation: me.reputation, hasEmail: !!me.email_enc, red: me.red_flag === 1,
+      rescanRequested: me.status === "verified" && !!me.rescan_requested_at,
       contradictions: await countContradictions(store, me.id, me.red_cleared_at ?? 0), redThreshold: RED_THRESHOLD });
   }
   if (path === "/arbitrage/email" && req.method === "POST") {
@@ -895,13 +902,15 @@ export async function handleArbitrage(req: Request, env: ArbEnv, deps: ArbDeps):
       faceScore: me.face_score,
       faceLiveness: me.face_liveness === 1,
       faceReviewed: me.face_reviewed === 1,
+      rescanRequested: !!me.rescan_requested_at,
       simAnswers: await store.simAnswerCountBy(me.id),
       manualReadAt,
     });
     return j({ ok: true, status: me.status, ...checklist });
   }
   if (path.startsWith("/arbitrage/rescan")) {
-    if (me.status !== "rescan_requested" || !me.photo_enc || !me.identity_enc) return j({ error: "no_rescan_requested", status: me.status }, 409);
+    const verifiedRescan = me.status === "verified" && !!me.rescan_requested_at;
+    if ((me.status !== "rescan_requested" && !verifiedRescan) || !me.photo_enc || !me.identity_enc) return j({ error: "no_rescan_requested", status: me.status }, 409);
     if (path === "/arbitrage/rescan/photo" && req.method === "GET") {
       // The candidate's own ID photo, so the browser can compare it to the live face. no-store.
       const [mime, b64] = (await decryptString(encKey, me.photo_enc)).split(";");
@@ -912,6 +921,13 @@ export async function handleArbitrage(req: Request, env: ArbEnv, deps: ArbDeps):
       const identity = await decryptString(encKey, me.identity_enc);
       const photoSha = await sha256Hex((await decryptString(encKey, me.photo_enc)).split(";")[1] ?? "");
       const identityHash = await sha256Hex(canonicalJson({ identity: await sha256Hex(identity), photo: photoSha, face }));
+      if (verifiedRescan) {
+        await store.updateArbiter(me.id, {
+          face_score: face.score, face_liveness: face.liveness ? 1 : 0, face_method: face.method,
+          identity_hash: identityHash, rescan_requested_at: null,
+        });
+        return j({ ok: true, status: "verified", faceVerdict: faceVerdict(face) });
+      }
       await store.updateArbiter(me.id, {
         status: "pending",
         face_score: face.score,

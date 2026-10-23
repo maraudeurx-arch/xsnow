@@ -514,9 +514,38 @@ describe("arbitrage worker", () => {
     assert.equal(store.arbiters.size, 1, "same application, no new row");
     // one-shot: a second rescan needs a new admin request
     assert.equal((await handleArbitrage(req("/arbitrage/rescan", "POST", { face: { score: 0.9, liveness: true } }, a.token), env, deps)).status, 409);
-    // verified/rejected arbiters cannot be sent to rescan
-    await handleArbitrage(req("/arbitrage/admin/review", "POST", { arbiterId: a.arbiterId, approve: true }, S), env, deps);
+    // rejected arbiters cannot be sent to rescan
+    await handleArbitrage(req("/arbitrage/admin/review", "POST", { arbiterId: a.arbiterId, approve: false }, S), env, deps);
     assert.equal((await handleArbitrage(req("/arbitrage/admin/review", "POST", { arbiterId: a.arbiterId, action: "rescan" }, S), env, deps)).status, 409);
+  });
+
+  it("rescan on a VERIFIED arbiter: flag only, stays verified with access, flag cleared after the new scan", async () => {
+    const env = await makeEnv();
+    const store = memStore();
+    const deps = { store };
+    const S = env.ARBITER_ADMIN_SECRET;
+    const a = await (await handleArbitrage(req("/arbitrage/apply", "POST", application), env, deps)).json();
+    await handleArbitrage(req("/arbitrage/admin/review", "POST", { arbiterId: a.arbiterId, approve: true, faceReviewed: true }, S), env, deps);
+    assert.equal((await handleArbitrage(req("/arbitrage/rescan/photo", "GET", undefined, a.token), env, deps)).status, 409);
+    const r = await (await handleArbitrage(req("/arbitrage/admin/review", "POST", { arbiterId: a.arbiterId, action: "rescan" }, S), env, deps)).json();
+    assert.equal(r.status, "verified");
+    assert.equal(r.rescanRequested, true);
+    const me = await (await handleArbitrage(req("/arbitrage/me", "GET", undefined, a.token), env, deps)).json();
+    assert.equal(me.status, "verified");
+    assert.equal(me.rescanRequested, true);
+    assert.equal((await handleArbitrage(req("/arbitrage/cases", "GET", undefined, a.token), env, deps)).status, 200, "access kept");
+    const cl = await (await handleArbitrage(req("/arbitrage/checklist", "GET", undefined, a.token), env, deps)).json();
+    assert.equal(JSON.stringify(cl).length > 0, true);
+    assert.equal((await handleArbitrage(req("/arbitrage/rescan/photo", "GET", undefined, a.token), env, deps)).status, 200);
+    const done = await (await handleArbitrage(req("/arbitrage/rescan", "POST", { face: { score: 0.77, liveness: true, method: "human-3.3/faceres+yaw-liveness" } }, a.token), env, deps)).json();
+    assert.equal(done.status, "verified");
+    const after = store.arbiters.get(a.arbiterId)!;
+    assert.equal(after.status, "verified");
+    assert.equal(after.face_score, 0.77);
+    assert.equal(after.face_liveness, 1);
+    assert.equal(after.rescan_requested_at ?? null, null);
+    assert.equal((await (await handleArbitrage(req("/arbitrage/me", "GET", undefined, a.token), env, deps)).json()).rescanRequested, false);
+    assert.equal((await handleArbitrage(req("/arbitrage/rescan", "POST", { face: { score: 0.9, liveness: true } }, a.token), env, deps)).status, 409, "one shot");
   });
 
   it("simulation: static Indiana suggestion (guarded), letters A–D, followed/contradicted in results", async () => {
