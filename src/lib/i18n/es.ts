@@ -415,6 +415,19 @@ export const es: Messages = {
       "body": "¡Bravo por tu primera simulación! Para recibir más tarde tu pago de árbitro, haz clic en Connect. Connect también te propone crear un wallet si no tienes uno.",
       "connected": "Wallet conectado:"
     },
+    "login": {
+      "title": "¿Ya eres árbitro? Recuperar mi perfil de árbitro",
+      "lead": "¿Instalaste OPC en tu pantalla de inicio o cambiaste de teléfono? No hace falta inscribirte otra vez: recibe un código por correo.",
+      "emailLabel": "Tu correo de árbitro",
+      "send": "Recibir mi código",
+      "sent": "Si este correo es de un árbitro, acaba de salir un código de 6 cifras. Mira tu bandeja (y el spam).",
+      "codeLabel": "El código de 6 cifras",
+      "verify": "Recuperar mi perfil",
+      "invalid": "Este código no funciona o ha caducado. Pide un código nuevo.",
+      "emailInvalid": "Este correo no parece correcto.",
+      "network": "Problema de conexión. Inténtalo de nuevo.",
+      "again": "Recibir un código nuevo"
+    },
     "notify": {
       "title": "Notificaciones de arbitraje",
       "body": "Activa las notificaciones: tu teléfono suena cuando un caso de arbitraje (o una simulación) te espera.",
@@ -451,7 +464,6 @@ export const es: Messages = {
       "manualLink": "Abrir el Manual de justicia",
       "manualRead": "Leí el Manual",
       "manualSaved": "¡Gracias! Lectura del Manual registrada.",
-      "switchChain": "Cambiar a Base Sepolia",
       "walletAfterVerify": "Podrás conectar tu wallet en cuanto tu solicitud sea verificada.",
       "goNotify": "Ver la tarjeta Notificaciones",
       "goEmail": "Ver la tarjeta Correo",
@@ -475,14 +487,13 @@ export const es: Messages = {
           ]
         },
         "wallet": {
-          "title": "Wallet conectada en Base Sepolia",
-          "done": "Tu wallet está conectada en Base Sepolia (red de prueba).",
+          "title": "Wallet conectada",
+          "done": "Tu wallet está conectada. Aquí no se hace ningún pago.",
           "steps": [
             "Toca « Connect ».",
             "Elige tu wallet, o crea una (es gratis).",
-            "Elige la red Base Sepolia (red de prueba, sin dinero real)."
-          ],
-          "wrongChain": "Tu wallet está conectada, pero no en Base Sepolia. Toca el botón para cambiar de red."
+            "Acepta la conexión. No hace falta cambiar de red."
+          ]
         },
         "face": {
           "title": "Verificación del rostro hecha",

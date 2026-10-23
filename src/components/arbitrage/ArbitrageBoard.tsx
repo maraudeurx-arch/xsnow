@@ -9,8 +9,8 @@ import { arbFetch, readArbiterToken, writeArbiterToken } from "@/lib/arbitrage-c
 import { prepareAdImage } from "@/lib/compress-ad-image";
 import { useI18n } from "@/lib/i18n/locale";
 import { useLocalProfile } from "@/lib/useLocalProfile";
-import { useAccount, useSwitchChain } from "wagmi";
-import { BASE_SEPOLIA_CHAIN_ID, type Checklist, type ChecklistItemId } from "@/lib/arb-checklist";
+import { useAccount } from "wagmi";
+import { type Checklist, type ChecklistItemId } from "@/lib/arb-checklist";
 import { ConnectWallet } from "@/components/ConnectWallet";
 import { assetUrl } from "@/lib/paths";
 import { b64uToUint8, pushSupport, type PushSupport } from "@/lib/push-client";
@@ -51,13 +51,18 @@ export function ArbitrageBoard() {
     arbFetch<{ status: Status; hasEmail?: boolean; red?: boolean }>("me", { token: tk }).then(({ status: code, data }) => {
       if (code === 503) setStatus("not_configured");
       else if (code === 200) { setStatus(data.status); setHasEmail(data.hasEmail === true); setRed(data.red === true); }
-      else if (code === 401) writeArbiterToken("");
+      else if (code === 401) { writeArbiterToken(""); setToken(""); }
     }).catch(() => {});
   }, [token]);
 
-  if (!profile) {
+  const onLogin = (tk: string) => { writeArbiterToken(tk); setToken(tk); };
+  const showLogin = !token && status === "none" && !terms;
+
+  // An arbiter token is enough (e.g. the home-screen app after "Retrouver mon profil", which has no local profile).
+  if (!profile && !token) {
     return (
       <div className="grid gap-2 text-left">
+        {showLogin ? <LoginCard onDone={onLogin} /> : null}
         <p className="text-slate-700">{t.needProfile}</p>
         <Link href="/mon-profil/infos/" className={primary + " inline-flex items-center justify-center"}>{t.profileCta}</Link>
       </div>
@@ -88,6 +93,7 @@ export function ArbitrageBoard() {
       {status === "none" && !terms ? (
         <button type="button" className={primary} data-arb-become onClick={() => setModal(true)}>{t.title}</button>
       ) : null}
+      {showLogin ? <LoginCard onDone={onLogin} /> : null}
       {modal ? (
         <TermsModal
           onAccept={() => { setTerms({ version: ARBITER_TERMS_VERSION, acceptedAt: new Date().toISOString() }); setModal(false); }}
@@ -97,12 +103,72 @@ export function ArbitrageBoard() {
       {status === "none" && terms ? (
         <SignupForm
           terms={terms}
-          defaults={{ firstName: profile.firstName, lastName: profile.lastName, opcId: profile.id, email: profile.email ?? "" }}
+          defaults={{ firstName: profile?.firstName ?? "", lastName: profile?.lastName ?? "", opcId: profile?.id ?? "", email: profile?.email ?? "" }}
           onDone={(tk) => { writeArbiterToken(tk); setToken(tk); setStatus("pending"); }}
           onNotConfigured={() => setStatus("not_configured")}
         />
       ) : null}
     </div>
+  );
+}
+
+/**
+ * "Déjà arbitre ? Retrouver mon profil" (Popol, 22/10/2026): the iPhone home-screen app has its own
+ * storage, so an existing arbiter gets a 6-digit code by email and types it here. No new signup.
+ */
+function LoginCard({ onDone }: { onDone: (token: string) => void }) {
+  const { m, locale } = useI18n();
+  const t = m.arbitrage.login;
+  const emailRef = useRef<HTMLInputElement>(null);
+  const codeRef = useRef<HTMLInputElement>(null);
+  const [open, setOpen] = useState(false);
+  const [step, setStep] = useState<"email" | "code">("email");
+  const [email, setEmail] = useState("");
+  const [msg, setMsg] = useState<"" | "sent" | "invalid" | "emailInvalid" | "network">("");
+  const [busy, setBusy] = useState(false);
+  async function request(e?: { preventDefault(): void }) {
+    e?.preventDefault();
+    const v = normalizeEmailInput(emailRef.current?.value ?? email);
+    if (!/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/.test(v)) { setMsg("emailInvalid"); return; }
+    setBusy(true); setMsg("");
+    try {
+      const { status } = await arbFetch("login/request", { method: "POST", body: { email: v, lang: locale } });
+      if (status === 200) { setEmail(v); setStep("code"); setMsg("sent"); } else setMsg(status === 400 ? "emailInvalid" : "network");
+    } catch { setMsg("network"); } finally { setBusy(false); }
+  }
+  async function verify(e?: { preventDefault(): void }) {
+    e?.preventDefault();
+    const code = (codeRef.current?.value ?? "").replace(/\s+/g, "");
+    if (!/^\d{6}$/.test(code)) { setMsg("invalid"); return; }
+    setBusy(true); setMsg("");
+    try {
+      const { status, data } = await arbFetch<{ token?: string }>("login/verify", { method: "POST", body: { email, code } });
+      if (status === 200 && data.token) onDone(data.token); else setMsg(status === 400 ? "invalid" : "network");
+    } catch { setMsg("network"); } finally { setBusy(false); }
+  }
+  if (!open) {
+    return <button type="button" className="tap min-h-11 rounded-2xl border-2 border-slate-900 bg-white px-4 font-extrabold text-slate-900" data-arb-login-open onClick={() => setOpen(true)}>{t.title}</button>;
+  }
+  return (
+    <section className="grid gap-2 rounded-2xl border-2 border-sky-400 bg-sky-50 p-3 text-sm text-slate-800" data-arb-login>
+      <h3 className="font-extrabold">{t.title}</h3>
+      <p>{t.lead}</p>
+      {step === "email" ? (
+        <form className="grid gap-2" onSubmit={(e) => void request(e)} noValidate>
+          <label htmlFor="arb-login-email" className="font-bold">{t.emailLabel}</label>
+          <input id="arb-login-email" ref={emailRef} className={input} type="email" inputMode="email" autoCapitalize="none" autoCorrect="off" spellCheck={false} autoComplete="email" data-arb-login-email />
+          <button type="submit" className={primary} disabled={busy} data-arb-login-send>{t.send}</button>
+        </form>
+      ) : (
+        <form className="grid gap-2" onSubmit={(e) => void verify(e)} noValidate>
+          <label htmlFor="arb-login-code" className="font-bold">{t.codeLabel}</label>
+          <input id="arb-login-code" ref={codeRef} className={input} type="text" inputMode="numeric" autoComplete="one-time-code" maxLength={6} data-arb-login-code />
+          <button type="submit" className={primary} disabled={busy} data-arb-login-verify>{t.verify}</button>
+          <button type="button" className="text-left font-bold text-sky-800 underline" onClick={() => { setStep("email"); setMsg(""); }} data-arb-login-again>{t.again}</button>
+        </form>
+      )}
+      {msg ? <p role={msg === "sent" ? "status" : "alert"} className={msg === "sent" ? "text-emerald-800" : "text-rose-800"} data-arb-login-msg={msg}>{t[msg]}</p> : null}
+    </section>
   );
 }
 
@@ -404,7 +470,6 @@ function ChecklistCard({ token, status }: { token: string; status: Status }) {
               </p>
               {it.done ? <p className="text-[13px]">{copy.done}</p> : (
                 <>
-                  {it.id === "wallet" && it.state === "wrong_chain" ? <p className="text-[13px] font-bold" data-arb-checklist-wrong-chain>{t.items.wallet.wrongChain}</p> : null}
                   <ol className="list-decimal pl-5 text-[13px]" data-arb-checklist-steps>
                     {copy.steps.map((step, i) => <li key={i}>{step}</li>)}
                   </ol>
@@ -428,12 +493,9 @@ function ChecklistCard({ token, status }: { token: string; status: Status }) {
   );
 }
 
-/** Wallet step of the checklist: Connect, then switch to Base Sepolia (test network). No payment. */
+/** Wallet step of the checklist: Connect is enough (any network shown by the wallet). No payment. */
 function ChecklistWallet({ token }: { token: string }) {
-  const { m } = useI18n();
-  const t = m.arbitrage.checklist;
   const { address, chainId, isConnected } = useAccount();
-  const { switchChain } = useSwitchChain();
   const [posted, setPosted] = useState("");
   useEffect(() => {
     if (!isConnected || !address || !chainId) return;
@@ -446,9 +508,6 @@ function ChecklistWallet({ token }: { token: string }) {
   return (
     <div className="grid gap-1" data-arb-checklist-wallet>
       <ConnectWallet compact />
-      {isConnected && chainId !== BASE_SEPOLIA_CHAIN_ID ? (
-        <button type="button" className={primary} onClick={() => switchChain({ chainId: BASE_SEPOLIA_CHAIN_ID })} data-arb-checklist-switch>{t.switchChain}</button>
-      ) : null}
     </div>
   );
 }
@@ -506,9 +565,16 @@ function NotifyCard({ token }: { token: string }) {
     });
     void Promise.resolve().then(() => setSupport(detected));
     if ("Notification" in window && Notification.permission === "granted" && "serviceWorker" in nav) {
-      void nav.serviceWorker.getRegistration(assetUrl("/")).then((reg) => reg?.pushManager.getSubscription()).then((s) => { if (s) setState("on"); });
+      // A subscription already on this device: re-register it for this arbiter (idempotent) so the
+      // checklist stops showing "Notifications" as to-do when the server lost or never had it.
+      void nav.serviceWorker.getRegistration(assetUrl("/")).then((reg) => reg?.pushManager.getSubscription()).then(async (s) => {
+        if (!s) return;
+        setState("on");
+        const r = await arbFetch("push/subscribe", { method: "POST", token, body: { endpoint: s.endpoint } }).catch(() => null);
+        if (r?.status === 200) refreshChecklist();
+      });
     }
-  }, []);
+  }, [token]);
   async function enable() {
     try {
       const { status, data } = await arbFetch<{ key?: string }>("push/vapid-key");

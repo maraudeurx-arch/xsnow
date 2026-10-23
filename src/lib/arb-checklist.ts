@@ -10,7 +10,7 @@ export const BASE_SEPOLIA_CHAIN_ID = 84532;
 export const CHECKLIST_ITEMS = ["email", "notifications", "wallet", "face", "test_case", "manual"] as const;
 export type ChecklistItemId = (typeof CHECKLIST_ITEMS)[number];
 
-export type WalletState = "missing" | "wrong_chain" | "done";
+export type WalletState = "missing" | "done";
 export type ChecklistItem = { id: ChecklistItemId; done: boolean; state?: WalletState };
 export type Checklist = { items: ChecklistItem[]; doneCount: number; total: number; complete: boolean };
 
@@ -26,9 +26,12 @@ export type ChecklistInput = {
   manualReadAt: number | null;
 };
 
+/**
+ * Wallet step (Popol, 22/10/2026): a connected address is enough, whatever network the wallet shows
+ * (e.g. chain_id 1 on a phone wallet). No network switch is required; the network is informational only.
+ */
 export function walletState(w: ChecklistInput["wallet"]): WalletState {
-  if (!w || !w.address) return "missing";
-  return w.chainId === BASE_SEPOLIA_CHAIN_ID ? "done" : "wrong_chain";
+  return w && w.address ? "done" : "missing";
 }
 
 /**

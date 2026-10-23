@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { handleArbitrage, isArbitragePath, parseSimCase, simTextError, type ArbStore, type ArbiterRow, type CaseRow, type SimAnswerRow, type WalletRow, type PushSubRow, type ExplanationRow } from "./arbitrage.ts";
+import { handleArbitrage, isArbitragePath, parseSimCase, simTextError, type ArbStore, type ArbiterRow, type CaseRow, type SimAnswerRow, type WalletRow, type PushSubRow, type ExplanationRow, type LoginCodeRow, type DeviceTokenRow } from "./arbitrage.ts";
 import { ARBITER_TERMS_VERSION, bytesToB64, importVerifyKey, verifyAttestation } from "../../../src/lib/arbitrage.ts";
 
 function memStore(): ArbStore & { arbiters: Map<string, ArbiterRow>; cases: Map<string, CaseRow>; simAns: SimAnswerRow[]; explanations: ExplanationRow[] } {
@@ -11,8 +11,16 @@ function memStore(): ArbStore & { arbiters: Map<string, ArbiterRow>; cases: Map<
   const wallets = new Map<string, WalletRow>();
   const pushSubs = new Map<string, PushSubRow>();
   const explanations: ExplanationRow[] = [];
+  const loginCodes: LoginCodeRow[] = [];
+  const deviceTokens: DeviceTokenRow[] = [];
   return {
     explanations,
+    async arbitersWithEmail() { return [...arbiters.values()].filter((a) => a.email_enc && a.status !== "rejected"); },
+    async insertLoginCode(c) { loginCodes.push({ ...c }); },
+    async latestLoginCode(id) { return [...loginCodes].filter((c) => c.arbiter_id === id).sort((a, b) => b.created_at - a.created_at)[0] ?? null; },
+    async loginCodesSince(id, since) { return loginCodes.filter((c) => c.arbiter_id === id && c.created_at >= since).length; },
+    async updateLoginCode(id, at, p) { const c = loginCodes.find((x) => x.arbiter_id === id && x.created_at === at); if (c) Object.assign(c, p); },
+    async addDeviceToken(t) { deviceTokens.push({ ...t }); },
     async insertExplanation(e) { if (!explanations.some((x) => x.case_id === e.case_id && x.arbiter_id === e.arbiter_id)) explanations.push({ ...e }); },
     async explanationsBy(id, limit) { return explanations.filter((x) => x.arbiter_id === id).sort((a, b) => b.created_at - a.created_at).slice(0, limit); },
     async explanationsForCase(id) { return explanations.filter((x) => x.case_id === id); },
@@ -36,7 +44,12 @@ function memStore(): ArbStore & { arbiters: Map<string, ArbiterRow>; cases: Map<
     async removePushSub(e, a) { const x = pushSubs.get(e); if (x && (!a || x.arbiter_id === a)) pushSubs.delete(e); },
     async allPushSubs() { return [...pushSubs.values()]; },
     async insertArbiter(r) { arbiters.set(r.id, { ...r }); },
-    async arbiterByToken(h) { return [...arbiters.values()].find((a) => a.token_hash === h) ?? null; },
+    async arbiterByToken(h) {
+      const a = [...arbiters.values()].find((x) => x.token_hash === h);
+      if (a) return a;
+      const d = deviceTokens.find((x) => x.token_hash === h);
+      return d ? arbiters.get(d.arbiter_id) ?? null : null;
+    },
     async arbiterById(id) { return arbiters.get(id) ?? null; },
     async pendingArbiters() { return [...arbiters.values()].filter((a) => a.status === "pending"); },
     async updateArbiter(id, p) { const a = arbiters.get(id); if (a) arbiters.set(id, { ...a, ...p }); },
@@ -572,10 +585,11 @@ describe("arbitrage worker", () => {
     assert.equal(c.doneCount, 2);
     assert.equal(c.total, 6);
     await handleArbitrage(req("/arbitrage/admin/review", "POST", { arbiterId: a.arbiterId, approve: true }, S), env, deps);
-    // wallet on Ethereum mainnet → wrong chain; on Base Sepolia → done
+    // wallet reported on chain_id 1 (phone wallet) → already done: no network switch required (22/10)
     await handleArbitrage(req("/arbitrage/wallet", "POST", { address: "0x" + "1".repeat(40), chainId: 1 }, a.token), env, deps);
     c = await get();
-    assert.equal(c.items.find((x: { id: string }) => x.id === "wallet").state, "wrong_chain");
+    assert.equal(c.items.find((x: { id: string }) => x.id === "wallet").state, "done");
+    assert.equal(c.items.find((x: { id: string }) => x.id === "wallet").done, true);
     await handleArbitrage(req("/arbitrage/wallet", "POST", { address: "0x" + "1".repeat(40), chainId: 84532 }, a.token), env, deps);
     await store.addPushSub({ endpoint: "https://fcm.googleapis.com/x", arbiter_id: a.arbiterId, created_at: 1 });
     const sim = await (await handleArbitrage(req("/arbitrage/admin/sim-cases", "POST", { title: "t", scenario: "s", choices: ["x", "y"] }, S), env, deps)).json();
@@ -665,6 +679,66 @@ describe("arbitrage worker", () => {
       assert.doesNotMatch(text, banned, text);
       assert.doesNotMatch(text, figures, text);
     }
+  });
+
+  it("email login: a 6-digit code finds the existing profile on a new device; no account discovery", async () => {
+    const env = { ...(await makeEnv()), RESEND_API_KEY: "re_test_key_123456" };
+    const store = memStore();
+    const mails: Record<string, unknown>[] = [];
+    const fetchImpl = (async (url: string | URL, init?: RequestInit) => {
+      if (String(url).includes("resend")) mails.push(JSON.parse(String(init?.body)));
+      return new Response("{}", { status: 200 });
+    }) as typeof fetch;
+    let t = Date.parse("2026-10-23T04:00:00Z");
+    const deps = { store, fetchImpl, now: () => t };
+    const a = await (await handleArbitrage(req("/arbitrage/apply", "POST", application), env, deps)).json();
+    // unknown email: same answer, nothing sent
+    const unk = await handleArbitrage(req("/arbitrage/login/request", "POST", { email: "personne@opc.test" }), env, deps);
+    assert.equal(unk.status, 200);
+    assert.deepEqual(await unk.json(), { ok: true });
+    assert.equal(mails.length, 0);
+    assert.equal((await handleArbitrage(req("/arbitrage/login/request", "POST", { email: "bad" }), env, deps)).status, 400);
+    // known email (case-insensitive): code emailed, signed by OPC management, no authority words
+    assert.equal((await handleArbitrage(req("/arbitrage/login/request", "POST", { email: " Arbitre@OPC.test " }), env, deps)).status, 200);
+    assert.equal(mails.length, 1);
+    const text = String(mails[0].text);
+    const code = /(\d{6})/.exec(text)![1];
+    assert.match(text, /La direction d’OPC/);
+    assert.match(text, /https:\/\/opencommunity\.app\/arbitrage\//);
+    assert.doesNotMatch(text, /tribunal|\bcour\b|\bcourt\b/i);
+    const wrong = code === "000000" ? "111111" : "000000";
+    assert.equal((await handleArbitrage(req("/arbitrage/login/verify", "POST", { email: "arbitre@opc.test", code: wrong }), env, deps)).status, 400);
+    const ok = await (await handleArbitrage(req("/arbitrage/login/verify", "POST", { email: "arbitre@opc.test", code }), env, deps)).json();
+    assert.equal(ok.status, "pending");
+    assert.ok(ok.token && ok.token !== a.token);
+    // both devices keep working, same arbiter
+    const me1 = await (await handleArbitrage(req("/arbitrage/me", "GET", undefined, a.token), env, deps)).json();
+    const me2 = await (await handleArbitrage(req("/arbitrage/me", "GET", undefined, ok.token), env, deps)).json();
+    assert.equal(me1.arbiterId, a.arbiterId);
+    assert.equal(me2.arbiterId, a.arbiterId);
+    // a code works only once
+    assert.equal((await handleArbitrage(req("/arbitrage/login/verify", "POST", { email: "arbitre@opc.test", code }), env, deps)).status, 400);
+    // expiry after 15 minutes
+    await handleArbitrage(req("/arbitrage/login/request", "POST", { email: "arbitre@opc.test" }), env, deps);
+    const code2 = /(\d{6})/.exec(String(mails[1].text))![1];
+    t += 16 * 60 * 1000;
+    assert.equal((await handleArbitrage(req("/arbitrage/login/verify", "POST", { email: "arbitre@opc.test", code: code2 }), env, deps)).status, 400);
+    // max 3 codes per hour, then silent
+    await handleArbitrage(req("/arbitrage/login/request", "POST", { email: "arbitre@opc.test" }), env, deps);
+    await handleArbitrage(req("/arbitrage/login/request", "POST", { email: "arbitre@opc.test" }), env, deps);
+    assert.equal(mails.length, 3);
+    // 5 wrong tries lock the code even if the right one comes next
+    t += 61 * 60 * 1000;
+    await handleArbitrage(req("/arbitrage/login/request", "POST", { email: "arbitre@opc.test" }), env, deps);
+    const code3 = /(\d{6})/.exec(String(mails[3].text))![1];
+    const bad = code3 === "222222" ? "333333" : "222222";
+    for (let i = 0; i < 5; i++) await handleArbitrage(req("/arbitrage/login/verify", "POST", { email: "arbitre@opc.test", code: bad }), env, deps);
+    assert.equal((await handleArbitrage(req("/arbitrage/login/verify", "POST", { email: "arbitre@opc.test", code: code3 }), env, deps)).status, 400);
+    // rejected arbiter gets nothing
+    store.arbiters.get(a.arbiterId)!.status = "rejected";
+    t += 61 * 60 * 1000;
+    await handleArbitrage(req("/arbitrage/login/request", "POST", { email: "arbitre@opc.test" }), env, deps);
+    assert.equal(mails.length, 4);
   });
 
   it("admin arbiter-mail: invitation and wallet reminder, signed by OPC management, owner only", async () => {
