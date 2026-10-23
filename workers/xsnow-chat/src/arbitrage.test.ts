@@ -783,3 +783,15 @@ describe("arbitrage worker", () => {
     assert.equal((await handleArbitrage(req("/arbitrage/admin/arbiter-mail", "POST", { arbiterId: a.arbiterId, kind: "invite" }, S), env, deps)).status, 409);
   });
 });
+
+import { arbiterMail as _am } from "./arbiter-mail.ts";
+import { loginMail as _lm } from "./login-mail.ts";
+import { test as _t2 } from "node:test";
+import _a2 from "node:assert/strict";
+_t2("arbiter emails carry the OPC management contact and signature", () => {
+  for (const text of [_am("invite", "fr").text, _am("wallet", "fr").text, _lm("123456", "fr").text]) {
+    _a2.match(text, /Écris-nous : opencommunity\.opc@gmail\.com/);
+    _a2.match(text, /La direction d’OPC$/);
+    _a2.doesNotMatch(text, /\b(cour|tribunal|court)\b/i);
+  }
+});

@@ -3,6 +3,7 @@
  * (POST /arbitrage/admin/arbiter-mail). Signed « La direction d'OPC ». Short, simple steps.
  * No pay figures, no percentages, no authority words, no person name.
  */
+import { OPC_DIRECTION_EMAIL } from "../../../src/lib/arb-checklist.ts";
 import { RESEND_API_URL, resolveFromAddress } from "../../../src/lib/owner-mail.ts";
 import { MANUEL_JUSTICE_PAGE_URL } from "../../../src/lib/arbitrage.ts";
 import { redactForLog, type MailLang } from "./decision-mail.ts";
@@ -39,7 +40,7 @@ const L = {
         "Pas besoin de changer de réseau.",
       ],
     },
-    page: "Page Arbitrage :", manual: "Manuel de justice :", sign: "La direction d’OPC",
+    page: "Page Arbitrage :", manual: "Manuel de justice :", contact: "Une question, une suggestion ? Écris-nous :", sign: "La direction d’OPC",
   },
   en: {
     invite: {
@@ -69,7 +70,7 @@ const L = {
         "No need to switch networks.",
       ],
     },
-    page: "Arbitration page:", manual: "Justice Manual:", sign: "OPC management",
+    page: "Arbitration page:", manual: "Justice Manual:", contact: "A question, a suggestion? Write to us:", sign: "OPC management",
   },
   es: {
     invite: {
@@ -99,7 +100,7 @@ const L = {
         "No hace falta cambiar de red.",
       ],
     },
-    page: "Página Arbitraje:", manual: "Manual de justicia:", sign: "La dirección de OPC",
+    page: "Página Arbitraje:", manual: "Manual de justicia:", contact: "¿Una pregunta, una sugerencia? Escríbenos:", sign: "La dirección de OPC",
   },
 } as const;
 
@@ -112,7 +113,7 @@ export function arbiterMail(kind: ArbiterMailKind, lang: MailLang): { subject: s
   const k = t[kind];
   const lines: string[] = [...k.body, "", `${t.page} ${ARBITRAGE_PAGE_URL}`];
   if (kind === "invite") lines.push(`${t.manual} ${MANUEL_JUSTICE_PAGE_URL}`);
-  lines.push("", t.sign);
+  lines.push("", `${t.contact} ${OPC_DIRECTION_EMAIL}`, "", t.sign);
   return { subject: k.subj, text: lines.join("\n") };
 }
 

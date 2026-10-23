@@ -3,6 +3,7 @@
  * storage, so the arbiter types a 6-digit code received by email to find their profile again.
  * Signed « La direction d'OPC ». No pay figures, no authority words.
  */
+import { OPC_DIRECTION_EMAIL } from "../../../src/lib/arb-checklist.ts";
 import { RESEND_API_URL, resolveFromAddress } from "../../../src/lib/owner-mail.ts";
 import { redactForLog, type MailLang } from "./decision-mail.ts";
 
@@ -19,7 +20,7 @@ const L = {
     how: "Ouvre OPC (l’app sur ton écran d’accueil ou le site), va sur la page Arbitrage, touche « Retrouver mon profil d’arbitre », puis tape ce code.",
     ttl: "Le code marche 15 minutes, une seule fois.",
     notYou: "Tu n’as rien demandé ? Ignore ce courriel : personne ne peut entrer sans ce code.",
-    sign: "La direction d’OPC",
+    contact: "Une question, une suggestion ? Écris-nous :", sign: "La direction d’OPC",
   },
   en: {
     subj: "Your code to find your OPC arbiter profile",
@@ -28,7 +29,7 @@ const L = {
     how: "Open OPC (the app on your home screen or the website), go to the Arbitration page, tap “Find my arbiter profile”, then type this code.",
     ttl: "The code works for 15 minutes, only once.",
     notYou: "Didn’t ask for this? Ignore this email: nobody can get in without this code.",
-    sign: "OPC management",
+    contact: "A question, a suggestion? Write to us:", sign: "OPC management",
   },
   es: {
     subj: "Tu código para recuperar tu perfil de árbitro OPC",
@@ -37,7 +38,7 @@ const L = {
     how: "Abre OPC (la app en tu pantalla de inicio o el sitio), ve a la página Arbitraje, toca « Recuperar mi perfil de árbitro » y escribe este código.",
     ttl: "El código funciona 15 minutos, una sola vez.",
     notYou: "¿No lo pediste? Ignora este correo: nadie puede entrar sin este código.",
-    sign: "La dirección de OPC",
+    contact: "¿Una pregunta, una sugerencia? Escríbenos:", sign: "La dirección de OPC",
   },
 } as const;
 
@@ -45,7 +46,7 @@ export function loginMail(code: string, lang: MailLang): { subject: string; text
   const t = L[lang];
   return {
     subject: t.subj,
-    text: [t.hello, "", `${t.code} ${code}`, "", t.how, ARBITRAGE_PAGE_URL, "", t.ttl, t.notYou, "", t.sign].join("\n"),
+    text: [t.hello, "", `${t.code} ${code}`, "", t.how, ARBITRAGE_PAGE_URL, "", t.ttl, t.notYou, "", `${t.contact} ${OPC_DIRECTION_EMAIL}`, "", t.sign].join("\n"),
   };
 }
 

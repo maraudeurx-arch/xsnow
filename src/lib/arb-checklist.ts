@@ -58,3 +58,11 @@ export function computeChecklist(i: ChecklistInput): Checklist {
   const doneCount = items.filter((x) => x.done).length;
   return { items, doneCount, total: items.length, complete: doneCount === items.length };
 }
+
+/** Arbiters write to OPC management (Popol, 23/10/2026): questions and suggestions, like OPC staff. */
+export const OPC_DIRECTION_EMAIL = "opencommunity.opc@gmail.com";
+export function arbContactHref(label: string, arbiterId: string): string {
+  const id = /^[A-Za-z0-9_-]{1,40}$/.test(arbiterId) ? arbiterId : "";
+  const subject = id ? `${label} ${id}` : label;
+  return `mailto:${OPC_DIRECTION_EMAIL}?subject=${encodeURIComponent(subject)}`;
+}

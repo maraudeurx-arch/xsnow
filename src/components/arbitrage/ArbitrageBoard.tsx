@@ -10,7 +10,7 @@ import { prepareAdImage } from "@/lib/compress-ad-image";
 import { useI18n } from "@/lib/i18n/locale";
 import { useLocalProfile } from "@/lib/useLocalProfile";
 import { useAccount } from "wagmi";
-import { type Checklist, type ChecklistItemId } from "@/lib/arb-checklist";
+import { type Checklist, type ChecklistItemId, arbContactHref } from "@/lib/arb-checklist";
 import { ConnectWallet } from "@/components/ConnectWallet";
 import { assetUrl } from "@/lib/paths";
 import { b64uToUint8, pushSupport, type PushSupport } from "@/lib/push-client";
@@ -81,7 +81,7 @@ export function ArbitrageBoard() {
           <p>{t.red.message}</p>
         </div>
       ) : null}
-      {token && (status === "verified" || status === "pending" || status === "rescan_requested") ? <ChecklistCard token={token} status={status} /> : null}
+      {token && (status === "verified" || status === "pending" || status === "rescan_requested") ? <ChecklistCard token={token} status={status} arbiterId={profile?.id ?? ""} /> : null}
       {token && hasEmail === false && (status === "verified" || status === "pending" || status === "rescan_requested") ? <EmailCard token={token} onDone={() => { setHasEmail(true); refreshChecklist(); }} /> : null}
       {token && (status === "verified" || status === "pending" || status === "rescan_requested") ? <NotifyCard token={token} /> : null}
       {status === "verified" ? <CasesView token={token} red={red} /> : null}
@@ -431,7 +431,7 @@ function refreshChecklist() {
  * Onboarding checklist (Popol, 21/10/2026): Indiana trains and approves every arbiter, so the arbiter
  * sees what is still missing, each item with a done/missing state and short, simple steps.
  */
-function ChecklistCard({ token, status }: { token: string; status: Status }) {
+function ChecklistCard({ token, status, arbiterId }: { token: string; status: Status; arbiterId: string }) {
   const { m } = useI18n();
   const t = m.arbitrage.checklist;
   const [data, setData] = useState<Checklist | null>(null);
@@ -489,6 +489,10 @@ function ChecklistCard({ token, status }: { token: string; status: Status }) {
           );
         })}
       </ul>
+      <div className="grid gap-1 rounded-xl border border-sky-300 bg-sky-50 p-2" data-arb-contact>
+        <p className="text-[13px]">{t.contactLead}</p>
+        <a className={primary + " inline-flex items-center justify-center"} href={arbContactHref(t.contactSubject, arbiterId)} data-arb-contact-link>{t.contactCta}</a>
+      </div>
     </section>
   );
 }

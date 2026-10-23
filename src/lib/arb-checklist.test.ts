@@ -67,3 +67,11 @@ describe("arbiter onboarding checklist", () => {
     assert.match(fr.arbitrage.checklist.lead, /Indiana/);
   });
 });
+
+import { arbContactHref as _ach } from "./arb-checklist.ts";
+import { test as _t } from "node:test";
+import _assert from "node:assert/strict";
+_t("arbiter contact mailto prefills subject with arbiter id", () => {
+  _assert.equal(_ach("Arbitre", "OPC-5X78"), "mailto:opencommunity.opc@gmail.com?subject=Arbitre%20OPC-5X78");
+  _assert.equal(_ach("Arbitre", "<x>"), "mailto:opencommunity.opc@gmail.com?subject=Arbitre");
+});
