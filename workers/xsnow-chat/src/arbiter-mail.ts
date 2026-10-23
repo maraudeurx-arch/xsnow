@@ -8,7 +8,7 @@ import { RESEND_API_URL, resolveFromAddress } from "../../../src/lib/owner-mail.
 import { MANUEL_JUSTICE_PAGE_URL } from "../../../src/lib/arbitrage.ts";
 import { redactForLog, type MailLang } from "./decision-mail.ts";
 
-export type ArbiterMailKind = "invite" | "wallet";
+export type ArbiterMailKind = "invite" | "wallet" | "rescan";
 export const ARBITRAGE_PAGE_URL = "https://opencommunity.app/arbitrage/";
 
 const L = {
@@ -38,6 +38,14 @@ const L = {
         "2. Dans ta liste d’accueil, touche « Connect ».",
         "3. Choisis ton wallet, ou crée-en un (c’est gratuit), puis accepte la connexion.",
         "Pas besoin de changer de réseau.",
+      ],
+    },
+    rescan: {
+      subj: "Vérification d’identité – dernière étape",
+      body: [
+        "Bonjour,",
+        "",
+        "Pour finaliser ta vérification d’identité, merci de refaire le scan du visage dans l’app (Mon profil > espace arbitre). Ça prend une minute.",
       ],
     },
     page: "Page Arbitrage :", manual: "Manuel de justice :", contact: "Une question, une suggestion ? Écris-nous :", sign: "La direction d’OPC",
@@ -70,6 +78,14 @@ const L = {
         "No need to switch networks.",
       ],
     },
+    rescan: {
+      subj: "Identity check – last step",
+      body: [
+        "Hello,",
+        "",
+        "To finish your identity check, please redo the face scan in the app (My profile > arbiter space). It takes one minute.",
+      ],
+    },
     page: "Arbitration page:", manual: "Justice Manual:", contact: "A question, a suggestion? Write to us:", sign: "OPC management",
   },
   es: {
@@ -100,12 +116,20 @@ const L = {
         "No hace falta cambiar de red.",
       ],
     },
+    rescan: {
+      subj: "Verificación de identidad – último paso",
+      body: [
+        "Hola,",
+        "",
+        "Para terminar tu verificación de identidad, vuelve a hacer el escaneo del rostro en la app (Mi perfil > espacio de árbitro). Toma un minuto.",
+      ],
+    },
     page: "Página Arbitraje:", manual: "Manual de justicia:", contact: "¿Una pregunta, una sugerencia? Escríbenos:", sign: "La dirección de OPC",
   },
 } as const;
 
 export function parseArbiterMailKind(raw: unknown): ArbiterMailKind | null {
-  return raw === "invite" || raw === "wallet" ? raw : null;
+  return raw === "invite" || raw === "wallet" || raw === "rescan" ? raw : null;
 }
 
 export function arbiterMail(kind: ArbiterMailKind, lang: MailLang): { subject: string; text: string } {

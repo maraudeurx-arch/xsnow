@@ -35,8 +35,8 @@
  *   GET  /arbitrage/admin/arbiters     id, status, red flag, contradictions (no identity)
  *   POST /arbitrage/admin/red-clear    {arbiterId} clear the red flag (after the training). Answers are kept.
  *   GET  /arbitrage/admin/wallets      connected arbiter wallet addresses (ids + public address only)
- *   POST /arbitrage/admin/arbiter-mail {arbiterId, kind: "invite"|"wallet"} email the arbiter (invitation or
- *                                      wallet reminder), signed « La direction d'OPC ». Address never returned.
+ *   POST /arbitrage/admin/arbiter-mail {arbiterId, kind: "invite"|"wallet"|"rescan"} email the arbiter (invitation,
+ *                                      wallet reminder or face rescan), signed « La direction d'OPC ». Address never returned.
  * Arbiter wallet (verified):
  *   GET  /arbitrage/wallet             {address, needsWallet} (needsWallet = ≥1 simulated answer and no wallet)
  *   POST /arbitrage/wallet             {address, chainId?} store the address connected with Connect. No payment.
