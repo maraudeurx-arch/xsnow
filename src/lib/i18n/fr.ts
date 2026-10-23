@@ -448,7 +448,6 @@ export const fr = {
       "manualLink": "Ouvrir le Manuel de justice",
       "manualRead": "J’ai lu le Manuel",
       "manualSaved": "Merci ! Lecture du Manuel notée.",
-      "switchChain": "Passer sur Base Sepolia",
       "walletAfterVerify": "Tu pourras connecter ton wallet dès que ta demande sera vérifiée.",
       "goNotify": "Voir la carte Notifications",
       "goEmail": "Voir la carte E-mail",
@@ -472,14 +471,13 @@ export const fr = {
           ]
         },
         "wallet": {
-          "title": "Wallet connecté sur Base Sepolia",
-          "done": "Ton wallet est connecté sur Base Sepolia (réseau de test).",
+          "title": "Wallet connecté",
+          "done": "Ton wallet est connecté. Aucun paiement n’est fait ici.",
           "steps": [
             "Touche « Connect ».",
             "Choisis ton wallet, ou crée-en un (c’est gratuit).",
-            "Choisis le réseau Base Sepolia (réseau de test, aucun vrai argent)."
-          ],
-          "wrongChain": "Ton wallet est connecté, mais pas sur Base Sepolia. Touche le bouton pour changer de réseau."
+            "Accepte la connexion. Pas besoin de changer de réseau."
+          ]
         },
         "face": {
           "title": "Vérification du visage faite",

@@ -30,11 +30,12 @@ describe("arbiter onboarding checklist", () => {
     assert.equal(c.doneCount, 6);
   });
 
-  it("wallet must be on Base Sepolia (84532); another network is 'wrong_chain'", () => {
+  it("wallet: any connected address is done, whatever the network (chain_id 1 bug, 22/10)", () => {
     assert.equal(BASE_SEPOLIA_CHAIN_ID, 84532);
     assert.equal(walletState(null), "missing");
-    assert.equal(walletState({ address: "0x" + "b".repeat(40), chainId: 1 }), "wrong_chain");
-    assert.equal(walletState({ address: "0x" + "b".repeat(40), chainId: null }), "wrong_chain");
+    assert.equal(walletState({ address: "", chainId: 84532 }), "missing");
+    assert.equal(walletState({ address: "0x" + "b".repeat(40), chainId: 1 }), "done");
+    assert.equal(walletState({ address: "0x" + "b".repeat(40), chainId: null }), "done");
     assert.equal(walletState({ address: "0x" + "b".repeat(40), chainId: 84532 }), "done");
   });
 

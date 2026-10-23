@@ -42,7 +42,7 @@ test.describe("arbiter onboarding checklist", () => {
     await skipConsent(page);
     await seedLocalProfile(page);
     await page.addInitScript(() => window.localStorage.setItem("opc.arbiter.token.v1", "tok-e2e"));
-    const calls = await stubArbiter(page, "verified", { email: true, face: true, test_case: true }, "wrong_chain");
+    const calls = await stubArbiter(page, "verified", { email: true, face: true, test_case: true });
     await page.goto("arbitrage/");
     const card = page.locator("[data-arb-checklist]");
     await expect(card).toBeVisible();
@@ -56,8 +56,8 @@ test.describe("arbiter onboarding checklist", () => {
       await expect(item).toHaveAttribute("data-arb-checklist-state", "missing");
       await expect(item.locator("[data-arb-checklist-steps] li").first()).toBeVisible();
     }
-    await expect(card.locator('[data-arb-checklist-item="wallet"]')).toContainText("Base Sepolia");
-    await expect(card.locator("[data-arb-checklist-wrong-chain]")).toBeVisible();
+    await expect(card.locator('[data-arb-checklist-item="wallet"]')).toContainText("Pas besoin de changer de réseau");
+    await expect(card.locator("[data-arb-checklist-switch]")).toHaveCount(0);
     await expect(card.locator("[data-arb-checklist-manual-link]")).toHaveAttribute("href", "https://essaim-agents.com/manuel-justice");
     await expect(card).not.toContainText(/tribunal|\bcour\b|\bcourt\b/i);
     await card.locator("[data-arb-checklist-manual-read]").click();

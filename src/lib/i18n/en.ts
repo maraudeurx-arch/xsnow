@@ -451,7 +451,6 @@ export const en: Messages = {
       "manualLink": "Open the Justice Manual",
       "manualRead": "I read the Manual",
       "manualSaved": "Thanks! Manual reading saved.",
-      "switchChain": "Switch to Base Sepolia",
       "walletAfterVerify": "You can connect your wallet as soon as your application is verified.",
       "goNotify": "See the Notifications card",
       "goEmail": "See the Email card",
@@ -475,14 +474,13 @@ export const en: Messages = {
           ]
         },
         "wallet": {
-          "title": "Wallet connected on Base Sepolia",
-          "done": "Your wallet is connected on Base Sepolia (test network).",
+          "title": "Wallet connected",
+          "done": "Your wallet is connected. No payment is made here.",
           "steps": [
             "Tap “Connect”.",
             "Pick your wallet, or create one (it is free).",
-            "Choose the Base Sepolia network (test network, no real money)."
-          ],
-          "wrongChain": "Your wallet is connected, but not on Base Sepolia. Tap the button to switch networks."
+            "Accept the connection. No need to switch networks."
+          ]
         },
         "face": {
           "title": "Face check done",

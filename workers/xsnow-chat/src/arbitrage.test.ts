@@ -572,10 +572,11 @@ describe("arbitrage worker", () => {
     assert.equal(c.doneCount, 2);
     assert.equal(c.total, 6);
     await handleArbitrage(req("/arbitrage/admin/review", "POST", { arbiterId: a.arbiterId, approve: true }, S), env, deps);
-    // wallet on Ethereum mainnet → wrong chain; on Base Sepolia → done
+    // wallet reported on chain_id 1 (phone wallet) → already done: no network switch required (22/10)
     await handleArbitrage(req("/arbitrage/wallet", "POST", { address: "0x" + "1".repeat(40), chainId: 1 }, a.token), env, deps);
     c = await get();
-    assert.equal(c.items.find((x: { id: string }) => x.id === "wallet").state, "wrong_chain");
+    assert.equal(c.items.find((x: { id: string }) => x.id === "wallet").state, "done");
+    assert.equal(c.items.find((x: { id: string }) => x.id === "wallet").done, true);
     await handleArbitrage(req("/arbitrage/wallet", "POST", { address: "0x" + "1".repeat(40), chainId: 84532 }, a.token), env, deps);
     await store.addPushSub({ endpoint: "https://fcm.googleapis.com/x", arbiter_id: a.arbiterId, created_at: 1 });
     const sim = await (await handleArbitrage(req("/arbitrage/admin/sim-cases", "POST", { title: "t", scenario: "s", choices: ["x", "y"] }, S), env, deps)).json();

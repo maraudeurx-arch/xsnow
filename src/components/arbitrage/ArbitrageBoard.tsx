@@ -9,8 +9,8 @@ import { arbFetch, readArbiterToken, writeArbiterToken } from "@/lib/arbitrage-c
 import { prepareAdImage } from "@/lib/compress-ad-image";
 import { useI18n } from "@/lib/i18n/locale";
 import { useLocalProfile } from "@/lib/useLocalProfile";
-import { useAccount, useSwitchChain } from "wagmi";
-import { BASE_SEPOLIA_CHAIN_ID, type Checklist, type ChecklistItemId } from "@/lib/arb-checklist";
+import { useAccount } from "wagmi";
+import { type Checklist, type ChecklistItemId } from "@/lib/arb-checklist";
 import { ConnectWallet } from "@/components/ConnectWallet";
 import { assetUrl } from "@/lib/paths";
 import { b64uToUint8, pushSupport, type PushSupport } from "@/lib/push-client";
@@ -404,7 +404,6 @@ function ChecklistCard({ token, status }: { token: string; status: Status }) {
               </p>
               {it.done ? <p className="text-[13px]">{copy.done}</p> : (
                 <>
-                  {it.id === "wallet" && it.state === "wrong_chain" ? <p className="text-[13px] font-bold" data-arb-checklist-wrong-chain>{t.items.wallet.wrongChain}</p> : null}
                   <ol className="list-decimal pl-5 text-[13px]" data-arb-checklist-steps>
                     {copy.steps.map((step, i) => <li key={i}>{step}</li>)}
                   </ol>
@@ -428,12 +427,9 @@ function ChecklistCard({ token, status }: { token: string; status: Status }) {
   );
 }
 
-/** Wallet step of the checklist: Connect, then switch to Base Sepolia (test network). No payment. */
+/** Wallet step of the checklist: Connect is enough (any network shown by the wallet). No payment. */
 function ChecklistWallet({ token }: { token: string }) {
-  const { m } = useI18n();
-  const t = m.arbitrage.checklist;
   const { address, chainId, isConnected } = useAccount();
-  const { switchChain } = useSwitchChain();
   const [posted, setPosted] = useState("");
   useEffect(() => {
     if (!isConnected || !address || !chainId) return;
@@ -446,9 +442,6 @@ function ChecklistWallet({ token }: { token: string }) {
   return (
     <div className="grid gap-1" data-arb-checklist-wallet>
       <ConnectWallet compact />
-      {isConnected && chainId !== BASE_SEPOLIA_CHAIN_ID ? (
-        <button type="button" className={primary} onClick={() => switchChain({ chainId: BASE_SEPOLIA_CHAIN_ID })} data-arb-checklist-switch>{t.switchChain}</button>
-      ) : null}
     </div>
   );
 }
@@ -506,9 +499,16 @@ function NotifyCard({ token }: { token: string }) {
     });
     void Promise.resolve().then(() => setSupport(detected));
     if ("Notification" in window && Notification.permission === "granted" && "serviceWorker" in nav) {
-      void nav.serviceWorker.getRegistration(assetUrl("/")).then((reg) => reg?.pushManager.getSubscription()).then((s) => { if (s) setState("on"); });
+      // A subscription already on this device: re-register it for this arbiter (idempotent) so the
+      // checklist stops showing "Notifications" as to-do when the server lost or never had it.
+      void nav.serviceWorker.getRegistration(assetUrl("/")).then((reg) => reg?.pushManager.getSubscription()).then(async (s) => {
+        if (!s) return;
+        setState("on");
+        const r = await arbFetch("push/subscribe", { method: "POST", token, body: { endpoint: s.endpoint } }).catch(() => null);
+        if (r?.status === 200) refreshChecklist();
+      });
     }
-  }, []);
+  }, [token]);
   async function enable() {
     try {
       const { status, data } = await arbFetch<{ key?: string }>("push/vapid-key");
