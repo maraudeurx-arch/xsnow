@@ -35,6 +35,8 @@
  *   GET  /arbitrage/admin/arbiters     id, status, red flag, contradictions (no identity)
  *   POST /arbitrage/admin/red-clear    {arbiterId} clear the red flag (after the training). Answers are kept.
  *   GET  /arbitrage/admin/wallets      connected arbiter wallet addresses (ids + public address only)
+ *   POST /arbitrage/admin/arbiter-mail {arbiterId, kind: "invite"|"wallet"} email the arbiter (invitation or
+ *                                      wallet reminder), signed « La direction d'OPC ». Address never returned.
  * Arbiter wallet (verified):
  *   GET  /arbitrage/wallet             {address, needsWallet} (needsWallet = ≥1 simulated answer and no wallet)
  *   POST /arbitrage/wallet             {address, chainId?} store the address connected with Connect. No payment.
@@ -44,6 +46,7 @@
  */
 
 import { parseArbiterEmail, parseMailLang, sendDecisionCopy, type MailLang } from "./decision-mail.ts";
+import { parseArbiterMailKind, sendArbiterMail } from "./arbiter-mail.ts";
 import { importVapidPrivate, isAllowedPushEndpoint, sendPush } from "./webpush.ts";
 import { LOGIN_CODES_PER_HOUR, LOGIN_CODE_MAX_ATTEMPTS, LOGIN_CODE_TTL_MS, newLoginCode, parseLoginCode, sendLoginCode } from "./login-mail.ts";
 import {
@@ -771,6 +774,18 @@ export async function handleArbitrage(req: Request, env: ArbEnv, deps: ArbDeps):
       const invite = b.invite !== false;
       await store.setSimInvite(r.id, invite, now()); // arbiters.status is never touched here
       return j({ ok: true, simulation: true, arbiterId: r.id, simInvited: invite, status: r.status });
+    }
+    if (path === "/arbitrage/admin/arbiter-mail" && req.method === "POST") {
+      const b = (body ?? {}) as Record<string, unknown>;
+      const kind = parseArbiterMailKind(b.kind);
+      if (!kind) return j({ error: "kind" }, 400);
+      const r = await store.arbiterById(clip(b.arbiterId, 60));
+      if (!r) return j({ error: "not_found" }, 404);
+      if (r.status === "rejected") return j({ error: "rejected" }, 409);
+      if (kind === "wallet" && (await store.walletOf(r.id))) return j({ ok: true, arbiterId: r.id, kind, result: "already_done" });
+      const to = r.email_enc ? await decryptString(encKey, r.email_enc) : null;
+      const result = await sendArbiterMail(env, to, parseMailLang(r.email_lang) as MailLang, kind, r.id, fetchImpl);
+      return j({ ok: result === "sent", arbiterId: r.id, kind, result }, result === "sent" ? 200 : result === "no_email" ? 409 : 502);
     }
     if (path === "/arbitrage/admin/arbiters" && req.method === "GET") {
       const ids = new Set<string>();
