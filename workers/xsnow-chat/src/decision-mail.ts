@@ -2,6 +2,7 @@
  * Copy of an arbiter's own decision, emailed to the arbiter (Resend, same API as OPC owner mail).
  * OFF unless env ARBITER_DECISION_EMAILS === "on". D1 keeps the record either way.
  */
+import { OPC_DIRECTION_EMAIL } from "../../../src/lib/arb-checklist.ts";
 import { RESEND_API_URL, resolveFromAddress } from "../../../src/lib/owner-mail.ts";
 import { MANUEL_JUSTICE_PAGE_URL, MANUEL_JUSTICE_PDF_URL, normalizeEmailInput } from "../../../src/lib/arbitrage.ts";
 
@@ -14,9 +15,9 @@ export type DecisionCopy = {
 };
 
 const L = {
-  fr: { subj: "Copie de ta décision d’arbitrage", sim: "SIMULATION — aucun vrai litige, aucun paiement.", case: "Dossier", id: "Numéro", choice: "Ta décision", sugg: "Suggestion", followed: "Tu as suivi la suggestion.", contra: "Tu n’as pas suivi la suggestion.", at: "Date (UTC)", why: "Pourquoi — la formation d’Indiana :", manual: "Manuel de justice", keep: "Cette décision est conservée dans OPC comme preuve. Ne réponds pas à ce courriel." },
-  en: { subj: "Copy of your arbitration decision", sim: "SIMULATION — no real dispute, no payment.", case: "Case", id: "ID", choice: "Your decision", sugg: "Suggestion", followed: "You followed the suggestion.", contra: "You did not follow the suggestion.", at: "Date (UTC)", why: "Why — Indiana’s training (in French):", manual: "Justice Manual", keep: "This decision is kept in OPC as a record. Do not reply to this email." },
-  es: { subj: "Copia de tu decisión de arbitraje", sim: "SIMULACIÓN — ninguna disputa real, ningún pago.", case: "Caso", id: "Número", choice: "Tu decisión", sugg: "Sugerencia", followed: "Seguiste la sugerencia.", contra: "No seguiste la sugerencia.", at: "Fecha (UTC)", why: "Por qué — la formación de Indiana (en francés):", manual: "Manual de justicia", keep: "Esta decisión se conserva en OPC como prueba. No respondas a este correo." },
+  fr: { contact: "Une question, une suggestion ? Écris-nous :", sign: "La direction d’OPC", subj: "Copie de ta décision d’arbitrage", sim: "SIMULATION — aucun vrai litige, aucun paiement.", case: "Dossier", id: "Numéro", choice: "Ta décision", sugg: "Suggestion", followed: "Tu as suivi la suggestion.", contra: "Tu n’as pas suivi la suggestion.", at: "Date (UTC)", why: "Pourquoi — la formation d’Indiana :", manual: "Manuel de justice", keep: "Cette décision est conservée dans OPC comme preuve." },
+  en: { contact: "A question, a suggestion? Write to us:", sign: "OPC management", subj: "Copy of your arbitration decision", sim: "SIMULATION — no real dispute, no payment.", case: "Case", id: "ID", choice: "Your decision", sugg: "Suggestion", followed: "You followed the suggestion.", contra: "You did not follow the suggestion.", at: "Date (UTC)", why: "Why — Indiana’s training (in French):", manual: "Justice Manual", keep: "This decision is kept in OPC as a record." },
+  es: { contact: "¿Una pregunta, una sugerencia? Escríbenos:", sign: "La dirección de OPC", subj: "Copia de tu decisión de arbitraje", sim: "SIMULACIÓN — ninguna disputa real, ningún pago.", case: "Caso", id: "Número", choice: "Tu decisión", sugg: "Sugerencia", followed: "Seguiste la sugerencia.", contra: "No seguiste la sugerencia.", at: "Fecha (UTC)", why: "Por qué — la formación de Indiana (en francés):", manual: "Manual de justicia", keep: "Esta decisión se conserva en OPC como prueba." },
 } as const;
 
 export const ARB_EMAIL_RE = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/;
@@ -44,6 +45,10 @@ export function decisionMail(d: DecisionCopy, lang: MailLang): { subject: string
     MANUEL_JUSTICE_PAGE_URL,
     "",
     t.keep,
+    "",
+    `${t.contact} ${OPC_DIRECTION_EMAIL}`,
+    "",
+    t.sign,
   ];
   return { subject: `${d.simulation ? "[SIMULATION] " : ""}${t.subj} — ${d.caseId}`, text: lines.join("\n") };
 }
