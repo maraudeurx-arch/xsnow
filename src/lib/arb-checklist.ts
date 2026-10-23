@@ -3,11 +3,12 @@
  * Pure logic shared by the Worker (GET /arbitrage/checklist) and the arbiter space.
  * Each item is "done" or "missing"; the UI shows short, simple steps for what is missing.
  */
+import { contractAccepted } from "./arb-contract.ts";
 
 /** Base Sepolia (test network only — no mainnet, no payment). */
 export const BASE_SEPOLIA_CHAIN_ID = 84532;
 
-export const CHECKLIST_ITEMS = ["email", "notifications", "wallet", "face", "test_case", "manual"] as const;
+export const CHECKLIST_ITEMS = ["email", "notifications", "wallet", "face", "test_case", "manual", "contract"] as const;
 export type ChecklistItemId = (typeof CHECKLIST_ITEMS)[number];
 
 export type WalletState = "missing" | "done";
@@ -24,6 +25,8 @@ export type ChecklistInput = {
   faceReviewed: boolean;
   simAnswers: number;
   manualReadAt: number | null;
+  /** SHA-256 of the arbiter agreement text the arbiter accepted (null = not accepted). */
+  contractHash?: string | null;
 };
 
 /**
@@ -53,6 +56,7 @@ export function computeChecklist(i: ChecklistInput): Checklist {
     face: faceCheckDone(i),
     test_case: i.simAnswers > 0,
     manual: typeof i.manualReadAt === "number" && i.manualReadAt > 0,
+    contract: contractAccepted(i.contractHash),
   };
   const items: ChecklistItem[] = CHECKLIST_ITEMS.map((id) => (id === "wallet" ? { id, done: done[id], state: ws } : { id, done: done[id] }));
   const doneCount = items.filter((x) => x.done).length;

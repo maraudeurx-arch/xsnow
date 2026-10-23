@@ -11,6 +11,7 @@
  *   GET  /arbitrage/sim-cases          Bearer <verified arbiter> → open SIMULATION cases + my answer
  *   GET  /arbitrage/explanations       Bearer <arbiter, not rejected> → my last training explanations (evidence)
  *   GET  /arbitrage/checklist          Bearer <arbiter, not rejected> → onboarding checklist (done/missing per item)
+ *   POST /arbitrage/contract-accept    Bearer <arbiter, not rejected> {version, hash} → e-signature of the arbiter agreement
  *   POST /arbitrage/manual-read        Bearer <arbiter, not rejected> → "J'ai lu le Manuel" (manual_read_at)
  *   POST /arbitrage/sim-cases/answer   Bearer <verified arbiter> {caseId, choiceId, comment?} (one per arbiter)
  * Email login (existing arbiter, e.g. the iPhone home-screen app with its own storage):
@@ -69,6 +70,7 @@ import {
   type VerificationLevel,
 } from "../../../src/lib/arbitrage.ts";
 import { computeChecklist } from "../../../src/lib/arb-checklist.ts";
+import { ARB_CONTRACT_SHA256, ARB_CONTRACT_VERSION } from "../../../src/lib/arb-contract.ts";
 import { OUTCOME_WORDS, buildExplanation, type TrainingExplanation } from "../../../src/lib/arb-training.ts";
 
 export type ArbiterRow = {
@@ -84,6 +86,9 @@ export type ArbiterRow = {
   red_at?: number | null;
   red_cleared_at?: number | null;
   manual_read_at?: number | null;
+  contract_accepted_at?: number | null;
+  contract_version?: string | null;
+  contract_hash?: string | null;
   identity_hash: string;
   doc_expiry: string;
   face_score: number | null;
@@ -181,7 +186,7 @@ export type D1Full = { prepare: (q: string) => D1Stmt };
 const ARB_COLS = new Set([
   "status", "identity_enc", "photo_enc", "face_reviewed", "reputation", "reviewed_at", "purge_after",
   "face_score", "face_liveness", "face_method", "identity_hash", "email_enc", "email_lang", "red_flag", "red_at", "red_cleared_at",
-  "manual_read_at",
+  "manual_read_at", "contract_accepted_at", "contract_version", "contract_hash",
 ]);
 const CASE_COLS = new Set(["status", "suggestion_json", "decision_json", "arbiter_id", "decided_at"]);
 
@@ -878,13 +883,26 @@ export async function handleArbitrage(req: Request, env: ArbEnv, deps: ArbDeps):
       chosen: r.chosen, suggested: r.suggested, manualRef: r.manual_ref, manualVersion: r.manual_version, text: r.text,
       createdAt: new Date(r.created_at).toISOString() })) });
   }
-  if ((path === "/arbitrage/checklist" && req.method === "GET") || (path === "/arbitrage/manual-read" && req.method === "POST")) {
+  if ((path === "/arbitrage/checklist" && req.method === "GET") || (path === "/arbitrage/manual-read" && req.method === "POST")
+    || (path === "/arbitrage/contract-accept" && req.method === "POST")) {
     // Onboarding checklist: every non-rejected arbiter (pending, rescan, verified) sees what is still missing.
     if (me.status === "rejected") return j({ error: "rejected" }, 403);
     let manualReadAt = me.manual_read_at ?? null;
     if (path === "/arbitrage/manual-read") {
       manualReadAt = manualReadAt || now();
       await store.updateArbiter(me.id, { manual_read_at: manualReadAt });
+    }
+    let contractHash = me.contract_hash ?? null;
+    if (path === "/arbitrage/contract-accept") {
+      // E-signature: the client must echo the exact version + SHA-256 it displayed (no stale text accepted).
+      const b = (body ?? {}) as Record<string, unknown>;
+      if (b.version !== ARB_CONTRACT_VERSION || b.hash !== ARB_CONTRACT_SHA256 || b.accept !== true) {
+        return j({ error: "contract_version", version: ARB_CONTRACT_VERSION, hash: ARB_CONTRACT_SHA256 }, 409);
+      }
+      if (contractHash !== ARB_CONTRACT_SHA256) {
+        contractHash = ARB_CONTRACT_SHA256;
+        await store.updateArbiter(me.id, { contract_accepted_at: now(), contract_version: ARB_CONTRACT_VERSION, contract_hash: contractHash });
+      }
     }
     const w = await store.walletOf(me.id);
     const checklist = computeChecklist({
@@ -897,6 +915,7 @@ export async function handleArbitrage(req: Request, env: ArbEnv, deps: ArbDeps):
       faceReviewed: me.face_reviewed === 1,
       simAnswers: await store.simAnswerCountBy(me.id),
       manualReadAt,
+      contractHash,
     });
     return j({ ok: true, status: me.status, ...checklist });
   }

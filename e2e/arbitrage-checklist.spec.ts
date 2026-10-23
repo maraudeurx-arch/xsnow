@@ -7,13 +7,13 @@ const cors = {
   "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
 };
 
-const items = (done: Record<string, boolean>, walletState = "missing") => ["email", "notifications", "wallet", "face", "test_case", "manual"].map((id) =>
+const items = (done: Record<string, boolean>, walletState = "missing") => ["email", "notifications", "wallet", "face", "test_case", "manual", "contract"].map((id) =>
   id === "wallet" ? { id, done: !!done[id], state: done[id] ? "done" : walletState } : { id, done: !!done[id] });
 
 function checklist(done: Record<string, boolean>, walletState?: string) {
   const list = items(done, walletState);
   const n = list.filter((x) => x.done).length;
-  return { ok: true, status: "verified", items: list, doneCount: n, total: 6, complete: n === 6 };
+  return { ok: true, status: "verified", items: list, doneCount: n, total: 7, complete: n === 7 };
 }
 
 /** Everything under /arbitrage/* is stubbed: nothing reaches the production Worker. */
@@ -28,6 +28,7 @@ async function stubArbiter(page: Page, status: string, initial: Record<string, b
     calls.push(`${req.method()} ${path.replace(/^.*\/arbitrage/, "")}`);
     if (path.endsWith("/me")) return route.fulfill({ headers: cors, json: { status, arbiterId: "arb_1", reputation: 0, hasEmail: !!state.email } });
     if (path.endsWith("/checklist")) return route.fulfill({ headers: cors, json: { ...checklist(state, walletState), status } });
+    if (path.endsWith("/contract-accept")) { state = { ...state, contract: true }; return route.fulfill({ headers: cors, json: { ...checklist(state, walletState), status } }); }
     if (path.endsWith("/manual-read")) { state = { ...state, manual: true }; return route.fulfill({ headers: cors, json: { ...checklist(state, walletState), status } }); }
     if (path.endsWith("/sim-cases")) return route.fulfill({ headers: cors, json: { simulation: true, cases: [] } });
     if (path.endsWith("/cases")) return route.fulfill({ headers: cors, json: { cases: [] } });
@@ -48,8 +49,8 @@ test.describe("arbiter onboarding checklist", () => {
     await expect(card).toBeVisible();
     await expect(card).toContainText("Ta liste pour devenir arbitre");
     await expect(card).toContainText("Indiana");
-    await expect(card.locator("[data-arb-checklist-progress]")).toHaveText("3 sur 6 faits");
-    await expect(card.locator("[data-arb-checklist-item]")).toHaveCount(6);
+    await expect(card.locator("[data-arb-checklist-progress]")).toHaveText("3 sur 7 faits");
+    await expect(card.locator("[data-arb-checklist-item]")).toHaveCount(7);
     for (const id of ["email", "face", "test_case"]) await expect(card.locator(`[data-arb-checklist-item="${id}"]`)).toHaveAttribute("data-arb-checklist-state", "done");
     for (const id of ["notifications", "wallet", "manual"]) {
       const item = card.locator(`[data-arb-checklist-item="${id}"]`);
@@ -62,7 +63,7 @@ test.describe("arbiter onboarding checklist", () => {
     await expect(card).not.toContainText(/tribunal|\bcour\b|\bcourt\b/i);
     await card.locator("[data-arb-checklist-manual-read]").click();
     await expect(card.locator('[data-arb-checklist-item="manual"]')).toHaveAttribute("data-arb-checklist-state", "done");
-    await expect(card.locator("[data-arb-checklist-progress]")).toHaveText("4 sur 6 faits");
+    await expect(card.locator("[data-arb-checklist-progress]")).toHaveText("4 sur 7 faits");
     expect(calls).toContain("POST /manual-read");
   });
 
@@ -73,7 +74,7 @@ test.describe("arbiter onboarding checklist", () => {
     await stubArbiter(page, "pending", { email: true, face: true });
     await page.goto("arbitrage/");
     const card = page.locator("[data-arb-checklist]");
-    await expect(card.locator("[data-arb-checklist-progress]")).toHaveText("2 sur 6 faits");
+    await expect(card.locator("[data-arb-checklist-progress]")).toHaveText("2 sur 7 faits");
     await expect(card.locator('[data-arb-checklist-item="wallet"]')).toContainText("dès que ta demande sera vérifiée");
     await expect(card.locator("[data-arb-checklist-wallet]")).toHaveCount(0);
   });
@@ -82,10 +83,28 @@ test.describe("arbiter onboarding checklist", () => {
     await skipConsent(page);
     await seedLocalProfile(page);
     await page.addInitScript(() => window.localStorage.setItem("opc.arbiter.token.v1", "tok-e2e"));
-    await stubArbiter(page, "verified", { email: true, notifications: true, wallet: true, face: true, test_case: true, manual: true });
+    await stubArbiter(page, "verified", { email: true, notifications: true, wallet: true, face: true, test_case: true, manual: true, contract: true });
     await page.goto("arbitrage/");
     const card = page.locator("[data-arb-checklist]");
-    await expect(card.locator('[data-arb-checklist-state="done"]')).toHaveCount(6);
+    await expect(card.locator('[data-arb-checklist-state="done"]')).toHaveCount(7);
     await expect(card.locator("[data-arb-checklist-cheer]")).toContainText("Bravo");
+  });
+
+  test("7th step: contract must be scrolled to the bottom before the box can be ticked", async ({ page }) => {
+    await skipConsent(page);
+    await seedLocalProfile(page);
+    await page.addInitScript(() => window.localStorage.setItem("opc.arbiter.token.v1", "tok-e2e"));
+    const calls = await stubArbiter(page, "verified", { email: true, notifications: true, wallet: true, face: true, test_case: true, manual: true });
+    await page.goto("arbitrage/");
+    const card = page.locator("[data-arb-checklist]");
+    await expect(card.locator("[data-arb-checklist-progress]")).toHaveText("6 sur 7 faits");
+    const box = card.locator("[data-arb-contract-accept]");
+    await expect(box).toBeDisabled();
+    await card.locator("[data-arb-contract-text]").evaluate((el) => { el.scrollTop = el.scrollHeight; el.dispatchEvent(new Event("scroll")); });
+    await expect(box).toBeEnabled();
+    await box.check();
+    await expect(card.locator('[data-arb-checklist-item="contract"]')).toHaveAttribute("data-arb-checklist-state", "done");
+    await expect(card.locator("[data-arb-checklist-progress]")).toHaveText("7 sur 7 faits");
+    expect(calls).toContain("POST /contract-accept");
   });
 });

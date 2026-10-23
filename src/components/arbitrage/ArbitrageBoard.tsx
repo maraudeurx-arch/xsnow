@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type UIEvent } from "react";
 import { normalizeEmailInput } from "@/lib/arbitrage";
 import { createPortal } from "react-dom";
 import { MANUEL_JUSTICE_PAGE_URL, MANUEL_JUSTICE_PDF_URL, ARBITER_TERMS_VERSION, ID_DOC_TYPES, type FaceCheck, type IdDocType, type TermsAcceptance } from "@/lib/arbitrage";
@@ -11,6 +11,7 @@ import { useI18n } from "@/lib/i18n/locale";
 import { useLocalProfile } from "@/lib/useLocalProfile";
 import { useAccount } from "wagmi";
 import { type Checklist, type ChecklistItemId, arbContactHref } from "@/lib/arb-checklist";
+import { ARB_CONTRACT_SHA256, ARB_CONTRACT_TEXT, ARB_CONTRACT_VERSION } from "@/lib/arb-contract";
 import { ConnectWallet } from "@/components/ConnectWallet";
 import { assetUrl } from "@/lib/paths";
 import { b64uToUint8, pushSupport, type PushSupport } from "@/lib/push-client";
@@ -436,6 +437,7 @@ function ChecklistCard({ token, status, arbiterId }: { token: string; status: St
   const t = m.arbitrage.checklist;
   const [data, setData] = useState<Checklist | null>(null);
   const [saved, setSaved] = useState(false);
+  const [contractSaved, setContractSaved] = useState(false);
   useEffect(() => {
     const load = () => arbFetch<Checklist>("checklist", { token }).then(({ status: code, data: d }) => { if (code === 200 && Array.isArray(d.items)) setData(d); }).catch(() => {});
     void load();
@@ -482,8 +484,10 @@ function ChecklistCard({ token, status, arbiterId }: { token: string; status: St
                       <button type="button" className={primary} onClick={() => void markRead()} data-arb-checklist-manual-read>{t.manualRead}</button>
                     </div>
                   ) : null}
+                  {it.id === "contract" ? <ChecklistContract token={token} onDone={(d) => { setData(d); setContractSaved(true); }} /> : null}
                 </>
               )}
+              {it.id === "contract" && it.done && contractSaved ? <p className="text-[13px] font-bold text-emerald-800" data-arb-contract-saved>{t.contractSaved}</p> : null}
               {it.id === "manual" && it.done && saved ? <p className="text-[13px] font-bold text-emerald-800">{t.manualSaved}</p> : null}
             </li>
           );
@@ -494,6 +498,42 @@ function ChecklistCard({ token, status, arbiterId }: { token: string; status: St
         <a className={primary + " inline-flex items-center justify-center"} href={arbContactHref(t.contactSubject, arbiterId)} data-arb-contact-link>{t.contactCta}</a>
       </div>
     </section>
+  );
+}
+
+/**
+ * 7th step (Popol, 23/10/2026): the arbiter scrolls the full agreement, then ticks the box.
+ * The server stores timestamp + version + SHA-256 of the exact text shown here.
+ */
+function ChecklistContract({ token, onDone }: { token: string; onDone: (d: Checklist) => void }) {
+  const { m } = useI18n();
+  const t = m.arbitrage.checklist;
+  const [read, setRead] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState("");
+  function onScroll(e: UIEvent<HTMLDivElement>) {
+    const el = e.currentTarget;
+    if (el.scrollTop + el.clientHeight >= el.scrollHeight - 8) setRead(true);
+  }
+  async function accept() {
+    setBusy(true); setErr("");
+    try {
+      const { status: code, data: d } = await arbFetch<Checklist>("contract-accept", { method: "POST", token, body: { accept: true, version: ARB_CONTRACT_VERSION, hash: ARB_CONTRACT_SHA256 } });
+      if (code === 200 && Array.isArray(d.items)) onDone(d);
+      else setErr(code === 409 ? t.contractStale : "network");
+    } catch { setErr("network"); } finally { setBusy(false); }
+  }
+  return (
+    <div className="grid gap-1" data-arb-contract>
+      <p className="text-[13px] font-bold">{t.contractLabel} — v{ARB_CONTRACT_VERSION}</p>
+      <div className="max-h-64 overflow-y-auto whitespace-pre-wrap rounded-lg border border-slate-300 bg-white p-2 text-[12px]" tabIndex={0} onScroll={onScroll} data-arb-contract-text>{ARB_CONTRACT_TEXT}</div>
+      {!read ? <p className="text-[12px]" data-arb-contract-hint>{t.contractScrollHint}</p> : null}
+      <label className="flex items-center gap-2 font-bold">
+        <input type="checkbox" disabled={!read || busy} onChange={(e) => { if (e.target.checked) void accept(); }} data-arb-contract-accept />
+        <span>{t.contractAccept}</span>
+      </label>
+      {err ? <p role="alert" className="text-[12px] text-rose-800" data-arb-contract-error>{err === "network" ? m.arbitrage.email.network : err}</p> : null}
+    </div>
   );
 }
 

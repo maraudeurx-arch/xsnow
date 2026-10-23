@@ -467,6 +467,11 @@ export const es: Messages = {
       "manualLink": "Abrir el Manual de justicia",
       "manualRead": "Leí el Manual",
       "manualSaved": "¡Gracias! Lectura del Manual registrada.",
+      "contractLabel": "Contrato de árbitro OPC",
+      "contractAccept": "Acepto el contrato de árbitro OPC",
+      "contractScrollHint": "Desplaza el contrato hasta el final para poder marcar.",
+      "contractSaved": "¡Gracias! Aceptación del contrato guardada.",
+      "contractStale": "El contrato cambió: recarga la página y vuelve a intentarlo.",
       "walletAfterVerify": "Podrás conectar tu wallet en cuanto tu solicitud sea verificada.",
       "goNotify": "Ver la tarjeta Notificaciones",
       "goEmail": "Ver la tarjeta Correo",
@@ -525,6 +530,11 @@ export const es: Messages = {
             "Lee al menos los capítulos sobre las pruebas y la decisión.",
             "Vuelve aquí y toca « Leí el Manual »."
           ]
+        },
+        "contract": {
+          "title": "Contrato de árbitro aceptado",
+          "done": "Aceptaste el contrato de árbitro OPC.",
+          "steps": ["Desplaza el contrato hasta el final.", "Léelo completo.", "Marca « Acepto el contrato de árbitro OPC »."]
         }
       }
     },

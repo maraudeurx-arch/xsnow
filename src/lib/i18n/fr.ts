@@ -464,6 +464,11 @@ export const fr = {
       "manualLink": "Ouvrir le Manuel de justice",
       "manualRead": "J’ai lu le Manuel",
       "manualSaved": "Merci ! Lecture du Manuel notée.",
+      "contractLabel": "Contrat d’arbitre OPC",
+      "contractAccept": "J’accepte le contrat d’arbitre OPC",
+      "contractScrollHint": "Fais défiler le contrat jusqu’en bas pour pouvoir cocher.",
+      "contractSaved": "Merci ! Acceptation du contrat enregistrée.",
+      "contractStale": "Le contrat a changé : recharge la page, puis réessaie.",
       "walletAfterVerify": "Tu pourras connecter ton wallet dès que ta demande sera vérifiée.",
       "goNotify": "Voir la carte Notifications",
       "goEmail": "Voir la carte E-mail",
@@ -522,6 +527,11 @@ export const fr = {
             "Lis au moins les chapitres sur les preuves et la décision.",
             "Reviens ici et touche « J’ai lu le Manuel »."
           ]
+        },
+        "contract": {
+          "title": "Contrat d’arbitre accepté",
+          "done": "Tu as accepté le contrat d’arbitre OPC.",
+          "steps": ["Fais défiler le contrat jusqu’en bas.", "Lis-le en entier.", "Coche « J’accepte le contrat d’arbitre OPC »."]
         }
       }
     },
