@@ -13,6 +13,9 @@
  *   GET  /arbitrage/checklist          Bearer <arbiter, not rejected> → onboarding checklist (done/missing per item)
  *   POST /arbitrage/manual-read        Bearer <arbiter, not rejected> → "J'ai lu le Manuel" (manual_read_at)
  *   POST /arbitrage/sim-cases/answer   Bearer <verified arbiter> {caseId, choiceId, comment?} (one per arbiter)
+ * Email login (existing arbiter, e.g. the iPhone home-screen app with its own storage):
+ *   POST /arbitrage/login/request      {email, lang} → always {ok:true}; emails a 6-digit code if it matches
+ *   POST /arbitrage/login/verify       {email, code} → {token, status} (extra device session, old one kept)
  * Public:
  *   GET  /arbitrage/public-key         Ed25519 SPKI to verify attestations
  *   GET  /arbitrage/push/vapid-key     VAPID public key for Web Push (503 if not configured)
@@ -42,6 +45,7 @@
 
 import { parseArbiterEmail, parseMailLang, sendDecisionCopy, type MailLang } from "./decision-mail.ts";
 import { importVapidPrivate, isAllowedPushEndpoint, sendPush } from "./webpush.ts";
+import { LOGIN_CODES_PER_HOUR, LOGIN_CODE_MAX_ATTEMPTS, LOGIN_CODE_TTL_MS, newLoginCode, parseLoginCode, sendLoginCode } from "./login-mail.ts";
 import {
   ID_RETENTION_DAYS,
   assertNoPii,
@@ -141,12 +145,22 @@ export type ArbStore = {
   insertExplanation(row: ExplanationRow): Promise<void>;
   explanationsBy(arbiterId: string, limit: number): Promise<ExplanationRow[]>;
   explanationsForCase(caseId: string): Promise<ExplanationRow[]>;
+  /** Email login: arbiters that have an encrypted email (small table; decrypted one by one to match). */
+  arbitersWithEmail(): Promise<ArbiterRow[]>;
+  insertLoginCode(row: LoginCodeRow): Promise<void>;
+  latestLoginCode(arbiterId: string): Promise<LoginCodeRow | null>;
+  loginCodesSince(arbiterId: string, since: number): Promise<number>;
+  updateLoginCode(arbiterId: string, createdAt: number, patch: { used_at?: number; attempts?: number }): Promise<void>;
+  addDeviceToken(row: DeviceTokenRow): Promise<void>;
 };
 
 export type ExplanationRow = {
   case_id: string; arbiter_id: string; simulation: number; followed: number; chosen: string | null; suggested: string | null;
   manual_ref: string; manual_version: string; text: string; created_at: number;
 };
+
+export type LoginCodeRow = { arbiter_id: string; code_hash: string; created_at: number; expires_at: number; used_at: number | null; attempts: number };
+export type DeviceTokenRow = { token_hash: string; arbiter_id: string; created_at: number };
 
 export type PushSubRow = { endpoint: string; arbiter_id: string; created_at: number };
 
@@ -187,7 +201,11 @@ export function d1ArbStore(db: D1Full): ArbStore {
           r.purge_after, r.email_enc ?? null, r.email_lang ?? null)
         .run();
     },
-    arbiterByToken: (h) => db.prepare(`SELECT * FROM arbiters WHERE token_hash = ?`).bind(h).first<ArbiterRow>(),
+    async arbiterByToken(h) {
+      const a = await db.prepare(`SELECT * FROM arbiters WHERE token_hash = ?`).bind(h).first<ArbiterRow>();
+      if (a) return a;
+      return db.prepare(`SELECT a.* FROM arbiters a JOIN arb_device_tokens t ON t.arbiter_id = a.id WHERE t.token_hash = ?`).bind(h).first<ArbiterRow>();
+    },
     arbiterById: (id) => db.prepare(`SELECT * FROM arbiters WHERE id = ?`).bind(id).first<ArbiterRow>(),
     async pendingArbiters() {
       const r = await db.prepare(`SELECT * FROM arbiters WHERE status = 'pending' ORDER BY created_at`).bind().all<ArbiterRow>();
@@ -282,6 +300,26 @@ export function d1ArbStore(db: D1Full): ArbStore {
     async explanationsForCase(caseId) {
       const r = await db.prepare(`SELECT * FROM arb_explanations WHERE case_id = ? ORDER BY created_at`).bind(caseId).all<ExplanationRow>();
       return r.results;
+    },
+    async arbitersWithEmail() {
+      const r = await db.prepare(`SELECT * FROM arbiters WHERE email_enc IS NOT NULL AND status != 'rejected' ORDER BY created_at LIMIT 500`).bind().all<ArbiterRow>();
+      return r.results;
+    },
+    async insertLoginCode(c) {
+      await db.prepare(`INSERT INTO arb_login_codes (arbiter_id, code_hash, created_at, expires_at, used_at, attempts) VALUES (?,?,?,?,?,?)`)
+        .bind(c.arbiter_id, c.code_hash, c.created_at, c.expires_at, c.used_at, c.attempts).run();
+    },
+    latestLoginCode: (id) => db.prepare(`SELECT * FROM arb_login_codes WHERE arbiter_id = ? ORDER BY created_at DESC LIMIT 1`).bind(id).first<LoginCodeRow>(),
+    async loginCodesSince(id, since) {
+      const r = await db.prepare(`SELECT COUNT(*) AS n FROM arb_login_codes WHERE arbiter_id = ? AND created_at >= ?`).bind(id, since).first<{ n: number }>();
+      return r?.n ?? 0;
+    },
+    async updateLoginCode(id, createdAt, patch) {
+      if (typeof patch.used_at === "number") await db.prepare(`UPDATE arb_login_codes SET used_at = ? WHERE arbiter_id = ? AND created_at = ?`).bind(patch.used_at, id, createdAt).run();
+      if (typeof patch.attempts === "number") await db.prepare(`UPDATE arb_login_codes SET attempts = ? WHERE arbiter_id = ? AND created_at = ?`).bind(patch.attempts, id, createdAt).run();
+    },
+    async addDeviceToken(t) {
+      await db.prepare(`INSERT INTO arb_device_tokens (token_hash, arbiter_id, created_at) VALUES (?,?,?)`).bind(t.token_hash, t.arbiter_id, t.created_at).run();
     },
   };
 }
@@ -574,6 +612,37 @@ export async function handleArbitrage(req: Request, env: ArbEnv, deps: ArbDeps):
     } catch {
       return j({ error: "bad_request" }, 400);
     }
+  }
+
+  // ---- email login (existing arbiter on a new device, e.g. the iPhone home-screen app) ----
+  if ((path === "/arbitrage/login/request" || path === "/arbitrage/login/verify") && req.method === "POST") {
+    const b = (body ?? {}) as Record<string, unknown>;
+    const email = parseArbiterEmail(b.email);
+    if (!email) return j({ error: "email" }, 400);
+    let match: ArbiterRow | null = null;
+    for (const a of await store.arbitersWithEmail()) {
+      if (a.status === "rejected" || !a.email_enc) continue;
+      try { if ((await decryptString(encKey, a.email_enc)) === email) { match = a; break; } } catch { /* unreadable row: skip */ }
+    }
+    if (path === "/arbitrage/login/request") {
+      // Same answer whether or not the email is known (no account discovery).
+      if (match && (await store.loginCodesSince(match.id, now() - 3_600_000)) < LOGIN_CODES_PER_HOUR) {
+        const code = newLoginCode();
+        const t = now();
+        await store.insertLoginCode({ arbiter_id: match.id, code_hash: await sha256Hex(`${match.id}:${code}`), created_at: t, expires_at: t + LOGIN_CODE_TTL_MS, used_at: null, attempts: 0 });
+        await sendLoginCode(env, email, parseMailLang(b.lang ?? match.email_lang), code, fetchImpl);
+      }
+      return j({ ok: true });
+    }
+    const code = parseLoginCode(b.code);
+    const c = match ? await store.latestLoginCode(match.id) : null;
+    if (!match || !c || !code || c.used_at || c.expires_at < now() || c.attempts >= LOGIN_CODE_MAX_ATTEMPTS) return j({ error: "invalid_code" }, 400);
+    await store.updateLoginCode(match.id, c.created_at, { attempts: c.attempts + 1 });
+    if ((await sha256Hex(`${match.id}:${code}`)) !== c.code_hash) return j({ error: "invalid_code" }, 400);
+    await store.updateLoginCode(match.id, c.created_at, { used_at: now() });
+    const token = b64url(crypto.getRandomValues(new Uint8Array(32)));
+    await store.addDeviceToken({ token_hash: await sha256Hex(token), arbiter_id: match.id, created_at: now() });
+    return j({ ok: true, token, status: match.status });
   }
 
   // ---- arbiter signup ----

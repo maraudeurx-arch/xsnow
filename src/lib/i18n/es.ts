@@ -415,6 +415,19 @@ export const es: Messages = {
       "body": "¡Bravo por tu primera simulación! Para recibir más tarde tu pago de árbitro, haz clic en Connect. Connect también te propone crear un wallet si no tienes uno.",
       "connected": "Wallet conectado:"
     },
+    "login": {
+      "title": "¿Ya eres árbitro? Recuperar mi perfil de árbitro",
+      "lead": "¿Instalaste OPC en tu pantalla de inicio o cambiaste de teléfono? No hace falta inscribirte otra vez: recibe un código por correo.",
+      "emailLabel": "Tu correo de árbitro",
+      "send": "Recibir mi código",
+      "sent": "Si este correo es de un árbitro, acaba de salir un código de 6 cifras. Mira tu bandeja (y el spam).",
+      "codeLabel": "El código de 6 cifras",
+      "verify": "Recuperar mi perfil",
+      "invalid": "Este código no funciona o ha caducado. Pide un código nuevo.",
+      "emailInvalid": "Este correo no parece correcto.",
+      "network": "Problema de conexión. Inténtalo de nuevo.",
+      "again": "Recibir un código nuevo"
+    },
     "notify": {
       "title": "Notificaciones de arbitraje",
       "body": "Activa las notificaciones: tu teléfono suena cuando un caso de arbitraje (o una simulación) te espera.",
