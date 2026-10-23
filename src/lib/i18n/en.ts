@@ -415,6 +415,19 @@ export const en: Messages = {
       "body": "Well done on your first simulation! To receive your arbiter pay later, click Connect. Connect also offers to create a wallet if you don’t have one.",
       "connected": "Wallet connected:"
     },
+    "login": {
+      "title": "Already an arbiter? Find my arbiter profile",
+      "lead": "Installed OPC on your home screen or changed phones? No need to sign up again: get a code by email.",
+      "emailLabel": "Your arbiter email",
+      "send": "Get my code",
+      "sent": "If this email belongs to an arbiter, a 6-digit code was just sent. Check your inbox (and spam).",
+      "codeLabel": "The 6-digit code",
+      "verify": "Find my profile",
+      "invalid": "This code does not work or has expired. Ask for a new code.",
+      "emailInvalid": "This email does not look right.",
+      "network": "Connection problem. Try again.",
+      "again": "Get a new code"
+    },
     "notify": {
       "title": "Arbitration notifications",
       "body": "Turn on notifications: your phone rings when an arbitration case (or a simulation) is waiting for you.",

@@ -412,6 +412,19 @@ export const fr = {
       "body": "Bravo pour ta première simulation ! Pour recevoir plus tard ta rémunération d’arbitre, clique sur Connect. Connect te propose aussi de créer un wallet si tu n’en as pas.",
       "connected": "Wallet connecté :"
     },
+    "login": {
+      "title": "Déjà arbitre ? Retrouver mon profil d’arbitre",
+      "lead": "Tu as installé OPC sur ton écran d’accueil ou tu changes de téléphone ? Pas besoin de refaire ton inscription : reçois un code par e-mail.",
+      "emailLabel": "Ton e-mail d’arbitre",
+      "send": "Recevoir mon code",
+      "sent": "Si cet e-mail est celui d’un arbitre, un code à 6 chiffres vient de partir. Regarde ta boîte (et les indésirables).",
+      "codeLabel": "Le code à 6 chiffres",
+      "verify": "Retrouver mon profil",
+      "invalid": "Ce code ne marche pas ou a expiré. Demande un nouveau code.",
+      "emailInvalid": "Cet e-mail n’a pas l’air correct.",
+      "network": "Problème de connexion. Réessaie.",
+      "again": "Recevoir un nouveau code"
+    },
     "notify": {
       "title": "Notifications d’arbitrage",
       "body": "Active les notifications : ton téléphone sonne quand un dossier d’arbitrage (ou une simulation) t’attend.",
