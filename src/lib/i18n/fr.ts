@@ -563,7 +563,6 @@ export const fr = {
     supportTitle: "Support technique",
     supportLead: "",
     disclaimer: "* Ces sociétés ne sont pas affiliées à OPC. Aucun revenu n’est garanti par OPC.",
-    bannedNote: "* Interdit : résoudre ou contourner des captchas contre paiement.",
     supportCta: "Aide un agent IA",
     supportDialogTitle: "En construction :",
     supportDialogBody:
