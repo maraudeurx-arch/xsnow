@@ -45,13 +45,14 @@ export function ArbitrageBoard() {
   const [terms, setTerms] = useState<TermsAcceptance | null>(null);
   const [hasEmail, setHasEmail] = useState<boolean | null>(null);
   const [red, setRed] = useState(false);
+  const [rescanFlag, setRescanFlag] = useState(false);
 
   useEffect(() => {
     const tk = token;
     if (!tk) return;
-    arbFetch<{ status: Status; hasEmail?: boolean; red?: boolean }>("me", { token: tk }).then(({ status: code, data }) => {
+    arbFetch<{ status: Status; hasEmail?: boolean; red?: boolean; rescanRequested?: boolean }>("me", { token: tk }).then(({ status: code, data }) => {
       if (code === 503) setStatus("not_configured");
-      else if (code === 200) { setStatus(data.status); setHasEmail(data.hasEmail === true); setRed(data.red === true); }
+      else if (code === 200) { setStatus(data.status); setHasEmail(data.hasEmail === true); setRed(data.red === true); setRescanFlag(data.rescanRequested === true); }
       else if (code === 401) { writeArbiterToken(""); setToken(""); }
     }).catch(() => {});
   }, [token]);
@@ -88,6 +89,7 @@ export function ArbitrageBoard() {
       {status === "verified" ? <CasesView token={token} red={red} /> : null}
       {token && (status === "verified" || status === "pending" || status === "rescan_requested") ? <LearnedList token={token} /> : null}
       {status === "rescan_requested" ? <RescanView token={token} onDone={() => setStatus("pending")} /> : null}
+      {status === "verified" && rescanFlag ? <RescanView token={token} onDone={() => setRescanFlag(false)} /> : null}
       {/* SIMULATION cases for owner-invited, non-verified arbiters (hidden when the server says 403) */}
       {token && (status === "pending" || status === "rescan_requested") ? <SimCasesView token={token} /> : null}
       {token && (status === "pending" || status === "rescan_requested") ? <ManualCard /> : null}
