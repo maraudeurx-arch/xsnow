@@ -22,6 +22,7 @@ export type ChecklistInput = {
   faceScore: number | null;
   faceLiveness: boolean;
   faceReviewed: boolean;
+  rescanRequested?: boolean;
   simAnswers: number;
   manualReadAt: number | null;
 };
@@ -38,8 +39,8 @@ export function walletState(w: ChecklistInput["wallet"]): WalletState {
  * Face check: a pending rescan means it is NOT done. An approved (verified) arbiter or a scan the owner
  * reviewed counts as done; otherwise we need a live scan (liveness) with a score.
  */
-export function faceCheckDone(i: Pick<ChecklistInput, "status" | "faceScore" | "faceLiveness" | "faceReviewed">): boolean {
-  if (i.status === "rescan_requested") return false;
+export function faceCheckDone(i: Pick<ChecklistInput, "status" | "faceScore" | "faceLiveness" | "faceReviewed" | "rescanRequested">): boolean {
+  if (i.status === "rescan_requested" || i.rescanRequested) return false;
   if (i.status === "verified" || i.faceReviewed) return true;
   return i.faceLiveness && typeof i.faceScore === "number";
 }
