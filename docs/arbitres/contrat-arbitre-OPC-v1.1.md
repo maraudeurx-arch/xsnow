@@ -1,7 +1,7 @@
-> **Version 1.0 du 23/10/2026 — en vigueur.**
-> **Version 1.0, 2026-10-23 — in force.**
+> **Version 1.1 du 25/10/2026 — en vigueur.**
+> **Version 1.1, 2026-10-25 — in force.**
 
-# Contrat d'arbitre OPC — version 1.0
+# Contrat d'arbitre OPC — version 1.1
 
 **Entre :** ESSAIM-AGENTS INC., société constituée sous le régime fédéral canadien et enregistrée en Ontario (numéro de société ontarienne 1001770650), qui exploite la plateforme Open Community (« **OPC** »),
 **et :** la personne qui accepte le présent contrat dans son espace arbitre (l'« **Arbitre** »).
@@ -64,7 +64,7 @@ Le contrat est régi par les lois de la province d'**Ontario** et les lois féd�
 
 ## 13. Règlement des différends
 13.1 Les parties cherchent d'abord une solution à l'amiable pendant 30 jours après avis écrit.
-13.2 À défaut, tout différend lié au contrat est réglé **définitivement par arbitrage privé**, selon la *Loi de 1991 sur l'arbitrage* (Ontario) ou, si le différend est international, la *Loi de 2017 sur l'arbitrage commercial international* (Ontario). Le **siège est Toronto**. Un seul arbitre de différend, indépendant d'OPC, est nommé. La langue est le **français ou l'anglais**, au choix de la partie qui répond.
+13.2 À défaut, tout différend lié au contrat est réglé **définitivement par arbitrage privé**, selon la *Loi de 1991 sur l'arbitrage* (Ontario) ou, si le différend est international, la *Loi de 2017 sur l'arbitrage commercial international* (Ontario). Le **siège est Toronto**. Un seul arbitre de différend, indépendant d'OPC et de l'Arbitre, est nommé **d'un commun accord** par OPC et l'Arbitre dans les 15 jours suivant la demande d'arbitrage écrite de l'une des parties. À défaut d'accord dans ce délai, il est nommé, à la demande de la partie la plus diligente, par l'autorité judiciaire compétente de l'Ontario, conformément à la loi applicable citée ci-dessus. L'arbitre de différend ne peut être ni un dirigeant, un employé ou un actionnaire d'ESSAIM-AGENTS INC., ni un arbitre inscrit sur OPC. La langue est le **français ou l'anglais**, au choix de la partie qui répond.
 13.3 L'arbitrage est confidentiel et individuel : aucune action collective ou de groupe, dans la mesure permise par la loi.
 
 ## 14. Modifications
@@ -82,7 +82,7 @@ OPC peut modifier le contrat ou le barème avec un **avis d'au moins 15 jours** 
 
 ---
 
-# OPC Arbiter Agreement — version 1.0 (English)
+# OPC Arbiter Agreement — version 1.1 (English)
 
 **Between:** ESSAIM-AGENTS INC., a federally incorporated Canadian company registered in Ontario (Ontario corporation number 1001770650), operator of the Open Community platform ("**OPC**"),
 **and:** the person who accepts this agreement in their arbiter space (the "**Arbiter**").
@@ -145,7 +145,7 @@ This agreement is governed by the laws of the Province of **Ontario** and the fe
 
 ## 13. Dispute resolution
 13.1 The parties first seek an amicable solution for 30 days after written notice.
-13.2 Failing that, any dispute relating to this agreement is **finally resolved by private arbitration** under the *Arbitration Act, 1991* (Ontario) or, for an international dispute, the *International Commercial Arbitration Act, 2017* (Ontario). The **seat is Toronto**. A single dispute arbitrator, independent of OPC, is appointed. The language is **French or English**, at the responding party's choice.
+13.2 Failing that, any dispute relating to this agreement is **finally resolved by private arbitration** under the *Arbitration Act, 1991* (Ontario) or, for an international dispute, the *International Commercial Arbitration Act, 2017* (Ontario). The **seat is Toronto**. A single dispute arbitrator, independent of OPC and of the Arbiter, is appointed **by mutual agreement** of OPC and the Arbiter within 15 days after either party's written request for arbitration. Failing agreement within that time, the dispute arbitrator is appointed, at the request of either party, by the competent judicial authority of Ontario under the applicable statute cited above. The dispute arbitrator may not be an officer, employee or shareholder of ESSAIM-AGENTS INC., nor an arbiter registered on OPC. The language is **French or English**, at the responding party's choice.
 13.3 The arbitration is confidential and individual: no class or collective action, to the extent permitted by law.
 
 ## 14. Amendments
