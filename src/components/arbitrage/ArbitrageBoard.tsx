@@ -461,6 +461,16 @@ function ChecklistCard({ token, status, arbiterId }: { token: string; status: St
         <div className="h-2 w-full overflow-hidden rounded-full bg-slate-200" aria-hidden="true"><div className="h-full rounded-full bg-emerald-600" style={{ width: `${pct}%` }} /></div>
         <p className="font-bold text-emerald-800" data-arb-checklist-cheer>{data.complete ? t.allDone : t.keepGoing}</p>
       </div>
+      {typeof data.contractGraceDaysLeft === "number" && data.contractGraceDaysLeft > 0 ? (
+        <p className="rounded-xl border border-sky-300 bg-sky-50 p-2 text-[13px]" role="status" data-arb-contract-grace={data.contractGraceDaysLeft}>
+          {(data.contractGraceDaysLeft === 1 ? t.contractGraceOne : t.contractGrace).replace("{version}", ARB_CONTRACT_VERSION).replace("{days}", String(data.contractGraceDaysLeft))}
+        </p>
+      ) : null}
+      {data.contractRequired && status === "verified" ? (
+        <p className="rounded-xl border border-amber-300 bg-amber-50 p-2 text-[13px] font-bold" role="status" data-arb-contract-required>
+          {t.contractRequired.replace("{version}", ARB_CONTRACT_VERSION)}
+        </p>
+      ) : null}
       <ul className="grid gap-2">
         {data.items.map((it) => {
           const copy = t.items[it.id as ChecklistItemId];

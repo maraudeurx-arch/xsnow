@@ -68,6 +68,18 @@ describe("arbiter onboarding checklist", () => {
     assert.doesNotMatch(all, /\d\s*(%|\$)/);
     assert.match(fr.arbitrage.checklist.lead, /Indiana/);
   });
+  it("contract grace prompt (FR): gentle, shows version and days left, in every language", () => {
+    const t = fr.arbitrage.checklist;
+    assert.match(t.contractGrace, /\{version\}/);
+    assert.match(t.contractGrace, /\{days\} jours/);
+    assert.match(t.contractGrace, /Pas d’inquiétude/);
+    assert.match(t.contractGraceOne, /dernier jour/);
+    assert.match(t.contractRequired, /Les simulations restent ouvertes/);
+    for (const m of [en, es]) {
+      assert.match(m.arbitrage.checklist.contractGrace, /\{days\}/);
+      assert.ok(m.arbitrage.checklist.contractGraceOne && m.arbitrage.checklist.contractRequired);
+    }
+  });
 });
 
 import { arbContactHref as _ach } from "./arb-checklist.ts";
