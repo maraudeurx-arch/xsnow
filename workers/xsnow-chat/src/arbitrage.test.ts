@@ -73,6 +73,9 @@ async function makeEnv() {
     ARBITER_SIGNING_KEY: pkcs8,
     ARBITER_SIGNING_PUBLIC_KEY: spki,
     ARBITER_ADMIN_SECRET: "admin-test-secret",
+    // Older tests predate the contract gate: keep them inside the grace window whatever the real date.
+    // The grace / block behaviour is tested on its own with an explicit effective date.
+    ARB_CONTRACT_EFFECTIVE: "2999-01-01T00:00:00Z",
     AI: {
       run: async () => ({ response: '{"outcome":"claimant","refundPercent":100,"rationale":"Livraison non conforme."}' }),
     },
@@ -600,6 +603,71 @@ describe("arbitrage worker", () => {
     assert.deepEqual(res.cases[0].choices.map((c: { letter: string }) => c.letter), ["A", "B", "C"]);
     assert.equal(res.cases[0].suggestion, null);
   });
+  it("contract v1.1 grace: earlier acceptances keep receiving real cases for 15 days, then the block applies", async () => {
+    const env = await makeEnv();
+    const kp = (await crypto.subtle.generateKey({ name: "ECDSA", namedCurve: "P-256" }, true, ["sign", "verify"])) as CryptoKeyPair;
+    const raw = new Uint8Array(await crypto.subtle.exportKey("raw", kp.publicKey));
+    const b64u = (u: Uint8Array) => btoa(String.fromCharCode(...u)).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+    const jwk = await crypto.subtle.exportKey("jwk", kp.privateKey);
+    const E = { ...env, VAPID_PUBLIC_KEY: b64u(raw), VAPID_PRIVATE_KEY: jwk.d!, ARB_CONTRACT_EFFECTIVE: "2026-11-01T00:00:00-04:00" };
+    const eff = Date.parse(E.ARB_CONTRACT_EFFECTIVE);
+    const DAY = 86_400_000;
+    let t = eff + 2 * DAY;
+    const store = memStore();
+    const pushed: string[] = [];
+    const fetchImpl = (async (url: string | URL) => { pushed.push(new URL(String(url)).pathname); return new Response("", { status: 201 }); }) as typeof fetch;
+    const deps = { store, fetchImpl, now: () => t };
+    const S = env.ARBITER_ADMIN_SECRET;
+    const V10 = "ed5194728feaf0a58376f74fe099339b7da72a341c3d1de17daa066f36dccaeb";
+    const mk = async (n: string, hash: string | null) => {
+      const a = await (await handleArbitrage(req("/arbitrage/apply", "POST", { ...application, docNumber: n }), E, deps)).json();
+      await handleArbitrage(req("/arbitrage/admin/review", "POST", { arbiterId: a.arbiterId, approve: true }, S), E, deps);
+      if (hash) await store.updateArbiter(a.arbiterId, { contract_hash: hash, contract_version: hash === V10 ? "1.0" : ARB_CONTRACT_VERSION, contract_accepted_at: 1 });
+      await store.addPushSub({ endpoint: `https://fcm.googleapis.com/fcm/send/${n}`, arbiter_id: a.arbiterId, created_at: 1 });
+      return a;
+    };
+    const old = await mk("GR000001", V10), cur = await mk("GR000002", ARB_CONTRACT_SHA256), none = await mk("GR000003", null);
+    const cases = (tok: string) => handleArbitrage(req("/arbitrage/cases", "GET", undefined, tok), E, deps);
+    const check = async (tok: string) => (await (await handleArbitrage(req("/arbitrage/checklist", "GET", undefined, tok), E, deps)).json());
+    const newCase = async () => (await (await handleArbitrage(req("/arbitrage/admin/cases", "POST", {
+      amountUsdc: 5, claimant: { agentId: "a", webhookUrl: "https://a.example/h" }, respondent: { agentId: "b", webhookUrl: "https://b.example/h" }, claim: "c", response: "r",
+    }, S), E, deps)).json());
+
+    // day 2 of the grace: everyone still receives new cases; v1.0 sees 13 days left and a gentle prompt
+    let c = await check(old.token);
+    assert.equal(c.contractGraceDaysLeft, 13);
+    assert.equal(c.contractRequired, false);
+    assert.equal(c.items.find((x: { id: string }) => x.id === "contract").done, false, "v1.1 still to accept");
+    assert.equal((await check(cur.token)).contractGraceDaysLeft, null);
+    for (const a of [old, cur, none]) assert.equal((await cases(a.token)).status, 200);
+    let k = await newCase();
+    assert.equal(k.pushed, 3);
+
+    // grace over (effective + 15 days): the block applies to v1.0 and to never-accepted arbiters
+    t = eff + 15 * DAY;
+    pushed.length = 0;
+    k = await newCase();
+    assert.equal(k.pushed, 1);
+    assert.deepEqual(pushed, ["/fcm/send/GR000002"]);
+    for (const a of [old, none]) {
+      const r = await cases(a.token);
+      assert.equal(r.status, 403);
+      assert.deepEqual(await r.json(), { error: "contract_required", version: ARB_CONTRACT_VERSION });
+      assert.equal((await handleArbitrage(req("/arbitrage/cases/decide", "POST", { caseId: k.caseId, accept: true }, a.token), E, deps)).status, 403);
+    }
+    assert.equal((await cases(cur.token)).status, 200);
+    c = await check(old.token);
+    assert.equal(c.contractGraceDaysLeft, null);
+    assert.equal(c.contractRequired, true);
+    // simulations stay open (training)
+    assert.equal((await handleArbitrage(req("/arbitrage/sim-cases", "GET", undefined, old.token), E, deps)).status, 200);
+    // accepting v1.1 lifts the block at once
+    const acc = await (await handleArbitrage(req("/arbitrage/contract-accept", "POST", { accept: true, version: ARB_CONTRACT_VERSION, hash: ARB_CONTRACT_SHA256 }, old.token), E, deps)).json();
+    assert.equal(acc.contractRequired, false);
+    assert.equal(store.arbiters.get(old.arbiterId)!.contract_accepted_at, t);
+    assert.equal((await cases(old.token)).status, 200);
+  });
+
   it("checklist: each item done/missing for the arbiter; manual-read stored; rejected → 403", async () => {
     const env = await makeEnv();
     const store = memStore();

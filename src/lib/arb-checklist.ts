@@ -13,7 +13,13 @@ export type ChecklistItemId = (typeof CHECKLIST_ITEMS)[number];
 
 export type WalletState = "missing" | "done";
 export type ChecklistItem = { id: ChecklistItemId; done: boolean; state?: WalletState };
-export type Checklist = { items: ChecklistItem[]; doneCount: number; total: number; complete: boolean };
+export type Checklist = {
+  items: ChecklistItem[]; doneCount: number; total: number; complete: boolean;
+  /** Set by the Worker: days left to accept the current agreement while still receiving new Dossiers (grace). */
+  contractGraceDaysLeft?: number | null;
+  /** Set by the Worker: grace is over and the current agreement is not accepted → no new real Dossiers. */
+  contractRequired?: boolean;
+};
 
 export type ChecklistInput = {
   status: string;

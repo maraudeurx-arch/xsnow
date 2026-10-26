@@ -70,7 +70,7 @@ import {
   type VerificationLevel,
 } from "../../../src/lib/arbitrage.ts";
 import { computeChecklist } from "../../../src/lib/arb-checklist.ts";
-import { ARB_CONTRACT_SHA256, ARB_CONTRACT_VERSION } from "../../../src/lib/arb-contract.ts";
+import { ARB_CONTRACT_SHA256, ARB_CONTRACT_VERSION, canReceiveRealCases, contractEffectiveAt, contractState } from "../../../src/lib/arb-contract.ts";
 import { OUTCOME_WORDS, buildExplanation, type TrainingExplanation } from "../../../src/lib/arb-training.ts";
 
 export type ArbiterRow = {
@@ -346,6 +346,8 @@ export type ArbEnv = {
   VAPID_PUBLIC_KEY?: string;
   VAPID_PRIVATE_KEY?: string;
   VAPID_SUBJECT?: string;
+  /** Optional ISO date overriding ARB_CONTRACT_EFFECTIVE (start of the 15-day grace for the new agreement). */
+  ARB_CONTRACT_EFFECTIVE?: string;
   AI?: { run: (model: string, inputs: Record<string, unknown>) => Promise<unknown> };
 };
 
@@ -925,7 +927,9 @@ export async function handleArbitrage(req: Request, env: ArbEnv, deps: ArbDeps):
       manualReadAt,
       contractHash,
     });
-    return j({ ok: true, status: me.status, ...checklist });
+    const cs = contractState(contractHash, now(), contractEffectiveAt(env.ARB_CONTRACT_EFFECTIVE));
+    return j({ ok: true, status: me.status, ...checklist,
+      contractGraceDaysLeft: cs.state === "grace" ? cs.daysLeft : null, contractRequired: cs.state === "required" });
   }
   if (path.startsWith("/arbitrage/rescan")) {
     const verifiedRescan = me.status === "verified" && !!me.rescan_requested_at;
@@ -968,6 +972,11 @@ export async function handleArbitrage(req: Request, env: ArbEnv, deps: ArbDeps):
 
   if ((path === "/arbitrage/cases" || path === "/arbitrage/cases/decide") && me.red_flag === 1) {
     return j({ error: "red_flag", red: true }, 403);
+  }
+  // Art. 14: after the grace period, no new real Dossiers until the current agreement is accepted.
+  if ((path === "/arbitrage/cases" || path === "/arbitrage/cases/decide")
+    && !canReceiveRealCases(me.contract_hash, now(), contractEffectiveAt(env.ARB_CONTRACT_EFFECTIVE))) {
+    return j({ error: "contract_required", version: ARB_CONTRACT_VERSION }, 403);
   }
 
   if (path === "/arbitrage/cases" && req.method === "GET") {
@@ -1159,7 +1168,8 @@ export async function handleArbitrage(req: Request, env: ArbEnv, deps: ArbDeps):
 }
 
 /**
- * Payload-less push to opted-in arbiters. Real cases: verified only. Simulations: verified + sim-invited
+ * Payload-less push to opted-in arbiters. Real cases: verified only, with the current agreement accepted
+ * or still inside the grace period (art. 14). Simulations: verified + sim-invited
  * (never rejected). Expired subscriptions are removed. Returns the number of accepted pushes.
  */
 export async function notifyArbiters(env: ArbEnv, store: ArbStore, kind: "real" | "sim", nowMs: number, fetchImpl: typeof fetch): Promise<number> {
@@ -1172,7 +1182,9 @@ export async function notifyArbiters(env: ArbEnv, store: ArbStore, kind: "real" 
   for (const sub of await store.allPushSubs()) {
     if (!ok.has(sub.arbiter_id)) {
       const a = await store.arbiterById(sub.arbiter_id);
-      ok.set(sub.arbiter_id, !!a && (a.status === "verified" || (kind === "sim" && a.status !== "rejected" && (await store.isSimInvited(a.id)))));
+      const real = !!a && a.status === "verified" && canReceiveRealCases(a.contract_hash, nowMs, contractEffectiveAt(env.ARB_CONTRACT_EFFECTIVE));
+      ok.set(sub.arbiter_id, !!a && (kind === "real" ? real
+        : a.status === "verified" || (a.status !== "rejected" && (await store.isSimInvited(a.id)))));
     }
     if (!ok.get(sub.arbiter_id)) continue;
     const r = await sendPush(sub.endpoint, key, env.VAPID_PUBLIC_KEY, subject, nowMs, fetchImpl);
