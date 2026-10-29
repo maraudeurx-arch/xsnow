@@ -576,6 +576,7 @@ export const es: Messages = {
     "myDecision": "Mi decisión",
     "rationale": "Motivo",
     "confirmReject": "Validar mi decisión",
+    "noSuggestion": "No hay sugerencia de IA para este caso. Lee la reclamación y la respuesta, luego decide tú y explica tu razón.",
     "decided": "Decisión firmada y enviada a ambas partes.",
     "notConfigured": "Servicio de arbitraje aún no configurado."
   },

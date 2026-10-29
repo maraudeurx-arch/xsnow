@@ -1081,6 +1081,9 @@ export async function handleArbitrage(req: Request, env: ArbEnv, deps: ArbDeps):
     const c = JSON.parse(row.case_json) as CaseInput;
     const suggestion = JSON.parse(row.suggestion_json) as Decision & { model: string };
     const accept = b.accept === true;
+    // No AI suggestion (stub): nothing to "accept". The arbiter must decide and explain; a stub can never become a free 50/50 split.
+    const isStub = suggestion.model === "stub";
+    if (accept && isStub) return j({ error: "stub_not_acceptable" }, 409);
     const reason = clip(b.reason, 1000);
     let decision: Decision;
     let origin: DecisionOrigin;
@@ -1144,13 +1147,14 @@ export async function handleArbitrage(req: Request, env: ArbEnv, deps: ArbDeps):
     // Training explanation: outcomes in words only (no amounts, no percentages); the AI rationale is only a hint for the Manuel article.
     const chosenWords = OUTCOME_WORDS[decision.outcome] ?? decision.outcome;
     const suggestedWords = OUTCOME_WORDS[suggestion.outcome] ?? suggestion.outcome;
-    const explanation = buildExplanation({ followed: accept, chosen: chosenWords, suggested: suggestedWords, refHints: [suggestion.rationale] });
-    await keepExplanation(store, row.id, me.id, false, chosenWords, suggestedWords, explanation, now());
+    // No training comparison against a stub: there was no real suggestion to follow or contradict.
+    const explanation = isStub ? null : buildExplanation({ followed: accept, chosen: chosenWords, suggested: suggestedWords, refHints: [suggestion.rationale] });
+    if (explanation) await keepExplanation(store, row.id, me.id, false, chosenWords, suggestedWords, explanation, now());
     const mail = await sendDecisionCopy(env, me.email_enc ? await decryptString(encKey, me.email_enc) : null, parseMailLang(me.email_lang) as MailLang, {
       caseId: row.id, title: `${c.claimant.agentId} / ${c.respondent.agentId}`, simulation: false,
       choice: `${decision.outcome}, ${decision.refundPercent}% — ${decision.rationale}`,
-      suggestion: `${suggestion.outcome}, ${suggestion.refundPercent}% — ${suggestion.rationale}`,
-      followedSuggestion: accept, decidedAt, explanation: explanation.text,
+      suggestion: isStub ? "Aucune suggestion IA disponible pour ce dossier." : `${suggestion.outcome}, ${suggestion.refundPercent}% — ${suggestion.rationale}`,
+      followedSuggestion: accept, decidedAt, explanation: explanation ? explanation.text : "",
     }, fetchImpl);
     return j({ ok: true, payload, delivery: { claimant: claimantStatus, respondent: respondentStatus }, emailCopy: mail, explanation: explanationJson(explanation) });
   }

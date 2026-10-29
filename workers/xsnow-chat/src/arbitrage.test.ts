@@ -194,6 +194,31 @@ describe("arbitrage worker", () => {
     assert.equal(res.payload.attestation.verificationLevel, "id_reviewed+face_auto");
   });
 
+  it("stub suggestion (no AI) cannot be accepted: the arbiter must decide and explain, no free 50/50", async () => {
+    const env = { ...(await makeEnv()), AI: undefined };
+    const store = memStore();
+    const deps = { store, fetchImpl: (async () => new Response("")) as typeof fetch };
+    const a = await (await handleArbitrage(req("/arbitrage/apply", "POST", application), env, deps)).json();
+    await handleArbitrage(req("/arbitrage/admin/review", "POST", { arbiterId: a.arbiterId, approve: true }, env.ARBITER_ADMIN_SECRET), env, deps);
+    const c = await (await handleArbitrage(req("/arbitrage/admin/cases", "POST", {
+      claimant: { agentId: "A", webhookUrl: "https://a.test" }, respondent: { agentId: "B", webhookUrl: "https://b.test" },
+      amountUsdc: 300, claim: "x", response: "y",
+    }, env.ARBITER_ADMIN_SECRET), env, deps)).json();
+    const list = await (await handleArbitrage(req("/arbitrage/cases", "GET", undefined, a.token), env, deps)).json();
+    assert.equal(list.cases[0].suggestion.model, "stub");
+    const refused = await handleArbitrage(req("/arbitrage/cases/decide", "POST", { caseId: c.caseId, accept: true }, a.token), env, deps);
+    assert.equal(refused.status, 409);
+    assert.equal((await refused.json()).error, "stub_not_acceptable");
+    assert.equal(store.cases.get(c.caseId)!.status, "open");
+    const res = await (await handleArbitrage(req("/arbitrage/cases/decide", "POST", {
+      caseId: c.caseId, accept: false, reason: "Pas de suggestion IA, j'ai lu les deux versions",
+      overrideDecision: { outcome: "respondent", refundPercent: 0, rationale: "Livraison prouvée." },
+    }, a.token), env, deps)).json();
+    assert.equal(res.payload.origin.kind, "human_override");
+    assert.equal(res.explanation, null);
+    assert.equal(store.explanations.length, 0);
+  });
+
   it("purges raw identity after retention", async () => {
     const env = await makeEnv();
     const store = memStore();
