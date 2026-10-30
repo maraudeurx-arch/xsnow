@@ -573,6 +573,7 @@ export const fr = {
     "myDecision": "Ma décision",
     "rationale": "Motif",
     "confirmReject": "Valider ma décision",
+    "noSuggestion": "Aucune suggestion IA pour ce dossier. Lis la demande et la réponse, puis tranche toi-même et explique ta raison.",
     "decided": "Décision signée et envoyée aux deux parties.",
     "notConfigured": "Service d’arbitrage pas encore configuré."
   },

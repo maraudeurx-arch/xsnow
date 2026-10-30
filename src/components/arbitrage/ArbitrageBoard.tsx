@@ -684,7 +684,9 @@ function WalletCard({ token, tick }: { token: string; tick: number }) {
 function CaseCard({ c, token, onDecided }: { c: ArbCase; token: string; onDecided: () => void }) {
   const { m } = useI18n();
   const t = m.arbitrage;
-  const [rejecting, setRejecting] = useState(false);
+  // Stub = no AI suggestion: no "accept" button, the arbiter decides directly and explains why.
+  const isStub = c.suggestion.model === "stub";
+  const [rejecting, setRejecting] = useState(isStub);
   const [reason, setReason] = useState("");
   const [outcome, setOutcome] = useState<Outcome>("split");
   const [refund, setRefund] = useState(50);
@@ -714,9 +716,15 @@ function CaseCard({ c, token, onDecided }: { c: ArbCase; token: string; onDecide
       <p><b>{t.claim} :</b> {c.claim}</p>
       <p><b>{t.response} :</b> {c.response}</p>
       <div className="arb-suggestion rounded-xl bg-slate-50 p-2">
-        <p className="font-extrabold">{t.suggestion} ({c.suggestion.model})</p>
-        <p>{t.outcome[c.suggestion.outcome]} — {t.refund} {c.suggestion.refundPercent} %</p>
-        <p>{c.suggestion.rationale}</p>
+        {isStub ? (
+          <p className="font-bold" data-arb-stub>{t.noSuggestion}</p>
+        ) : (
+          <>
+            <p className="font-extrabold">{t.suggestion} ({c.suggestion.model})</p>
+            <p>{t.outcome[c.suggestion.outcome]} — {t.refund} {c.suggestion.refundPercent} %</p>
+            <p>{c.suggestion.rationale}</p>
+          </>
+        )}
       </div>
       {done ? (
         <>

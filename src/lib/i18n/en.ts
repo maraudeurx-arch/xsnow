@@ -576,6 +576,7 @@ export const en: Messages = {
     "myDecision": "My decision",
     "rationale": "Rationale",
     "confirmReject": "Confirm my decision",
+    "noSuggestion": "No AI suggestion for this case. Read the claim and the response, then decide yourself and explain your reason.",
     "decided": "Decision signed and sent to both parties.",
     "notConfigured": "Arbitration service not configured yet."
   },
