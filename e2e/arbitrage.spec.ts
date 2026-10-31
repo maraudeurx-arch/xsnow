@@ -83,7 +83,7 @@ test.describe("HITL arbitrage", () => {
       if (path.endsWith("/cases")) {
         return route.fulfill({ headers: cors, json: { cases: decided ? [] : [{
           caseId: "case_1", amountUsdc: 500, claimant: "agent-A", respondent: "agent-B",
-          claim: "Service non livré", response: "Livré", suggestion: { outcome: "claimant", refundPercent: 100, rationale: "Pas de preuve.", model: "stub" },
+          claim: "Service non livré", response: "Livré", suggestion: { outcome: "claimant", refundPercent: 100, rationale: "Pas de preuve.", model: "@cf/meta/llama-3.2-3b-instruct" },
         }] } });
       }
       if (path.endsWith("/cases/decide")) {
@@ -97,6 +97,36 @@ test.describe("HITL arbitrage", () => {
     await page.locator("[data-arb-accept]").click();
     await expect(page.getByText(/signée et envoyée/)).toBeVisible();
     expect(decided).toEqual({ caseId: "case_1", accept: true });
+  });
+
+  test("no AI suggestion (stub): no Accept button, the arbiter must decide and explain", async ({ page }) => {
+    await skipConsent(page);
+    await seedLocalProfile(page);
+    await page.addInitScript(() => window.localStorage.setItem("opc.arbiter.token.v1", "tok-e2e"));
+    let decideCalls = 0;
+    await page.route(/\/arbitrage\/(me|cases)/, async (route) => {
+      const req = route.request();
+      if (req.method() === "OPTIONS") return route.fulfill({ status: 204, headers: cors });
+      const path = new URL(req.url()).pathname;
+      if (path.endsWith("/me")) return route.fulfill({ headers: cors, json: { status: "verified", arbiterId: "arb_1", reputation: 0 } });
+      if (path.endsWith("/cases/decide")) {
+        decideCalls += 1;
+        return route.fulfill({ status: 409, headers: cors, json: { error: "stub_not_acceptable" } });
+      }
+      if (path.endsWith("/cases")) {
+        return route.fulfill({ headers: cors, json: { cases: [{
+          caseId: "case_stub", amountUsdc: 500, claimant: "agent-A", respondent: "agent-B",
+          claim: "Service non livré", response: "Livré", suggestion: { outcome: "split", refundPercent: 50, rationale: "STUB", model: "stub" },
+        }] } });
+      }
+      return route.fulfill({ status: 404, headers: cors, json: {} });
+    });
+    await page.goto("arbitrage/");
+    await expect(page.locator('[data-arb-status="verified"]')).toBeVisible();
+    await expect(page.locator("[data-arb-stub]")).toBeVisible();
+    await expect(page.locator("[data-arb-accept]")).toHaveCount(0);
+    await expect(page.locator("textarea").first()).toBeVisible();
+    expect(decideCalls).toBe(0);
   });
 
   test("existing arbiter without email: 'Ajouter mon e-mail' saves it", async ({ page }) => {
