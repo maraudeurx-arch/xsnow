@@ -171,8 +171,8 @@ export const es: Messages = {
       title: "Privacidad",
       lead: "Qué recoge Open Community — y qué no hace.",
       draft:
-        "Borrador para el producto comunitario, no un consejo jurídico. Tenemos en cuenta la LPRPDE (PIPEDA, Canadá) y la Ley 25 de Quebec (Loi 25): consentimiento, limitación de finalidades y conservación limitada.",
-      updated: "Última actualización: septiembre de 2026",
+        "Borrador para el producto comunitario, no un consejo jurídico. Tenemos en cuenta la LPRPDE (PIPEDA), la ley federal canadiense que se aplica en Ontario, y las leyes del país de cada participante: consentimiento, limitación de finalidades y conservación limitada.",
+      updated: "Última actualización: 1 de noviembre de 2026",
       sections: [
         {
           heading: "Quiénes somos",
@@ -191,8 +191,8 @@ export const es: Messages = {
           body: "No vendemos datos personales. Sin seguimiento GPS continuo sin consentimiento. Las alertas de proximidad no usan Apple Buscar: cada persona abre OPC y concede el GPS del navegador. Sin ID de Apple, sin acceso a Mensajes. Sin reventa a anunciantes. Puedes rechazarlo todo y seguir usando la app (etiqueta genérica: tu barrio, o tu última ciudad conocida).",
         },
         {
-          heading: "Consentimiento (Canadá / Quebec)",
-          body: "Pedimos un sí claro antes del permiso de ubicación del navegador y antes de enviar estadísticas. Las finalidades se limitan a lo descrito aquí. Puedes cambiar de opinión en Ajustes. Esto expresa nuestra intención respecto de PIPEDA y la Ley 25 — no es un consejo jurídico.",
+          heading: "Consentimiento (Canadá / Ontario)",
+          body: "Pedimos un sí claro antes del permiso de ubicación del navegador y antes de enviar estadísticas. Las finalidades se limitan a lo descrito aquí. Puedes cambiar de opinión en Ajustes. Esto expresa nuestra intención respecto de PIPEDA — no es un consejo jurídico.",
         },
         {
           heading: "Conservación",

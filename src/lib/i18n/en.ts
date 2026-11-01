@@ -171,8 +171,8 @@ export const en: Messages = {
       title: "Privacy",
       lead: "What Open Community collects — and what it does not do.",
       draft:
-        "This is a draft for the community product, not legal advice. We take into account PIPEDA (Canada) and Quebec’s Law 25 (Loi 25): consent, purpose limitation, and limited retention.",
-      updated: "Last updated: September 2026",
+        "This is a draft for the community product, not legal advice. We take into account PIPEDA, the Canadian federal law that applies in Ontario, and the laws of each participant’s country: consent, purpose limitation, and limited retention.",
+      updated: "Last updated: November 1, 2026",
       sections: [
         {
           heading: "Who we are",
@@ -191,8 +191,8 @@ export const en: Messages = {
           body: "We do not sell personal data. No continuous GPS tracking without consent. Proximity alerts do not use Apple Find My: each loved one opens OPC and grants browser GPS themselves. No Apple ID, no Messages access. No resale to advertisers. You can decline everything and still use the app (generic label: your neighbourhood, or your last known city).",
         },
         {
-          heading: "Consent (Canada / Quebec)",
-          body: "We ask for a clear yes before the browser location prompt and before sending stats. Purposes are limited to what is described here. You can change your mind in Settings. This states our intent under PIPEDA and Law 25 — it is not legal advice.",
+          heading: "Consent (Canada / Ontario)",
+          body: "We ask for a clear yes before the browser location prompt and before sending stats. Purposes are limited to what is described here. You can change your mind in Settings. This states our intent under PIPEDA — it is not legal advice.",
         },
         {
           heading: "Retention",

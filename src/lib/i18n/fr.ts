@@ -167,8 +167,8 @@ export const fr = {
       title: "Vie privée",
       lead: "Ce que Open Community collecte — et ce qu’elle ne fait pas.",
       draft:
-        "Brouillon pour le produit communautaire, pas un avis juridique. Nous tenons compte de la LPRPDE (PIPEDA, Canada) et de la Loi 25 du Québec : consentement, limitation des finalités, conservation limitée.",
-      updated: "Dernière mise à jour : septembre 2026",
+        "Brouillon pour le produit communautaire, pas un avis juridique. Nous tenons compte de la LPRPDE (PIPEDA), la loi fédérale canadienne qui s’applique en Ontario, et des lois du pays de chaque participant : consentement, limitation des finalités, conservation limitée.",
+      updated: "Dernière mise à jour : 1er novembre 2026",
       sections: [
         {
           heading: "Qui nous sommes",
@@ -187,8 +187,8 @@ export const fr = {
           body: "Nous ne vendons pas de données personnelles. Pas de suivi GPS continu sans consentement. Les alertes de proximité n’utilisent pas Apple Localiser : chaque proche ouvre OPC et accorde lui-même le GPS du navigateur. Pas d’identifiant Apple, pas d’accès Messages. Pas de revente à des annonceurs. Tu peux tout refuser et quand même utiliser l’app (libellé générique : votre quartier, ou ta dernière ville connue).",
         },
         {
-          heading: "Consentement (Canada / Québec)",
-          body: "Nous demandons un accord clair avant la permission de position du navigateur et avant d’envoyer des stats. Finalités limitées à celles décrites ici. Tu peux changer d’avis dans Réglages. Ceci décrit notre intention vis-à-vis de la LPRPDE et de la Loi 25 — ce n’est pas un avis juridique.",
+          heading: "Consentement (Canada / Ontario)",
+          body: "Nous demandons un accord clair avant la permission de position du navigateur et avant d’envoyer des stats. Finalités limitées à celles décrites ici. Tu peux changer d’avis dans Réglages. Ceci décrit notre intention vis-à-vis de la LPRPDE (PIPEDA) — ce n’est pas un avis juridique.",
         },
         {
           heading: "Conservation",
