@@ -204,7 +204,7 @@ export const fr = {
       title: "Conditions",
       lead: "Règles courtes du MVP communautaire.",
       draft: "Brouillon pour la communauté, pas un contrat rédigé par un avocat.",
-      updated: "Dernière mise à jour : octobre 2026",
+      updated: "Dernière mise à jour : 31 octobre 2026",
       sections: [
         {
           heading: "L’app",
@@ -233,6 +233,10 @@ export const fr = {
         {
           heading: "Publicité business",
           body: "L’offre « publicité gratuite pour les 2 premières semaines » s’applique uniquement à la première publicité business envoyée avec une adresse e-mail de contact. Une deuxième publicité (et les suivantes), même avec le même e-mail, ne bénéficie pas de ces 2 semaines gratuites : après examen, une proposition de paiement s’applique. L’équipe Open Community décide de la publication ; ce n’est pas une publication automatique.",
+        },
+        {
+          heading: "Membre utile (au-delà de 10 000 $ US) — effet différé",
+          body: "Cette clause n’est pas encore en vigueur. Préavis d’au moins 60 jours : l’avis part de l’adresse officielle d’OPC, au nom d’Essaim-Agents Inc., par courriel (en français et en anglais) à tous les membres inscrits, avec la date d’entrée en vigueur et le texte de la clause ; un bandeau dans l’app OPC, avec un lien vers les Conditions mises à jour, est affiché pendant les 60 jours ; les membres ayant déjà généré 8 000 $ US ou plus reçoivent aussi un message personnel dans l’app indiquant leur progression et les tâches disponibles. À la date d’activation, le membre doit cliquer « J’accepte » pour continuer à générer des revenus ; une trace de son acceptation est conservée. Une fois activée : un membre dont les revenus cumulés générés via OPC (y compris l’arbitrage ASAP) dépassent 10 000 $ US devra, pour continuer à générer de nouveaux revenus sur OPC, participer comme membre utile à des tâches rémunérées proposées par OPC pour le bien de la communauté (par exemple, de futurs laboratoires de tests ADN ou alimentaires, ou d’autres projets). Ces tâches seront toujours payées à un taux juste annoncé à l’avance, raisonnables et adaptées aux compétences et au pays du membre, et limitées à un volume minimal raisonnable proposé et accepté pour chaque période. Le membre peut choisir parmi les tâches proposées. Exceptions : raisons de santé, handicap, force majeure ou autre motif valable. Un refus répété et injustifié entraîne d’abord un avertissement écrit et un délai d’au moins 30 jours pour régulariser ; seule ensuite la suspension des nouveaux revenus, puis la perte du statut de membre, peut s’appliquer. Le membre peut contester toute décision auprès d’une revue humaine, puis par arbitrage. Les gains déjà acquis ne sont jamais confisqués. Le membre reste indépendant : cette clause ne crée aucun lien d’emploi avec OPC ni avec Essaim-Agents Inc. Ces conditions sont régies par les lois de l’Ontario et les lois fédérales du Canada applicables. Notre mission : aider le plus de gens possible, notamment dans les pays en développement, à sortir de la misère — plus les membres travaillent, plus OPC peut offrir de travail à d’autres.",
         },
         {
           heading: "Limite",
