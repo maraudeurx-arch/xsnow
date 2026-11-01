@@ -208,7 +208,7 @@ export const en: Messages = {
       title: "Terms",
       lead: "Short rules for the community MVP.",
       draft: "A draft for the community, not a lawyer-written contract.",
-      updated: "Last updated: October 2026",
+      updated: "Last updated: October 31, 2026",
       sections: [
         {
           heading: "The app",
@@ -237,6 +237,10 @@ export const en: Messages = {
         {
           heading: "Business advertising",
           body: "The “free advertising for the first 2 weeks” offer applies only to the first business ad submitted with a contact email. A second ad (and any later ones), even with the same email, do not get those free 2 weeks: after review, a paid proposal applies. The Open Community team decides publication; ads are not published automatically.",
+        },
+        {
+          heading: "Useful member (above US$10,000) — deferred effect",
+          body: "This clause is not yet in force. OPC will announce its activation in the app and by email at least 60 days in advance. Once active: a member whose cumulative earnings generated through OPC (including ASAP arbitration) exceed US$10,000 must, to keep generating new earnings on OPC, take part as a useful member in paid tasks offered by OPC for the good of the community (for example, future DNA or food-testing labs, or other projects). These tasks will always be paid at a fair rate announced in advance, be reasonable and suited to the member’s skills and country, and be limited to a reasonable minimum volume offered and accepted for each period. The member may choose among the tasks offered. Exceptions: health reasons, disability, force majeure or other valid reason. Repeated, unjustified refusal first leads to a written warning and at least 30 days to remedy; only then may new earnings be suspended, and then membership status lost. The member may contest any decision through human review, then arbitration. Earnings already acquired are never confiscated. The member remains independent: this clause creates no employment relationship with OPC or Essaim-Agents Inc. These terms are governed by the laws of Ontario and the applicable federal laws of Canada. Our mission: help as many people as possible, especially in developing countries, out of poverty — the more members work, the more work OPC can offer others.",
         },
         {
           heading: "Limits",
