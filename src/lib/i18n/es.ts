@@ -208,7 +208,7 @@ export const es: Messages = {
       title: "Condiciones",
       lead: "Reglas cortas del MVP comunitario.",
       draft: "Borrador para la comunidad, no un contrato de abogado.",
-      updated: "Última actualización: octubre de 2026",
+      updated: "Última actualización: 31 de octubre de 2026",
       sections: [
         {
           heading: "La app",
@@ -237,6 +237,10 @@ export const es: Messages = {
         {
           heading: "Publicidad business",
           body: "La oferta de «publicidad gratuita las 2 primeras semanas» aplica solo al primer anuncio business enviado con un correo de contacto. Un segundo anuncio (y los siguientes), aunque sea con el mismo correo, no reciben esas 2 semanas gratis: tras revisión, se aplica una propuesta de pago. El equipo de Open Community decide la publicación; no es automática.",
+        },
+        {
+          heading: "Miembro útil (más de 10 000 US$) — efecto diferido",
+          body: "Esta cláusula aún no está vigente. OPC anunciará su activación en la app y por correo con al menos 60 días de antelación. Una vez activa: un miembro cuyos ingresos acumulados generados mediante OPC (incluido el arbitraje ASAP) superen 10 000 US$ deberá, para seguir generando nuevos ingresos en OPC, participar como miembro útil en tareas remuneradas propuestas por OPC por el bien de la comunidad (por ejemplo, futuros laboratorios de pruebas de ADN o de alimentos, u otros proyectos). Estas tareas se pagarán siempre a una tarifa justa anunciada de antemano, serán razonables y adaptadas a las competencias y al país del miembro, y limitadas a un volumen mínimo razonable propuesto y aceptado en cada período. El miembro puede elegir entre las tareas propuestas. Excepciones: salud, discapacidad, fuerza mayor u otro motivo válido. Un rechazo repetido e injustificado conlleva primero un aviso escrito y al menos 30 días para regularizar; solo después pueden suspenderse los nuevos ingresos y luego perderse la condición de miembro. El miembro puede impugnar cualquier decisión mediante revisión humana y luego arbitraje. Las ganancias ya adquiridas nunca se confiscan. El miembro sigue siendo independiente: esta cláusula no crea ninguna relación laboral con OPC ni con Essaim-Agents Inc. Estas condiciones se rigen por las leyes de Ontario y las leyes federales de Canadá aplicables. Nuestra misión: ayudar a la mayor cantidad posible de personas, sobre todo en países en desarrollo, a salir de la miseria.",
         },
         {
           heading: "Límites",
