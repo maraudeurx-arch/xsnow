@@ -5,7 +5,7 @@ import { useEffect, useId, useRef, useState } from "react";
 import { PAID_MISSION_LINKS } from "@/lib/paid-missions";
 import { ONLINE_WORK_LINKS } from "@/lib/online-work";
 import { useI18n } from "@/lib/i18n/locale";
-import { ProjectGuideDialog } from "@/components/features/ProjectGuideDialog";
+import { ProjectLeadDialog } from "@/components/features/ProjectLeadDialog";
 
 const ctaClass =
   "tap inline-flex min-h-12 w-full items-center justify-between rounded-2xl border border-slate-200 bg-white px-3.5 text-left text-[15px] font-bold text-slate-900 shadow-[0_8px_20px_rgba(15,23,42,0.05)]";
@@ -19,7 +19,7 @@ export function EarnNowBoard() {
   const { m } = useI18n();
   const copy = m.earnNow;
   const [supportOpen, setSupportOpen] = useState(false);
-  const [guideOpen, setGuideOpen] = useState(false);
+  const [leadOpen, setLeadOpen] = useState(false);
   const titleId = useId();
   const supportCtaRef = useRef<HTMLButtonElement | null>(null);
   const supportCloseRef = useRef<HTMLButtonElement | null>(null);
@@ -106,10 +106,10 @@ export function EarnNowBoard() {
         <button
           type="button"
           className={ctaClass}
-          data-earn-project-guide-cta
-          onClick={() => setGuideOpen(true)}
+          data-earn-project-lead-cta
+          onClick={() => setLeadOpen(true)}
         >
-          {copy.projectGuide.cta}
+          {copy.projectLead.cta}
         </button>
         <Link href="/arbitrage/" className={ctaClass} data-earn-arbiter-cta>
           {copy.arbiterCta}
@@ -125,7 +125,7 @@ export function EarnNowBoard() {
         </p>
       ) : null}
 
-      {guideOpen ? <ProjectGuideDialog onClose={() => setGuideOpen(false)} /> : null}
+      {leadOpen ? <ProjectLeadDialog onClose={() => setLeadOpen(false)} /> : null}
 
       {supportOpen ? (
         <div

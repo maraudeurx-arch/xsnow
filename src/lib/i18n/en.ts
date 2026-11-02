@@ -601,25 +601,25 @@ export const en: Messages = {
     supportDialogBody:
       "Very soon, autonomous AI agents will come here to ask for help and support.",
     supportDialogClose: "Got it",
-    projectGuide: {
-      "title": "AI Project Guide",
-      "cta": "Become an AI Project Guide",
-      "lead": "Some people give an AI one clear goal (find a job, get fit, organize a project) without wanting to talk to it every day. An AI Project Guide is an OPC member who works on one project only: they write and update the AI's instructions so it follows the project from start to finish. Recruiting first in developing countries.",
-      "doesTitle": "What the guide does",
+    projectLead: {
+      "title": "Project Lead",
+      "cta": "Become a Project Lead",
+      "lead": "Some people give an AI one clear goal (find a job, get fit, organize a project) without wanting to talk to it every day. A Project Lead is an OPC member who works on one project only: they write and update the AI's instructions so it follows the project from start to finish. Recruiting first in developing countries. Separate from “Help an AI agent”: this is where we choose the person who follows a client project. The Project Lead talks to the client's AI through a logged OPC channel that the client can see and revoke at any time.",
+      "doesTitle": "What the Project Lead does",
       "doesList": [
             "Reads the client's goal and turns it into clear instructions for their AI (“My rules”).",
             "Tracks progress and adjusts the instructions; every change stays visible to the client.",
             "Flags critical moments to the OPC team: money, signatures, official documents. Only the client acts there.",
             "Stays respectful and answers questions about how the project is going."
       ],
-      "neverTitle": "What the guide never does",
+      "neverTitle": "What the Project Lead never does",
       "neverList": [
             "No access to the client's money, accounts or payment methods.",
             "No access to the client's personal or official documents.",
             "No signing and no commitments on the client's behalf.",
             "No medical, legal or financial advice.",
             "Confidentiality: nothing about the project leaves the follow-up, online or anywhere else.",
-            "Adults only: guides and clients are 18 or older."
+            "Adults only: Project Leads and clients are 18 or older."
       ],
       "payNote": "Pay will be announced at launch. No amount and no commitment for now.",
       "formTitle": "I'm interested",

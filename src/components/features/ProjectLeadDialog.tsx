@@ -7,25 +7,25 @@ import { useI18n } from "@/lib/i18n/locale";
 import { usePlace } from "@/lib/place";
 import { useLocalProfile } from "@/lib/useLocalProfile";
 import {
-  emptyProjectGuideForm,
-  projectGuideInboxText,
-  projectGuideIssues,
-  type ProjectGuideForm,
-} from "@/lib/project-guide";
+  emptyProjectLeadForm,
+  projectLeadInboxText,
+  projectLeadIssues,
+  type ProjectLeadForm,
+} from "@/lib/project-lead";
 
 const inputClass =
   "min-h-11 w-full rounded-xl border border-white/30 bg-white/90 px-3 text-[15px] text-slate-900";
 const buttonClass =
   "tap inline-flex min-h-12 w-full items-center justify-center rounded-2xl border border-slate-200 bg-white px-3.5 text-[15px] font-bold text-slate-900";
 
-export function ProjectGuideDialog({ onClose }: { onClose: () => void }) {
+export function ProjectLeadDialog({ onClose }: { onClose: () => void }) {
   const { m } = useI18n();
-  const g = m.earnNow.projectGuide;
+  const g = m.earnNow.projectLead;
   const { city } = usePlace();
   const [profile] = useLocalProfile();
   const titleId = useId();
   const closeRef = useRef<HTMLButtonElement | null>(null);
-  const [form, setForm] = useState<ProjectGuideForm>(emptyProjectGuideForm());
+  const [form, setForm] = useState<ProjectLeadForm>(emptyProjectLeadForm());
   const [state, setState] = useState<"idle" | "invalid" | "sending" | IdeaInboxPostResult>("idle");
 
   useEffect(() => {
@@ -40,22 +40,22 @@ export function ProjectGuideDialog({ onClose }: { onClose: () => void }) {
   async function onSubmit(event: FormEvent) {
     event.preventDefault();
     if (state === "sending") return;
-    if (projectGuideIssues(form).length) {
+    if (projectLeadIssues(form).length) {
       setState("invalid");
       return;
     }
     setState("sending");
     // Same inbox as Vos idées: tagged text + city + OPC id only, never phone or e-mail.
     const result = await postIdeaToInbox({
-      id: `guide-${Date.now().toString(36)}`,
-      text: projectGuideInboxText(form),
+      id: `lead-${Date.now().toString(36)}`,
+      text: projectLeadInboxText(form),
       city: city || "",
       opcId: profile?.id || "",
     });
     setState(result);
   }
 
-  const patch = (key: keyof ProjectGuideForm, value: string | boolean) =>
+  const patch = (key: keyof ProjectLeadForm, value: string | boolean) =>
     setForm((prev) => ({ ...prev, [key]: value }));
 
   return (
@@ -68,7 +68,7 @@ export function ProjectGuideDialog({ onClose }: { onClose: () => void }) {
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
-        data-project-guide-dialog
+        data-project-lead-dialog
         onClick={(event) => event.stopPropagation()}
       >
         <h2 id={titleId} className="text-[16px] font-extrabold tracking-wide">{g.title}</h2>
@@ -78,18 +78,18 @@ export function ProjectGuideDialog({ onClose }: { onClose: () => void }) {
           {g.doesList.map((item) => <li key={item}>{item}</li>)}
         </ul>
         <h3 className="mt-3 text-[14px] font-bold">{g.neverTitle}</h3>
-        <ul className="mt-1 list-disc space-y-1 pl-5 text-[13px] text-snow/90" data-project-guide-never>
+        <ul className="mt-1 list-disc space-y-1 pl-5 text-[13px] text-snow/90" data-project-lead-never>
           {g.neverList.map((item) => <li key={item}>{item}</li>)}
         </ul>
-        <p className="mt-3 text-[13px] italic text-snow/90" data-project-guide-pay>{g.payNote}</p>
+        <p className="mt-3 text-[13px] italic text-snow/90" data-project-lead-pay>{g.payNote}</p>
 
         <h3 className="mt-4 text-[14px] font-bold">{g.formTitle}</h3>
         <div className="mt-2">
           <SignupGate>
             {state === "sent" ? (
-              <p className="text-[13px]" data-project-guide-sent>{g.sent}</p>
+              <p className="text-[13px]" data-project-lead-sent>{g.sent}</p>
             ) : (
-              <form className="grid gap-2" onSubmit={onSubmit} data-project-guide-form>
+              <form className="grid gap-2" onSubmit={onSubmit} data-project-lead-form>
                 <label className="grid gap-1 text-[13px]">{g.country}
                   <input className={inputClass} value={form.country} maxLength={60} onChange={(e) => patch("country", e.target.value)} />
                 </label>
@@ -117,7 +117,7 @@ export function ProjectGuideDialog({ onClose }: { onClose: () => void }) {
             )}
           </SignupGate>
         </div>
-        <button ref={closeRef} type="button" className={`${buttonClass} mt-3`} onClick={onClose} data-project-guide-close>
+        <button ref={closeRef} type="button" className={`${buttonClass} mt-3`} onClick={onClose} data-project-lead-close>
           {g.close}
         </button>
       </section>

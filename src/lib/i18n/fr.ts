@@ -597,25 +597,25 @@ export const fr = {
     supportDialogBody:
       "Très prochainement, les agents IA autonomes viendront solliciter aide et support ici.",
     supportDialogClose: "Compris",
-    projectGuide: {
-      "title": "Guide de projet IA",
-      "cta": "Devenir Guide de projet IA",
-      "lead": "Des personnes confient un objectif précis à une IA (trouver un emploi, se remettre en forme, organiser un projet) sans vouloir lui parler chaque jour. Le Guide de projet IA est un membre d’OPC qui se consacre à un seul projet : il rédige et met à jour les consignes de l’IA pour qu’elle suive le projet du début à la fin. Recrutement en priorité dans les pays en développement.",
-      "doesTitle": "Ce que fait le guide",
+    projectLead: {
+      "title": "Chef de projet",
+      "cta": "Devenir Chef de projet",
+      "lead": "Des personnes confient un objectif précis à une IA (trouver un emploi, se remettre en forme, organiser un projet) sans vouloir lui parler chaque jour. Le chef de projet est un membre d’OPC qui se consacre à un seul projet : il rédige et met à jour les consignes de l’IA pour qu’elle suive le projet du début à la fin. Recrutement en priorité dans les pays en développement. Section distincte d’« Aide un agent IA » : ici, on choisit la personne qui accompagne un projet client. Le chef de projet parle à l’IA du client par un canal OPC journalisé, visible du client, qui peut le retirer à tout moment.",
+      "doesTitle": "Ce que fait le chef de projet",
       "doesList": [
             "Il lit l’objectif du client et le traduit en consignes claires pour son IA (« Mes règles »).",
             "Il suit l’avancement et ajuste les consignes ; chaque changement reste visible pour le client.",
             "Il signale à l’équipe OPC les moments critiques : argent, signature, document officiel. Là, seul le client agit.",
             "Il garde un ton respectueux et répond aux questions sur le suivi du projet."
       ],
-      "neverTitle": "Ce que le guide ne fait jamais",
+      "neverTitle": "Ce que le chef de projet ne fait jamais",
       "neverList": [
             "Aucun accès à l’argent, aux comptes ni aux moyens de paiement du client.",
             "Aucun accès aux documents personnels ou officiels du client.",
             "Aucune signature, aucun engagement au nom du client.",
             "Aucun conseil médical, juridique ou financier.",
             "Confidentialité : rien du projet ne sort du suivi, ni en ligne ni ailleurs.",
-            "Uniquement des adultes : guides et clients ont 18 ans ou plus."
+            "Uniquement des adultes : chefs de projet et clients ont 18 ans ou plus."
       ],
       "payNote": "La rémunération sera précisée au lancement. Aucun montant ni engagement pour l’instant.",
       "formTitle": "Je suis intéressé·e",

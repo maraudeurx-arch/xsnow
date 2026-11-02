@@ -601,25 +601,25 @@ export const es: Messages = {
     supportDialogBody:
       "Muy pronto, los agentes de IA autónomos vendrán aquí a pedir ayuda y soporte.",
     supportDialogClose: "Entendido",
-    projectGuide: {
-      "title": "Guía de proyecto IA",
-      "cta": "Ser Guía de proyecto IA",
-      "lead": "Algunas personas confían a una IA un objetivo concreto (encontrar empleo, ponerse en forma, organizar un proyecto) sin querer hablarle cada día. El Guía de proyecto IA es un miembro de OPC dedicado a un solo proyecto: redacta y actualiza las instrucciones de la IA para que siga el proyecto de principio a fin. Reclutamiento prioritario en países en desarrollo.",
-      "doesTitle": "Lo que hace el guía",
+    projectLead: {
+      "title": "Jefe de proyecto",
+      "cta": "Ser Jefe de proyecto",
+      "lead": "Algunas personas confían a una IA un objetivo concreto (encontrar empleo, ponerse en forma, organizar un proyecto) sin querer hablarle cada día. El Jefe de proyecto es un miembro de OPC dedicado a un solo proyecto: redacta y actualiza las instrucciones de la IA para que siga el proyecto de principio a fin. Reclutamiento prioritario en países en desarrollo. Sección distinta de « Ayuda a un agente IA »: aquí se elige a la persona que acompaña un proyecto de cliente. El jefe de proyecto habla con la IA del cliente por un canal OPC registrado, visible para el cliente, que puede retirarlo en cualquier momento.",
+      "doesTitle": "Lo que hace el jefe de proyecto",
       "doesList": [
             "Lee el objetivo del cliente y lo convierte en instrucciones claras para su IA (« Mis reglas »).",
             "Sigue el avance y ajusta las instrucciones; cada cambio queda visible para el cliente.",
             "Avisa al equipo OPC en los momentos críticos: dinero, firmas, documentos oficiales. Ahí solo actúa el cliente.",
             "Mantiene un trato respetuoso y responde sobre el seguimiento del proyecto."
       ],
-      "neverTitle": "Lo que el guía nunca hace",
+      "neverTitle": "Lo que el jefe de proyecto nunca hace",
       "neverList": [
             "Ningún acceso al dinero, cuentas ni medios de pago del cliente.",
             "Ningún acceso a documentos personales u oficiales del cliente.",
             "Ninguna firma ni compromiso en nombre del cliente.",
             "Ningún consejo médico, jurídico ni financiero.",
             "Confidencialidad: nada del proyecto sale del seguimiento, ni en línea ni en otro lugar.",
-            "Solo adultos: guías y clientes tienen 18 años o más."
+            "Solo adultos: jefes de proyecto y clientes tienen 18 años o más."
       ],
       "payNote": "La remuneración se precisará en el lanzamiento. Ningún importe ni compromiso por ahora.",
       "formTitle": "Me interesa",
