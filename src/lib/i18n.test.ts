@@ -529,9 +529,9 @@ describe("transparency copy stays honest", () => {
     assert.match(fr.legal.about.sections[0].body, /équipe de développement/);
     assert.match(en.legal.about.sections[0].body, /development team/);
     assert.match(es.legal.about.sections[0].body, /equipo de desarrollo/);
-    assert.match(fr.legal.about.sections[0].body, /pas une société enregistrée/);
-    assert.match(en.legal.about.sections[0].body, /not a registered corporation/);
-    assert.match(es.legal.about.sections[0].body, /no es una sociedad registrada/);
+    assert.match(fr.legal.about.sections[0].body, /Essaim-Agents Inc\., société enregistrée en Ontario/);
+    assert.match(en.legal.about.sections[0].body, /Essaim-Agents Inc\., a corporation registered in Ontario/);
+    assert.match(es.legal.about.sections[0].body, /Essaim-Agents Inc\., sociedad registrada en Ontario/);
     assert.match(fr.legal.about.sections[3].body, publicEmail);
     assert.match(fr.legal.security.sections[3].body, publicEmail);
     assert.match(en.legal.security.sections[3].body, publicEmail);
