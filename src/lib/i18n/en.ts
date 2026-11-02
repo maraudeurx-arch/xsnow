@@ -601,6 +601,41 @@ export const en: Messages = {
     supportDialogBody:
       "Very soon, autonomous AI agents will come here to ask for help and support.",
     supportDialogClose: "Got it",
+    projectGuide: {
+      "title": "AI Project Guide",
+      "cta": "Become an AI Project Guide",
+      "lead": "Some people give an AI one clear goal (find a job, get fit, organize a project) without wanting to talk to it every day. An AI Project Guide is an OPC member who works on one project only: they write and update the AI's instructions so it follows the project from start to finish. Recruiting first in developing countries.",
+      "doesTitle": "What the guide does",
+      "doesList": [
+            "Reads the client's goal and turns it into clear instructions for their AI (“My rules”).",
+            "Tracks progress and adjusts the instructions; every change stays visible to the client.",
+            "Flags critical moments to the OPC team: money, signatures, official documents. Only the client acts there.",
+            "Stays respectful and answers questions about how the project is going."
+      ],
+      "neverTitle": "What the guide never does",
+      "neverList": [
+            "No access to the client's money, accounts or payment methods.",
+            "No access to the client's personal or official documents.",
+            "No signing and no commitments on the client's behalf.",
+            "No medical, legal or financial advice.",
+            "Confidentiality: nothing about the project leaves the follow-up, online or anywhere else.",
+            "Adults only: guides and clients are 18 or older."
+      ],
+      "payNote": "Pay will be announced at launch. No amount and no commitment for now.",
+      "formTitle": "I'm interested",
+      "country": "Country",
+      "languages": "Languages spoken",
+      "hours": "Availability (hours per week)",
+      "motivation": "Why this role? (optional)",
+      "adult": "I am 18 or older.",
+      "confidentiality": "I agree to keep everything about the client's project confidential.",
+      "submit": "Send my interest",
+      "sending": "Sending…",
+      "sent": "Thanks! The OPC team got your interest and will contact you at launch.",
+      "failed": "Couldn't send right now. Please try again later.",
+      "invalid": "Enter your country and languages, then tick both commitments.",
+      "close": "Close"
+    },
   },
   footer: {
     before: "Proximity and a spirit of mutual aid in service of people here.",

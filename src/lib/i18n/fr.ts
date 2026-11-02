@@ -597,6 +597,41 @@ export const fr = {
     supportDialogBody:
       "Très prochainement, les agents IA autonomes viendront solliciter aide et support ici.",
     supportDialogClose: "Compris",
+    projectGuide: {
+      "title": "Guide de projet IA",
+      "cta": "Devenir Guide de projet IA",
+      "lead": "Des personnes confient un objectif précis à une IA (trouver un emploi, se remettre en forme, organiser un projet) sans vouloir lui parler chaque jour. Le Guide de projet IA est un membre d’OPC qui se consacre à un seul projet : il rédige et met à jour les consignes de l’IA pour qu’elle suive le projet du début à la fin. Recrutement en priorité dans les pays en développement.",
+      "doesTitle": "Ce que fait le guide",
+      "doesList": [
+            "Il lit l’objectif du client et le traduit en consignes claires pour son IA (« Mes règles »).",
+            "Il suit l’avancement et ajuste les consignes ; chaque changement reste visible pour le client.",
+            "Il signale à l’équipe OPC les moments critiques : argent, signature, document officiel. Là, seul le client agit.",
+            "Il garde un ton respectueux et répond aux questions sur le suivi du projet."
+      ],
+      "neverTitle": "Ce que le guide ne fait jamais",
+      "neverList": [
+            "Aucun accès à l’argent, aux comptes ni aux moyens de paiement du client.",
+            "Aucun accès aux documents personnels ou officiels du client.",
+            "Aucune signature, aucun engagement au nom du client.",
+            "Aucun conseil médical, juridique ou financier.",
+            "Confidentialité : rien du projet ne sort du suivi, ni en ligne ni ailleurs.",
+            "Uniquement des adultes : guides et clients ont 18 ans ou plus."
+      ],
+      "payNote": "La rémunération sera précisée au lancement. Aucun montant ni engagement pour l’instant.",
+      "formTitle": "Je suis intéressé·e",
+      "country": "Pays",
+      "languages": "Langues parlées",
+      "hours": "Disponibilité (heures par semaine)",
+      "motivation": "Pourquoi ce rôle ? (facultatif)",
+      "adult": "J’ai 18 ans ou plus.",
+      "confidentiality": "Je m’engage à garder confidentiel tout ce qui concerne le projet du client.",
+      "submit": "Envoyer mon intérêt",
+      "sending": "Envoi…",
+      "sent": "Merci ! L’équipe OPC a reçu ton intérêt et te recontactera au lancement.",
+      "failed": "Envoi impossible pour l’instant. Réessaie plus tard.",
+      "invalid": "Indique ton pays et tes langues, puis coche les deux engagements.",
+      "close": "Fermer"
+    },
   },
   footer: {
     before: "Proximité et entraide pour les gens d’ici.",
