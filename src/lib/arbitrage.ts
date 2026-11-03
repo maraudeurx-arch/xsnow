@@ -7,6 +7,8 @@
  * the ID number, names, or face images.
  */
 
+import { PROJECT_LEAD_TERMS_VERSION, parseApplicantRole, type ApplicantRole } from "./project-lead-registration.ts";
+
 export const ARBITER_STATUSES = ["pending", "verified", "rejected"] as const;
 export type ArbiterStatus = (typeof ARBITER_STATUSES)[number];
 
@@ -25,13 +27,13 @@ export const ARBITER_TERMS_VERSION = "2026-10-20.v1";
 
 export type TermsAcceptance = { version: string; acceptedAt: string };
 
-export function parseTermsAcceptance(raw: unknown): TermsAcceptance | null {
+export function parseTermsAcceptance(raw: unknown, expectedVersion: string = ARBITER_TERMS_VERSION): TermsAcceptance | null {
   if (!raw || typeof raw !== "object") return null;
   const r = raw as Record<string, unknown>;
-  if (r.version !== ARBITER_TERMS_VERSION) return null;
+  if (r.version !== expectedVersion) return null;
   const at = typeof r.acceptedAt === "string" ? r.acceptedAt : "";
   if (Number.isNaN(Date.parse(at))) return null;
-  return { version: ARBITER_TERMS_VERSION, acceptedAt: new Date(at).toISOString() };
+  return { version: expectedVersion, acceptedAt: new Date(at).toISOString() };
 }
 
 export type FaceCheck = {
@@ -44,6 +46,8 @@ export type FaceCheck = {
 
 export type ArbiterApplication = {
   consent: true;
+  /** "arbiter" (default) or "project_lead" (Chef de projet): same identity checks, different conditions. */
+  role: ApplicantRole;
   lastName: string;
   firstName: string;
   docType: IdDocType;
@@ -87,7 +91,8 @@ export function parseArbiterApplication(raw: unknown, now: Date = new Date()): P
   if (!raw || typeof raw !== "object") return { ok: false, error: "invalid" };
   const r = raw as Record<string, unknown>;
   if (r.consent !== true) return { ok: false, error: "consent_required" };
-  const terms = parseTermsAcceptance(r.terms);
+  const role = parseApplicantRole(r.role);
+  const terms = parseTermsAcceptance(r.terms, role === "project_lead" ? PROJECT_LEAD_TERMS_VERSION : ARBITER_TERMS_VERSION);
   if (!terms) return { ok: false, error: "terms_required" };
   const lastName = cleanText(r.lastName, 80);
   const firstName = cleanText(r.firstName, 80);
@@ -118,6 +123,7 @@ export function parseArbiterApplication(raw: unknown, now: Date = new Date()): P
     ok: true,
     value: {
       consent: true,
+      role,
       lastName,
       firstName,
       docType,

@@ -2,6 +2,7 @@ import { ARB_CONTRACT_SHA256, ARB_CONTRACT_VERSION } from "../../../src/lib/arb-
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { handleArbitrage, isArbitragePath, parseSimCase, simTextError, type ArbStore, type ArbiterRow, type CaseRow, type SimAnswerRow, type WalletRow, type PushSubRow, type ExplanationRow, type LoginCodeRow, type DeviceTokenRow } from "./arbitrage.ts";
+import { PROJECT_LEAD_INSTRUCTIONS_VERSION, PROJECT_LEAD_TERMS_VERSION } from "../../../src/lib/project-lead-registration.ts";
 import { ARBITER_TERMS_VERSION, bytesToB64, importVerifyKey, verifyAttestation } from "../../../src/lib/arbitrage.ts";
 
 function memStore(): ArbStore & { arbiters: Map<string, ArbiterRow>; cases: Map<string, CaseRow>; simAns: SimAnswerRow[]; explanations: ExplanationRow[] } {
@@ -861,4 +862,101 @@ _t2("arbiter emails carry the OPC management contact and signature", () => {
     _a2.match(text, /La direction d’OPC$/);
     _a2.doesNotMatch(text, /\b(cour|tribunal|court)\b/i);
   }
+});
+
+describe("Chef de projet registration (same path as arbiters, instructions instead of the Manuel)", () => {
+  const plApplication = { ...application, role: "project_lead", email: "chef@opc.test", docNumber: "PL123456",
+    terms: { version: PROJECT_LEAD_TERMS_VERSION, acceptedAt: "2026-11-02T12:00:00.000Z" } };
+
+  it("refuses arbiter terms for a project lead, and project-lead terms for an arbiter", async () => {
+    const env = await makeEnv();
+    const deps = { store: memStore(), fetchImpl: (async () => new Response("")) as typeof fetch };
+    assert.equal((await handleArbitrage(req("/arbitrage/apply", "POST", { ...plApplication, terms: application.terms }), env, deps)).status, 400);
+    assert.equal((await handleArbitrage(req("/arbitrage/apply", "POST", { ...application, terms: plApplication.terms }), env, deps)).status, 400);
+    assert.equal((await handleArbitrage(req("/arbitrage/apply", "POST", { ...plApplication, consent: false }), env, deps)).status, 400);
+  });
+
+  it("stores identity like an arbiter, runs the 7 steps and records a timestamped instructions acceptance", async () => {
+    const env = await makeEnv();
+    const store = memStore();
+    let t = Date.parse("2026-11-02T12:00:00Z");
+    const deps = { store, fetchImpl: (async () => new Response("")) as typeof fetch, now: () => t };
+    const res = await handleArbitrage(req("/arbitrage/apply", "POST", plApplication), env, deps);
+    assert.equal(res.status, 201);
+    const a = await res.json();
+    assert.equal(a.role, "project_lead");
+    const row = store.arbiters.get(a.arbiterId)!;
+    assert.equal(row.role, "project_lead");
+    assert.equal(row.terms_version, PROJECT_LEAD_TERMS_VERSION);
+    // Same protections: identity, e-mail and photo encrypted; no clear-text name or number in the row.
+    const raw = JSON.stringify(row);
+    for (const s of ["Estigene", "Politzer", "PL123456", "chef@opc.test"]) assert.equal(raw.includes(s), false, s);
+
+    const me = await (await handleArbitrage(req("/arbitrage/me", "GET", undefined, a.token), env, deps)).json();
+    assert.equal(me.role, "project_lead");
+
+    let c = await (await handleArbitrage(req("/arbitrage/checklist", "GET", undefined, a.token), env, deps)).json();
+    assert.deepEqual(c.items.map((x: { id: string }) => x.id), ["terms", "identity", "face", "email", "notifications", "instructions", "approval"]);
+    assert.deepEqual(c.items.filter((x: { done: boolean }) => x.done).map((x: { id: string }) => x.id), ["terms", "identity", "face", "email"]);
+    assert.equal(c.instructionsReadAt, null);
+
+    // Stale or missing acceptance is refused.
+    assert.equal((await handleArbitrage(req("/arbitrage/instructions-accept", "POST", { accept: true, version: "old" }, a.token), env, deps)).status, 409);
+    assert.equal((await handleArbitrage(req("/arbitrage/instructions-accept", "POST", { accept: false, version: PROJECT_LEAD_INSTRUCTIONS_VERSION }, a.token), env, deps)).status, 409);
+
+    const ok = await handleArbitrage(req("/arbitrage/instructions-accept", "POST", { accept: true, version: PROJECT_LEAD_INSTRUCTIONS_VERSION }, a.token), env, deps);
+    assert.equal(ok.status, 200);
+    c = await ok.json();
+    assert.equal(c.items.find((x: { id: string }) => x.id === "instructions").done, true);
+    assert.equal(c.instructionsReadAt, "2026-11-02T12:00:00.000Z");
+    assert.equal(store.arbiters.get(a.arbiterId)!.instructions_version, PROJECT_LEAD_INSTRUCTIONS_VERSION);
+    // A second tick keeps the first timestamp.
+    t += 60_000;
+    c = await (await handleArbitrage(req("/arbitrage/instructions-accept", "POST", { accept: true, version: PROJECT_LEAD_INSTRUCTIONS_VERSION }, a.token), env, deps)).json();
+    assert.equal(c.instructionsReadAt, "2026-11-02T12:00:00.000Z");
+
+    // Notifications are allowed while pending; approval by the owner completes the path.
+    assert.equal((await handleArbitrage(req("/arbitrage/push/subscribe", "POST", { endpoint: "https://web.push.apple.com/abc" }, a.token), env, deps)).status, 200);
+    await handleArbitrage(req("/arbitrage/admin/review", "POST", { arbiterId: a.arbiterId, approve: true }, env.ARBITER_ADMIN_SECRET), env, deps);
+    c = await (await handleArbitrage(req("/arbitrage/checklist", "GET", undefined, a.token), env, deps)).json();
+    assert.equal(c.complete, true);
+    assert.equal(c.doneCount, 7);
+
+    const pending = await (await handleArbitrage(req("/arbitrage/admin/arbiters", "GET", undefined, env.ARBITER_ADMIN_SECRET), env, deps)).json();
+    assert.equal(pending.arbiters.find((x: { arbiterId: string }) => x.arbiterId === a.arbiterId).role, "project_lead");
+  });
+
+  it("never gives a project lead arbitration cases, simulations, wallet, manual or arbiter agreement", async () => {
+    const env = await makeEnv();
+    const store = memStore();
+    const deps = { store, fetchImpl: (async () => new Response("")) as typeof fetch };
+    const a = await (await handleArbitrage(req("/arbitrage/apply", "POST", plApplication), env, deps)).json();
+    await handleArbitrage(req("/arbitrage/admin/review", "POST", { arbiterId: a.arbiterId, approve: true }, env.ARBITER_ADMIN_SECRET), env, deps);
+    for (const [path, method, body] of [
+      ["/arbitrage/cases", "GET", undefined], ["/arbitrage/cases/decide", "POST", { caseId: "x", accept: true }],
+      ["/arbitrage/sim-cases", "GET", undefined], ["/arbitrage/wallet", "GET", undefined],
+      ["/arbitrage/manual-read", "POST", {}], ["/arbitrage/contract-accept", "POST", { accept: true, version: ARB_CONTRACT_VERSION, hash: ARB_CONTRACT_SHA256 }],
+    ] as const) {
+      const r = await handleArbitrage(req(path, method, body, a.token), env, deps);
+      assert.equal(r.status, 403, path);
+    }
+    // An arbiter's checklist and routes are unchanged.
+    const arb = await (await handleArbitrage(req("/arbitrage/apply", "POST", application), env, deps)).json();
+    const ac = await (await handleArbitrage(req("/arbitrage/checklist", "GET", undefined, arb.token), env, deps)).json();
+    assert.deepEqual(ac.items.map((x: { id: string }) => x.id), ["email", "notifications", "wallet", "face", "test_case", "manual", "contract"]);
+    assert.equal((await handleArbitrage(req("/arbitrage/instructions-accept", "POST", { accept: true, version: PROJECT_LEAD_INSTRUCTIONS_VERSION }, arb.token), env, deps)).status, 403);
+  });
+
+  it("keeps arbiter and project-lead email logins apart", async () => {
+    const env = await makeEnv();
+    const store = memStore();
+    const deps = { store, fetchImpl: (async () => new Response("")) as typeof fetch };
+    const a = await (await handleArbitrage(req("/arbitrage/apply", "POST", plApplication), env, deps)).json();
+    // Arbiter login (default role) does not find a project lead…
+    await handleArbitrage(req("/arbitrage/login/request", "POST", { email: "chef@opc.test" }), env, deps);
+    assert.equal(await store.loginCodesSince(a.arbiterId, 0), 0);
+    // …the Project Lead login does.
+    await handleArbitrage(req("/arbitrage/login/request", "POST", { email: "chef@opc.test", role: "project_lead" }), env, deps);
+    assert.equal(await store.loginCodesSince(a.arbiterId, 0), 1);
+  });
 });

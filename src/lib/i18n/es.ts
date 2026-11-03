@@ -634,7 +634,50 @@ export const es: Messages = {
       "sent": "¡Gracias! El equipo OPC recibió tu interés y te contactará en el lanzamiento.",
       "failed": "No se pudo enviar ahora. Inténtalo más tarde.",
       "invalid": "Indica tu país e idiomas, y marca los dos compromisos.",
-      "close": "Cerrar"
+      "close": "Cerrar",
+      "register": {
+        "cta": "Registrarse",
+        "title": "Registrarse como Jefe de proyecto",
+        "lead": "Es un rol oficial: como para los árbitros, verificamos tu identidad (documento + rostro) y luego lees y aceptas las instrucciones del jefe de proyecto. 7 pasos, a tu ritmo. Después, Indiana te forma en OPC.",
+        "stepsTitle": "Los 7 pasos",
+        "steps": {
+          "terms": "Condiciones del rol",
+          "identity": "Documento de identidad",
+          "face": "Escaneo del rostro",
+          "email": "Correo electrónico",
+          "notifications": "Notificaciones",
+          "instructions": "Instrucciones del jefe de proyecto",
+          "approval": "Validación por el equipo de OPC"
+        },
+        "termsTitle": "Antes de registrarte como Jefe de proyecto",
+        "termsItems": [
+          "Debes ingresar tu identidad y hacer un escaneo biométrico (rostro) para probar que eres tú, como los árbitros.",
+          "Debes leer las instrucciones del jefe de proyecto (PDF) y marcar «He leído y acepto las instrucciones».",
+          "El jefe de proyecto nunca tiene acceso al dinero, las cuentas, los documentos ni las firmas del cliente, y no da consejos médicos, legales ni financieros.",
+          "Tienes 18 años o más. La remuneración se precisará en el lanzamiento: ningún monto ni compromiso por ahora."
+        ],
+        "privacyTitle": "Privacidad",
+        "privacy": "Las mismas protecciones que para los árbitros: guardamos una sola foto de tu documento, cifrada, visible solo para el propietario de OPC, borrada 90 días después de la verificación. El escaneo del rostro se hace en tu navegador: no se envía ni se guarda ninguna imagen del rostro, solo una puntuación. No se guarda nada más. Los clientes nunca reciben tu nombre, tu foto ni el número de tu documento. Tratamiento conforme a la PIPEDA (LPRPDE), la ley de Ontario y la ley federal de Canadá.",
+        "consent": "Acepto que mi documento de identidad y el resultado de la verificación del rostro se traten solo para verificar mi identidad de jefe de proyecto.",
+        "checklistTitle": "Tu recorrido de Jefe de proyecto",
+        "checklistLead": "Indiana te acompaña paso a paso. Completa lo que falta, a tu ritmo.",
+        "allDone": "¡Bravo, tu registro está completo! Indiana te contactará para tu formación y tus primeros clientes.",
+        "approvalWaiting": "El equipo de OPC revisa tu expediente. Te avisaremos por correo.",
+        "instructionsLead": "Lee las instrucciones del jefe de proyecto y luego marca la casilla.",
+        "instructionsPdf": "Abrir las instrucciones (PDF, inglés)",
+        "instructionsPdfOther": "Versión francesa (PDF)",
+        "instructionsAccept": "He leído y acepto las instrucciones",
+        "instructionsSaved": "¡Gracias! Aceptación registrada el {date}.",
+        "instructionsStale": "Las instrucciones cambiaron: recarga la página y vuelve a leerlas.",
+        "emailWhy": "El equipo de OPC te escribe a esta dirección (formación, primeros clientes). Tu correo está cifrado y nunca se muestra.",
+        "notifyBody": "Activa las notificaciones: tu teléfono suena cuando el equipo de OPC tiene un mensaje sobre tu proyecto.",
+        "contactSubject": "Jefe de proyecto",
+        "statusPending": "Solicitud recibida: en espera de verificación.",
+        "statusVerified": "Jefe de proyecto verificado.",
+        "statusRejected": "Solicitud rechazada.",
+        "loginTitle": "¿Ya registrado? Recuperar mi perfil de jefe de proyecto",
+        "loginEmail": "Tu correo de jefe de proyecto"
+      }
     },
   },
   footer: {

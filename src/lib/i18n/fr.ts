@@ -630,7 +630,50 @@ export const fr = {
       "sent": "Merci ! L’équipe OPC a reçu ton intérêt et te recontactera au lancement.",
       "failed": "Envoi impossible pour l’instant. Réessaie plus tard.",
       "invalid": "Indique ton pays et tes langues, puis coche les deux engagements.",
-      "close": "Fermer"
+      "close": "Fermer",
+      "register": {
+        "cta": "S’enregistrer",
+        "title": "S’enregistrer comme Chef de projet",
+        "lead": "C’est un travail officiel : comme pour les arbitres, on vérifie ton identité (pièce + visage), puis tu lis et acceptes les instructions du chef de projet. 7 étapes, à ton rythme. Indiana te forme ensuite dans OPC.",
+        "stepsTitle": "Les 7 étapes",
+        "steps": {
+          "terms": "Conditions du rôle",
+          "identity": "Pièce d’identité",
+          "face": "Scan du visage",
+          "email": "E-mail",
+          "notifications": "Notifications",
+          "instructions": "Instructions du chef de projet",
+          "approval": "Validation par l’équipe OPC"
+        },
+        "termsTitle": "Avant de t’enregistrer comme Chef de projet",
+        "termsItems": [
+          "Tu dois entrer ton identité et faire un scan biométrique (visage) pour prouver que c’est bien toi, comme pour les arbitres.",
+          "Tu dois lire les instructions du chef de projet (PDF) et cocher « J’ai lu et j’accepte les instructions ».",
+          "Le chef de projet n’a jamais accès à l’argent, aux comptes, aux documents ni aux signatures du client, et ne donne aucun conseil médical, juridique ou financier.",
+          "Tu as 18 ans ou plus. La rémunération sera précisée au lancement : aucun montant ni engagement pour l’instant."
+        ],
+        "privacyTitle": "Vie privée",
+        "privacy": "Mêmes protections que pour les arbitres : nous gardons une seule photo de ta pièce, chiffrée, accessible au seul propriétaire d’OPC, supprimée 90 jours après la vérification. Le scan du visage se fait dans ton navigateur : aucune image du visage n’est envoyée ni conservée, seulement un score. Rien d’autre n’est stocké. Les clients ne reçoivent jamais ton nom, ta photo ni le numéro de ta pièce. Traitement conforme à la LPRPDE, au droit de l’Ontario et au droit fédéral du Canada.",
+        "consent": "J’accepte que ma pièce d’identité et le résultat de la vérification du visage soient traités uniquement pour vérifier mon identité de chef de projet.",
+        "checklistTitle": "Ton parcours de Chef de projet",
+        "checklistLead": "Indiana t’accompagne pas à pas. Complète ce qui manque, à ton rythme.",
+        "allDone": "Bravo, ton inscription est complète. Indiana te contactera pour ta formation et tes premiers clients.",
+        "approvalWaiting": "L’équipe OPC vérifie ton dossier. Tu seras prévenu par e-mail.",
+        "instructionsLead": "Lis les instructions du chef de projet, puis coche la case.",
+        "instructionsPdf": "Ouvrir les instructions (PDF, français)",
+        "instructionsPdfOther": "Version anglaise (PDF)",
+        "instructionsAccept": "J’ai lu et j’accepte les instructions",
+        "instructionsSaved": "Merci ! Acceptation enregistrée le {date}.",
+        "instructionsStale": "Les instructions ont changé : recharge la page et relis-les.",
+        "emailWhy": "L’équipe OPC t’écrit à cette adresse (formation, premiers clients). Ton e-mail est chiffré et n’est jamais affiché.",
+        "notifyBody": "Active les notifications : ton téléphone sonne quand l’équipe OPC a un message pour ton projet.",
+        "contactSubject": "Chef de projet",
+        "statusPending": "Demande reçue : en attente de vérification.",
+        "statusVerified": "Chef de projet vérifié.",
+        "statusRejected": "Demande refusée.",
+        "loginTitle": "Déjà enregistré ? Retrouver mon profil de chef de projet",
+        "loginEmail": "Ton e-mail de chef de projet"
+      }
     },
   },
   footer: {

@@ -13,6 +13,10 @@
  *   GET  /arbitrage/checklist          Bearer <arbiter, not rejected> → onboarding checklist (done/missing per item)
  *   POST /arbitrage/contract-accept    Bearer <arbiter, not rejected> {version, hash} → e-signature of the arbiter agreement
  *   POST /arbitrage/manual-read        Bearer <arbiter, not rejected> → "J'ai lu le Manuel" (manual_read_at)
+ * Chef de projet (Project Lead) — same signup (/apply with role "project_lead"), same identity storage:
+ *   GET  /arbitrage/checklist          → the 7-step Project Lead path instead of the arbiter one
+ *   POST /arbitrage/instructions-accept Bearer <project lead, not rejected> {accept, version} → timestamped acceptance
+ *   Project leads never get cases, simulations, wallet, manual or arbiter-agreement routes (403 "project_lead").
  *   POST /arbitrage/sim-cases/answer   Bearer <verified arbiter> {caseId, choiceId, comment?} (one per arbiter)
  * Email login (existing arbiter, e.g. the iPhone home-screen app with its own storage):
  *   POST /arbitrage/login/request      {email, lang} → always {ok:true}; emails a 6-digit code if it matches
@@ -70,6 +74,7 @@ import {
   type VerificationLevel,
 } from "../../../src/lib/arbitrage.ts";
 import { computeChecklist } from "../../../src/lib/arb-checklist.ts";
+import { PROJECT_LEAD_INSTRUCTIONS_VERSION, computeProjectLeadChecklist } from "../../../src/lib/project-lead-registration.ts";
 import { ARB_CONTRACT_SHA256, ARB_CONTRACT_VERSION } from "../../../src/lib/arb-contract.ts";
 import { OUTCOME_WORDS, buildExplanation, type TrainingExplanation } from "../../../src/lib/arb-training.ts";
 
@@ -86,6 +91,10 @@ export type ArbiterRow = {
   red_at?: number | null;
   red_cleared_at?: number | null;
   manual_read_at?: number | null;
+  /** "arbiter" (default) or "project_lead". */
+  role?: string | null;
+  instructions_read_at?: number | null;
+  instructions_version?: string | null;
   contract_accepted_at?: number | null;
   contract_version?: string | null;
   contract_hash?: string | null;
@@ -187,7 +196,7 @@ export type D1Full = { prepare: (q: string) => D1Stmt };
 const ARB_COLS = new Set([
   "status", "identity_enc", "photo_enc", "face_reviewed", "reputation", "reviewed_at", "purge_after",
   "face_score", "face_liveness", "face_method", "identity_hash", "email_enc", "email_lang", "red_flag", "red_at", "red_cleared_at",
-  "manual_read_at", "contract_accepted_at", "contract_version", "contract_hash", "rescan_requested_at",
+  "manual_read_at", "instructions_read_at", "instructions_version", "contract_accepted_at", "contract_version", "contract_hash", "rescan_requested_at",
 ]);
 const CASE_COLS = new Set(["status", "suggestion_json", "decision_json", "arbiter_id", "decided_at"]);
 
@@ -202,12 +211,12 @@ export function d1ArbStore(db: D1Full): ArbStore {
       await db
         .prepare(
           `INSERT INTO arbiters (id, token_hash, status, opc_id, identity_enc, photo_enc, identity_hash, doc_expiry,
-            face_score, face_liveness, face_method, face_reviewed, reputation, terms_version, terms_accepted_at, created_at, reviewed_at, purge_after, email_enc, email_lang)
-           VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+            face_score, face_liveness, face_method, face_reviewed, reputation, terms_version, terms_accepted_at, created_at, reviewed_at, purge_after, email_enc, email_lang, role)
+           VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
         )
         .bind(r.id, r.token_hash, r.status, r.opc_id, r.identity_enc, r.photo_enc, r.identity_hash, r.doc_expiry,
           r.face_score, r.face_liveness, r.face_method, r.face_reviewed, r.reputation, r.terms_version, r.terms_accepted_at, r.created_at, r.reviewed_at,
-          r.purge_after, r.email_enc ?? null, r.email_lang ?? null)
+          r.purge_after, r.email_enc ?? null, r.email_lang ?? null, r.role ?? "arbiter")
         .run();
     },
     async arbiterByToken(h) {
@@ -629,8 +638,11 @@ export async function handleArbitrage(req: Request, env: ArbEnv, deps: ArbDeps):
     const email = parseArbiterEmail(b.email);
     if (!email) return j({ error: "email" }, 400);
     let match: ArbiterRow | null = null;
+    // An arbiter login never returns a Project Lead session, and vice versa.
+    const wantRole = b.role === "project_lead" ? "project_lead" : "arbiter";
     for (const a of await store.arbitersWithEmail()) {
       if (a.status === "rejected" || !a.email_enc) continue;
+      if ((a.role ?? "arbiter") !== wantRole) continue;
       try { if ((await decryptString(encKey, a.email_enc)) === email) { match = a; break; } } catch { /* unreadable row: skip */ }
     }
     if (path === "/arbitrage/login/request") {
@@ -675,6 +687,7 @@ export async function handleArbitrage(req: Request, env: ArbEnv, deps: ArbDeps):
     const id = randomId("arb");
     await store.insertArbiter({
       id,
+      role: a.role,
       token_hash: await sha256Hex(token),
       status: "pending",
       opc_id: a.opcId ?? null,
@@ -695,7 +708,7 @@ export async function handleArbitrage(req: Request, env: ArbEnv, deps: ArbDeps):
       reviewed_at: null,
       purge_after: null,
     });
-    return j({ ok: true, arbiterId: id, token, status: "pending", faceVerdict: faceVerdict(a.face) }, 201);
+    return j({ ok: true, arbiterId: id, role: a.role, token, status: "pending", faceVerdict: faceVerdict(a.face) }, 201);
   }
 
   // ---- owner/admin ----
@@ -707,6 +720,7 @@ export async function handleArbitrage(req: Request, env: ArbEnv, deps: ArbDeps):
       for (const r of rows) {
         out.push({
           arbiterId: r.id,
+          role: r.role ?? "arbiter",
           identity: r.identity_enc ? JSON.parse(await decryptString(encKey, r.identity_enc)) : null,
           terms: { version: r.terms_version, acceptedAt: r.terms_accepted_at },
           face: { score: r.face_score, liveness: r.face_liveness === 1, method: r.face_method },
@@ -808,7 +822,7 @@ export async function handleArbitrage(req: Request, env: ArbEnv, deps: ArbDeps):
       for (const id of ids) {
         const r = await store.arbiterById(id);
         if (!r) continue;
-        out.push({ arbiterId: r.id, status: r.status, red: r.red_flag === 1, redAt: r.red_at ? new Date(r.red_at).toISOString() : null,
+        out.push({ arbiterId: r.id, role: r.role ?? "arbiter", status: r.status, red: r.red_flag === 1, redAt: r.red_at ? new Date(r.red_at).toISOString() : null,
           contradictions: await countContradictions(store, r.id, r.red_cleared_at ?? 0) });
       }
       return j({ arbiters: out });
@@ -870,7 +884,7 @@ export async function handleArbitrage(req: Request, env: ArbEnv, deps: ArbDeps):
   if (!me) return j({ error: "unauthorized" }, 401);
 
   if (path === "/arbitrage/me" && req.method === "GET") {
-    return j({ arbiterId: me.id, status: me.status, reputation: me.reputation, hasEmail: !!me.email_enc, red: me.red_flag === 1,
+    return j({ arbiterId: me.id, role: me.role ?? "arbiter", status: me.status, reputation: me.reputation, hasEmail: !!me.email_enc, red: me.red_flag === 1,
       rescanRequested: me.status === "verified" && !!me.rescan_requested_at,
       contradictions: await countContradictions(store, me.id, me.red_cleared_at ?? 0), redThreshold: RED_THRESHOLD });
   }
@@ -889,6 +903,42 @@ export async function handleArbitrage(req: Request, env: ArbEnv, deps: ArbDeps):
     return j({ explanations: rows.map((r) => ({ caseId: r.case_id, simulation: r.simulation === 1, followed: r.followed === 1,
       chosen: r.chosen, suggested: r.suggested, manualRef: r.manual_ref, manualVersion: r.manual_version, text: r.text,
       createdAt: new Date(r.created_at).toISOString() })) });
+  }
+  const isProjectLead = me.role === "project_lead";
+  if (isProjectLead && ((path === "/arbitrage/checklist" && req.method === "GET") || (path === "/arbitrage/instructions-accept" && req.method === "POST"))) {
+    // Chef de projet: same identity checks as arbiters; "Manuel de justice" is replaced by the Project Lead instructions.
+    if (me.status === "rejected") return j({ error: "rejected" }, 403);
+    let readAt = me.instructions_read_at ?? null;
+    let version = me.instructions_version ?? null;
+    if (path === "/arbitrage/instructions-accept") {
+      const b = (body ?? {}) as Record<string, unknown>;
+      if (b.accept !== true || b.version !== PROJECT_LEAD_INSTRUCTIONS_VERSION) {
+        return j({ error: "instructions_version", version: PROJECT_LEAD_INSTRUCTIONS_VERSION }, 409);
+      }
+      if (version !== PROJECT_LEAD_INSTRUCTIONS_VERSION || !readAt) {
+        readAt = now();
+        version = PROJECT_LEAD_INSTRUCTIONS_VERSION;
+        await store.updateArbiter(me.id, { instructions_read_at: readAt, instructions_version: version });
+      }
+    }
+    const checklist = computeProjectLeadChecklist({
+      status: me.status,
+      termsVersion: me.terms_version,
+      hasIdentity: !!me.identity_enc,
+      hasEmail: !!me.email_enc,
+      pushSubscriptions: (await store.allPushSubs()).filter((s) => s.arbiter_id === me.id).length,
+      faceScore: me.face_score,
+      faceLiveness: me.face_liveness === 1,
+      faceReviewed: me.face_reviewed === 1,
+      rescanRequested: !!me.rescan_requested_at,
+      instructionsReadAt: readAt,
+      instructionsVersion: version,
+    });
+    return j({ ok: true, role: "project_lead", status: me.status, ...checklist });
+  }
+  // Project leads never reach arbitration: cases, simulations, wallet, manual, arbiter agreement.
+  if (isProjectLead && !path.startsWith("/arbitrage/rescan") && !path.startsWith("/arbitrage/push/")) {
+    return j({ error: "project_lead" }, 403);
   }
   if ((path === "/arbitrage/checklist" && req.method === "GET") || (path === "/arbitrage/manual-read" && req.method === "POST")
     || (path === "/arbitrage/contract-accept" && req.method === "POST")) {
@@ -962,7 +1012,8 @@ export async function handleArbitrage(req: Request, env: ArbEnv, deps: ArbDeps):
 
   // SIMULATION endpoints: verified arbiters, or non-rejected arbiters the owner invited for simulations only.
   if (path.startsWith("/arbitrage/sim-cases") || path.startsWith("/arbitrage/push/")) {
-    const allowed = me.status === "verified" || (me.status !== "rejected" && (await store.isSimInvited(me.id)));
+    // Project leads (any non-rejected status) may turn notifications on; they are never pushed arbitration cases.
+    const allowed = me.status === "verified" || (me.status !== "rejected" && (isProjectLead || (await store.isSimInvited(me.id))));
     if (!allowed) return j({ error: "not_verified", status: me.status }, 403);
   } else if (me.status !== "verified") return j({ error: "not_verified", status: me.status }, 403);
 
@@ -1176,7 +1227,7 @@ export async function notifyArbiters(env: ArbEnv, store: ArbStore, kind: "real" 
   for (const sub of await store.allPushSubs()) {
     if (!ok.has(sub.arbiter_id)) {
       const a = await store.arbiterById(sub.arbiter_id);
-      ok.set(sub.arbiter_id, !!a && (a.status === "verified" || (kind === "sim" && a.status !== "rejected" && (await store.isSimInvited(a.id)))));
+      ok.set(sub.arbiter_id, !!a && a.role !== "project_lead" && (a.status === "verified" || (kind === "sim" && a.status !== "rejected" && (await store.isSimInvited(a.id)))));
     }
     if (!ok.get(sub.arbiter_id)) continue;
     const r = await sendPush(sub.endpoint, key, env.VAPID_PUBLIC_KEY, subject, nowMs, fetchImpl);

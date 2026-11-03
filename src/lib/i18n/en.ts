@@ -634,7 +634,50 @@ export const en: Messages = {
       "sent": "Thanks! The OPC team got your interest and will contact you at launch.",
       "failed": "Couldn't send right now. Please try again later.",
       "invalid": "Enter your country and languages, then tick both commitments.",
-      "close": "Close"
+      "close": "Close",
+      "register": {
+        "cta": "Register",
+        "title": "Register as a Project Lead",
+        "lead": "This is an official role: as for arbiters, we verify your identity (ID + face), then you read and accept the Project Lead instructions. 7 steps, at your own pace. Indiana then trains you in OPC.",
+        "stepsTitle": "The 7 steps",
+        "steps": {
+          "terms": "Role conditions",
+          "identity": "ID document",
+          "face": "Face scan",
+          "email": "Email",
+          "notifications": "Notifications",
+          "instructions": "Project Lead instructions",
+          "approval": "Approval by the OPC team"
+        },
+        "termsTitle": "Before you register as a Project Lead",
+        "termsItems": [
+          "You must enter your identity and do a biometric (face) scan to prove it is really you, as arbiters do.",
+          "You must read the Project Lead instructions (PDF) and tick “I have read and accept the instructions”.",
+          "A Project Lead never has access to the client’s money, accounts, documents or signatures, and gives no medical, legal or financial advice.",
+          "You are 18 or older. Pay will be announced at launch: no amount and no commitment for now."
+        ],
+        "privacyTitle": "Privacy",
+        "privacy": "Same protections as for arbiters: we keep one photo of your ID, encrypted, visible only to the OPC owner, deleted 90 days after verification. The face scan runs in your browser: no face image is sent or kept, only a score. Nothing else is stored. Clients never receive your name, photo or ID number. Processing complies with PIPEDA, Ontario law and Canadian federal law.",
+        "consent": "I agree that my ID document and the face-check result are processed only to verify my identity as a Project Lead.",
+        "checklistTitle": "Your Project Lead path",
+        "checklistLead": "Indiana guides you step by step. Complete what is missing, at your own pace.",
+        "allDone": "Well done, your registration is complete. Indiana will contact you for your training and your first clients.",
+        "approvalWaiting": "The OPC team is reviewing your file. You will be told by email.",
+        "instructionsLead": "Read the Project Lead instructions, then tick the box.",
+        "instructionsPdf": "Open the instructions (PDF, English)",
+        "instructionsPdfOther": "French version (PDF)",
+        "instructionsAccept": "I have read and accept the instructions",
+        "instructionsSaved": "Thank you! Acceptance recorded on {date}.",
+        "instructionsStale": "The instructions changed: reload the page and read them again.",
+        "emailWhy": "The OPC team writes to you at this address (training, first clients). Your email is encrypted and never shown.",
+        "notifyBody": "Turn on notifications: your phone rings when the OPC team has a message about your project.",
+        "contactSubject": "Project Lead",
+        "statusPending": "Request received: waiting for verification.",
+        "statusVerified": "Verified Project Lead.",
+        "statusRejected": "Request declined.",
+        "loginTitle": "Already registered? Find my Project Lead profile",
+        "loginEmail": "Your Project Lead email"
+      }
     },
   },
   footer: {

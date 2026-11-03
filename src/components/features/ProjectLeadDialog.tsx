@@ -2,6 +2,7 @@
 
 import { useEffect, useId, useRef, useState, type FormEvent } from "react";
 import { SignupGate } from "@/components/SignupGate";
+import { ProjectLeadRegistration } from "@/components/features/ProjectLeadRegistration";
 import { postIdeaToInbox, type IdeaInboxPostResult } from "@/lib/idea-inbox";
 import { useI18n } from "@/lib/i18n/locale";
 import { usePlace } from "@/lib/place";
@@ -82,6 +83,10 @@ export function ProjectLeadDialog({ onClose }: { onClose: () => void }) {
           {g.neverList.map((item) => <li key={item}>{item}</li>)}
         </ul>
         <p className="mt-3 text-[13px] italic text-snow/90" data-project-lead-pay>{g.payNote}</p>
+
+        <div className="mt-4">
+          <ProjectLeadRegistration />
+        </div>
 
         <h3 className="mt-4 text-[14px] font-bold">{g.formTitle}</h3>
         <div className="mt-2">
