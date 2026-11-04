@@ -82,6 +82,24 @@ Status: design only, no code. Approved by Popol on Nov 4, 2026.
 
 **Privacy (PIPEDA and Ontario):** explicit consent before the client's input goes to the AI and to a lead outside Canada (cross-border transfer disclosed); minimisation (pseudonym shown to the lead); host with no training on data; access and deletion on request; named privacy officer; breach report to the Commissioner.
 
+## Clé API et pilotage de l'IA (approuvé par Popol, 04/11/2026 17:15) / API key and AI piloting (approved by Popol, 04/11/2026 17:15)
+
+### FR
+1. **Une seule clé API** pour l'IA open source nord-américaine, conservée uniquement comme secret sur notre serveur. Elle n'est jamais remise au client ni au chef de projet.
+2. **Le client** parle à l'IA dans l'appli ; l'appli passe toujours par notre serveur, qui seul détient la clé.
+3. **Le chef de projet** a son propre accès personnel (nom + mot de passe) dans « Mes clients ». Il ne voit que les projets des clients qui lui sont assignés, avec tout l'historique. Il pilote la même IA, par le même serveur, et accepte ou refuse ses propositions.
+4. **Le harnais** tourne côté serveur : il applique les règles et compte la consommation de chaque projet, pour les plafonds par formule.
+5. **Déroulement :** l'IA cherche et prépare (recherches, code) → le chef de projet valide et teste → le projet est déposé dans l'organisation GitHub `Cle-en-main-Essaim-Agents` (un dépôt privé par client) → le client suit son site en ligne.
+6. **Trois actions que le chef de projet ne fait jamais seul :** tout paiement (domaine, billets…), toute réservation au nom du client, et la première mise en ligne. L'IA prépare la demande ; l'équipe de trois (Popol, Indiana, Yves) l'approuve. Le paiement passe par une page de paiement hébergée ; le domaine est enregistré au nom du client (option A).
+
+### EN
+1. **One single API key** for the North-American open-source AI, stored only as a server secret. It is never given to the client or the project lead.
+2. **The client** talks to the AI in the app; the app always goes through our server, which alone holds the key.
+3. **The project lead** has a personal login (name + password) in "Mes clients". They see only their assigned clients' projects, with the full history. They drive the same AI through the same server and accept or refuse its proposals.
+4. **The harness** runs server-side: it applies the rules and meters usage per project, for per-plan caps.
+5. **Flow:** the AI researches and prepares (research, code) → the lead validates and tests → the project is pushed to the GitHub org `Cle-en-main-Essaim-Agents` (one private repo per client) → the client follows the live site.
+6. **Three actions the lead never does alone:** any payment (domain, tickets…), any booking in the client's name, and the first go-live. The AI prepares the request; the team of three (Popol, Indiana, Yves) approves. Payment goes through a hosted checkout; the domain is registered in the client's name (option A).
+
 ---
 
 ## Réserves de la revue Knicks (4 nov. 2026) — à trancher avant tout code / Knicks review reserves — to settle before any code
