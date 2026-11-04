@@ -44,3 +44,16 @@ Status: design only, no code. Approved by Popol on Nov 4, 2026.
 **Out of scope.** Lead payouts, ratings, auto-assignment (later).
 
 **Open questions.** Which inbox contact@essaim-agents.com forwards to; voice-note retention period; reassignment rule if a lead does not reply within 48 h.
+
+## Décision : hébergement « option A » (Popol, 4 nov. 2026) / Decision: "option A" hosting
+
+**FR —** Après discussion avec Indiana, Popol a retenu l'option A pour l'app Clé en main :
+- Le code des projets qui en ont besoin est hébergé dans le compte GitHub/Vercel **d'Essaim-Agents**, un dossier (dépôt/projet) par client.
+- Le nom de domaine est enregistré **au nom du client**. Le client ne crée aucun compte.
+- Tout est transféré au client s'il part ou à la fin du projet, garanti par écrit. Si l'abonnement s'arrête : site en ligne 30 jours, puis transfert (ou suppression sur demande) — délai proposé, à confirmer.
+- Inscription : prénom, nom, courriel, mot de passe propre à l'app (jamais celui du courriel, jamais réutilisé pour GitHub/Vercel). Carte : page de paiement hébergée (ex. Stripe), jamais saisie dans nos apps.
+- Consentement explicite à l'inscription (FR/EN). Vie privée : LPRPDE et loi de l'Ontario.
+- Impact « Mes clients » : le chef de projet voit le dossier du client via le compte Essaim-Agents (accès par projet, révocable), jamais les identifiants ni l'adresse du client.
+- Option B (le client crée ses comptes via « Se connecter avec Google » et nous invite) : plus tard, pour les clients avancés.
+
+**EN —** After discussion with Indiana, Popol chose option A: code hosted in Essaim-Agents' own GitHub/Vercel account, one folder per client; domain in the client's name; no client account; full transfer on exit or completion, guaranteed in writing; if the subscription stops, 30 days online then transfer (proposed, to confirm). App-only password; hosted checkout (e.g. Stripe), no card fields. PIPEDA (LPRPDE) and Ontario law. Option B later for advanced clients.
