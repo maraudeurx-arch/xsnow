@@ -436,9 +436,24 @@ describe("legal copy is present in FR/EN/ES", () => {
     assert.equal(es.legal.privacy.sections.length, fr.legal.privacy.sections.length);
     assert.equal(en.legal.terms.sections.length, fr.legal.terms.sections.length);
     assert.equal(es.legal.terms.sections.length, fr.legal.terms.sections.length);
-    assert.match(fr.legal.privacy.draft, /Loi 25/);
-    assert.match(en.legal.privacy.draft, /Law 25/);
-    assert.match(es.legal.privacy.draft, /Ley 25/);
+    assert.match(fr.legal.privacy.draft, /LPRPDE \(PIPEDA\)/);
+    assert.match(en.legal.privacy.draft, /PIPEDA/);
+    assert.match(es.legal.privacy.draft, /PIPEDA/);
+  });
+
+  it("privacy page cites Ontario / federal Canadian law, never Quebec law", () => {
+    const quebecLaw = /Loi\s*25|Law\s*25|Ley\s*25|Qu[ée]bec/i;
+    for (const [lang, m] of [["fr", fr], ["en", en], ["es", es]] as const) {
+      const p = m.legal.privacy;
+      assert.match(p.draft, /Ontario/, `${lang} draft names Ontario`);
+      assert.doesNotMatch(p.draft, quebecLaw, `${lang} draft`);
+      const consent = p.sections.find((s) => /Ontario/.test(s.heading));
+      assert.ok(consent, `${lang} consent heading names Ontario`);
+      for (const s of p.sections) {
+        assert.doesNotMatch(`${s.heading} ${s.body}`, /Loi\s*25|Law\s*25|Ley\s*25/i, `${lang}: ${s.heading}`);
+        assert.doesNotMatch(s.heading, /Qu[ée]bec/i, `${lang}: ${s.heading}`);
+      }
+    }
   });
 
   it("keeps transparency documents aligned", () => {
