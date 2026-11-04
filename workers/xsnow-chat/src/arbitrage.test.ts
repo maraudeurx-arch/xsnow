@@ -915,6 +915,11 @@ describe("Chef de projet registration (same path as arbiters, instructions inste
     c = await (await handleArbitrage(req("/arbitrage/instructions-accept", "POST", { accept: true, version: PROJECT_LEAD_INSTRUCTIONS_VERSION }, a.token), env, deps)).json();
     assert.equal(c.instructionsReadAt, "2026-11-02T12:00:00.000Z");
 
+    // Arbitration evidence (training explanations) stays closed to project leads.
+    const ex = await handleArbitrage(req("/arbitrage/explanations", "GET", undefined, a.token), env, deps);
+    assert.equal(ex.status, 403);
+    assert.equal((await ex.json()).error, "project_lead");
+
     // Notifications are allowed while pending; approval by the owner completes the path.
     assert.equal((await handleArbitrage(req("/arbitrage/push/subscribe", "POST", { endpoint: "https://web.push.apple.com/abc" }, a.token), env, deps)).status, 200);
     await handleArbitrage(req("/arbitrage/admin/review", "POST", { arbiterId: a.arbiterId, approve: true }, env.ARBITER_ADMIN_SECRET), env, deps);
