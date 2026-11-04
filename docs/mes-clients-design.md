@@ -57,3 +57,27 @@ Status: design only, no code. Approved by Popol on Nov 4, 2026.
 - Option B (le client crée ses comptes via « Se connecter avec Google » et nous invite) : plus tard, pour les clients avancés.
 
 **EN —** After discussion with Indiana, Popol chose option A: code hosted in Essaim-Agents' own GitHub/Vercel account, one folder per client; domain in the client's name; no client account; full transfer on exit or completion, guaranteed in writing; if the subscription stops, 30 days online then transfer (proposed, to confirm). App-only password; hosted checkout (e.g. Stripe), no card fields. PIPEDA (LPRPDE) and Ontario law. Option B later for advanced clients.
+
+## IA open source avec harnais, validation et escalade (Popol, 4 nov. 2026) / Harnessed open-source AI, validation and escalation
+
+### FR
+**Flux :** client (« Mon projet IA », micro) → IA open source nord-américaine sous harnais (ex. Llama 3.3 70B ou GPT-OSS 120B chez un hébergeur américain : Fireworks, AWS Bedrock, DeepInfra ; pas de DeepSeek) → le chef de projet OPC valide chaque demande et dirige l'IA → si blocage ou hors règles, escalade à l'équipe (Popol, Indiana, Yves) qui accepte ou refuse.
+
+**Règles du harnais :** l'IA ne publie, ne déploie, ne dépense et ne contacte personne sans validation du chef de projet ; aucune action sur domaine, facturation, données personnelles ou suppression sans accord de l'équipe ; plafond de jetons par forfait ; contenu illégal, haineux ou trompeur refusé ; chaque action journalisée.
+
+**File d'escalade :** demande créée par le harnais ou le chef de projet (motif, projet, action proposée) ; une approbation d'un membre de l'équipe suffit, un refus est motivé ; délai visé 24 h ; sans réponse, l'action reste bloquée (jamais d'accord implicite).
+
+**Accès :** une clé par projet, à portée limitée (ce projet seulement, révocable, plafonnée), détenue par le serveur, jamais montrée. Le chef de projet agit via son propre compte OPC, avec un rôle sur le projet assigné ; il ne voit ni le mot de passe, ni le courriel, ni la carte du client. La clé fournisseur IA reste côté serveur.
+
+**Vie privée (LPRPDE et Ontario) :** consentement explicite avant envoi des propos du client à l'IA et au chef de projet hors Canada (communication transfrontalière annoncée) ; minimisation (pseudonyme au chef de projet) ; hébergeur sans entraînement sur les données ; accès et suppression sur demande ; responsable de la protection désigné ; avis d'atteinte au Commissaire en cas de fuite.
+
+### EN
+**Flow:** client ("Mon projet IA", mic) → harnessed North-American open-source AI (e.g. Llama 3.3 70B or GPT-OSS 120B on a US host: Fireworks, AWS Bedrock, DeepInfra; no DeepSeek) → the OPC project lead validates each request and directs the AI → if blocked or beyond the rules, escalation to the team (Popol, Indiana, Yves), who approve or refuse.
+
+**Harness rules:** the AI never publishes, deploys, spends or contacts anyone without project-lead validation; no domain, billing, personal-data or deletion action without team approval; per-plan token cap; illegal, hateful or deceptive content refused; every action logged.
+
+**Escalation queue:** item created by the harness or the lead (reason, project, proposed action); one team approval suffices, refusals carry a reason; 24 h target; no answer means the action stays blocked (never implicit approval).
+
+**Access scoping:** one scoped key per project (that project only, revocable, capped), held server-side, never shown. The lead acts through their own OPC account with a role on the assigned project; they never see the client's password, email or card. The AI provider key stays server-side.
+
+**Privacy (PIPEDA and Ontario):** explicit consent before the client's input goes to the AI and to a lead outside Canada (cross-border transfer disclosed); minimisation (pseudonym shown to the lead); host with no training on data; access and deletion on request; named privacy officer; breach report to the Commissioner.
