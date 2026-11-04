@@ -81,3 +81,16 @@ Status: design only, no code. Approved by Popol on Nov 4, 2026.
 **Access scoping:** one scoped key per project (that project only, revocable, capped), held server-side, never shown. The lead acts through their own OPC account with a role on the assigned project; they never see the client's password, email or card. The AI provider key stays server-side.
 
 **Privacy (PIPEDA and Ontario):** explicit consent before the client's input goes to the AI and to a lead outside Canada (cross-border transfer disclosed); minimisation (pseudonym shown to the lead); host with no training on data; access and deletion on request; named privacy officer; breach report to the Commissioner.
+
+---
+
+## Réserves de la revue Knicks (4 nov. 2026) — à trancher avant tout code / Knicks review reserves — to settle before any code
+
+Non bloquantes pour la bêta courriel du 9 novembre. Aucun code « Mes clients » ne sera écrit avant qu'elles soient tranchées dans une PR de spécification dédiée.
+Non-blocking for the 9 November email beta. No "Mes clients" code will be written before these are settled in a dedicated spec PR.
+
+1. **Masquage du relais / Relay masking** — décrire le mécanisme : en-têtes `From`/`Reply-To` réécrits, citations retirées des réponses, notifications sans adresse ni nom de famille. / Describe the mechanism: rewritten `From`/`Reply-To`, quoted text stripped from replies, notifications without address or surname.
+2. **Canal du client / Client channel** — choisir comment le client Clé en main voit la liste d'étapes (lien courriel signé ou espace dédié). Point le plus important. / Choose how the client sees the step list (signed email link or dedicated space). Top priority.
+3. **Réciprocité et texte libre / Reciprocity and free text** — préciser ce que le client voit du chef de projet ; filtrer la description de projet (courriels, téléphones, adresses). / Specify what the client sees of the project lead; filter the project description (emails, phones, addresses).
+4. **Sécurité / Security** — accès strictement par assignation, vérifié côté serveur ; le code VIBE-CLE est un identifiant, jamais un justificatif ; fils journalisés et relisibles par l'équipe ; procédure de révocation d'un chef de projet et purge des données sur son appareil. / Assignment-only access checked server-side; the VIBE-CLE code is an identifier, never a credential; threads logged and reviewable by the team; project-lead revocation procedure and on-device data purge.
+5. **Infrastructure** — modèle de données (assignations, fils, messages) via une nouvelle migration ; stockage des notes vocales à valider avec Popol (aucune dépense sans son accord) ; le code VIBE-CLE naît côté site et sera importé dans OPC. / Data model via a new migration; voice-note storage to be approved by Popol (no spending without approval); the VIBE-CLE code is created on the site and imported into OPC.
