@@ -16,6 +16,7 @@ import { ConnectWallet } from "@/components/ConnectWallet";
 import { assetUrl } from "@/lib/paths";
 import { b64uToUint8, pushSupport, type PushSupport } from "@/lib/push-client";
 import { FaceScan } from "./FaceScan";
+import type { ApplicantRole } from "@/lib/project-lead-registration";
 
 type Status = "none" | "pending" | "verified" | "rejected" | "rescan_requested" | "not_configured";
 type Outcome = "claimant" | "respondent" | "split";
@@ -119,9 +120,9 @@ export function ArbitrageBoard() {
  * "Déjà arbitre ? Retrouver mon profil" (Popol, 22/10/2026): the iPhone home-screen app has its own
  * storage, so an existing arbiter gets a 6-digit code by email and types it here. No new signup.
  */
-function LoginCard({ onDone }: { onDone: (token: string) => void }) {
+export function LoginCard({ onDone, role = "arbiter", copy }: { onDone: (token: string) => void; role?: ApplicantRole; copy?: { title: string; emailLabel: string } }) {
   const { m, locale } = useI18n();
-  const t = m.arbitrage.login;
+  const t = { ...m.arbitrage.login, ...(copy ?? {}) };
   const emailRef = useRef<HTMLInputElement>(null);
   const codeRef = useRef<HTMLInputElement>(null);
   const [open, setOpen] = useState(false);
@@ -135,7 +136,7 @@ function LoginCard({ onDone }: { onDone: (token: string) => void }) {
     if (!/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/.test(v)) { setMsg("emailInvalid"); return; }
     setBusy(true); setMsg("");
     try {
-      const { status } = await arbFetch("login/request", { method: "POST", body: { email: v, lang: locale } });
+      const { status } = await arbFetch("login/request", { method: "POST", body: { email: v, lang: locale, role } });
       if (status === 200) { setEmail(v); setStep("code"); setMsg("sent"); } else setMsg(status === 400 ? "emailInvalid" : "network");
     } catch { setMsg("network"); } finally { setBusy(false); }
   }
@@ -145,7 +146,7 @@ function LoginCard({ onDone }: { onDone: (token: string) => void }) {
     if (!/^\d{6}$/.test(code)) { setMsg("invalid"); return; }
     setBusy(true); setMsg("");
     try {
-      const { status, data } = await arbFetch<{ token?: string }>("login/verify", { method: "POST", body: { email, code } });
+      const { status, data } = await arbFetch<{ token?: string }>("login/verify", { method: "POST", body: { email, code, role } });
       if (status === 200 && data.token) onDone(data.token); else setMsg(status === 400 ? "invalid" : "network");
     } catch { setMsg("network"); } finally { setBusy(false); }
   }
@@ -175,9 +176,9 @@ function LoginCard({ onDone }: { onDone: (token: string) => void }) {
   );
 }
 
-export function TermsModal({ onAccept, onCancel }: { onAccept: () => void; onCancel: () => void }) {
+export function TermsModal({ onAccept, onCancel, title, items }: { onAccept: () => void; onCancel: () => void; title?: string; items?: readonly string[] }) {
   const { m } = useI18n();
-  const t = m.arbitrage;
+  const t = { ...m.arbitrage, ...(title ? { termsTitle: title } : {}), ...(items ? { termsItems: [...items] } : {}) };
   const boxRef = useRef<HTMLElement | null>(null);
   useEffect(() => {
     boxRef.current?.scrollTo({ top: 0 });
@@ -211,14 +212,17 @@ export function TermsModal({ onAccept, onCancel }: { onAccept: () => void; onCan
   );
 }
 
-function SignupForm({ terms, defaults, onDone, onNotConfigured }: {
+export function SignupForm({ terms, defaults, onDone, onNotConfigured, role = "arbiter", copy }: {
   terms: TermsAcceptance;
+  /** "project_lead" reuses this exact form (same ID + face checks); only the copy and the role differ. */
+  role?: ApplicantRole;
+  copy?: { privacyTitle: string; privacy: string; consent: string };
   defaults: { firstName: string; lastName: string; opcId: string; email: string };
   onDone: (token: string) => void;
   onNotConfigured: () => void;
 }) {
   const { m } = useI18n();
-  const t = m.arbitrage;
+  const t = { ...m.arbitrage, ...(copy ?? {}) };
   const { locale } = useI18n();
   const [f, setF] = useState({ email: defaults.email, lastName: defaults.lastName, firstName: defaults.firstName, docType: "passport" as IdDocType, docNumber: "", issuingCountry: "", expiryDate: "" });
   const [photo, setPhoto] = useState<string | null>(null);
@@ -246,7 +250,7 @@ function SignupForm({ terms, defaults, onDone, onNotConfigured }: {
     try {
       const { status, data } = await arbFetch<{ token: string }>("apply", {
         method: "POST",
-        body: { consent: true, ...f, lang: locale, idPhotoBase64: b64, idPhotoMime: mime, face, opcId: defaults.opcId, terms },
+        body: { consent: true, role, ...f, lang: locale, idPhotoBase64: b64, idPhotoMime: mime, face, opcId: defaults.opcId, terms },
       });
       if (status === 503) onNotConfigured();
       else if (status === 201 && data.token) onDone(data.token);
@@ -393,9 +397,9 @@ function SimCaseCard({ c, token, onAnswered }: { c: SimCase; token: string; onAn
 }
 
 /** Existing arbiters without a contact email: "Ajouter mon e-mail" (stored encrypted, used for decision copies). */
-function EmailCard({ token, onDone }: { token: string; onDone: () => void }) {
+export function EmailCard({ token, onDone, why }: { token: string; onDone: () => void; why?: string }) {
   const { m, locale } = useI18n();
-  const t = m.arbitrage.email;
+  const t = { ...m.arbitrage.email, ...(why ? { why } : {}) };
   const ref = useRef<HTMLInputElement>(null);
   const [err, setErr] = useState<"" | "empty" | "invalid" | "session" | "network">("");
   const [busy, setBusy] = useState(false);
@@ -425,8 +429,8 @@ function EmailCard({ token, onDone }: { token: string; onDone: () => void }) {
 }
 
 /** Ask the onboarding checklist to reload (after an email, a push opt-in, a wallet or an answer). */
-const CHECKLIST_EVENT = "opc-arb-checklist";
-function refreshChecklist() {
+export const CHECKLIST_EVENT = "opc-arb-checklist";
+export function refreshChecklist() {
   if (typeof window !== "undefined") window.dispatchEvent(new Event(CHECKLIST_EVENT));
 }
 
@@ -597,9 +601,9 @@ function LearnedList({ token }: { token: string }) {
 }
 
 /** Opt-in Web Push: the phone rings when a case or simulation is waiting. iOS: Home Screen app only. */
-function NotifyCard({ token }: { token: string }) {
+export function NotifyCard({ token, body, title }: { token: string; body?: string; title?: string }) {
   const { m } = useI18n();
-  const t = m.arbitrage.notify;
+  const t = { ...m.arbitrage.notify, ...(body ? { body } : {}), ...(title ? { title } : {}) };
   const [support, setSupport] = useState<PushSupport | null>(null);
   const [state, setState] = useState<"idle" | "on" | "denied" | "forbidden" | "error" | "not_configured">("idle");
   useEffect(() => {
