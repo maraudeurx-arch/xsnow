@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useId, useRef, useState, type FormEvent } from "react";
+import { createPortal } from "react-dom";
+import { useModalViewport } from "@/lib/useModalViewport";
 import { SignupGate } from "@/components/SignupGate";
 import { ProjectLeadRegistration } from "@/components/features/ProjectLeadRegistration";
 import { postIdeaToInbox, type IdeaInboxPostResult } from "@/lib/idea-inbox";
@@ -29,8 +31,14 @@ export function ProjectLeadDialog({ onClose }: { onClose: () => void }) {
   const [form, setForm] = useState<ProjectLeadForm>(emptyProjectLeadForm());
   const [state, setState] = useState<"idle" | "invalid" | "sending" | IdeaInboxPostResult>("idle");
 
+  const boxRef = useRef<HTMLElement | null>(null);
+  const viewport = useModalViewport();
+
   useEffect(() => {
-    closeRef.current?.focus();
+    // Always reopen on the title + intro: focusing « Fermer » (bottom) used to scroll the sheet
+    // down, so the second « S'enregistrer » showed only the fields (Popol, 04/11/2026).
+    boxRef.current?.scrollTo({ top: 0 });
+    closeRef.current?.focus({ preventScroll: true });
     const onKey = (event: KeyboardEvent) => {
       if (event.key === "Escape") onClose();
     };
@@ -59,13 +67,18 @@ export function ProjectLeadDialog({ onClose }: { onClose: () => void }) {
   const patch = (key: keyof ProjectLeadForm, value: string | boolean) =>
     setForm((prev) => ({ ...prev, [key]: value }));
 
-  return (
+  if (typeof document === "undefined") return null;
+  // Portal to <body>: inside .app-stage (z-20) the sheet sat under the footer slogan banner.
+  return createPortal(
     <div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 p-3 sm:items-center"
+      className="fixed inset-x-0 top-0 z-[90] flex items-end justify-center bg-black/60 px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-[max(0.75rem,env(safe-area-inset-top))] sm:items-center"
+      style={{ top: viewport.top, height: viewport.height }}
       onClick={onClose}
+      data-project-lead-overlay
     >
       <section
-        className="opc-glass-menu max-h-[90vh] w-full max-w-md overflow-y-auto rounded-2xl p-4 text-left text-snow"
+        ref={boxRef}
+        className="opc-glass-menu max-h-full w-full overscroll-contain max-w-md overflow-y-auto rounded-2xl p-4 text-left text-snow"
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
@@ -126,6 +139,7 @@ export function ProjectLeadDialog({ onClose }: { onClose: () => void }) {
           {g.close}
         </button>
       </section>
-    </div>
+    </div>,
+    document.body,
   );
 }

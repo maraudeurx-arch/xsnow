@@ -686,7 +686,7 @@ export const es: Messages = {
     slogans: [
       "Open Community — La fuerza de la ayuda mutua local.",
       "Open Community — La gente de aquí, para la gente de aquí.",
-      "Open Community — Conectada y solidaria.",
+      "Open Community — Conectada y cerca de ti.",
     ],
     privacy: "Privacidad",
     terms: "Condiciones",

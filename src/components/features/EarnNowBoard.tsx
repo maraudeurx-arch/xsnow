@@ -20,6 +20,7 @@ export function EarnNowBoard() {
   const copy = m.earnNow;
   const [supportOpen, setSupportOpen] = useState(false);
   const [leadOpen, setLeadOpen] = useState(false);
+  const [leadKey, setLeadKey] = useState(0);
   const titleId = useId();
   const supportCtaRef = useRef<HTMLButtonElement | null>(null);
   const supportCloseRef = useRef<HTMLButtonElement | null>(null);
@@ -107,7 +108,7 @@ export function EarnNowBoard() {
           type="button"
           className={ctaClass}
           data-earn-project-lead-cta
-          onClick={() => setLeadOpen(true)}
+          onClick={() => { setLeadKey((k) => k + 1); setLeadOpen(true); }}
         >
           {copy.projectLead.cta}
         </button>
@@ -125,7 +126,7 @@ export function EarnNowBoard() {
         </p>
       ) : null}
 
-      {leadOpen ? <ProjectLeadDialog onClose={() => setLeadOpen(false)} /> : null}
+      {leadOpen ? <ProjectLeadDialog key={leadKey} onClose={() => setLeadOpen(false)} /> : null}
 
       {supportOpen ? (
         <div
