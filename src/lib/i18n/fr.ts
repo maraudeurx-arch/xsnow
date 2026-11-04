@@ -682,7 +682,7 @@ export const fr = {
     slogans: [
       "Open Community — La force de l’entraide locale.",
       "Open Community — Les gens d’ici, pour les gens d’ici.",
-      "Open Community — Connectée et solidaire.",
+      "Open Community — Connectée et proche de chez toi.",
     ],
     privacy: "Vie privée",
     terms: "Conditions",

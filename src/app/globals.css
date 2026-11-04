@@ -1173,3 +1173,10 @@ footer.opc-glass-soft,
   background: #ffffff;
   accent-color: #0f172a;
 }
+
+/* Modal open (Chef de projet, 04/11/2026): hide fixed chrome so it never overlaps the sheet
+   or floats above the iOS keyboard. Visibility keeps the layout stable underneath. */
+html.opc-modal-open .safe-frame > footer,
+html.opc-modal-open .chrome-panel {
+  visibility: hidden;
+}
