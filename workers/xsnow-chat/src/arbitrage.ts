@@ -9,7 +9,7 @@
  *   GET  /arbitrage/rescan/photo       Bearer <arbiter in rescan_requested> → own ID photo (for the in-browser match)
  *   POST /arbitrage/rescan             Bearer <arbiter in rescan_requested> {face} → back to pending with new score
  *   GET  /arbitrage/sim-cases          Bearer <verified arbiter> → open SIMULATION cases + my answer
- *   GET  /arbitrage/explanations       Bearer <arbiter, not rejected> → my last training explanations (evidence)
+ *   GET  /arbitrage/explanations       Bearer <arbiter (not project_lead), not rejected> → my last training explanations (evidence)
  *   GET  /arbitrage/checklist          Bearer <arbiter, not rejected> → onboarding checklist (done/missing per item)
  *   POST /arbitrage/contract-accept    Bearer <arbiter, not rejected> {version, hash} → e-signature of the arbiter agreement
  *   POST /arbitrage/manual-read        Bearer <arbiter, not rejected> → "J'ai lu le Manuel" (manual_read_at)
@@ -899,6 +899,8 @@ export async function handleArbitrage(req: Request, env: ArbEnv, deps: ArbDeps):
   }
   if (path === "/arbitrage/explanations" && req.method === "GET") {
     if (me.status === "rejected") return j({ error: "rejected" }, 403);
+    // Training explanations are arbitration evidence: project leads never see them.
+    if (me.role === "project_lead") return j({ error: "project_lead" }, 403);
     const rows = await store.explanationsBy(me.id, 20);
     return j({ explanations: rows.map((r) => ({ caseId: r.case_id, simulation: r.simulation === 1, followed: r.followed === 1,
       chosen: r.chosen, suggested: r.suggested, manualRef: r.manual_ref, manualVersion: r.manual_version, text: r.text,
