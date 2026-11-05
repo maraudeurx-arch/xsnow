@@ -817,6 +817,7 @@ export const es: Messages = {
     reglages: "Ajustes",
     inviter: "Invitar a otros a unirse a la comunidad",
     aPropos: "Acerca de Open Community (OPC)",
+    charte: "Carta de derechos y libertades",
     vosIdees: "Tus ideas · Implicarte",
     infosBody: "Tus datos y tu cartera se quedan en este aparato.",
     infosPrivacy:

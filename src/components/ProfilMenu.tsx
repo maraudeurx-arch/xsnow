@@ -8,11 +8,12 @@ import { LanguageSwitch } from "@/components/LanguageSwitch";
 import { LocalProfileBoard } from "@/components/LocalProfileBoard";
 import { ProfileAvatarControls } from "@/components/ProfileAvatarControls";
 import { useI18n } from "@/lib/i18n/locale";
-import { pathMatches } from "@/lib/paths";
+import { CHARTER_HREF, pathMatches } from "@/lib/paths";
 
 const PROFILE_LINKS = [
   { href: "/mon-profil/reglages", key: "reglages" as const },
   { href: "/mon-profil/a-propos", key: "aPropos" as const },
+  { href: CHARTER_HREF, key: "charte" as const },
 ];
 
 export function ProfilMenu() {
