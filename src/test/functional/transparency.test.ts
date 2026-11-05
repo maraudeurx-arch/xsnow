@@ -9,6 +9,7 @@ import { es } from "../../lib/i18n/es.ts";
 import { fr } from "../../lib/i18n/fr.ts";
 import {
   ABOUT_HREF,
+  CHARTER_HREF,
   GITHUB_ISSUES_URL,
   GITHUB_REPO_URL,
   GITHUB_SECURITY_MD_URL,
@@ -37,7 +38,7 @@ describe("transparency pages exist", () => {
   it("ships an App Router page for every public-trust footer link", () => {
     assert.deepEqual(
       TRUST_NAV.map((item) => item.href),
-      [PRIVACY_HREF, TERMS_HREF, ABOUT_HREF, HOW_IT_WORKS_HREF, SECURITY_HREF, PROOFS_HREF],
+      [PRIVACY_HREF, TERMS_HREF, ABOUT_HREF, HOW_IT_WORKS_HREF, SECURITY_HREF, PROOFS_HREF, CHARTER_HREF],
     );
     for (const item of TRUST_NAV) {
       assert.equal(existsSync(pageFile(item.href)), true, item.href);

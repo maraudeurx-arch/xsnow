@@ -84,6 +84,7 @@ export const TRUST_NAV = [
   { href: HOW_IT_WORKS_HREF, footerKey: "how" as const },
   { href: SECURITY_HREF, footerKey: "security" as const },
   { href: PROOFS_HREF, footerKey: "proofs" as const },
+  { href: CHARTER_HREF, footerKey: "charter" as const },
 ] as const;
 
 export function assetUrl(path: string) {
