@@ -961,6 +961,7 @@ export const en: Messages = {
     reglages: "Settings",
     inviter: "Invite others to join the community",
     aPropos: "About Open Community (OPC)",
+    charte: "Charter of Rights and Freedoms",
     vosIdees: "Your ideas · Get involved",
     infosBody: "Your details and wallet stay on this device.",
     infosPrivacy:

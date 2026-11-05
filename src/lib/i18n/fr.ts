@@ -957,6 +957,7 @@ export const fr = {
     reglages: "Réglages",
     inviter: "Inviter d’autres à rejoindre la communauté",
     aPropos: "À propos de Open Community (OPC)",
+    charte: "Charte des droits et libertés",
     vosIdees: "Vos idées · S’impliquer",
     infosBody: "Vos coordonnées et votre portefeuille restent sur cet appareil.",
     infosPrivacy:
