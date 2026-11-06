@@ -96,6 +96,14 @@ export function ProjectLeadDialog({ onClose }: { onClose: () => void }) {
           {g.neverList.map((item) => <li key={item}>{item}</li>)}
         </ul>
         <p className="mt-3 text-[13px] italic text-snow/90" data-project-lead-pay>{g.payNote}</p>
+        <div className="mt-3 rounded-xl border border-white/25 bg-white/10 px-3 py-2.5" data-project-lead-gains>
+          <h3 className="text-[14px] font-bold">{g.gains.title}</h3>
+          <p className="mt-1 text-[13px] leading-relaxed text-snow/90">{g.gains.lead}</p>
+          <ul className="mt-1.5 space-y-1 text-[13px] font-semibold text-snow">
+            {g.gains.rows.map((row) => <li key={row}>{row}</li>)}
+          </ul>
+          <p className="mt-1.5 text-[12px] italic text-snow/80">{g.gains.note}</p>
+        </div>
 
         <div className="mt-4">
           <ProjectLeadRegistration />

@@ -27,18 +27,43 @@ describe("chef de projet", () => {
     assert.equal("email" in parsed, false);
   });
 
-  it("copy states the limits in FR/EN/ES, with no amount and banned words absent", () => {
+  it("copy states the limits in FR/EN/ES; amounts only in the Clé en Main gains box (décision Popol, 06/11/2026)", () => {
     for (const m of [fr, en, es]) {
       const g = m.earnNow.projectLead;
       assert.ok(g.title && g.cta && g.submit);
       assert.ok(g.doesList.length >= 3);
       assert.ok(g.neverList.length >= 6);
-      const all = JSON.stringify(g);
+      // Depuis la décision de Popol du 06/11/2026, seuls les gains Clé en Main
+      // (encadré « gains ») affichent des montants ; le reste du texte n'en contient aucun.
+      const { gains, ...rest } = g;
+      const all = JSON.stringify(rest);
       assert.doesNotMatch(all, /[$€]|\d+\s?(USD|CAD)/);
       assert.doesNotMatch(all, /crypto|token|jeton|solidaire|Cap Objectif/i);
+      assert.doesNotMatch(JSON.stringify(gains), /crypto|token|jeton|solidaire|Cap Objectif/i);
+      assert.match(gains.lead, /35\s?%/);
+      assert.equal(gains.rows.length, 4);
     }
-    assert.match(fr.earnNow.projectLead.payNote, /précisée au lancement/);
-    assert.match(en.earnNow.projectLead.payNote, /announced at launch/);
+    // Gains figés : 35 % de la grille par projet (74,99 / 59,99 / 49,99 / 44,99 $ CAD).
+    assert.deepEqual(fr.earnNow.projectLead.gains.rows, [
+      "1er projet du client : 26,25 $",
+      "2e projet : 21,00 $",
+      "3e projet : 17,50 $",
+      "4e projet et suivants : 15,75 $",
+    ]);
+    assert.deepEqual(en.earnNow.projectLead.gains.rows, [
+      "Client's 1st project: $26.25",
+      "2nd project: $21.00",
+      "3rd project: $17.50",
+      "4th project and beyond: $15.75",
+    ]);
+    assert.deepEqual(es.earnNow.projectLead.gains.rows, [
+      "1er proyecto del cliente: 26,25 $",
+      "2.º proyecto: 21,00 $",
+      "3er proyecto: 17,50 $",
+      "4.º proyecto y siguientes: 15,75 $",
+    ]);
+    assert.match(fr.earnNow.projectLead.payNote, /encadré ci-dessous/);
+    assert.match(en.earnNow.projectLead.payNote, /box below/);
     assert.match(fr.earnNow.projectLead.neverList.join(" "), /adultes/);
     assert.match(fr.earnNow.projectLead.lead, /pays en développement/);
     assert.equal(fr.earnNow.projectLead.title, "Chef de projet");
