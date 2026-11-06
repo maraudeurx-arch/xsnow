@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * « Chef de projet » › S'enregistrer (Popol, 02/11/2026).
+ * « Chef de projet » › S'enregistrer (équipe, 02/11/2026).
  * Same official path as « Devenir arbitre », reusing its components and Worker routes:
  * conditions modal → ID papers + one ID photo → in-browser face scan (only a score leaves the device)
  * → privacy consent → e-mail → notifications → Project Lead instructions (PDF + mandatory,

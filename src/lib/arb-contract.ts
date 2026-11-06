@@ -1,6 +1,6 @@
 /**
- * OPC arbiter agreement (Popol, 23/10/2026): 7th checklist step « J'accepte le contrat d'arbitre OPC ».
- * v1.0 in force (Popol's go 23/10 + Knicks review). Lawyer review later, when funded.
+ * OPC arbiter agreement (équipe, 23/10/2026): 7th checklist step « J'accepte le contrat d'arbitre OPC ».
+ * v1.0 in force (go de l'équipe 23/10 + Knicks review). Lawyer review later, when funded.
  * The server stores acceptance timestamp + version + SHA-256 of the exact accepted text.
  */
 export { ARB_CONTRACT_TEXT } from "./arb-contract-text.ts";

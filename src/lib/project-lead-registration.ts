@@ -1,5 +1,5 @@
 /**
- * « Chef de projet » — S'enregistrer (Popol, 02/11/2026): the same official onboarding as arbiters
+ * « Chef de projet » — S'enregistrer (équipe, 02/11/2026): the same official onboarding as arbiters
  * (identity papers + browser face check, same Worker routes and storage, same privacy rules),
  * with one difference: "read the Manuel de justice" becomes "read the Project Lead instructions"
  * (PDF + mandatory, timestamped "I have read and accept" box).
