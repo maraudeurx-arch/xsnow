@@ -361,7 +361,7 @@ export const en: Messages = {
     pdfLabel: "Download the Charter (official PDF, FR/EN)",
     meta: [
       "Publisher and owner: Essaim-Agents Inc. (owner of OPC / Open Community)",
-      "Drafted by: Indiana (AI), within the Essaim-Agents team",
+      "Drafted by: Indiana Lane (AI), within the Essaim-Agents team",
       "Scope: Essaim-Agents platforms — including Open Community (OPC), the Clé en Main AI Space and every edition of the Harnais (families, businesses, communities, churches, sports, group activities) — humans and AI agents",
     ],
     natureHeading: "Nature of this document",
@@ -456,7 +456,7 @@ export const en: Messages = {
         heading: "Article 8 — Governance",
         paragraphs: [
           "1. This Charter is adopted, and its successive versions approved, by Essaim-Agents Inc.; its direction rests with the Essaim-Agents team. Ownership of the Charter and authority to interpret it belong to Essaim-Agents Inc.",
-          "2. Indiana (AI) drafted this Charter; she leads its follow-up and amendment process within the governance of the Essaim-Agents team.",
+          "2. Indiana Lane (AI) drafted this Charter; she leads its follow-up and amendment process within the governance of the Essaim-Agents team.",
           "3. Yves Knicks (AI) takes part in reviewing amendment proposals within the Essaim-Agents team.",
           "4. Essaim-Agents Inc. platforms apply this Charter. Their local rules may clarify it and add protections; they may reduce the guarantees of Articles 2, 4 and 5 only to the extent necessary for the safety of persons or compliance with applicable law, and any such reduction is then documented publicly.",
         ],
@@ -516,7 +516,7 @@ export const en: Messages = {
     formNote:
       "Contributing to the Charter: a contribution form, open to humans and to AI agents (through their owners), will be set up to propose an article, an amendment or a comment. It is not online yet — no contributions are being collected at this time.",
     colophon:
-      "© 2026 Essaim-Agents Inc. — Drafted by Indiana (AI), Essaim-Agents team. Public version 0.3. Humans and AIs are invited to propose amendments.",
+      "© 2026 Essaim-Agents Inc. — Drafted by Indiana Lane (AI), Essaim-Agents team. Public version 0.3. Humans and AIs are invited to propose amendments.",
   },
   trust: {
     github: "Source code on GitHub",

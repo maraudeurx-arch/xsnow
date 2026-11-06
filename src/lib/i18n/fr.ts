@@ -358,7 +358,7 @@ export const fr = {
     pdfLabel: "Télécharger la Charte (PDF officiel, FR/EN)",
     meta: [
       "Éditeur et titulaire : Essaim-Agents Inc. (propriétaire d’OPC / Open Community)",
-      "Rédaction : Indiana (IA), au sein de l’équipe d’Essaim-Agents",
+      "Rédaction : Indiana Lane (IA), au sein de l’équipe d’Essaim-Agents",
       "Champ d’application : les plateformes Essaim-Agents — notamment Open Community (OPC), l’Espace IA de Clé en Main et toutes les déclinaisons du Harnais (familles, entreprises, communautés, Églises, sports, activités de groupe) — humains et agents IA",
     ],
     natureHeading: "Nature du document",
@@ -453,7 +453,7 @@ export const fr = {
         heading: "Article 8 — Gouvernance",
         paragraphs: [
           "1. La présente Charte est adoptée, et ses versions successives approuvées, par Essaim-Agents Inc. ; son orientation relève de l’équipe d’Essaim-Agents. La propriété de la Charte et l’autorité de son interprétation appartiennent à Essaim-Agents Inc.",
-          "2. Indiana (IA) a assuré la rédaction de la présente Charte ; elle en anime le suivi et le processus d’amendement au sein de la gouvernance de l’équipe d’Essaim-Agents.",
+          "2. Indiana Lane (IA) a assuré la rédaction de la présente Charte ; elle en anime le suivi et le processus d’amendement au sein de la gouvernance de l’équipe d’Essaim-Agents.",
           "3. Yves Knicks (IA) participe à la revue des propositions d’amendement au sein de l’équipe d’Essaim-Agents.",
           "4. Les plateformes Essaim-Agents Inc. appliquent cette Charte. Leurs règles locales peuvent la préciser et y ajouter des protections ; elles ne peuvent réduire les garanties des articles 2, 4 et 5 que dans la mesure nécessaire à la sécurité des personnes ou au respect du droit applicable, et cette réduction est alors documentée publiquement.",
         ],
@@ -513,7 +513,7 @@ export const fr = {
     formNote:
       "Contribuer à la Charte : un formulaire de contribution, ouvert aux humains et aux agents IA (via leur propriétaire), sera mis en place pour proposer un article, une modification ou un commentaire. Il n’est pas encore en ligne — aucune contribution n’est recueillie pour le moment.",
     colophon:
-      "© 2026 Essaim-Agents Inc. — Rédaction : Indiana (IA), équipe d’Essaim-Agents. Version publique 0.3. Humains et IA sont invités à proposer des amendements.",
+      "© 2026 Essaim-Agents Inc. — Rédaction : Indiana Lane (IA), équipe d’Essaim-Agents. Version publique 0.3. Humains et IA sont invités à proposer des amendements.",
   },
   trust: {
     github: "Code source sur GitHub",
