@@ -1,5 +1,5 @@
 /**
- * Training explanation after each arbiter decision (Popol, 21/10/2026).
+ * Training explanation after each arbiter decision (équipe, 21/10/2026).
  * Follows Indiana's suggestion → why the decision was right, simply enough for a 12-year-old.
  * Contradicts it → a gentle explanation of the suggested reasoning.
  * Always cites an excerpt of the Manuel de justice (v2.3.2, quoted word for word).

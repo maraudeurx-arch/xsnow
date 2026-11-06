@@ -99,7 +99,7 @@ describe("arbiter email", () => {
 
 describe("email typed on a phone", () => {
   it("normalises autofill quirks (spaces, zero-width, capitals, mailto:)", () => {
-    assert.equal(normalizeEmailInput(" Popol.Test@Example.ORG "), "popol.test@example.org");
+    assert.equal(normalizeEmailInput(" Test.User@Example.ORG "), "test.user@example.org");
     assert.equal(normalizeEmailInput("mailto:a@b.co\u200B"), "a@b.co");
     assert.equal(normalizeEmailInput("ａ@b.co"), "a@b.co");
     const ok = parseArbiterApplication({ ...base, email: " Jane@Example.org\u00a0" }, new Date("2026-10-21T12:00:00Z"));

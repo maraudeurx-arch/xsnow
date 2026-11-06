@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 export const MODAL_OPEN_CLASS = "opc-modal-open";
 
 /**
- * Stable mobile modal layout (Popol, 04/11/2026): while a modal is open, lock page scroll,
+ * Stable mobile modal layout (équipe, 04/11/2026): while a modal is open, lock page scroll,
  * hide the fixed header/footer chrome (html.opc-modal-open) and size the overlay to the
  * *visual* viewport, so the iOS keyboard never squeezes the top nav or floats the footer banner.
  */

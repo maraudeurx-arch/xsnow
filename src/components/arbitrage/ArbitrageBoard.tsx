@@ -117,7 +117,7 @@ export function ArbitrageBoard() {
 }
 
 /**
- * "Déjà arbitre ? Retrouver mon profil" (Popol, 22/10/2026): the iPhone home-screen app has its own
+ * "Déjà arbitre ? Retrouver mon profil" (équipe, 22/10/2026): the iPhone home-screen app has its own
  * storage, so an existing arbiter gets a 6-digit code by email and types it here. No new signup.
  */
 export function LoginCard({ onDone, role = "arbiter", copy }: { onDone: (token: string) => void; role?: ApplicantRole; copy?: { title: string; emailLabel: string } }) {
@@ -435,7 +435,7 @@ export function refreshChecklist() {
 }
 
 /**
- * Onboarding checklist (Popol, 21/10/2026): Indiana trains and approves every arbiter, so the arbiter
+ * Onboarding checklist (équipe, 21/10/2026): Indiana trains and approves every arbiter, so the arbiter
  * sees what is still missing, each item with a done/missing state and short, simple steps.
  */
 function ChecklistCard({ token, status, arbiterId }: { token: string; status: Status; arbiterId: string }) {
@@ -508,7 +508,7 @@ function ChecklistCard({ token, status, arbiterId }: { token: string; status: St
 }
 
 /**
- * 7th step (Popol, 23/10/2026): the arbiter scrolls the full agreement, then ticks the box.
+ * 7th step (équipe, 23/10/2026): the arbiter scrolls the full agreement, then ticks the box.
  * The server stores timestamp + version + SHA-256 of the exact text shown here.
  */
 function ChecklistContract({ token, onDone }: { token: string; onDone: (d: Checklist) => void }) {

@@ -98,7 +98,7 @@ describe("display name and initials", () => {
       "M.T.",
     );
     assert.equal(profileInitials("Marie", "Tremblay"), "M.T.");
-    assert.equal(profileInitials("politzer", "estigene"), "P.E.");
+    assert.equal(profileInitials("marie", "curie"), "M.C.");
     assert.ok("Marie".length <= HEADER_FIRST_NAME_MAX);
   });
 

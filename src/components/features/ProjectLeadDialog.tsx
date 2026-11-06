@@ -36,7 +36,7 @@ export function ProjectLeadDialog({ onClose }: { onClose: () => void }) {
 
   useEffect(() => {
     // Always reopen on the title + intro: focusing « Fermer » (bottom) used to scroll the sheet
-    // down, so the second « S'enregistrer » showed only the fields (Popol, 04/11/2026).
+    // down, so the second « S'enregistrer » showed only the fields (équipe, 04/11/2026).
     boxRef.current?.scrollTo({ top: 0 });
     closeRef.current?.focus({ preventScroll: true });
     const onKey = (event: KeyboardEvent) => {

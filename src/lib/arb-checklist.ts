@@ -1,5 +1,5 @@
 /**
- * Arbiter onboarding checklist (Popol, 21/10/2026: Indiana trains and approves every arbiter).
+ * Arbiter onboarding checklist (équipe, 21/10/2026: Indiana trains and approves every arbiter).
  * Pure logic shared by the Worker (GET /arbitrage/checklist) and the arbiter space.
  * Each item is "done" or "missing"; the UI shows short, simple steps for what is missing.
  */
@@ -31,7 +31,7 @@ export type ChecklistInput = {
 };
 
 /**
- * Wallet step (Popol, 22/10/2026): a connected address is enough, whatever network the wallet shows
+ * Wallet step (équipe, 22/10/2026): a connected address is enough, whatever network the wallet shows
  * (e.g. chain_id 1 on a phone wallet). No network switch is required; the network is informational only.
  */
 export function walletState(w: ChecklistInput["wallet"]): WalletState {
@@ -64,7 +64,7 @@ export function computeChecklist(i: ChecklistInput): Checklist {
   return { items, doneCount, total: items.length, complete: doneCount === items.length };
 }
 
-/** Arbiters write to OPC management (Popol, 23/10/2026): questions and suggestions, like OPC staff. */
+/** Arbiters write to OPC management (équipe, 23/10/2026): questions and suggestions, like OPC staff. */
 export const OPC_DIRECTION_EMAIL = "opencommunity.opc@gmail.com";
 export function arbContactHref(label: string, arbiterId: string): string {
   const id = /^[A-Za-z0-9_-]{1,40}$/.test(arbiterId) ? arbiterId : "";
