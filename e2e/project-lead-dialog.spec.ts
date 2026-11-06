@@ -40,6 +40,20 @@ test.describe("Chef de projet dialog on mobile", () => {
     await expect(page.locator(".chrome-panel")).toBeHidden();
   });
 
+  test("encadré « Vos gains par projet (Clé en Main) » visible avec les 4 montants figés", async ({ page }) => {
+    await page.locator("[data-earn-project-lead-cta]").click();
+    const gains = page.locator("[data-project-lead-gains]");
+    await gains.scrollIntoViewIfNeeded();
+    await expect(gains).toBeVisible();
+    await expect(gains).toContainText("Vos gains par projet (Clé en Main)");
+    await expect(gains).toContainText("35 %");
+    await expect(gains).toContainText("1er projet du client : 26,25 $");
+    await expect(gains).toContainText("2e projet : 21,00 $");
+    await expect(gains).toContainText("3e projet : 17,50 $");
+    await expect(gains).toContainText("4e projet et suivants : 15,75 $");
+    await expect(gains).toContainText("aucun paiement n’est activé");
+  });
+
   test("reopening after « Fermer » shows the title and intro again", async ({ page }) => {
     for (let i = 0; i < 2; i += 1) {
       await page.locator("[data-earn-project-lead-cta]").click();

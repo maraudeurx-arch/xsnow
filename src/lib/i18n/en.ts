@@ -621,7 +621,18 @@ export const en: Messages = {
             "Confidentiality: nothing about the project leaves the follow-up, online or anywhere else.",
             "Adults only: Project Leads and clients are 18 or older."
       ],
-      "payNote": "Pay will be announced at launch. No amount and no commitment for now.",
+      "payNote": "For Clé en Main projects, your pay per project is shown in the box below. No payment is active yet.",
+      "gains": {
+        "title": "Your pay per project (Clé en Main)",
+        "lead": "You receive 35% of the price of each Clé en Main project you lead. The amount depends on the project's rank with the client:",
+        "rows": [
+          "Client's 1st project: $26.25",
+          "2nd project: $21.00",
+          "3rd project: $17.50",
+          "4th project and beyond: $15.75"
+        ],
+        "note": "Amounts in Canadian dollars, for information only: no payment is active yet."
+      },
       "formTitle": "I'm interested",
       "country": "Country",
       "languages": "Languages spoken",

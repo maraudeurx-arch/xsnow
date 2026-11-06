@@ -617,7 +617,18 @@ export const fr = {
             "Confidentialité : rien du projet ne sort du suivi, ni en ligne ni ailleurs.",
             "Uniquement des adultes : chefs de projet et clients ont 18 ans ou plus."
       ],
-      "payNote": "La rémunération sera précisée au lancement. Aucun montant ni engagement pour l’instant.",
+      "payNote": "Pour les projets Clé en Main, vos gains par projet sont indiqués dans l’encadré ci-dessous. Aucun paiement n’est activé pour l’instant.",
+      "gains": {
+        "title": "Vos gains par projet (Clé en Main)",
+        "lead": "Vous recevez 35 % du prix de chaque projet Clé en Main que vous pilotez. Le montant dépend du rang du projet chez le client :",
+        "rows": [
+          "1er projet du client : 26,25 $",
+          "2e projet : 21,00 $",
+          "3e projet : 17,50 $",
+          "4e projet et suivants : 15,75 $"
+        ],
+        "note": "Montants en dollars canadiens, à titre informatif seulement : aucun paiement n’est activé pour l’instant."
+      },
       "formTitle": "Je suis intéressé·e",
       "country": "Pays",
       "languages": "Langues parlées",

@@ -621,7 +621,18 @@ export const es: Messages = {
             "Confidencialidad: nada del proyecto sale del seguimiento, ni en línea ni en otro lugar.",
             "Solo adultos: jefes de proyecto y clientes tienen 18 años o más."
       ],
-      "payNote": "La remuneración se precisará en el lanzamiento. Ningún importe ni compromiso por ahora.",
+      "payNote": "Para los proyectos Clé en Main, tus ganancias por proyecto se indican en el recuadro siguiente. Ningún pago está activado por ahora.",
+      "gains": {
+        "title": "Tus ganancias por proyecto (Clé en Main)",
+        "lead": "Recibes el 35 % del precio de cada proyecto Clé en Main que diriges. El importe depende del rango del proyecto en el cliente:",
+        "rows": [
+          "1er proyecto del cliente: 26,25 $",
+          "2.º proyecto: 21,00 $",
+          "3er proyecto: 17,50 $",
+          "4.º proyecto y siguientes: 15,75 $"
+        ],
+        "note": "Importes en dólares canadienses, solo a título informativo: ningún pago está activado por ahora."
+      },
       "formTitle": "Me interesa",
       "country": "País",
       "languages": "Idiomas",
