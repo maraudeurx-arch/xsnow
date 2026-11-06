@@ -665,7 +665,7 @@ export const es: Messages = {
           "Debes ingresar tu identidad y hacer un escaneo biométrico (rostro) para probar que eres tú, como los árbitros.",
           "Debes leer las instrucciones del jefe de proyecto (PDF) y marcar «He leído y acepto las instrucciones».",
           "El jefe de proyecto nunca tiene acceso al dinero, las cuentas, los documentos ni las firmas del cliente, y no da consejos médicos, legales ni financieros.",
-          "Tienes 18 años o más. La remuneración se precisará en el lanzamiento: ningún monto ni compromiso por ahora."
+          "Tienes 18 años o más. Para los proyectos Clé en Main, tus ganancias por proyecto se indican en la presentación del rol de arriba (35 % del precio del proyecto). Ningún pago está activado por ahora."
         ],
         "privacyTitle": "Privacidad",
         "privacy": "Las mismas protecciones que para los árbitros: guardamos una sola foto de tu documento, cifrada, visible solo para el propietario de OPC, borrada 90 días después de la verificación. El escaneo del rostro se hace en tu navegador: no se envía ni se guarda ninguna imagen del rostro, solo una puntuación. No se guarda nada más. Los clientes nunca reciben tu nombre, tu foto ni el número de tu documento. Tratamiento conforme a la PIPEDA (LPRPDE), la ley de Ontario y la ley federal de Canadá.",
