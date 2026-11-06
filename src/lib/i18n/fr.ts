@@ -661,7 +661,7 @@ export const fr = {
           "Tu dois entrer ton identité et faire un scan biométrique (visage) pour prouver que c’est bien toi, comme pour les arbitres.",
           "Tu dois lire les instructions du chef de projet (PDF) et cocher « J’ai lu et j’accepte les instructions ».",
           "Le chef de projet n’a jamais accès à l’argent, aux comptes, aux documents ni aux signatures du client, et ne donne aucun conseil médical, juridique ou financier.",
-          "Tu as 18 ans ou plus. La rémunération sera précisée au lancement : aucun montant ni engagement pour l’instant."
+          "Tu as 18 ans ou plus. Pour les projets Clé en Main, vos gains par projet sont indiqués dans la présentation du rôle ci-dessus (35 % du prix du projet). Aucun paiement n’est activé pour l’instant."
         ],
         "privacyTitle": "Vie privée",
         "privacy": "Mêmes protections que pour les arbitres : nous gardons une seule photo de ta pièce, chiffrée, accessible au seul propriétaire d’OPC, supprimée 90 jours après la vérification. Le scan du visage se fait dans ton navigateur : aucune image du visage n’est envoyée ni conservée, seulement un score. Rien d’autre n’est stocké. Les clients ne reçoivent jamais ton nom, ta photo ni le numéro de ta pièce. Traitement conforme à la LPRPDE, au droit de l’Ontario et au droit fédéral du Canada.",

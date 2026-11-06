@@ -665,7 +665,7 @@ export const en: Messages = {
           "You must enter your identity and do a biometric (face) scan to prove it is really you, as arbiters do.",
           "You must read the Project Lead instructions (PDF) and tick “I have read and accept the instructions”.",
           "A Project Lead never has access to the client’s money, accounts, documents or signatures, and gives no medical, legal or financial advice.",
-          "You are 18 or older. Pay will be announced at launch: no amount and no commitment for now."
+          "You are 18 or older. For Clé en Main projects, your pay per project is shown in the role presentation above (35% of the project price). No payment is active yet."
         ],
         "privacyTitle": "Privacy",
         "privacy": "Same protections as for arbiters: we keep one photo of your ID, encrypted, visible only to the OPC owner, deleted 90 days after verification. The face scan runs in your browser: no face image is sent or kept, only a score. Nothing else is stored. Clients never receive your name, photo or ID number. Processing complies with PIPEDA, Ontario law and Canadian federal law.",
