@@ -6,6 +6,7 @@ import { PAID_MISSION_LINKS } from "@/lib/paid-missions";
 import { ONLINE_WORK_LINKS } from "@/lib/online-work";
 import { useI18n } from "@/lib/i18n/locale";
 import { ProjectLeadDialog } from "@/components/features/ProjectLeadDialog";
+import { IdeaSaleDialog } from "@/components/features/IdeaSaleDialog";
 
 const ctaClass =
   "tap inline-flex min-h-12 w-full items-center justify-between rounded-2xl border border-slate-200 bg-white px-3.5 text-left text-[15px] font-bold text-slate-900 shadow-[0_8px_20px_rgba(15,23,42,0.05)]";
@@ -21,6 +22,8 @@ export function EarnNowBoard() {
   const [supportOpen, setSupportOpen] = useState(false);
   const [leadOpen, setLeadOpen] = useState(false);
   const [leadKey, setLeadKey] = useState(0);
+  const [ideaSaleOpen, setIdeaSaleOpen] = useState(false);
+  const [ideaSaleKey, setIdeaSaleKey] = useState(0);
   const titleId = useId();
   const supportCtaRef = useRef<HTMLButtonElement | null>(null);
   const supportCloseRef = useRef<HTMLButtonElement | null>(null);
@@ -112,6 +115,14 @@ export function EarnNowBoard() {
         >
           {copy.projectLead.cta}
         </button>
+        <button
+          type="button"
+          className={ctaClass}
+          data-earn-idea-sale-cta
+          onClick={() => { setIdeaSaleKey((k) => k + 1); setIdeaSaleOpen(true); }}
+        >
+          {copy.ideaSale.cta}
+        </button>
         <Link href="/arbitrage/" className={ctaClass} data-earn-arbiter-cta>
           {copy.arbiterCta}
         </Link>
@@ -127,6 +138,8 @@ export function EarnNowBoard() {
       ) : null}
 
       {leadOpen ? <ProjectLeadDialog key={leadKey} onClose={() => setLeadOpen(false)} /> : null}
+
+      {ideaSaleOpen ? <IdeaSaleDialog key={ideaSaleKey} onClose={() => setIdeaSaleOpen(false)} /> : null}
 
       {supportOpen ? (
         <div

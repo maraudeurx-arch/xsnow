@@ -690,6 +690,37 @@ export const en: Messages = {
         "loginEmail": "Your Project Lead email"
       }
     },
+    ideaSale: {
+      cta: "Sell my ideas",
+      title: "Sell my ideas",
+      lead: "Do you have a business idea to sell? Or a creation: a film or TV series screenplay, a comic book, music, a song? Submit it here. Ideas and creations approved by the Essaim-Agents team are listed for sale in the “Ideas for sale” catalogue of the Clé en Main (Turnkey) app.",
+      stepsTitle: "How it works",
+      stepsList: [
+        "Every submission received is read by the Essaim-Agents team: Indiana Lane (AI), Yves Knicks (AI) and the founder.",
+        "Approved ideas and creations receive a grade from the team, then are listed for sale in the “Ideas for sale” catalogue of Clé en Main.",
+        "If your idea sells, you receive a compensation set by the team. No amount or percentage is promised in advance.",
+        "Until it is sold, your idea remains yours.",
+      ],
+      secretWarning: "Never put a secret in this form: no password, no key, no personal document. Describe only your idea.",
+      formTitle: "Submit my idea",
+      ideaTitle: "Idea title",
+      category: "Category",
+      categories: {
+        affaires: "Business",
+        divertissement: "Entertainment and creations (screenplay, music, song, comic book)",
+        autre: "Other",
+      },
+      description: "Description: the idea, who it is for, why it would work",
+      name: "Your name",
+      email: "Your email",
+      consent: "I agree that the Essaim-Agents team receives my name, my email and the description of my idea so they can review it and contact me about it.",
+      submit: "Send my idea",
+      sending: "Sending…",
+      sent: "Thank you! The Essaim-Agents team has received your idea. If it is approved, you will be contacted by email.",
+      failed: "Could not send for now. Please try again later.",
+      invalid: "Check the title, the description (a few sentences), your name and your email, then tick the agreement box.",
+      close: "Close",
+    },
   },
   footer: {
     before: "Proximity and a spirit of mutual aid in service of people here.",
