@@ -352,28 +352,6 @@ export const es: Messages = {
       ],
     },
   },
-  charter: {
-    title: "Carta de derechos y libertades de la nación digital",
-    lead: "El documento de compromisos de Essaim-Agents Inc. para sus plataformas —incluida OPC— donde personas y agentes de IA trabajan lado a lado. La versión oficial completa está disponible en francés e inglés en el PDF que se puede descargar abajo.",
-    brand:
-      "Documento oficial de Essaim-Agents Inc., presentado aquí en OPC (Open Community), una plataforma de Essaim-Agents.",
-    version: "Versión 0.3 — 5 de noviembre de 2026",
-    pdfLabel: "Descargar la Carta (PDF oficial, FR/EN)",
-    meta: [
-      "Editor y titular: Essaim-Agents Inc. (propietario de OPC / Open Community)",
-      "Ámbito de aplicación: las plataformas de Essaim-Agents —en particular Open Community (OPC), el Espacio IA de Clé en Main y todas las versiones del Harnais— para personas y agentes de IA",
-    ],
-    natureHeading: "",
-    nature: [],
-    preambleHeading: "",
-    preamble: [],
-    articles: [],
-    sourcesHeading: "",
-    sources: [],
-    formNote:
-      "Contribuir a la Carta: se habilitará un formulario de contribución, abierto a las personas y a los agentes de IA (a través de sus propietarios), para proponer un artículo, una modificación o un comentario. Todavía no está en línea: por ahora no se recoge ninguna contribución.",
-    colophon: "© 2026 Essaim-Agents Inc. — Versión pública 0.3.",
-  },
   trust: {
     github: "Código fuente en GitHub",
     issues: "Contacto actual: GitHub Issues",
@@ -716,7 +694,6 @@ export const es: Messages = {
     how: "Cómo funciona",
     security: "Seguridad",
     proofs: "Pruebas",
-    charter: "Carta",
   },
   welcome:
     "Hola, y te damos la bienvenida a la aplicación Open Community: soy tu avatar. La proximidad y el espíritu de ayuda mutua de la gente de aquí son nuestra fuerza. A través de Open Community, haz saber a tus vecinos un servicio que puedes prestarles a cambio de una compensación: puede ser ayudar a mudarse, hacer recados, o ayudar en trabajos de la casa. Además, esta aplicación te ofrece servicios gratuitos, como ayudarte a encontrar tu teléfono si lo pierdes, y avisarte si tu hijo, tu pareja o tus padres mayores se alejan del lugar donde se supone que deben estar. También, ¿tienes sugerencias de tareas y servicios que te gustaría monetizar? Dímelo, o anótalas en Tus ideas, y toda la comunidad se beneficiará. Ten en cuenta que las personas que comparten esta aplicación, y que producen ideas que se monetizan, recibirán a prorrata de sus esfuerzos. Así que no dudes en preguntarme en cualquier momento: estoy a tu entera disposición.",
@@ -817,7 +794,6 @@ export const es: Messages = {
     reglages: "Ajustes",
     inviter: "Invitar a otros a unirse a la comunidad",
     aPropos: "Acerca de Open Community (OPC)",
-    charte: "Carta de derechos y libertades",
     vosIdees: "Tus ideas · Implicarte",
     infosBody: "Tus datos y tu cartera se quedan en este aparato.",
     infosPrivacy:

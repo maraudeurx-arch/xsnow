@@ -4,7 +4,6 @@ import {
   ABOUT_HREF,
   absoluteAssetUrl,
   BASE_PATH,
-  CHARTER_HREF,
   CUSTOM_DOMAIN_ORIGIN,
   GITHUB_ISSUES_URL,
   GITHUB_PAGES_HOST,
@@ -37,9 +36,8 @@ describe("public trust paths", () => {
   it("lists privacy, terms, and transparency routes", () => {
     assert.deepEqual(
       TRUST_NAV.map((item) => item.href),
-      [PRIVACY_HREF, TERMS_HREF, ABOUT_HREF, HOW_IT_WORKS_HREF, SECURITY_HREF, PROOFS_HREF, CHARTER_HREF],
+      [PRIVACY_HREF, TERMS_HREF, ABOUT_HREF, HOW_IT_WORKS_HREF, SECURITY_HREF, PROOFS_HREF],
     );
-    assert.equal(CHARTER_HREF, "/charte");
     assert.equal(ABOUT_HREF, "/about");
     assert.equal(HOW_IT_WORKS_HREF, "/comment-ca-marche");
     assert.equal(SECURITY_HREF, "/securite");

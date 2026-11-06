@@ -40,8 +40,6 @@ export const ABOUT_HREF = "/about";
 export const HOW_IT_WORKS_HREF = "/comment-ca-marche";
 export const SECURITY_HREF = "/securite";
 export const PROOFS_HREF = "/preuves-de-revenus";
-export const CHARTER_HREF = "/charte";
-export const CHARTER_PDF_PATH = "/charte/charte-v0.3-Essaim-Agents.pdf";
 
 /**
  * Custom-domain TLS is live (GitHub Pages Let's Encrypt for opencommunity.app).
@@ -84,7 +82,6 @@ export const TRUST_NAV = [
   { href: HOW_IT_WORKS_HREF, footerKey: "how" as const },
   { href: SECURITY_HREF, footerKey: "security" as const },
   { href: PROOFS_HREF, footerKey: "proofs" as const },
-  { href: CHARTER_HREF, footerKey: "charter" as const },
 ] as const;
 
 export function assetUrl(path: string) {
