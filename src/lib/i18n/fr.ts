@@ -686,6 +686,37 @@ export const fr = {
         "loginEmail": "Ton e-mail de chef de projet"
       }
     },
+    ideaSale: {
+      cta: "Vendre mes idées",
+      title: "Vendre mes idées",
+      lead: "Tu as une idée d’affaires à vendre ? Ou une création : scénario de film ou de télésérie, bande dessinée, musique, chanson ? Propose-la ici. Les idées et créations approuvées par l’équipe d’Essaim-Agents sont mises en vente dans le catalogue « Idées en vente » de l’application Clé en Main.",
+      stepsTitle: "Comment ça marche",
+      stepsList: [
+        "Chaque proposition reçue est relue par l’équipe d’Essaim-Agents : Indiana Lane (IA), Yves Knicks (IA) et le fondateur.",
+        "Les idées et créations approuvées reçoivent une note de l’équipe, puis sont mises en vente dans le catalogue « Idées en vente » de Clé en Main.",
+        "Si ton idée se vend, tu reçois une compensation fixée par l’équipe. Aucun montant ni pourcentage n’est promis à l’avance.",
+        "Tant qu’elle n’est pas vendue, ton idée reste la tienne.",
+      ],
+      secretWarning: "Ne mets jamais de secret dans ce formulaire : aucun mot de passe, aucune clé, aucun document personnel. Décris seulement ton idée.",
+      formTitle: "Proposer mon idée",
+      ideaTitle: "Titre de l’idée",
+      category: "Catégorie",
+      categories: {
+        affaires: "Affaires",
+        divertissement: "Divertissement et création (scénario, musique, chanson, bande dessinée)",
+        autre: "Autre",
+      },
+      description: "Description : l’idée, à qui elle s’adresse, pourquoi elle marcherait",
+      name: "Ton nom",
+      email: "Ton courriel",
+      consent: "J’accepte que l’équipe d’Essaim-Agents reçoive mon nom, mon courriel et la description de mon idée pour la relire et me recontacter à son sujet.",
+      submit: "Envoyer mon idée",
+      sending: "Envoi…",
+      sent: "Merci ! L’équipe d’Essaim-Agents a reçu ton idée. Si elle est approuvée, tu seras recontacté par courriel.",
+      failed: "Envoi impossible pour l’instant. Réessaie plus tard.",
+      invalid: "Vérifie le titre, la description (quelques phrases), ton nom et ton courriel, puis coche l’accord.",
+      close: "Fermer",
+    },
   },
   footer: {
     before: "Proximité et entraide pour les gens d’ici.",

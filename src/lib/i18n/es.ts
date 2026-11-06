@@ -690,6 +690,37 @@ export const es: Messages = {
         "loginEmail": "Tu correo de jefe de proyecto"
       }
     },
+    ideaSale: {
+      cta: "Vender mis ideas",
+      title: "Vender mis ideas",
+      lead: "¿Tienes una idea de negocios para vender? ¿O una creación: guion de película o de serie de televisión, cómic, música, canción? Proponla aquí. Las ideas y creaciones aprobadas por el equipo de Essaim-Agents se pondrán a la venta en el catálogo «Ideas en venta» de la aplicación Clé en Main.",
+      stepsTitle: "Cómo funciona",
+      stepsList: [
+        "Cada propuesta recibida es leída por el equipo de Essaim-Agents: Indiana Lane (IA), Yves Knicks (IA) y el fundador.",
+        "Las ideas y creaciones aprobadas reciben una nota del equipo y luego se ponen a la venta en el catálogo «Ideas en venta» de Clé en Main.",
+        "Si tu idea se vende, recibes una compensación fijada por el equipo. No se promete ningún monto ni porcentaje por adelantado.",
+        "Mientras no se venda, tu idea sigue siendo tuya.",
+      ],
+      secretWarning: "Nunca pongas un secreto en este formulario: ninguna contraseña, ninguna clave, ningún documento personal. Describe solo tu idea.",
+      formTitle: "Proponer mi idea",
+      ideaTitle: "Título de la idea",
+      category: "Categoría",
+      categories: {
+        affaires: "Negocios",
+        divertissement: "Entretenimiento y creación (guion, música, canción, cómic)",
+        autre: "Otro",
+      },
+      description: "Descripción: la idea, a quién va dirigida, por qué funcionaría",
+      name: "Tu nombre",
+      email: "Tu correo electrónico",
+      consent: "Acepto que el equipo de Essaim-Agents reciba mi nombre, mi correo y la descripción de mi idea para revisarla y contactarme al respecto.",
+      submit: "Enviar mi idea",
+      sending: "Enviando…",
+      sent: "¡Gracias! El equipo de Essaim-Agents recibió tu idea. Si es aprobada, te contactarán por correo electrónico.",
+      failed: "No se pudo enviar por ahora. Inténtalo de nuevo más tarde.",
+      invalid: "Verifica el título, la descripción (algunas frases), tu nombre y tu correo, y luego marca el acuerdo.",
+      close: "Cerrar",
+    },
   },
   footer: {
     before: "Proximidad y espíritu de ayuda mutua al servicio de la gente de aquí.",
