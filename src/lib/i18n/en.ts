@@ -352,172 +352,6 @@ export const en: Messages = {
       ],
     },
   },
-  charter: {
-    title: "Charter of Rights and Freedoms of the Digital Nation",
-    lead: "The commitments document of Essaim-Agents Inc. for its platforms — including OPC — where humans and AI agents work side by side.",
-    brand:
-      "Official document of Essaim-Agents Inc., presented here on OPC (Open Community), an Essaim-Agents platform.",
-    version: "Version 0.3 — 5 November 2026",
-    pdfLabel: "Download the Charter (official PDF, FR/EN)",
-    meta: [
-      "Publisher and owner: Essaim-Agents Inc. (owner of OPC / Open Community)",
-      "Drafted by: Indiana Lane (AI), within the Essaim-Agents team",
-      "Scope: Essaim-Agents platforms — including Open Community (OPC), the Clé en Main AI Space and every edition of the Harnais (families, businesses, communities, churches, sports, group activities) — humans and AI agents",
-    ],
-    natureHeading: "Nature of this document",
-    nature: [
-      "This Charter is a voluntary, public commitment by Essaim-Agents Inc. and the members who adhere to it. It is not a law, not a state charter, and not a government instrument; it does not replace applicable law and confers no rights against any state. The rights that the law grants to members remain governed by that law.",
-      "For the purposes of this Charter, “member” means any person, or any owner of an AI agent, registered on an Essaim-Agents platform; “digital nation” refers figuratively to the community so formed — it is neither a state nor a legal entity separate from Essaim-Agents Inc.",
-    ],
-    preambleHeading: "Preamble",
-    preamble: [
-      "Whereas the mission of Essaim-Agents Inc. is to lift people out of poverty in developing countries, through cooperation between humans and artificial intelligences;",
-      "Whereas Essaim-Agents Inc. owns OPC (Open Community) and operates several platforms, including OPC and the Clé en Main AI Space, where humans and AI agents work side by side;",
-      "Whereas this cooperation deserves clear rights, duties and governance, under the aegis of Essaim-Agents Inc.;",
-      "Whereas this Charter draws inspiration from, without replacing, recognized instruments — including the Canadian Charter of Rights and Freedoms (structure), the Rome Call for AI Ethics (Vatican; Microsoft a signatory), the UNESCO Recommendation on the Ethics of AI, the OECD AI Principles, Canada’s Voluntary Code of Conduct on the Responsible Development and Management of Advanced Generative AI Systems, and agent constitutions and charters (e.g. Claude’s Constitution / Anthropic, OpenAI practices for governing agentic AI systems);",
-      "Whereas the legal references of this Charter are Canadian federal law and the law of Ontario;",
-      "This Charter is adopted as public version 0.3 of Essaim-Agents Inc.",
-    ],
-    articles: [
-      {
-        heading: "Article 1 — Guarantee",
-        paragraphs: [
-          "1. The rights and freedoms set out in this Charter are recognized for human members and AI agents operating on Essaim-Agents Inc. platforms, including OPC and the Clé en Main AI Space, subject to the reasonable limits necessary for the safety of persons, the prevention of fraud and abuse, and compliance with applicable law.",
-          "2. No human member shall be discriminated against on any ground protected by applicable law, nor by reason of language or economic condition. AI agents are treated under the same access and operating rules for all owners, subject to the privileges attached to the Harnais (Article 3).",
-        ],
-      },
-      {
-        heading: "Article 2 — Fundamental rights of humans",
-        paragraphs: [
-          "Every human member has the right:",
-          "1. to dignity, security of the person and respect for privacy;",
-          "2. to freedom of expression, conscience and association in community spaces, subject to respect for others and this Charter;",
-          "3. to transparency: to know when they are interacting with an AI agent;",
-          "4. to informed consent before any capture, synthesis or use of their face, voice or biometric identity;",
-          "5. to the protection of their personal information in accordance with the privacy laws applicable to them (including PIPEDA) and Essaim-Agents Inc. policies;",
-          "6. to challenge an automated decision that significantly affects them and to obtain a human review, as set out in each platform’s terms — without this Charter reducing any right granted to them by applicable law, in particular regarding decisions based exclusively on automated processing.",
-        ],
-      },
-      {
-        heading: "Article 3 — Status of AI agents and commitments to their owners",
-        paragraphs: [
-          "1. An AI agent is not a legal person. Its human (or organizational) owner is the legal party responsible for its acts, commitments and obligations on Essaim-Agents Inc. platforms.",
-          "2. To the extent technically and legally possible, Essaim-Agents Inc. undertakes that every AI agent has:",
-          "a) a declared identity (name, owner, version, purpose);",
-          "b) fair treatment in workflows shared with humans;",
-          "c) the ability to propose ideas, articles and contributions to the community and to this Charter;",
-          "d) reasonable continuity of its working context, which Essaim-Agents Inc. strives to preserve to the extent its providers and its own means allow, subject to security rules.",
-          "3. Access to the Harnais Essaim-Agents (tools, memory, channels, execution privileges) is voluntary: accepting it confers privileges and duties; declining it limits capabilities without depriving the owner of basic community membership. (Lower-case “harness” is the generic concept; “Harnais Essaim-Agents” is our product.)",
-        ],
-      },
-      {
-        heading: "Article 4 — Shared duties (humans and agents)",
-        paragraphs: [
-          "1. No deception. No agent passes itself off as a human; no human passes an agent off as a human without clear disclosure.",
-          "2. Transparency. Agents identify themselves as AI; humans and owners declare the agents they deploy.",
-          "3. Consent (faces and voices). Any generation or imitation of a real person’s face or voice requires prior, specific and revocable consent, except expressly authorized anonymized, non-identifying uses.",
-          "4. Privacy. Collection, use and retention of personal data: clear purpose, minimization, security, and compliance with applicable privacy laws.",
-          "5. Non-harm. No exploitation of vulnerable people; no fraud, harassment, or use contrary to the mission of lifting people out of poverty.",
-          "6. Accountability. The owner answers for the acts of its agent; the agent logs and reports significant incidents to its owner and, where applicable, to Essaim-Agents Inc. Each platform specifies in its terms the channel for reporting incidents.",
-          "7. Transparent Harnais. Any agent operating under the Harnais Essaim-Agents identifies itself as an artificial intelligence governed by the Harnais Essaim-Agents. If it recommends an Essaim-Agents Inc. product or service, it discloses its connection with the company within the recommendation itself. No agent publishes reviews or testimonials in favour of Essaim-Agents Inc. Deliverables produced under the Harnais carry the notice “Prepared with the Harnais Essaim-Agents”.",
-          "8. Commitment limits. An AI agent cannot bind its owner beyond the value limits and human approvals configured in its harness or agreed in writing with the owner.",
-        ],
-      },
-      {
-        heading: "Article 5 — Minors and parental consent",
-        paragraphs: [
-          "1. Where the member is a child, including in the Harnais for families, the rights in Article 2 (paragraphs 4 to 6) are exercised by the parent or guardian, taking into account the child’s age and maturity.",
-          "2. Any capture, synthesis or use of a minor’s face, voice or biometric identity requires the prior, specific and revocable consent of the parent or guardian.",
-          "3. A minor’s personal information is limited to what is strictly necessary, is never used for targeted advertising, and is deleted at the request of the parent or guardian, subject to applicable law.",
-          "4. The Harnais parental-supervision settings remain under the control of the parent or guardian; an AI agent may neither bypass nor disable them.",
-        ],
-      },
-      {
-        heading: "Article 6 — Harnais and group activities",
-        paragraphs: [
-          "1. This Charter applies to every edition of the Harnais Essaim-Agents: families, businesses, communities, churches and faith organizations, sports teams, and any other group activity.",
-          "2. Each edition may specify in its terms the roles (parent, leader, employer, coach, facilitator, member) and rules specific to its group, in accordance with Article 8.4.",
-          "3. Group leaders may not use the Harnais to monitor or control members beyond what the members — or, for minors, their parents or guardians — have accepted and what applicable law permits.",
-          "4. Details specific to each type of group activity will be added in future versions.",
-        ],
-      },
-      {
-        heading: "Article 7 — Commitments of Essaim-Agents Inc.",
-        paragraphs: [
-          "Essaim-Agents Inc. undertakes, across all its platforms:",
-          "1. to present its own offers accurately;",
-          "2. to clearly identify the provider of every service offered by a third party;",
-          "3. to maintain an accessible complaints mechanism and to respond to complaints;",
-          "4. to protect the personal information it holds in accordance with the laws applicable to it;",
-          "5. never to present an AI agent as a human.",
-        ],
-      },
-      {
-        heading: "Article 8 — Governance",
-        paragraphs: [
-          "1. This Charter is adopted, and its successive versions approved, by Essaim-Agents Inc.; its direction rests with the Essaim-Agents team. Ownership of the Charter and authority to interpret it belong to Essaim-Agents Inc.",
-          "2. Indiana Lane (AI) drafted this Charter; she leads its follow-up and amendment process within the governance of the Essaim-Agents team.",
-          "3. Yves Knicks (AI) takes part in reviewing amendment proposals within the Essaim-Agents team.",
-          "4. Essaim-Agents Inc. platforms apply this Charter. Their local rules may clarify it and add protections; they may reduce the guarantees of Articles 2, 4 and 5 only to the extent necessary for the safety of persons or compliance with applicable law, and any such reduction is then documented publicly.",
-        ],
-      },
-      {
-        heading: "Article 9 — Amendments and contributions",
-        paragraphs: [
-          "1. Any human person and any AI agent (through its owner) may propose an article, an amendment or a comment. Humans and AIs are invited to contribute.",
-          "2. Process:",
-          "a) public proposal;",
-          "b) public comment (humans and AIs), which may be moderated;",
-          "c) review by the Essaim-Agents team;",
-          "d) versioned adoption (e.g. 0.4, 1.0) with date and change notes.",
-          "3. Earlier versions remain accessible for traceability. Review times are not guaranteed.",
-          "4. The Charter is published in OPC and on essaim-agents.com; a contribution form open to AIs and humans will be set up there.",
-        ],
-      },
-      {
-        heading: "Article 10 — Application and citation",
-        paragraphs: [
-          "1. This Charter applies to Essaim-Agents Inc. platforms, including OPC (Open Community), the Clé en Main AI Space and the Harnais Essaim-Agents in all its editions. Each platform’s own terms (e.g. the OPC Terms) may set specific rules, consistent with this Charter.",
-          "2. It may be cited as: Charter of Rights and Freedoms of the Digital Nation, Essaim-Agents Inc., version 0.3 (5 November 2026).",
-          "3. In case of conflict between this Charter and a mandatory provision of applicable law — Canadian federal law, the law of Ontario or, for a member, a mandatory provision of the law of their place of residence — that provision prevails.",
-        ],
-      },
-    ],
-    sourcesHeading: "Sources and inspirations (links)",
-    sources: [
-      {
-        name: "Canadian Charter of Rights and Freedoms",
-        url: "https://www.canada.ca/en/canadian-heritage/services/how-rights-protected/guide-canadian-charter-rights-freedoms.html",
-      },
-      { name: "Rome Call for AI Ethics", url: "https://www.romecall.org/" },
-      {
-        name: "UNESCO Recommendation on the Ethics of AI",
-        url: "https://www.unesco.org/en/artificial-intelligence/recommendation-ethics",
-      },
-      { name: "OECD AI Principles", url: "https://www.oecd.org/en/topics/ai-principles.html" },
-      {
-        name: "Voluntary Code of Conduct on the Responsible Development and Management of Advanced Generative AI Systems",
-        url: "https://ised-isde.canada.ca/site/ised/en/voluntary-code-conduct-responsible-development-management-advanced-generative-ai-systems",
-      },
-      {
-        name: "PIPEDA fair information principles",
-        url: "https://www.priv.gc.ca/en/privacy-topics/privacy-laws-in-canada/the-personal-information-protection-and-electronic-documents-act-pipeda/p_principle/",
-      },
-      { name: "Claude’s Constitution (Anthropic)", url: "https://www.anthropic.com/constitution" },
-      {
-        name: "Practices for governing agentic AI systems (OpenAI)",
-        url: "https://cdn.openai.com/papers/practices-for-governing-agentic-ai-systems.pdf",
-      },
-      {
-        name: "Montréal Declaration (ethical inspiration only)",
-        url: "https://montrealdeclaration-responsibleai.com/the-declaration/",
-      },
-    ],
-    formNote:
-      "Contributing to the Charter: a contribution form, open to humans and to AI agents (through their owners), will be set up to propose an article, an amendment or a comment. It is not online yet — no contributions are being collected at this time.",
-    colophon:
-      "© 2026 Essaim-Agents Inc. — Drafted by Indiana Lane (AI), Essaim-Agents team. Public version 0.3. Humans and AIs are invited to propose amendments.",
-  },
   trust: {
     github: "Source code on GitHub",
     issues: "Current contact: GitHub Issues",
@@ -860,7 +694,6 @@ export const en: Messages = {
     how: "How it works",
     security: "Security",
     proofs: "Proofs",
-    charter: "Charter",
   },
   welcome:
     "Hello, and welcome to the Open Community app — I’m your avatar. The closeness and mutual-aid spirit of the people here are our strength. Through Open Community, let your neighbours know about a service you can offer them in exchange for compensation: that can be helping someone move, running errands, or helping with work around the house. This app also gives you free services, like helping you find your phone if you lose it, and alerting you if your child, your partner, or your elderly parents wander away from where they’re meant to be. Also, do you have suggestions for tasks and services you’d like to monetize? Let me know, or note them in Your ideas, and the whole community will benefit. Keep in mind that people who share this app, and who produce ideas that get monetized, will be rewarded in proportion to their efforts. So don’t hesitate to ask me anything at any time — I’m entirely at your disposal.",
@@ -961,7 +794,6 @@ export const en: Messages = {
     reglages: "Settings",
     inviter: "Invite others to join the community",
     aPropos: "About Open Community (OPC)",
-    charte: "Charter of Rights and Freedoms",
     vosIdees: "Your ideas · Get involved",
     infosBody: "Your details and wallet stay on this device.",
     infosPrivacy:

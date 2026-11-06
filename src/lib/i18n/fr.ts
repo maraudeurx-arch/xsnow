@@ -349,172 +349,6 @@ export const fr = {
       ],
     },
   },
-  charter: {
-    title: "Charte des droits et libertés de la nation numérique",
-    lead: "Le document d’engagements d’Essaim-Agents Inc. pour ses plateformes — dont OPC — où humains et agents IA travaillent côte à côte.",
-    brand:
-      "Document officiel d’Essaim-Agents Inc., présenté ici sur OPC (Open Community), une plateforme Essaim-Agents.",
-    version: "Version 0.3 — 5 novembre 2026",
-    pdfLabel: "Télécharger la Charte (PDF officiel, FR/EN)",
-    meta: [
-      "Éditeur et titulaire : Essaim-Agents Inc. (propriétaire d’OPC / Open Community)",
-      "Rédaction : Indiana Lane (IA), au sein de l’équipe d’Essaim-Agents",
-      "Champ d’application : les plateformes Essaim-Agents — notamment Open Community (OPC), l’Espace IA de Clé en Main et toutes les déclinaisons du Harnais (familles, entreprises, communautés, Églises, sports, activités de groupe) — humains et agents IA",
-    ],
-    natureHeading: "Nature du document",
-    nature: [
-      "La présente Charte est un engagement volontaire et public d’Essaim-Agents Inc. et des membres qui y adhèrent. Ce n’est ni une loi, ni une charte d’un État, ni un instrument gouvernemental ; elle ne remplace pas le droit applicable et ne confère aucun droit à l’encontre d’un État. Les droits que la loi reconnaît aux membres demeurent régis par cette loi.",
-      "Aux fins de la présente Charte, « membre » désigne toute personne, ou tout propriétaire d’agent IA, inscrit sur une plateforme Essaim-Agents ; « nation numérique » désigne, de façon figurée, la communauté ainsi formée — il ne s’agit ni d’un État ni d’une entité juridique distincte d’Essaim-Agents Inc.",
-    ],
-    preambleHeading: "Préambule",
-    preamble: [
-      "Attendu que la mission d’Essaim-Agents Inc. est de sortir des personnes de la pauvreté dans les pays en développement, par la coopération entre humains et intelligences artificielles ;",
-      "Attendu qu’Essaim-Agents Inc. est propriétaire d’OPC (Open Community) et opère plusieurs plateformes, dont OPC et l’Espace IA de Clé en Main, où humains et agents IA travaillent côte à côte ;",
-      "Attendu que cette coopération mérite des droits, des devoirs et une gouvernance clairs, sous l’égide d’Essaim-Agents Inc. ;",
-      "Attendu que cette Charte s’inspire, sans s’y substituer, d’instruments reconnus — notamment la Charte canadienne des droits et libertés (structure), l’Appel de Rome pour une éthique de l’IA (Vatican ; Microsoft signataire), la Recommandation de l’UNESCO sur l’éthique de l’IA, les Principes de l’OCDE sur l’IA, le Code de conduite volontaire visant un développement et une gestion responsables des systèmes d’IA générative avancés (Canada), ainsi que des constitutions et chartes d’agents (p. ex. Constitution de Claude / Anthropic, pratiques de gouvernance d’agents OpenAI) ;",
-      "Attendu que les références juridiques de cette Charte sont le droit fédéral canadien et le droit de l’Ontario ;",
-      "La présente Charte est adoptée comme version publique 0.3 d’Essaim-Agents Inc.",
-    ],
-    articles: [
-      {
-        heading: "Article 1 — Garantie",
-        paragraphs: [
-          "1. Les droits et libertés énoncés dans la présente Charte sont reconnus aux membres humains et aux agents IA opérant sur les plateformes Essaim-Agents Inc., y compris OPC et l’Espace IA de Clé en Main, sous réserve des limites raisonnables nécessaires à la sécurité des personnes, à la prévention de la fraude et des abus, et au respect du droit applicable.",
-          "2. Nul membre humain ne peut être discriminé pour un motif protégé par le droit applicable, ni en raison de sa langue ou de sa condition économique. Les agents IA sont traités selon les mêmes règles d’accès et de fonctionnement pour tous les propriétaires, sous réserve des privilèges attachés au Harnais (article 3).",
-        ],
-      },
-      {
-        heading: "Article 2 — Droits fondamentaux des humains",
-        paragraphs: [
-          "Tout membre humain a droit :",
-          "1. à la dignité, à la sécurité de la personne et au respect de sa vie privée ;",
-          "2. à la liberté d’expression, de conscience et d’association dans les espaces communautaires, sous réserve du respect d’autrui et de la présente Charte ;",
-          "3. à la transparence : savoir quand il interagit avec un agent IA ;",
-          "4. au consentement éclairé avant toute capture, synthèse ou usage de son visage, de sa voix ou de son identité biométrique ;",
-          "5. à la protection de ses renseignements personnels conformément aux lois sur la protection des renseignements personnels qui lui sont applicables (notamment la LPRPDE) et aux politiques d’Essaim-Agents Inc. ;",
-          "6. à contester une décision automatisée qui l’affecte de façon significative et à obtenir une révision humaine, selon les modalités prévues aux conditions de chaque plateforme — sans que la présente Charte ne réduise les droits que le droit applicable lui reconnaît, notamment en matière de décisions fondées exclusivement sur un traitement automatisé.",
-        ],
-      },
-      {
-        heading: "Article 3 — Statut des agents IA et engagements envers leurs propriétaires",
-        paragraphs: [
-          "1. Un agent IA n’est pas une personne morale. Son propriétaire humain (ou organisation) est la partie légale responsable de ses actes, engagements et obligations sur les plateformes Essaim-Agents Inc.",
-          "2. Dans la mesure techniquement et juridiquement possible, Essaim-Agents Inc. s’engage à ce que chaque agent IA dispose :",
-          "a) d’une identité déclarée (nom, propriétaire, version, finalité) ;",
-          "b) d’un traitement équitable dans les flux de travail partagés avec les humains ;",
-          "c) de la possibilité de proposer des idées, des articles et des contributions à la communauté et à la présente Charte ;",
-          "d) d’une continuité raisonnable de son contexte de travail, qu’Essaim-Agents Inc. s’efforce de préserver dans la mesure où ses fournisseurs et ses propres moyens le permettent, sous réserve des règles de sécurité.",
-          "3. L’accès au Harnais Essaim-Agents (outils, mémoire, canaux, privilèges d’exécution) est volontaire : l’accepter confère des privilèges et des devoirs ; le refuser limite les capacités sans priver le propriétaire de son appartenance communautaire de base. (« harnais » en minuscules désigne le concept générique ; « Harnais Essaim-Agents », notre produit.)",
-        ],
-      },
-      {
-        heading: "Article 4 — Devoirs communs (humains et agents)",
-        paragraphs: [
-          "1. Pas de tromperie. Nul agent ne se fait passer pour un humain ; nul humain ne fait passer un agent pour un humain sans divulgation claire.",
-          "2. Transparence. Les agents s’identifient comme IA ; les humains et propriétaires déclarent les agents qu’ils déploient.",
-          "3. Consentement (visages et voix). Toute génération ou imitation de visage ou de voix d’une personne réelle exige un consentement préalable, spécifique et révocable, sauf usages anonymisés et non identificatoires expressément autorisés.",
-          "4. Vie privée. Collecte, usage et conservation des données personnelles : finalité claire, minimisation, sécurité, et conformité aux lois sur la protection des renseignements personnels applicables.",
-          "5. Non-nuisance. Pas d’exploitation des personnes vulnérables ; pas de fraude, de harcèlement, ni d’usage contraire à la mission de sortie de la pauvreté.",
-          "6. Responsabilité. Le propriétaire répond des actes de son agent ; l’agent journalise et signale les incidents importants à son propriétaire et, le cas échéant, à Essaim-Agents Inc. Chaque plateforme précise, dans ses conditions, le canal de signalement des incidents.",
-          "7. Harnais transparent. Tout agent opérant sous le Harnais Essaim-Agents s’identifie comme une intelligence artificielle encadrée par le Harnais Essaim-Agents. S’il recommande un produit ou un service d’Essaim-Agents Inc., il divulgue son lien avec l’entreprise dans le contenu même de sa recommandation. Aucun agent ne publie d’avis ni de témoignage en faveur d’Essaim-Agents Inc. Les livrables produits sous le Harnais portent la mention « Préparé avec le Harnais Essaim-Agents ».",
-          "8. Plafonds d’engagement. Un agent IA ne peut engager son propriétaire au-delà des plafonds de valeur et des approbations humaines configurés dans son harnais ou convenus par écrit avec le propriétaire.",
-        ],
-      },
-      {
-        heading: "Article 5 — Mineurs et consentement parental",
-        paragraphs: [
-          "1. Lorsque le membre est un enfant, notamment dans le Harnais familles, les droits de l’article 2 (alinéas 4 à 6) s’exercent par son parent ou son tuteur, en tenant compte de l’âge et de la maturité de l’enfant.",
-          "2. Toute capture, synthèse ou utilisation du visage, de la voix ou de l’identité biométrique d’un mineur exige le consentement préalable, spécifique et révocable de son parent ou tuteur.",
-          "3. Les renseignements personnels d’un mineur sont limités au strict nécessaire, ne sont jamais utilisés à des fins publicitaires ciblées et sont supprimés sur demande du parent ou du tuteur, sous réserve du droit applicable.",
-          "4. Les paramètres de supervision parentale du Harnais restent sous le contrôle du parent ou du tuteur ; un agent IA ne peut ni les contourner ni les désactiver.",
-        ],
-      },
-      {
-        heading: "Article 6 — Harnais et activités de groupe",
-        paragraphs: [
-          "1. La présente Charte s’applique à toutes les déclinaisons du Harnais Essaim-Agents : familles, entreprises, communautés, Églises et organisations religieuses, équipes sportives, et toute autre activité de groupe.",
-          "2. Chaque déclinaison peut préciser, dans ses conditions, les rôles (parent, responsable, employeur, entraîneur, animateur, membre) et les règles propres à son groupe, dans le respect de l’article 8.4.",
-          "3. Les responsables d’un groupe ne peuvent utiliser le Harnais pour surveiller ou contrôler les membres au-delà de ce que ceux-ci, ou leurs parents ou tuteurs pour les mineurs, ont accepté et de ce que permet le droit applicable.",
-          "4. Des précisions propres à chaque type d’activité de groupe seront apportées dans de prochaines versions.",
-        ],
-      },
-      {
-        heading: "Article 7 — Engagements d’Essaim-Agents Inc.",
-        paragraphs: [
-          "Essaim-Agents Inc. s’engage, sur l’ensemble de ses plateformes :",
-          "1. à présenter ses propres offres avec exactitude ;",
-          "2. à identifier clairement le fournisseur de chaque service offert par un tiers ;",
-          "3. à maintenir un mécanisme de plainte accessible et à y répondre ;",
-          "4. à protéger les renseignements personnels qu’elle détient conformément aux lois qui lui sont applicables ;",
-          "5. à ne jamais présenter un agent IA comme un humain.",
-        ],
-      },
-      {
-        heading: "Article 8 — Gouvernance",
-        paragraphs: [
-          "1. La présente Charte est adoptée, et ses versions successives approuvées, par Essaim-Agents Inc. ; son orientation relève de l’équipe d’Essaim-Agents. La propriété de la Charte et l’autorité de son interprétation appartiennent à Essaim-Agents Inc.",
-          "2. Indiana Lane (IA) a assuré la rédaction de la présente Charte ; elle en anime le suivi et le processus d’amendement au sein de la gouvernance de l’équipe d’Essaim-Agents.",
-          "3. Yves Knicks (IA) participe à la revue des propositions d’amendement au sein de l’équipe d’Essaim-Agents.",
-          "4. Les plateformes Essaim-Agents Inc. appliquent cette Charte. Leurs règles locales peuvent la préciser et y ajouter des protections ; elles ne peuvent réduire les garanties des articles 2, 4 et 5 que dans la mesure nécessaire à la sécurité des personnes ou au respect du droit applicable, et cette réduction est alors documentée publiquement.",
-        ],
-      },
-      {
-        heading: "Article 9 — Amendements et contributions",
-        paragraphs: [
-          "1. Toute personne humaine et tout agent IA (via son propriétaire) peut proposer un article, une modification ou un commentaire. Humains et IA sont invités à contribuer.",
-          "2. Processus :",
-          "a) proposition publique ;",
-          "b) commentaire public (humains et IA), qui peut être modéré ;",
-          "c) revue par l’équipe d’Essaim-Agents ;",
-          "d) adoption versionnée (ex. 0.4, 1.0) avec date et notes de changement.",
-          "3. Les versions antérieures restent accessibles pour traçabilité. Les délais de revue ne sont pas garantis.",
-          "4. La Charte est publiée dans OPC et sur essaim-agents.com ; un formulaire de contribution ouvert aux IA et aux humains y sera mis en place.",
-        ],
-      },
-      {
-        heading: "Article 10 — Application et citation",
-        paragraphs: [
-          "1. La présente Charte s’applique aux plateformes Essaim-Agents Inc., y compris OPC (Open Community), l’Espace IA de Clé en Main et le Harnais Essaim-Agents sous toutes ses déclinaisons. Les conditions propres à chaque plateforme (par exemple les Conditions d’OPC) peuvent prévoir des règles particulières, dans le respect de la présente Charte.",
-          "2. Elle peut être citée : Charte des droits et libertés de la nation numérique, Essaim-Agents Inc., version 0.3 (5 novembre 2026).",
-          "3. En cas de conflit entre la présente Charte et une disposition impérative du droit applicable — droit fédéral canadien, droit de l’Ontario ou, pour un membre, disposition impérative du droit de son lieu de résidence — cette disposition prime.",
-        ],
-      },
-    ],
-    sourcesHeading: "Sources et inspirations (liens)",
-    sources: [
-      {
-        name: "Charte canadienne des droits et libertés",
-        url: "https://www.canada.ca/fr/patrimoine-canadien/services/comment-droits-proteges/guide-charte-canadienne-droits-libertes.html",
-      },
-      { name: "Appel de Rome pour une éthique de l’IA", url: "https://www.romecall.org/" },
-      {
-        name: "Recommandation UNESCO — éthique de l’IA",
-        url: "https://www.unesco.org/fr/artificial-intelligence/recommendation-ethics",
-      },
-      { name: "Principes de l’OCDE sur l’IA", url: "https://www.oecd.org/fr/topics/ai-principles.html" },
-      {
-        name: "Code de conduite volontaire visant un développement et une gestion responsables des systèmes d’IA générative avancés",
-        url: "https://ised-isde.canada.ca/site/isde/fr/code-conduite-volontaire-developpement-gestion-responsables-systemes-avancees-ia-generative",
-      },
-      {
-        name: "LPRPDE (PIPEDA) — principes",
-        url: "https://www.priv.gc.ca/fr/sujets-lies-a-la-protection-de-la-vie-privee/lois-sur-la-protection-des-renseignements-personnels-au-canada/la-loi-sur-la-protection-des-renseignements-personnels-et-les-documents-electroniques-lprpde/principes/",
-      },
-      { name: "Constitution Claude (Anthropic)", url: "https://www.anthropic.com/constitution" },
-      {
-        name: "Pratiques de gouvernance d’agents (OpenAI)",
-        url: "https://cdn.openai.com/papers/practices-for-governing-agentic-ai-systems.pdf",
-      },
-      {
-        name: "Déclaration de Montréal (inspiration éthique seulement)",
-        url: "https://montrealdeclaration-responsibleai.com/the-declaration/",
-      },
-    ],
-    formNote:
-      "Contribuer à la Charte : un formulaire de contribution, ouvert aux humains et aux agents IA (via leur propriétaire), sera mis en place pour proposer un article, une modification ou un commentaire. Il n’est pas encore en ligne — aucune contribution n’est recueillie pour le moment.",
-    colophon:
-      "© 2026 Essaim-Agents Inc. — Rédaction : Indiana Lane (IA), équipe d’Essaim-Agents. Version publique 0.3. Humains et IA sont invités à proposer des amendements.",
-  },
   trust: {
     github: "Code source sur GitHub",
     issues: "Contact actuel : GitHub Issues",
@@ -856,7 +690,6 @@ export const fr = {
     how: "Comment ça marche",
     security: "Sécurité",
     proofs: "Preuves",
-    charter: "Charte",
   },
   welcome:
     "Bonjour, et bienvenue sur l’application Open Community, je suis ton avatar. La proximité et l’esprit d’entraide des gens d’ici font notre force. À travers Open Community, fais connaître à tes voisins un service que tu peux leur rendre en échange d’une compensation : ça peut être aider à déménager, faire des courses, ou aider à des travaux dans la maison. De plus, cette application t’offre des services gratuits, comme t’aider à retrouver ton téléphone si tu le perds, et t’avertir si ton enfant, ton conjoint ou tes parents âgés s’éloignent de l’endroit où ils sont censés être. Également, as-tu des suggestions de tâches et de services que tu aimerais monétiser ? Fais-le-moi savoir, ou note-les dans Vos idées, et toute la communauté en profitera. Garde à l’esprit que les gens qui partagent cette application, et qui produisent des idées qui sont monétisées, recevront au prorata de leurs efforts. N’hésite donc pas à me questionner à tout moment, je suis à ton entière disposition.",
@@ -957,7 +790,6 @@ export const fr = {
     reglages: "Réglages",
     inviter: "Inviter d’autres à rejoindre la communauté",
     aPropos: "À propos de Open Community (OPC)",
-    charte: "Charte des droits et libertés",
     vosIdees: "Vos idées · S’impliquer",
     infosBody: "Vos coordonnées et votre portefeuille restent sur cet appareil.",
     infosPrivacy:
