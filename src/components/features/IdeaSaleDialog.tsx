@@ -4,12 +4,19 @@ import { useEffect, useId, useRef, useState, type FormEvent } from "react";
 import { createPortal } from "react-dom";
 import { useModalViewport } from "@/lib/useModalViewport";
 import { SignupGate } from "@/components/SignupGate";
-import { postIdeaToInbox, postRegisterNotice, type IdeaInboxPostResult } from "@/lib/idea-inbox";
+import {
+  isPlaywrightE2eIdea,
+  postIdeaToInbox,
+  postRegisterNotice,
+  type IdeaInboxPostResult,
+} from "@/lib/idea-inbox";
+import { postIdeaSaleConfirmation } from "@/lib/idea-sale-confirmation";
 import { useI18n } from "@/lib/i18n/locale";
 import { usePlace } from "@/lib/place";
 import { useLocalProfile } from "@/lib/useLocalProfile";
 import {
   emptyIdeaSaleForm,
+  formatIdeaSalePrice,
   ideaSaleInboxText,
   ideaSaleIssues,
   proposeIdeaSummary,
@@ -35,6 +42,12 @@ import {
   prepareIdeaAttachment,
   type PreparedIdeaAttachment,
 } from "@/lib/idea-attachment";
+import {
+  readIdeaSaleSubmissions,
+  recordIdeaSaleSubmission,
+  submissionFromIdeaSaleForm,
+  type IdeaSaleSubmission,
+} from "@/lib/idea-sale-list";
 
 const inputClass =
   "min-h-11 w-full rounded-xl border border-white/30 bg-white/90 px-3 text-[15px] text-slate-900";
@@ -62,6 +75,11 @@ export function IdeaSaleDialog({ onClose }: { onClose: () => void }) {
   const [micError, setMicError] = useState("");
   const recogRef = useRef<BrowserSpeechRecognition | null>(null);
   const retryLangRef = useRef(false);
+  // « Mes idées proposées »: the seller's on-device copy of their confirmed
+  // submissions (idea-sale-list.ts), shown when they come back to the section.
+  const [submissions, setSubmissions] = useState<IdeaSaleSubmission[]>(() =>
+    readIdeaSaleSubmissions(),
+  );
   const [attachment, setAttachment] = useState<PreparedIdeaAttachment | null>(null);
   const [attachmentError, setAttachmentError] = useState<"" | "bad_type" | "too_big" | "unreadable">("");
 
@@ -123,13 +141,50 @@ export function IdeaSaleDialog({ onClose }: { onClose: () => void }) {
     // Proposal next, to the same inbox as Vos idées and « Chef de projet »:
     // tagged text + city + OPC id. No name or e-mail inside — that inbox
     // redacts e-mails by design.
+    const inboxText = ideaSaleInboxText(form);
     const result = await postIdeaToInbox({
       id: proposalId,
-      text: ideaSaleInboxText(form),
+      text: inboxText,
       city: city || "",
       opcId: profile?.id || "",
     });
+    if (result === "sent") {
+      // Keep the seller's own copy on this device, so the idea shows up in
+      // « Mes idées proposées » when they come back — and right away below.
+      const next = recordIdeaSaleSubmission(
+        submissionFromIdeaSaleForm(form, proposalId, new Date()),
+      );
+      setSubmissions(next);
+      // Receipt e-mail to the seller (Popol, 07/11/2026), best-effort like
+      // every notice here: its failure never affects the submission. The
+      // number is the entry's position in « Mes idées proposées » — the
+      // same numbering the seller sees in the list. Never for fixtures.
+      const number = next.findIndex((item) => item.id === proposalId) + 1;
+      if (
+        number > 0 &&
+        !isPlaywrightE2eIdea({ text: inboxText, opcId: profile?.id || "" })
+      ) {
+        void postIdeaSaleConfirmation({
+          id: proposalId,
+          email: form.email,
+          title: form.title,
+          number,
+          lang: locale,
+        });
+      }
+    }
     setState(result);
+  }
+
+  function startAnother() {
+    const base = emptyIdeaSaleForm();
+    // Keep the contact fields: same person, one more idea.
+    base.name = form.name;
+    base.email = form.email;
+    setForm(base);
+    setAttachment(null);
+    setAttachmentError("");
+    setState("idle");
   }
 
   const patch = (key: keyof IdeaSaleForm, value: string | boolean) =>
@@ -280,7 +335,17 @@ export function IdeaSaleDialog({ onClose }: { onClose: () => void }) {
         <div className="mt-2">
           <SignupGate>
             {state === "sent" ? (
-              <p className="text-[13px]" data-idea-sale-sent>{g.sent}</p>
+              <div>
+                <p className="text-[13px]" data-idea-sale-sent>{g.sent}</p>
+                <button
+                  type="button"
+                  className={`${buttonClass} mt-2`}
+                  onClick={startAnother}
+                  data-idea-sale-another
+                >
+                  {g.submitAnother}
+                </button>
+              </div>
             ) : (
               <form className="grid gap-2" onSubmit={onSubmit} data-idea-sale-form>
                 <label className="grid gap-1 text-[13px]">{g.ideaTitle}
@@ -378,6 +443,40 @@ export function IdeaSaleDialog({ onClose }: { onClose: () => void }) {
               </form>
             )}
           </SignupGate>
+          {submissions.length ? (
+            <div className="mt-4" data-idea-sale-my-ideas>
+              <h3 className="text-[14px] font-bold">{g.myIdeasTitle}</h3>
+              <ul className="mt-2 grid gap-2">
+                {submissions.map((entry, index) => (
+                  <li
+                    key={entry.id}
+                    className="rounded-xl border border-white/20 bg-white/10 p-3"
+                    data-idea-sale-my-idea
+                  >
+                    <p className="text-[13px] font-bold">
+                      {g.myIdeaNo} {index + 1} — {entry.title}
+                    </p>
+                    <p className="mt-0.5 text-[12px] text-snow/80">
+                      {new Date(entry.submittedAt).toLocaleDateString(
+                        locale === "fr" ? "fr-CA" : locale === "es" ? "es-MX" : "en-CA",
+                        { year: "numeric", month: "short", day: "numeric" },
+                      )}
+                      {" · "}
+                      {g.categories[entry.category]}
+                      {" · "}
+                      {g.myIdeaReceived}
+                    </p>
+                    <p className="mt-1 text-[13px] leading-relaxed text-snow/90">{entry.summary}</p>
+                    {entry.priceUsd !== null ? (
+                      <p className="mt-1 text-[12px] text-snow/80">
+                        {g.myIdeaPrice} : {formatIdeaSalePrice(entry.priceUsd)} USD
+                      </p>
+                    ) : null}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
         </div>
         <button ref={closeRef} type="button" className={`${buttonClass} mt-3`} onClick={onClose} data-idea-sale-close>
           {g.close}

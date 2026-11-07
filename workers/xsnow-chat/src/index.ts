@@ -11,6 +11,7 @@
  * `POST /ideas` = sanitized visitor ideas; emails opencommunity.opc@gmail.com
  * `POST /business-ads` = business photo ad for review; emails opencommunity.opc@gmail.com with attachment
  * `POST /idea-attachments` = optional document/photo of a « Vendre mes idées » proposal; emails the same inbox with attachment, keyed by proposal id
+ * `POST /idea-sale-confirmation` = receipt e-mail to the « Vendre mes idées » seller (their idea's title + number), best-effort, flag-gated
  * `POST /register` = optional registration notice to the same inbox
  * `GET /ideas` = owner list (JSON or HTML) behind `IDEAS_OWNER_SECRET`
  * `POST /alerts` = guardian registers a consented proximity alert (schedule + place)
@@ -38,6 +39,7 @@ import { parseLatLon, reverseGeocode } from "./geo";
 import { handleIdeasGet, handleIdeasPost, handleRegisterPost, isIdeasPath, isRegisterPath } from "./ideas";
 import { handleBusinessAdsPost, isBusinessAdsPath } from "./business-ads";
 import { handleIdeaAttachmentsPost, isIdeaAttachmentsPath } from "./idea-attachments";
+import { handleIdeaSaleConfirmationPost, isIdeaSaleConfirmationPath } from "./idea-sale-confirmation";
 import { fetchCityNews, parseCityParam, parseLangParam } from "./news";
 import { CHAT_TEXT_MAX, isJsonContentType, sanitizeUntrustedText } from "../../../src/lib/sanitize.ts";
 import {
@@ -59,6 +61,8 @@ export interface Env {
   RESEND_API_KEY?: string;
   /** Optional From: header, verified Resend domain. Default: beth.t@example.com */
   IDEAS_FROM_EMAIL?: string;
+  /** "on" enables « Vendre mes idées » receipt e-mails to sellers. Config flag, not a secret. */
+  IDEA_SALE_CONFIRM_EMAILS?: string;
   /** Twilio SMS for proximity alerts. `npx wrangler secret put TWILIO_ACCOUNT_SID` (and AUTH_TOKEN, FROM_NUMBER). */
   TWILIO_ACCOUNT_SID?: string;
   TWILIO_AUTH_TOKEN?: string;
@@ -345,6 +349,19 @@ async function handleIdeaAttachments(request: Request, env: Env, origin: string 
   return json(data, response.status, origin);
 }
 
+async function handleIdeaSaleConfirmation(request: Request, env: Env, origin: string | null): Promise<Response> {
+  if (request.method !== "POST") {
+    return json({ error: "method_not_allowed" }, 405, origin);
+  }
+  if (tooMany(clientIp(request))) {
+    return json({ error: "rate_limited" }, 429, origin);
+  }
+  const body = await readJsonBody(request, origin);
+  if (!body.ok) return body.response;
+  const result = await handleIdeaSaleConfirmationPost(body.value, env);
+  return json(result.data, result.status, origin);
+}
+
 async function handleIdeas(request: Request, env: Env, origin: string | null): Promise<Response> {
   if (request.method === "POST") {
     if (tooMany(clientIp(request))) {
@@ -520,6 +537,10 @@ export default {
 
     if (isIdeaAttachmentsPath(pathname)) {
       return handleIdeaAttachments(request, env, origin);
+    }
+
+    if (isIdeaSaleConfirmationPath(pathname)) {
+      return handleIdeaSaleConfirmation(request, env, origin);
     }
 
     if (isIdeasPath(pathname)) {
