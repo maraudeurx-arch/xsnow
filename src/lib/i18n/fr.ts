@@ -684,6 +684,45 @@ export const fr = {
         "statusRejected": "Demande refusée.",
         "loginTitle": "Déjà enregistré ? Retrouver mon profil de chef de projet",
         "loginEmail": "Ton e-mail de chef de projet"
+      },
+      "projects": {
+        "open": "Ouvrir Mes projets",
+        "title": "Mes projets",
+        "lead": "Tes projets Clé en Main, un par un. La discussion avec l'IA de chaque projet a lieu ici, dans l'application ; le courriel ne sert qu'à te prévenir.",
+        "empty": "Aucun projet ne t'est rattaché pour le moment. L'équipe te préviendra ici et par courriel dès qu'un projet arrive.",
+        "clientCode": "Code client",
+        "clientCodePending": "à venir",
+        "projectNumber": "Projet nº {n}",
+        "lastActivity": "Dernière activité : {date}",
+        "statuses": {
+          "nouveau": "Nouveau",
+          "en_cours": "En cours",
+          "en_attente_client": "En attente du client",
+          "termine": "Terminé"
+        },
+        "back": "← Tous mes projets",
+        "summaryTitle": "Résumé du projet",
+        "specTitle": "Cahier des charges",
+        "specPending": "Le cahier des charges est en préparation : expertise de l'IA accompagnante, puis contre-expertise de l'équipe. Il apparaîtra ici, avec les suggestions de l'équipe.",
+        "stepsTitle": "Étapes du projet",
+        "stepDone": "Fait",
+        "stepCurrent": "En cours",
+        "stepTodo": "À venir",
+        "chatTitle": "Discussion avec l'IA du projet",
+        "chatLead": "L'IA connaît ce projet et son cahier des charges. Elle ne te demandera jamais un secret ; les paiements et la première mise en ligne restent décidés par l'équipe.",
+        "chatEmpty": "Aucun message pour l'instant. Pose ta première question à l'IA du projet.",
+        "chatPlaceholder": "Écris à l'IA du projet…",
+        "chatSend": "Envoyer",
+        "chatSending": "L'IA réfléchit…",
+        "chatError": "L'IA du projet ne répond pas pour le moment (réseau ou service indisponible). Ton message est gardé dans le fil ; réessaie dans un instant.",
+        "chatYou": "Toi",
+        "chatAi": "IA du projet",
+        "gateTitle": "Espace réservé aux chefs de projet",
+        "gateNone": "Connecte-toi d'abord : ouvre « Devenir Chef de projet » dans Gagner maintenant et retrouve ton profil de chef de projet.",
+        "gatePending": "Ton inscription de chef de projet est en cours de validation par l'équipe. Tes projets apparaîtront ici dès la validation.",
+        "gateRejected": "Ton inscription de chef de projet n'a pas été retenue. Contacte l'équipe OPC si tu penses qu'il y a une erreur.",
+        "loading": "Chargement de ton espace…",
+        "toEarn": "Aller à Gagner maintenant"
       }
     },
     ideaSale: {
@@ -785,6 +824,10 @@ export const fr = {
     gagnerMaintenant: {
       title: "",
       lead: "",
+    },
+    mesProjets: {
+      title: "Mes projets",
+      lead: "L'espace des chefs de projet Clé en Main : tes projets, leur cahier des charges et la discussion avec l'IA de chaque projet.",
     },
     sondages: {
       title: "Sondages rémunérés",
