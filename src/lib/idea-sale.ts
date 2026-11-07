@@ -56,9 +56,12 @@ export const IDEA_SALE_PRICE_MAX_USD = 100_000_000;
  * of ideas and no means to build them, others have tools and funds but no
  * ideas — OPC brings them together. One produced file per form language
  * under public/videos/ (narration ≈ 45 s, OPC logo card at the end;
- * approved by Popol on 07/11/2026). ideaSaleVideoSrc picks the file for
- * the form's language and falls back to FR, so the dialog never renders
- * an empty player (sobriety rule).
+ * approved by Popol on 07/11/2026). The player sits in the section's
+ * explanatory block on « Gagner maintenant » — under the intro paragraph,
+ * above « Comment ça marche », visible without opening the form (Popol,
+ * 07/11/2026 10 h 15). ideaSaleVideoSrc picks the file for the section's
+ * language and falls back to FR, so the section never renders an empty
+ * player (sobriety rule).
  */
 export const IDEA_SALE_VIDEO_SRCS = {
   fr: "/videos/video-idees-opc-fr.mp4",
