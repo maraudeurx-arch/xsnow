@@ -12,6 +12,7 @@ import {
   IDEA_SALE_SUMMARY_MAX,
   IDEA_SALE_TAG,
   IDEA_SALE_VIDEO_SRCS,
+  ideaSaleVideoEnabled,
   ideaSaleVideoSrc,
   type IdeaSaleForm,
 } from "./idea-sale.ts";
@@ -154,7 +155,7 @@ describe("vendre mes idées", () => {
 
   it("video header serves the intro video in the form's language, FR by default, with a sober label in FR/EN/ES", () => {
     // One produced file per language under public/videos/; an unknown
-    // language falls back to FR — the dialog never shows an empty player.
+    // language falls back to FR — an enabled player is never empty.
     assert.equal(IDEA_SALE_VIDEO_SRCS.fr, "/videos/video-idees-opc-fr.mp4");
     assert.equal(ideaSaleVideoSrc("fr"), IDEA_SALE_VIDEO_SRCS.fr);
     assert.equal(ideaSaleVideoSrc("en"), IDEA_SALE_VIDEO_SRCS.en);
@@ -163,6 +164,20 @@ describe("vendre mes idées", () => {
     assert.match(fr.earnNow.ideaSale.videoLabel, /45 secondes/);
     assert.match(en.earnNow.ideaSale.videoLabel, /45 seconds/);
     assert.match(es.earnNow.ideaSale.videoLabel, /45 segundos/);
+  });
+
+  it("video stays off until configured: only NEXT_PUBLIC_IDEA_SALE_VIDEO_ENABLED=on enables it", () => {
+    // Éteinte tant qu'elle n'est pas configurée (Indiana Lane (IA),
+    // 07/11/2026): unset/empty/anything-but-on renders no player at all.
+    assert.equal(ideaSaleVideoEnabled(undefined), false);
+    assert.equal(ideaSaleVideoEnabled(""), false);
+    assert.equal(ideaSaleVideoEnabled("off"), false);
+    assert.equal(ideaSaleVideoEnabled("false"), false);
+    assert.equal(ideaSaleVideoEnabled("true"), false);
+    assert.equal(ideaSaleVideoEnabled("1"), false);
+    assert.equal(ideaSaleVideoEnabled("on"), true);
+    assert.equal(ideaSaleVideoEnabled("ON"), true);
+    assert.equal(ideaSaleVideoEnabled(" on "), true);
   });
 
   it("consent covers the optional document or photo in FR/EN/ES (ajout Popol, 07/11/2026)", () => {

@@ -5,7 +5,7 @@ import { useEffect, useId, useRef, useState } from "react";
 import { PAID_MISSION_LINKS } from "@/lib/paid-missions";
 import { ONLINE_WORK_LINKS } from "@/lib/online-work";
 import { useI18n } from "@/lib/i18n/locale";
-import { ideaSaleVideoSrc } from "@/lib/idea-sale";
+import { ideaSaleVideoEnabled, ideaSaleVideoSrc } from "@/lib/idea-sale";
 import { ProjectLeadDialog } from "@/components/features/ProjectLeadDialog";
 import { IdeaSaleDialog } from "@/components/features/IdeaSaleDialog";
 
@@ -126,18 +126,20 @@ export function EarnNowBoard() {
           {copy.ideaSale.title}
         </h2>
         <p className={sectionLeadClass}>{copy.ideaSale.lead}</p>
-        <figure data-idea-sale-video>
-          <video
-            className="w-full rounded-2xl"
-            controls
-            preload="metadata"
-            src={ideaSaleVideoSrc(locale)}
-            aria-label={copy.ideaSale.videoLabel}
-          />
-          <figcaption className="mt-1 text-left text-xs text-slate-500">
-            {copy.ideaSale.videoLabel}
-          </figcaption>
-        </figure>
+        {ideaSaleVideoEnabled() ? (
+          <figure data-idea-sale-video>
+            <video
+              className="w-full rounded-2xl"
+              controls
+              preload="metadata"
+              src={ideaSaleVideoSrc(locale)}
+              aria-label={copy.ideaSale.videoLabel}
+            />
+            <figcaption className="mt-1 text-left text-xs text-slate-500">
+              {copy.ideaSale.videoLabel}
+            </figcaption>
+          </figure>
+        ) : null}
         <h3 className="text-left text-[15px] font-bold text-slate-900">
           {copy.ideaSale.stepsTitle}
         </h3>

@@ -60,14 +60,32 @@ export const IDEA_SALE_PRICE_MAX_USD = 100_000_000;
  * explanatory block on « Gagner maintenant » — under the intro paragraph,
  * above « Comment ça marche », visible without opening the form (Popol,
  * 07/11/2026 10 h 15). ideaSaleVideoSrc picks the file for the section's
- * language and falls back to FR, so the section never renders an empty
- * player (sobriety rule).
+ * language and falls back to FR, so an enabled player is never empty.
  */
 export const IDEA_SALE_VIDEO_SRCS = {
   fr: "/videos/video-idees-opc-fr.mp4",
   en: "/videos/video-idees-opc-en.mp4",
   es: "/videos/video-idees-opc-es.mp4",
 } as const;
+
+/**
+ * The section's video stays OFF until it is configured (Indiana Lane
+ * (IA), 07/11/2026): the player renders only when the build sets
+ * NEXT_PUBLIC_IDEA_SALE_VIDEO_ENABLED=on — the single configuration
+ * point for the video, following the repository's « off unless
+ * explicitly on » convention (seller confirmation e-mails:
+ * IDEA_SALE_CONFIRM_EMAILS === "on"; partner ads:
+ * NEXT_PUBLIC_ADS_ENABLED). Unset, empty or any other value: the
+ * section renders no player at all — never an empty frame. Read as a
+ * static member access so Next inlines it in the client bundle
+ * (see pages-base.ts), with the raw value injectable for tests, like
+ * partner-ads' helpers.
+ */
+export function ideaSaleVideoEnabled(
+  raw: string | undefined = process.env.NEXT_PUBLIC_IDEA_SALE_VIDEO_ENABLED,
+): boolean {
+  return (raw ?? "").trim().toLowerCase() === "on";
+}
 
 export function ideaSaleVideoSrc(locale: string): string {
   switch (locale) {
