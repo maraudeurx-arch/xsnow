@@ -8,6 +8,7 @@
  * timestamped acceptance; replaces the Manuel de justice) → approval by the OPC team.
  * No wallet, no crypto, no token, no amount.
  */
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { EmailCard, LoginCard, NotifyCard, SignupForm, TermsModal, CHECKLIST_EVENT, refreshChecklist } from "@/components/arbitrage/ArbitrageBoard";
 import { arbContactHref } from "@/lib/arb-checklist";
@@ -77,6 +78,11 @@ export function ProjectLeadRegistration() {
       {status === "rejected" ? <p className="rounded-xl bg-rose-50 p-2 text-[13px] font-bold text-rose-900" data-project-lead-status="rejected">{r.statusRejected}</p> : null}
       {status === "not_configured" ? <p className="rounded-xl bg-slate-100 p-2 text-[13px]">{m.arbitrage.notConfigured}</p> : null}
 
+      {status === "verified" ? (
+        <Link className={primary + " inline-flex items-center justify-center"} href="/mes-projets/" data-project-lead-projects-open>
+          {m.earnNow.projectLead.projects.open}
+        </Link>
+      ) : null}
       {active ? <ProjectLeadChecklistCard token={token} opcId={profile?.id ?? ""} /> : null}
       {active && hasEmail === false ? <EmailCard token={token} why={r.emailWhy} onDone={() => { setHasEmail(true); refreshChecklist(); }} /> : null}
       {active ? <NotifyCard token={token} title={r.steps.notifications} body={r.notifyBody} /> : null}

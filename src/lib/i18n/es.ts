@@ -688,6 +688,45 @@ export const es: Messages = {
         "statusRejected": "Solicitud rechazada.",
         "loginTitle": "¿Ya registrado? Recuperar mi perfil de jefe de proyecto",
         "loginEmail": "Tu correo de jefe de proyecto"
+      },
+      "projects": {
+        "open": "Abrir Mis proyectos",
+        "title": "Mis proyectos",
+        "lead": "Tus proyectos Clé en Main, uno por uno. La discusión con la IA de cada proyecto ocurre aquí, en la aplicación; el correo solo sirve para avisarte.",
+        "empty": "Todavía no tienes ningún proyecto asignado. El equipo te avisará aquí y por correo en cuanto llegue un proyecto.",
+        "clientCode": "Código del cliente",
+        "clientCodePending": "próximamente",
+        "projectNumber": "Proyecto n.º {n}",
+        "lastActivity": "Última actividad: {date}",
+        "statuses": {
+          "nouveau": "Nuevo",
+          "en_cours": "En curso",
+          "en_attente_client": "En espera del cliente",
+          "termine": "Terminado"
+        },
+        "back": "← Todos mis proyectos",
+        "summaryTitle": "Resumen del proyecto",
+        "specTitle": "Pliego de condiciones (cahier des charges)",
+        "specPending": "El pliego de condiciones está en preparación: peritaje de la IA acompañante y luego contraperitaje del equipo. Aparecerá aquí, con las sugerencias del equipo.",
+        "stepsTitle": "Etapas del proyecto",
+        "stepDone": "Hecho",
+        "stepCurrent": "En curso",
+        "stepTodo": "Por venir",
+        "chatTitle": "Discusión con la IA del proyecto",
+        "chatLead": "La IA conoce este proyecto y su pliego de condiciones. Nunca te pedirá un secreto; los pagos y la primera puesta en línea los sigue decidiendo el equipo.",
+        "chatEmpty": "Aún no hay mensajes. Haz tu primera pregunta a la IA del proyecto.",
+        "chatPlaceholder": "Escribe a la IA del proyecto…",
+        "chatSend": "Enviar",
+        "chatSending": "La IA está pensando…",
+        "chatError": "La IA del proyecto no responde en este momento (red o servicio no disponible). Tu mensaje queda en el hilo; inténtalo de nuevo en un momento.",
+        "chatYou": "Tú",
+        "chatAi": "IA del proyecto",
+        "gateTitle": "Espacio reservado a los jefes de proyecto",
+        "gateNone": "Primero inicia sesión: abre «Ser jefe de proyecto» en Ganar ahora y recupera tu perfil de jefe de proyecto.",
+        "gatePending": "Tu registro como jefe de proyecto está en revisión por el equipo. Tus proyectos aparecerán aquí en cuanto se apruebe.",
+        "gateRejected": "Tu registro como jefe de proyecto no fue aceptado. Contacta al equipo OPC si crees que hay un error.",
+        "loading": "Cargando tu espacio…",
+        "toEarn": "Ir a Ganar ahora"
       }
     },
     ideaSale: {
@@ -789,6 +828,10 @@ export const es: Messages = {
     gagnerMaintenant: {
       title: "",
       lead: "",
+    },
+    mesProjets: {
+      title: "Mis proyectos",
+      lead: "El espacio de los jefes de proyecto Clé en Main: tus proyectos, su pliego de condiciones y la discusión con la IA de cada proyecto.",
     },
     sondages: {
       title: "Responde encuestas y gana dinero",

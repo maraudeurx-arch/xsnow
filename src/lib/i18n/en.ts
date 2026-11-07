@@ -688,6 +688,45 @@ export const en: Messages = {
         "statusRejected": "Request declined.",
         "loginTitle": "Already registered? Find my Project Lead profile",
         "loginEmail": "Your Project Lead email"
+      },
+      "projects": {
+        "open": "Open My projects",
+        "title": "My projects",
+        "lead": "Your Clé en Main (Turnkey) projects, one by one. The discussion with each project's AI happens here, in the app; email is only for notifications.",
+        "empty": "No project is assigned to you yet. The team will let you know here and by email as soon as a project arrives.",
+        "clientCode": "Client code",
+        "clientCodePending": "coming soon",
+        "projectNumber": "Project no. {n}",
+        "lastActivity": "Last activity: {date}",
+        "statuses": {
+          "nouveau": "New",
+          "en_cours": "In progress",
+          "en_attente_client": "Waiting on the client",
+          "termine": "Done"
+        },
+        "back": "← All my projects",
+        "summaryTitle": "Project summary",
+        "specTitle": "Project brief (cahier des charges)",
+        "specPending": "The project brief is being prepared: expertise by the companion AI, then counter-expertise by the team. It will appear here, with the team's suggestions.",
+        "stepsTitle": "Project steps",
+        "stepDone": "Done",
+        "stepCurrent": "In progress",
+        "stepTodo": "Upcoming",
+        "chatTitle": "Discussion with the project's AI",
+        "chatLead": "The AI knows this project and its brief. It will never ask you for a secret; payments and the first go-live remain decided by the team.",
+        "chatEmpty": "No messages yet. Ask the project's AI your first question.",
+        "chatPlaceholder": "Write to the project's AI…",
+        "chatSend": "Send",
+        "chatSending": "The AI is thinking…",
+        "chatError": "The project's AI is not answering right now (network or service unavailable). Your message stays in the thread; try again in a moment.",
+        "chatYou": "You",
+        "chatAi": "Project AI",
+        "gateTitle": "Project Leads only",
+        "gateNone": "Sign in first: open “Become a Project Lead” in Earn now and find your Project Lead profile.",
+        "gatePending": "Your Project Lead registration is being reviewed by the team. Your projects will appear here once it is approved.",
+        "gateRejected": "Your Project Lead registration was not accepted. Contact the OPC team if you think this is a mistake.",
+        "loading": "Loading your space…",
+        "toEarn": "Go to Earn now"
       }
     },
     ideaSale: {
@@ -789,6 +828,10 @@ export const en: Messages = {
     gagnerMaintenant: {
       title: "",
       lead: "",
+    },
+    mesProjets: {
+      title: "My projects",
+      lead: "The Clé en Main (Turnkey) Project Lead space: your projects, their brief, and the discussion with each project's AI.",
     },
     sondages: {
       title: "Answer surveys and earn money",
