@@ -1,10 +1,12 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import {
+  hasPdfSignature,
   ideaAttachmentKind,
   ideaAttachmentMetaIssue,
   parseIdeaAttachmentDataUrl,
   postIdeaAttachment,
+  prepareIdeaAttachment,
   IDEA_ATTACHMENT_MAX_BYTES,
   type PreparedIdeaAttachment,
 } from "./idea-attachment.ts";
@@ -100,6 +102,63 @@ describe("pièce jointe d'une idée à vendre", () => {
       "failed",
     );
     assert.equal(calls, 0);
+  });
+
+  it("judges a PDF on its content (extension + signature), never a false « too_big »", async () => {
+    const pdfText = "%PDF-1.4\n% prototype sketch\n";
+
+    // The file-manager case (Indiana Lane (IA), via Regie, 07/11/2026):
+    // empty declared type, .pdf name, real PDF content, well under the
+    // cap — accepted, with a normalized data URL. The old code read the
+    // file back as a MIME-less data URL, failed its own whitelist parse
+    // and refused it as « too_big ».
+    const noType = await prepareIdeaAttachment(new File([pdfText], "croquis.pdf", { type: "" }));
+    assert.ok(noType.ok);
+    assert.equal(noType.value.mime, "application/pdf");
+    assert.equal(noType.value.filename, "croquis.pdf");
+    assert.equal(noType.value.bytes, pdfText.length);
+    assert.ok(noType.value.dataUrl.startsWith("data:application/pdf;base64,"));
+    // …and the prepared file still passes the strict whitelist parse
+    // that postIdeaAttachment applies before anything leaves the device.
+    assert.ok(parseIdeaAttachmentDataUrl(noType.value.dataUrl));
+
+    // Declared PDF type with a real signature: accepted as before.
+    const declared = await prepareIdeaAttachment(
+      new File([pdfText], "croquis.pdf", { type: "application/pdf" }),
+    );
+    assert.ok(declared.ok);
+
+    // .pdf name but the content is not a PDF: refused as a TYPE problem,
+    // with the true reason — not « too_big ».
+    const fake = await prepareIdeaAttachment(
+      new File(["Bonjour, ceci n'est pas un PDF."], "document.pdf", { type: "" }),
+    );
+    assert.deepEqual(fake, { ok: false, reason: "bad_type" });
+
+    // A declared application/pdf does not rescue non-PDF content either:
+    // the signature is the judge.
+    const fakeDeclared = await prepareIdeaAttachment(
+      new File(["du texte déguisé"], "document.pdf", { type: "application/pdf" }),
+    );
+    assert.deepEqual(fakeDeclared, { ok: false, reason: "bad_type" });
+
+    // Real signature but over the cap: « too_big » — and only then.
+    const big = await prepareIdeaAttachment(
+      new File(["%PDF-" + "x".repeat(IDEA_ATTACHMENT_MAX_BYTES)], "gros.pdf", { type: "" }),
+    );
+    assert.deepEqual(big, { ok: false, reason: "too_big" });
+
+    // No type AND no .pdf extension: nothing establishes a PDF — refused
+    // as a type problem without even reading the content.
+    const anonymous = await prepareIdeaAttachment(new File([pdfText], "document", { type: "" }));
+    assert.deepEqual(anonymous, { ok: false, reason: "bad_type" });
+  });
+
+  it("recognizes the PDF signature in a base64 head", () => {
+    assert.equal(hasPdfSignature(TINY_PDF_BASE64), true);
+    assert.equal(hasPdfSignature(Buffer.from("Bonjour le monde").toString("base64")), false);
+    assert.equal(hasPdfSignature(""), false);
+    assert.equal(hasPdfSignature("%%%pas-du-base64%%%"), false);
   });
 
   it("the proposal stays sendable without any attachment", async () => {

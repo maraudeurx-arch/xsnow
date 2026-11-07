@@ -82,13 +82,36 @@ export type PrepareIdeaAttachmentResult =
   | { ok: true; value: PreparedIdeaAttachment }
   | { ok: false; reason: "bad_type" | "too_big" | "unreadable" };
 
-function fileToDataUrl(file: Blob): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(String(reader.result || ""));
-    reader.onerror = () => reject(reader.error || new Error("read_failed"));
-    reader.readAsDataURL(file);
-  });
+/**
+ * Read a Blob as base64 (chunked btoa over arrayBuffer — no FileReader,
+ * so the PDF path behaves identically in the browser and under the Node
+ * test runner, and never depends on the Blob's declared type).
+ */
+async function blobToBase64(blob: Blob): Promise<string> {
+  const bytes = new Uint8Array(await blob.arrayBuffer());
+  let binary = "";
+  const CHUNK = 0x8000;
+  for (let offset = 0; offset < bytes.length; offset += CHUNK) {
+    binary += String.fromCharCode(...bytes.subarray(offset, offset + CHUNK));
+  }
+  return btoa(binary);
+}
+
+const PDF_SIGNATURE = "%PDF-";
+
+/**
+ * True when the payload really starts with the PDF signature — the
+ * content test for files whose declared type cannot be trusted (a PDF
+ * picked from some file managers arrives with an empty type).
+ */
+export function hasPdfSignature(base64: string): boolean {
+  const head = (base64 || "").replace(/\s+/g, "").slice(0, 16);
+  if (!head) return false;
+  try {
+    return atob(head).startsWith(PDF_SIGNATURE);
+  } catch {
+    return false;
+  }
 }
 
 function safeFilename(name: string, fallback: string): string {
@@ -130,9 +153,21 @@ export async function prepareIdeaAttachment(file: File): Promise<PrepareIdeaAtta
   }
 
   try {
-    const dataUrl = await fileToDataUrl(file);
+    const base64 = (await blobToBase64(file)).replace(/\s+/g, "");
+    if (!base64) return { ok: false, reason: "unreadable" };
+    // The verdict rests on the content, never on the declared type: a
+    // PDF with an empty type reads back as a data URL carrying no MIME,
+    // which the whitelist parser refuses — the previous code mapped that
+    // refusal to « too_big » even for a small, valid PDF (Indiana Lane
+    // (IA), via Regie, 07/11/2026). Judge in order: the decoded size
+    // (the true cap for a file sent as-is), then the %PDF- signature.
+    // Each refusal now names its real reason.
+    const bytes = dataUrlByteLength(`data:${IDEA_ATTACHMENT_PDF_MIME};base64,${base64}`);
+    if (bytes > IDEA_ATTACHMENT_MAX_BYTES) return { ok: false, reason: "too_big" };
+    if (!hasPdfSignature(base64)) return { ok: false, reason: "bad_type" };
+    const dataUrl = `data:${IDEA_ATTACHMENT_PDF_MIME};base64,${base64}`;
     const parsed = parseIdeaAttachmentDataUrl(dataUrl);
-    if (!parsed) return { ok: false, reason: "too_big" };
+    if (!parsed) return { ok: false, reason: "unreadable" };
     return {
       ok: true,
       value: {
