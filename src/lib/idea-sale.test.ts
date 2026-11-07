@@ -11,7 +11,8 @@ import {
   proposeIdeaSummary,
   IDEA_SALE_SUMMARY_MAX,
   IDEA_SALE_TAG,
-  IDEA_SALE_VIDEO_SRC,
+  IDEA_SALE_VIDEO_SRCS,
+  ideaSaleVideoSrc,
   type IdeaSaleForm,
 } from "./idea-sale.ts";
 import { dictationSupported, getSpeechRecognitionCtor } from "./dictation.ts";
@@ -151,9 +152,14 @@ describe("vendre mes idées", () => {
     assert.match(text, /Accord: oui$/);
   });
 
-  it("video header stays dormant until a video file exists, with a sober label in FR/EN/ES", () => {
-    // Sobriety rule: no file yet → the dialog renders no player at all.
-    assert.equal(IDEA_SALE_VIDEO_SRC, null);
+  it("video header serves the intro video in the form's language, FR by default, with a sober label in FR/EN/ES", () => {
+    // One produced file per language under public/videos/; an unknown
+    // language falls back to FR — the dialog never shows an empty player.
+    assert.equal(IDEA_SALE_VIDEO_SRCS.fr, "/videos/video-idees-opc-fr.mp4");
+    assert.equal(ideaSaleVideoSrc("fr"), IDEA_SALE_VIDEO_SRCS.fr);
+    assert.equal(ideaSaleVideoSrc("en"), IDEA_SALE_VIDEO_SRCS.en);
+    assert.equal(ideaSaleVideoSrc("es"), IDEA_SALE_VIDEO_SRCS.es);
+    assert.equal(ideaSaleVideoSrc("de"), IDEA_SALE_VIDEO_SRCS.fr);
     assert.match(fr.earnNow.ideaSale.videoLabel, /45 secondes/);
     assert.match(en.earnNow.ideaSale.videoLabel, /45 seconds/);
     assert.match(es.earnNow.ideaSale.videoLabel, /45 segundos/);

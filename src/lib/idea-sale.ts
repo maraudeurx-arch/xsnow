@@ -52,14 +52,30 @@ export const IDEA_SALE_EMAIL_MAX = 60;
 export const IDEA_SALE_PRICE_MAX_USD = 100_000_000;
 
 /**
- * 45-second intro video for this section (Popol, 07/11/2026): some people
- * have plenty of ideas and no means to build them, others have tools and
- * funds but no ideas — OPC brings them together. While this is null,
- * NOTHING is rendered: the public page never shows an empty player
- * (sobriety rule). When the video is produced, drop the file under
- * public/videos/ and set this to its path, e.g. "/videos/vendre-mes-idees-45s.mp4".
+ * Intro video for this section (Popol, 07/11/2026): some people have plenty
+ * of ideas and no means to build them, others have tools and funds but no
+ * ideas — OPC brings them together. One produced file per form language
+ * under public/videos/ (narration ≈ 45 s, OPC logo card at the end;
+ * approved by Popol on 07/11/2026). ideaSaleVideoSrc picks the file for
+ * the form's language and falls back to FR, so the dialog never renders
+ * an empty player (sobriety rule).
  */
-export const IDEA_SALE_VIDEO_SRC: string | null = null;
+export const IDEA_SALE_VIDEO_SRCS = {
+  fr: "/videos/video-idees-opc-fr.mp4",
+  en: "/videos/video-idees-opc-en.mp4",
+  es: "/videos/video-idees-opc-es.mp4",
+} as const;
+
+export function ideaSaleVideoSrc(locale: string): string {
+  switch (locale) {
+    case "en":
+      return IDEA_SALE_VIDEO_SRCS.en;
+    case "es":
+      return IDEA_SALE_VIDEO_SRCS.es;
+    default:
+      return IDEA_SALE_VIDEO_SRCS.fr;
+  }
+}
 
 export type IdeaSaleForm = {
   title: string;

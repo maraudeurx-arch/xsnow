@@ -26,7 +26,7 @@ import {
   IDEA_SALE_NAME_MAX,
   IDEA_SALE_SUMMARY_MAX,
   IDEA_SALE_TITLE_MAX,
-  IDEA_SALE_VIDEO_SRC,
+  ideaSaleVideoSrc,
   type IdeaSaleCategory,
   type IdeaSaleForm,
 } from "@/lib/idea-sale";
@@ -57,6 +57,7 @@ const buttonClass =
 export function IdeaSaleDialog({ onClose }: { onClose: () => void }) {
   const { locale, m } = useI18n();
   const g = m.earnNow.ideaSale;
+  const videoSrc = ideaSaleVideoSrc(locale);
   const { city, localeHint } = usePlace();
   const [profile] = useLocalProfile();
   const titleId = useId();
@@ -312,13 +313,13 @@ export function IdeaSaleDialog({ onClose }: { onClose: () => void }) {
         onClick={(event) => event.stopPropagation()}
       >
         <h2 id={titleId} className="text-[16px] font-extrabold tracking-wide">{g.title}</h2>
-        {IDEA_SALE_VIDEO_SRC ? (
+        {videoSrc ? (
           <figure className="mt-3" data-idea-sale-video>
             <video
               className="w-full rounded-xl"
               controls
               preload="metadata"
-              src={IDEA_SALE_VIDEO_SRC}
+              src={videoSrc}
               aria-label={g.videoLabel}
             />
             <figcaption className="mt-1 text-[12px] text-snow/80">{g.videoLabel}</figcaption>
