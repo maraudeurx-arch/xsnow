@@ -10,6 +10,8 @@
  * `GET /stats/summary` = aggregate counts
  * `POST /ideas` = sanitized visitor ideas; emails opencommunity.opc@gmail.com
  * `POST /business-ads` = business photo ad for review; emails opencommunity.opc@gmail.com with attachment
+ * `POST /idea-attachments` = optional document/photo of a « Vendre mes idées » proposal; emails the same inbox with attachment, keyed by proposal id
+ * `POST /idea-sale-confirmation` = receipt e-mail to the « Vendre mes idées » seller (their idea's title + number), best-effort, flag-gated
  * `POST /register` = optional registration notice to the same inbox
  * `GET /ideas` = owner list (JSON or HTML) behind `IDEAS_OWNER_SECRET`
  * `POST /alerts` = guardian registers a consented proximity alert (schedule + place)
@@ -36,6 +38,8 @@ import { d1ArbStore, handleArbitrage, isArbitragePath, type D1Full } from "./arb
 import { parseLatLon, reverseGeocode } from "./geo";
 import { handleIdeasGet, handleIdeasPost, handleRegisterPost, isIdeasPath, isRegisterPath } from "./ideas";
 import { handleBusinessAdsPost, isBusinessAdsPath } from "./business-ads";
+import { handleIdeaAttachmentsPost, isIdeaAttachmentsPath } from "./idea-attachments";
+import { handleIdeaSaleConfirmationPost, isIdeaSaleConfirmationPath } from "./idea-sale-confirmation";
 import { fetchCityNews, parseCityParam, parseLangParam } from "./news";
 import { CHAT_TEXT_MAX, isJsonContentType, sanitizeUntrustedText } from "../../../src/lib/sanitize.ts";
 import {
@@ -57,6 +61,8 @@ export interface Env {
   RESEND_API_KEY?: string;
   /** Optional From: header, verified Resend domain. Default: beth.t@example.com */
   IDEAS_FROM_EMAIL?: string;
+  /** "on" enables « Vendre mes idées » receipt e-mails to sellers. Config flag, not a secret. */
+  IDEA_SALE_CONFIRM_EMAILS?: string;
   /** Twilio SMS for proximity alerts. `npx wrangler secret put TWILIO_ACCOUNT_SID` (and AUTH_TOKEN, FROM_NUMBER). */
   TWILIO_ACCOUNT_SID?: string;
   TWILIO_AUTH_TOKEN?: string;
@@ -72,6 +78,8 @@ const MODEL = "@cf/meta/llama-3.2-3b-instruct";
 const MAX_BODY_BYTES = 16_384;
 /** Business photo ads (JPEG ≤150 Ko as base64 JSON). */
 const MAX_BUSINESS_AD_BODY_BYTES = 700_000;
+/** Idea-sale attachments (one file ≤400 Ko as base64 JSON). */
+const MAX_IDEA_ATTACHMENT_BODY_BYTES = 800_000;
 const MAX_MESSAGES = 24;
 const MAX_TEXT_CHARS = CHAT_TEXT_MAX;
 const MAX_TOKENS = 400;
@@ -327,6 +335,33 @@ async function handleBusinessAds(request: Request, env: Env, origin: string | nu
   return json(data, response.status, origin);
 }
 
+async function handleIdeaAttachments(request: Request, env: Env, origin: string | null): Promise<Response> {
+  if (request.method !== "POST") {
+    return json({ error: "method_not_allowed" }, 405, origin);
+  }
+  if (tooMany(clientIp(request))) {
+    return json({ error: "rate_limited" }, 429, origin);
+  }
+  const body = await readJsonBody(request, origin, MAX_IDEA_ATTACHMENT_BODY_BYTES);
+  if (!body.ok) return body.response;
+  const response = await handleIdeaAttachmentsPost(body.value, env);
+  const data = await response.json();
+  return json(data, response.status, origin);
+}
+
+async function handleIdeaSaleConfirmation(request: Request, env: Env, origin: string | null): Promise<Response> {
+  if (request.method !== "POST") {
+    return json({ error: "method_not_allowed" }, 405, origin);
+  }
+  if (tooMany(clientIp(request))) {
+    return json({ error: "rate_limited" }, 429, origin);
+  }
+  const body = await readJsonBody(request, origin);
+  if (!body.ok) return body.response;
+  const result = await handleIdeaSaleConfirmationPost(body.value, env);
+  return json(result.data, result.status, origin);
+}
+
 async function handleIdeas(request: Request, env: Env, origin: string | null): Promise<Response> {
   if (request.method === "POST") {
     if (tooMany(clientIp(request))) {
@@ -498,6 +533,14 @@ export default {
 
     if (isBusinessAdsPath(pathname)) {
       return handleBusinessAds(request, env, origin);
+    }
+
+    if (isIdeaAttachmentsPath(pathname)) {
+      return handleIdeaAttachments(request, env, origin);
+    }
+
+    if (isIdeaSaleConfirmationPath(pathname)) {
+      return handleIdeaSaleConfirmation(request, env, origin);
     }
 
     if (isIdeasPath(pathname)) {
