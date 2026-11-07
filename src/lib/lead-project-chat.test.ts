@@ -28,9 +28,9 @@ describe("mes projets — prompt système du canal chef", () => {
     assert.match(prompt, /chef de projet/);
   });
 
-  it("dit l'état réel du cahier : remis pour Éducation, en préparation pour Haute couture", () => {
+  it("dit l'état réel du cahier : remis pour Éducation comme pour Haute couture", () => {
     assert.match(leadProjectSystemPrompt(education), /Cahier des charges : remis/);
-    assert.match(leadProjectSystemPrompt(couture), /Cahier des charges : en préparation/);
+    assert.match(leadProjectSystemPrompt(couture), /Cahier des charges : remis/);
     assert.match(leadProjectSystemPrompt(couture), /Haute couture/);
   });
 

@@ -22,7 +22,8 @@ describe("mes projets — registre des rattachements chef → projets", () => {
     const alex = leadProjectsFor("OPC-UBNZ");
     assert.equal(alex.length, 1);
     assert.equal(alex[0]?.title, "Haute couture");
-    assert.equal(alex[0]?.spec, null, "cahier des charges encore en préparation");
+    assert.ok(alex[0]?.spec && alex[0].spec.length > 500, "le cahier des charges de Haute couture est intégré");
+    assert.match(alex[0]?.spec ?? "", /tech pack/);
     assert.match(alex[0]?.summary ?? "", /magasin/);
   });
 

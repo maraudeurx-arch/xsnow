@@ -112,9 +112,84 @@ Hors portée v1 : notes et bulletins, communications officielles aux parents, vi
 Suggestions de l'équipe : commencer par le parcours d'accès (moins d'une minute) ; jalons courts montrés au client — J1 accès et classe, J2 publication de contenus, J3 tableau de bord ; prévoir une 2e langue et plusieurs classes sans les construire tout de suite.
 Décisions en attente du client : valider l'interprétation du résumé ; âge approximatif des élèves ; documents, activités interactives, ou les deux.`;
 
+const HAUTE_COUTURE_SPEC = `Cahier des charges — Projet « Haute couture »
+
+Client : projet nº 2
+Préparé par : l'IA accompagnante du client (expertise), contre-expertise d'Yves Knicks (IA), pour l'équipe d'Essaim-Agents
+Remis le : 7 novembre 2026 (le jour même de la réception du projet, selon le procédé)
+Chef de projet : Alex
+
+1. Résumé du projet (paroles du client)
+
+« J'ai un magasin où je vends des vêtements. J'aimerais que l'application m'aide à créer des vêtements pour bébé, des vêtements pour enfants, des vêtements pour adultes. Envoyer les dessins de vêtements créatifs en Chine pour la confection, faire exécuter en Chine, faire fabriquer ces vêtements, les renvoyer au Canada à mon magasin pour la vente. »
+
+2. Expertise et contre-expertise
+
+- Verdict de l'expertise : FAISABLE AVEC CONDITIONS — le parcours demandé est une pratique d'industrie établie (marque propre en petite série depuis la Chine) ; les outils existent ; la logistique de petits lots est rodée ; le cadre canadien, strict pour l'enfant, est connu et stable.
+- Note : 62/100 — confirmée en contre-expertise. Vérifications refaites sur sources officielles : le Tarif des douanes de l'ASFC (chapitre 61) confirme les vêtements pour bébés (position 6111, enfants d'au plus 86 cm) en franchise (0 %) en NPF, contre 17–18 % pour l'adulte ; l'évaluation de Santé Canada confirme les règles sur les cordons (capuche et cou : nouveau-né à 12 ans ; norme ASTM F1816). Précision de la contre-expertise : le classement se fait modèle par modèle (tricot 6111, tissé 6209 — bébé en franchise dans les deux cas), et les coûts de marché cités dans l'étude sont des fourchettes documentées, à re-deviser au moment des commandes.
+- Étude complète : etude-faisabilite-haute-couture_2026-11-07.md (dossier de l'équipe).
+
+3. Objectif et utilisateurs
+
+- Le client (propriétaire du magasin) : créer ses modèles (bébé, enfants, adultes) avec l'aide de l'application, produire ses dossiers techniques, suivre échantillons, production et expédition, et connaître son coût rendu magasin avant de commander.
+- Le chef de projet : piloter la construction de l'application et le parcours d'approvisionnement, jalon par jalon, avec l'IA du projet.
+- Principe directeur : démarrer petit et conforme — un premier lot réel vendu en magasin vaut plus qu'une grande collection sur papier.
+
+4. Portée de la première version (proposition)
+
+1. Bibliothèque de modèles : le client saisit ou dicte ses idées de vêtements ; l'IA l'aide à produire des concepts et des dessins présentables (l'IA produit des concepts, pas des patrons).
+2. Fiches techniques (tech packs) générées : mesures, gradation des tailles (bébé / enfant / adulte), tissus, couleurs, finitions — avec le bloc conformité Canada intégré aux gabarits : étiquette bilingue avec numéro CA à coudre en usine, règles cordons de Santé Canada, avertissements d'inflammabilité.
+3. Validation humaine du patron avant tout envoi en usine (modéliste) : aucun dessin seul ne part en production.
+4. Calculateur de coût rendu : prix usine + fret + droits (distinction bébé 0 % / enfant et adulte 17–18 %) + taxes + inspection, par pièce, avec marge visée — aucun prix de détail figé avant réception du lot.
+5. Suivi du parcours d'achat : échantillons (rondes), production, inspection avant solde, expédition (maritime LCL ou aérien), réception au magasin.
+6. Périmètre de départ resserré : segment bébé + 1 à 2 modèles adultes ; enfant hors bébé et vêtements de nuit enfants exclus de la v1.
+7. Chaîne d'achat protégée : commandes via Trade Assurance au démarrage, entente NNN signée avant l'envoi des dossiers techniques, inspection pré-expédition (AQL 2,5) avant le paiement du solde.
+
+5. Hors portée de la première version
+
+- Vêtements de nuit pour enfants (règlement d'inflammabilité propre — entrée après mise en place des tests de conformité).
+- Modélisation 3D (type CLO) et patronage automatique.
+- Vente en ligne et boutique (le client vend en magasin ; à rouvrir selon sa réponse à la question 6).
+- Deuxième pays de fabrication.
+
+6. Suggestions de l'équipe au chef de projet
+
+1. Commencer par le bébé : 0 % de droits de douane, quantités minimales dès 100 pièces/couleur, modèles simples — c'est le segment de démarrage rationnel ; ajouter 1 modèle adulte témoin pour éprouver le calcul de coût rendu à 17–18 %.
+2. Le tech pack est le goulot : fais valider chaque patron/gradation par un modéliste avant l'envoi en usine — l'étude montre que c'est ce qui fait passer les rondes d'échantillons d'environ 4,5 à 1,8.
+3. Conformité dessinée, pas corrigée : étiquettes bilingues avec numéro CA cousues en usine ; aucun cordon capuche/cou sur les modèles enfants dès le dessin ; tests d'inflammabilité des tissus avant la première production.
+4. Aucune exception à la chaîne protégée : Trade Assurance, NNN avant l'envoi des dessins, inspection avant le solde — même pour un petit lot « pour essayer ».
+5. Pilote réel avant d'élargir : premier lot d'environ 300–600 pièces au total, vendu et analysé en magasin (taux de vente, marge réelle rendue) avant d'ajouter des modèles ou des segments. Calendrier : compter un cycle réel de 3 à 5 mois par collection — viser la saison en conséquence.
+
+7. Décisions demandées au client (posées par l'équipe — le chef ne contacte pas le client directement)
+
+1. Dans quelle province est le magasin ? (Québec → étiquetage français renforcé ; Ontario → régime fédéral bilingue standard.)
+2. Quel budget de démarrage avant les premières ventes ?
+3. Quels volumes annuels par modèle, et quelle rotation de stock le magasin supporte-t-il ? (Le minimum de 100 pièces/modèle doit être absorbable.)
+4. A-t-il déjà une marque (nom, logo), déposée au Canada ? Le nom du magasin fera-t-il office de marque sur les étiquettes (numéro CA) ?
+5. Quels tissus vise-t-il (coton, coton biologique certifié, synthétiques) ?
+6. Veut-il aussi vendre en ligne, ou uniquement en magasin ?
+7. Qui approuve les échantillons chez lui, et sur quels critères ?
+
+8. Questions au chef de projet (à trancher avec l'équipe)
+
+1. Modèle de validation du patron : modéliste freelance partenaire (coût au modèle), service de patronage, ou patronage par l'usine avec contrôle renforcé ? Qui paie les rondes supplémentaires ?
+2. Route d'approvisionnement par défaut : Alibaba + Trade Assurance en direct par le client guidé par l'application, ou agent d'approvisionnement mandaté ?
+3. Périmètre exact de la v1 : confirme-t-on l'exclusion de la 3D et l'intégration d'un seul générateur d'images au lancement ?
+4. Qui tient le rôle « conformité » : gabarits et listes de contrôle dans l'application + revue humaine par modèle, ou revue externe pour le segment enfant ?
+5. Calendrier cible : quelle saison vise la première collection vendable, en comptant le cycle de 3 à 5 mois ?
+
+9. Déroulement
+
+- Expertise : faite le 7 novembre 2026. Contre-expertise : faite le même jour, note confirmée. Cahier des charges : remis le même jour.
+- Après les réponses du client (section 7) et du chef (section 8) : construction jalon par jalon, avec démonstration à chaque jalon.
+- L'IA accompagnante fait le lien entre le client et le chef de projet à chaque étape ; la discussion du chef avec l'IA du projet se tient dans l'application OPC (écran « Mes projets ») — le courriel sert de notification.`;
+
 const HAUTE_COUTURE_SUMMARY = `« J'ai un magasin où je vends des vêtements. J'aimerais que l'application m'aide à créer des vêtements pour bébé, des vêtements pour enfants, des vêtements pour adultes. Envoyer les dessins de vêtements créatifs en Chine pour la confection, faire exécuter en Chine, faire fabriquer ces vêtements, les renvoyer au Canada à mon magasin pour la vente. »`;
 
-const HAUTE_COUTURE_BRIEF = `Le client tient un magasin de vêtements au Canada. L'application à construire doit l'aider à créer des vêtements (bébé, enfants, adultes), à envoyer ses dessins créatifs en Chine pour la confection et la fabrication, puis à faire revenir les vêtements fabriqués à son magasin pour la vente. Le cahier des charges est en préparation : expertise de l'IA accompagnante, puis contre-expertise de l'équipe. Tant qu'il n'est pas remis, aide le chef à préparer ses questions (gammes, quantités, délais, qualité attendue) sans promettre de dates ni de prix au client.`;
+const HAUTE_COUTURE_BRIEF = `Portée v1 : bibliothèque de modèles (le client saisit ou dicte ses idées ; l'IA aide à produire concepts et dessins, jamais de patrons) ; fiches techniques (tech packs) générées — mesures, gradation des tailles bébé/enfant/adulte, tissus, couleurs, finitions — avec le bloc conformité Canada intégré aux gabarits (étiquette bilingue avec numéro CA cousue en usine, règles cordons de Santé Canada, inflammabilité) ; validation humaine du patron avant tout envoi en usine ; calculateur de coût rendu (droits : bébé 0 %, enfant et adulte 17–18 %) ; suivi échantillons, production, inspection avant solde, expédition ; démarrage resserré : segment bébé + 1 à 2 modèles adultes ; chaîne d'achat protégée (Trade Assurance, NNN avant l'envoi des dessins, inspection AQL 2,5 avant le solde).
+Hors portée v1 : vêtements de nuit pour enfants, modélisation 3D et patronage automatique, vente en ligne, deuxième pays de fabrication.
+Suggestions de l'équipe : commencer par le bébé (0 % de droits, minimum 100 pièces/couleur) + 1 modèle adulte témoin ; le tech pack est le goulot — validation par un modéliste à chaque modèle ; conformité dessinée dès le départ, pas corrigée ; pilote réel de 300–600 pièces vendues et analysées en magasin avant d'élargir ; cycle réel de 3 à 5 mois par collection.
+Décisions en attente du client : province du magasin ; budget de démarrage ; volumes annuels par modèle ; marque existante (nom, logo, numéro CA) ; tissus visés ; vente en ligne ou magasin seulement ; qui approuve les échantillons.`;
 
 /**
  * Rattachements en vigueur. Clé = code OPC du chef. Pour ajouter un projet
@@ -150,14 +225,15 @@ export const LEAD_PROJECT_REGISTRY: Readonly<Record<string, readonly LeadProject
       number: 2,
       title: "Haute couture",
       clientCode: "",
-      status: "nouveau",
+      status: "en_attente_client",
       summary: HAUTE_COUTURE_SUMMARY,
-      spec: null,
+      spec: HAUTE_COUTURE_SPEC,
       aiBrief: HAUTE_COUTURE_BRIEF,
       steps: [
         { label: "Projet reçu par l'équipe", state: "done" },
-        { label: "Expertise de l'IA accompagnante, puis contre-expertise de l'équipe", state: "current" },
-        { label: "Cahier des charges remis au chef de projet, avec les suggestions de l'équipe", state: "todo" },
+        { label: "Expertise de l'IA accompagnante, puis contre-expertise de l'équipe", state: "done" },
+        { label: "Cahier des charges remis au chef de projet, avec les suggestions de l'équipe", state: "done" },
+        { label: "Réponses du client (§7 du cahier) et du chef (§8), rapportées par l'équipe", state: "current" },
         { label: "Construction par jalons, avec démonstration au client à chaque jalon", state: "todo" },
       ],
       updatedAt: "2026-11-07",

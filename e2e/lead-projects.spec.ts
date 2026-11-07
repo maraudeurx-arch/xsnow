@@ -103,7 +103,7 @@ test.describe("Mes projets — espace chef de projet", () => {
     await expect(page.locator("[data-lead-project-step='current']")).toContainText("Validation du client");
   });
 
-  test("Alex (OPC-UBNZ) voit Haute couture, cahier en préparation, et discute avec l'IA du projet", async ({ page }) => {
+  test("Alex (OPC-UBNZ) voit Haute couture, cahier des charges intégré, et discute avec l'IA du projet", async ({ page }) => {
     await seedProfile(page, "OPC-UBNZ", "Alex", "Kumba");
     await seedLeadToken(page);
     const chatBodies = await stubWorker(page, "verified");
@@ -113,7 +113,10 @@ test.describe("Mes projets — espace chef de projet", () => {
     await expect(card).toContainText("Haute couture");
     await card.click();
     await expect(page.locator("[data-lead-project-detail='haute-couture']")).toBeVisible();
-    await expect(page.locator("[data-lead-project-spec]")).toContainText("en préparation");
+    const spec = page.locator("[data-lead-project-spec]");
+    await expect(spec).toContainText("Fiches techniques (tech packs)");
+    await expect(spec).toContainText("Suggestions de l'équipe au chef de projet");
+    await expect(page.locator("[data-lead-project-step='current']")).toContainText("Réponses du client");
     // Discussion : le message part au Worker avec le prompt du canal chef.
     await page.locator("[data-lead-chat-input]").fill("Par où je commence ?");
     await page.locator("[data-lead-chat-send]").click();
