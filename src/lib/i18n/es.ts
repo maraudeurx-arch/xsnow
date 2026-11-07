@@ -755,10 +755,10 @@ export const es: Messages = {
       // crochets à remplir avant validation).
       consentItems: [
         "Propones tu voz (la grabación que recitas aquí) y tu imagen (una foto, un video y un video corto de verificación de tu rostro). Con tu acuerdo, entran en el banco de sonidos e imágenes de los gemelos digitales de OPC: pueden servir para crear un gemelo digital, es decir, un personaje animado que habla con tu voz y muestra tu rostro.",
-        "Participación reservada a personas de 18 años o más que residan en un país admisible [lista de países admisibles — por completar antes de la validación del texto].",
+        "Admisibilidad: participación reservada a personas de 18 años o más, residentes en un país en desarrollo (fuera de Canadá, Estados Unidos y Europa).",
         "Usos prohibidos: tu voz y tu imagen nunca servirán para engañar a nadie, ni para contenidos sexuales, ni para contenidos políticos.",
         "Ningún ingreso garantizado: si tu voz o tu imagen se utilizan, podrías recibir una pequeña compensación, pero no es un ingreso prometido ni garantizado. Su monto aún no está fijado.",
-        "Retiro en cualquier momento: puedes retirar tu consentimiento y pedir la supresión de tu expediente cuando quieras, escribiendo al equipo de OPC. El retiro detiene todo uso futuro; no puede borrar lo que ya se hubiera publicado con tu acuerdo antes del retiro.",
+        "Retiro en cualquier momento: puedes retirar tu consentimiento y pedir la supresión de tu expediente cuando quieras, escribiendo al equipo de OPC [correo de contacto — por completar antes de la validación del texto]. El retiro detiene todo uso futuro; no puede borrar lo que ya se hubiera publicado con tu acuerdo antes del retiro.",
         "Privacidad: el tratamiento de tu expediente sigue la ley federal canadiense de protección de la información personal en el sector privado (PIPEDA — « LPRPDE » en francés).",
         "Nunca propongas la voz ni la imagen de otra persona: solo las tuyas. La verificación de tu identidad la hace el equipo: ninguna decisión automática confirma una identidad en la aplicación.",
       ],
@@ -784,6 +784,9 @@ export const es: Messages = {
       videoLabel: "Tu video (MP4, WebM o MOV)",
       chooseFile: "Elegir un archivo",
       fileSaved: "Archivo registrado en tu dispositivo.",
+      fileSaving: "Guardando…",
+      fileSaveFailed: "El guardado falló: este archivo no quedó registrado. Inténtalo de nuevo.",
+      captureError: "La captura falló. Inténtalo de nuevo: el micrófono y la cámara están apagados.",
       fileEmpty: "Ese archivo está vacío. Elige otro.",
       fileWrongType: "Ese formato no se acepta. Elige un archivo del tipo solicitado.",
       fileTooBig: "Ese archivo es demasiado pesado. Elige uno más ligero.",
@@ -961,7 +964,7 @@ export const es: Messages = {
     inviter:
       "Un enlace de invitación y un QR aparecerán aquí. Por ahora, habla de Open Community a un vecino.",
     monetise:
-      "El recorrido está abierto: consentimiento, muestra de voz, foto y video, verificación del rostro y depósito de tu expediente en el banco de gemelos digitales.",
+      "En preparación: el recorrido (consentimiento, muestra de voz, foto y video, verificación del rostro y depósito de tu expediente en el banco de gemelos digitales) se abrirá en cuanto se valide el texto de consentimiento. Por ahora, no se recoge nada.",
     scenarios:
       "Un taller para inventar sketches y dibujos animados comunitarios. Previsto para 2027.",
     sondages:

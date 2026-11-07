@@ -20,6 +20,48 @@ export function personaMediaKey(depositId: string, kind: PersonaMediaKind): stri
   return `${depositId}:${kind}`;
 }
 
+/** Structural minimum of a MediaStream — keeps the helpers testable in Node. */
+export type StoppableStream = {
+  getTracks: () => Array<{ stop: () => void }>;
+} | null | undefined;
+
+/**
+ * Cut a media stream completely: every track is stopped, so the
+ * microphone/camera indicator actually goes off. Called after every
+ * capture (voice, selfie) and after every failure or refusal — a stream
+ * must never be left running. Never throws.
+ */
+export function stopMediaStream(stream: StoppableStream): void {
+  if (!stream) return;
+  try {
+    for (const track of stream.getTracks()) {
+      try {
+        track.stop();
+      } catch {
+        // One stubborn track must not keep the others alive.
+      }
+    }
+  } catch {
+    // A broken stream object must not break the flow.
+  }
+}
+
+/**
+ * Release preview object URLs (voice player, photo, videos) so the blobs
+ * behind them can be garbage-collected. Never throws.
+ */
+export function revokePreviewUrls(urls: Iterable<string | null | undefined>): void {
+  if (typeof URL === "undefined" || typeof URL.revokeObjectURL !== "function") return;
+  for (const url of urls) {
+    if (!url) continue;
+    try {
+      URL.revokeObjectURL(url);
+    } catch {
+      // Revoking twice is harmless; a failure here must not break the flow.
+    }
+  }
+}
+
 /** Test helper — swap IndexedDB for an in-memory map (same pattern as durable-storage). */
 let testStore: Map<string, Blob> | null = null;
 export function setPersonaMediaStoreForTests(store: Map<string, Blob> | null) {

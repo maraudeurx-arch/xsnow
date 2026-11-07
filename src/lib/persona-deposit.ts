@@ -41,7 +41,7 @@ export const PERSONA_COLLECTION_ENABLED = false;
  * form; bump this version when her text replaces it, so a recorded consent
  * always names the exact text that was accepted.
  */
-export const PERSONA_CONSENT_TEXT_VERSION = "provisoire-2026-11-07";
+export const PERSONA_CONSENT_TEXT_VERSION = "provisoire-2026-11-07-r2";
 
 /** Durable-storage key for the current deposit metadata (media live in IndexedDB). */
 export const PERSONA_DEPOSIT_KEY = "xsnow.personaDeposit";

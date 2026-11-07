@@ -249,29 +249,34 @@ describe("monétise-toi — drapeau de collecte (cadrage Indiana, 07/11/2026)", 
     const locales = [
       {
         items: fr.earnNow.personaMonetise.consentItems.join("\n"),
-        country: /pays admissible/,
+        country: /pays en développement/,
+        formula: /18 ans ou plus, résidant dans un pays en développement \(hors Canada, États-Unis et Europe\)/,
         deceive: /tromper/,
         income: /Aucun revenu garanti/,
         withdraw: /Retrait en tout temps/,
       },
       {
         items: en.earnNow.personaMonetise.consentItems.join("\n"),
-        country: /eligible country/,
+        country: /developing country/,
+        formula: /18 or older, living in a developing country \(excluding Canada, the United States and Europe\)/,
         deceive: /deceive/,
         income: /No guaranteed income/,
         withdraw: /Withdrawal at any time/,
       },
       {
         items: es.earnNow.personaMonetise.consentItems.join("\n"),
-        country: /país admisible/,
+        country: /país en desarrollo/,
+        formula: /18 años o más, residentes en un país en desarrollo \(fuera de Canadá, Estados Unidos y Europa\)/,
         deceive: /engañar/,
         income: /Ningún ingreso garantizado/,
         withdraw: /Retiro en cualquier momento/,
       },
     ];
-    for (const { items, country, deceive, income, withdraw } of locales) {
+    for (const { items, country, formula, deceive, income, withdraw } of locales) {
       assert.match(items, /18 ans|18 or older|18 años/);
       assert.match(items, country);
+      // Popol's validated eligibility formula (07/11/2026, via Indiana).
+      assert.match(items, formula);
       assert.match(items, deceive);
       assert.match(items, /sexuels|sexual|sexuales/);
       assert.match(items, /politiques|political|políticos/);
@@ -280,6 +285,15 @@ describe("monétise-toi — drapeau de collecte (cadrage Indiana, 07/11/2026)", 
       assert.match(items, /PIPEDA|LPRPDE/);
       // A bracketed field remains open for Indiana's definitive text.
       assert.match(items, /\[[^\]]+]/);
+    }
+  });
+
+  it("while the section is « En préparation », no copy claims the journey is open", () => {
+    const stubs = [fr.stubs.monetise, en.stubs.monetise, es.stubs.monetise];
+    for (const stub of stubs) {
+      assert.doesNotMatch(stub, /parcours est ouvert|journey is open|recorrido está abierto/i);
+      assert.match(stub, /En préparation|In preparation|En preparación/);
+      assert.match(stub, /rien n’est collecté|nothing is collected|no se recoge nada/);
     }
   });
 });

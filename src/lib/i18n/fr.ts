@@ -751,10 +751,10 @@ export const fr = {
       // crochets à remplir avant validation).
       consentItems: [
         "Tu proposes ta voix (l’enregistrement que tu récites ici) et ton image (une photo, une vidéo et une courte vidéo de vérification de ton visage). Avec ton accord, elles entrent dans la banque de sons et d’images des jumeaux numériques d’OPC : elles peuvent servir à créer un jumeau numérique, c’est-à-dire un personnage animé qui parle avec ta voix et montre ton visage.",
-        "Participation réservée aux personnes de 18 ans ou plus qui résident dans un pays admissible [liste des pays admissibles — à compléter avant la validation du texte].",
+        "Admissibilité : participation réservée aux personnes de 18 ans ou plus, résidant dans un pays en développement (hors Canada, États-Unis et Europe).",
         "Usages interdits : ta voix et ton image ne serviront jamais à tromper qui que ce soit, ni à des contenus sexuels, ni à des contenus politiques.",
         "Aucun revenu garanti : si ta voix ou ton image sont utilisées, tu pourrais recevoir une petite compensation, mais ce n’est ni un revenu promis ni un revenu garanti. Son montant n’est pas encore fixé.",
-        "Retrait en tout temps : tu peux retirer ton consentement et demander la suppression de ton dossier quand tu veux, en écrivant à l’équipe d’OPC. Le retrait arrête toute utilisation future ; il ne peut pas effacer ce qui aurait déjà été publié avec ton accord avant le retrait.",
+        "Retrait en tout temps : tu peux retirer ton consentement et demander la suppression de ton dossier quand tu veux, en écrivant à l’équipe d’OPC [courriel de contact — à compléter avant la validation du texte]. Le retrait arrête toute utilisation future ; il ne peut pas effacer ce qui aurait déjà été publié avec ton accord avant le retrait.",
         "Vie privée : le traitement de ton dossier suit la loi fédérale canadienne sur la protection des renseignements personnels dans le secteur privé (LPRPDE, dite « PIPEDA » en anglais).",
         "Ne propose jamais la voix ni l’image d’une autre personne : seulement les tiennes. La vérification de ton identité est faite par l’équipe : aucune décision automatique ne confirme une identité dans l’application.",
       ],
@@ -780,6 +780,9 @@ export const fr = {
       videoLabel: "Ta vidéo (MP4, WebM ou MOV)",
       chooseFile: "Choisir un fichier",
       fileSaved: "Fichier consigné sur ton appareil.",
+      fileSaving: "Enregistrement en cours…",
+      fileSaveFailed: "L’enregistrement a échoué : ce fichier n’a pas été consigné. Réessaie.",
+      captureError: "La capture a échoué. Réessaie — le micro et la caméra sont coupés.",
       fileEmpty: "Ce fichier est vide. Choisis-en un autre.",
       fileWrongType: "Ce format n’est pas accepté. Choisis un fichier du type demandé.",
       fileTooBig: "Ce fichier est trop lourd. Choisis-en un plus léger.",
@@ -956,7 +959,7 @@ export const fr = {
     inviter:
       "Un lien d’invitation et un QR apparaîtront ici. Pour l’instant, parlez d’Open Community à un voisin.",
     monetise:
-      "Le parcours est ouvert : consentement, échantillon de voix, photo et vidéo, vérification du visage, puis dépôt du dossier dans la banque des jumeaux numériques.",
+      "En préparation : le parcours (consentement, échantillon de voix, photo et vidéo, vérification du visage, dépôt dans la banque des jumeaux numériques) ouvrira dès que le texte de consentement sera validé. Pour l’instant, rien n’est collecté.",
     scenarios:
       "Un atelier pour inventer des sketches et des dessins animés communautaires. Prévu pour 2027.",
     sondages:

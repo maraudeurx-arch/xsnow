@@ -755,10 +755,10 @@ export const en: Messages = {
       // crochets à remplir avant validation).
       consentItems: [
         "You are offering your voice (the recording you read here) and your image (a photo, a video, and a short face-verification video). With your agreement, they join OPC's digital-twin sound and image bank: they may be used to create a digital twin — an animated character that speaks with your voice and shows your face.",
-        "Participation is limited to people aged 18 or older who live in an eligible country [list of eligible countries — to be completed before the text is validated].",
+        "Eligibility: participation is reserved for people aged 18 or older, living in a developing country (excluding Canada, the United States and Europe).",
         "Forbidden uses: your voice and your image will never be used to deceive anyone, nor for sexual content, nor for political content.",
         "No guaranteed income: if your voice or your image are used, you may receive a small compensation, but it is neither promised nor guaranteed income. Its amount is not set yet.",
-        "Withdrawal at any time: you may withdraw your consent and ask for your file to be deleted whenever you want, by writing to the OPC team. Withdrawal stops any future use; it cannot erase anything already published with your agreement before the withdrawal.",
+        "Withdrawal at any time: you may withdraw your consent and ask for your file to be deleted whenever you want, by writing to the OPC team [contact email — to be completed before the text is validated]. Withdrawal stops any future use; it cannot erase anything already published with your agreement before the withdrawal.",
         "Privacy: your file is handled under Canada's federal private-sector privacy law (PIPEDA — « LPRPDE » in French).",
         "Never offer someone else's voice or image: only your own. Identity verification is done by the team: no automatic decision ever confirms an identity in the app.",
       ],
@@ -784,6 +784,9 @@ export const en: Messages = {
       videoLabel: "Your video (MP4, WebM or MOV)",
       chooseFile: "Choose a file",
       fileSaved: "File recorded on your device.",
+      fileSaving: "Saving…",
+      fileSaveFailed: "Saving failed: this file was not recorded. Please try again.",
+      captureError: "The capture failed. Please try again — the microphone and camera are off.",
       fileEmpty: "That file is empty. Choose another one.",
       fileWrongType: "That format is not accepted. Choose a file of the requested type.",
       fileTooBig: "That file is too heavy. Choose a lighter one.",
@@ -960,7 +963,7 @@ export const en: Messages = {
     inviter:
       "An invite link and QR will appear here. For now, tell a neighbour about Open Community.",
     monetise:
-      "The journey is open: consent, voice sample, photo and video, face verification, then deposit of your file into the digital-twin bank.",
+      "In preparation: the journey (consent, voice sample, photo and video, face verification, deposit into the digital-twin bank) will open as soon as the consent text is validated. For now, nothing is collected.",
     scenarios:
       "A workshop to invent community sketches and cartoons. Planned for 2027.",
     sondages:

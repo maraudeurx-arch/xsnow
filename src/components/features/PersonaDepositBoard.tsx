@@ -20,9 +20,16 @@
  * - no compensation amount anywhere: the amount is not set yet.
  *
  * Media blobs are stored on-device (IndexedDB, persona-media.ts) as soon
- * as they are captured; only a metadata notice is POSTed, best-effort, to
- * the proposed /persona-deposits Worker route (inactive until Indiana
- * activates it — the dossier then simply stays complete on the device).
+ * as they are captured; a file is shown as « consigné » ONLY after the
+ * vault write is confirmed — while it is in flight the UI says
+ * « Enregistrement… », and a failed write is shown as a failure, never as
+ * recorded (the metadata that unlocks steps is persisted only after a
+ * confirmed write). Microphone/camera streams are fully stopped after
+ * every capture and every failure, and preview object URLs are revoked
+ * when replaced, on a new deposit and on unmount. Only a metadata notice
+ * is POSTed, best-effort, to the proposed /persona-deposits Worker route
+ * (inactive until Indiana activates it — the dossier then simply stays
+ * complete on the device).
  */
 
 import { useEffect, useRef, useState } from "react";
@@ -56,7 +63,9 @@ import {
 import {
   deletePersonaMedia,
   loadPersonaMedia,
+  revokePreviewUrls,
   savePersonaMedia,
+  stopMediaStream,
 } from "@/lib/persona-media";
 
 const cardClass =
@@ -69,6 +78,9 @@ const checkRowClass = "flex items-start gap-2 text-[13px] leading-snug text-slat
 const alertClass = "rounded-xl bg-amber-50 p-2 text-[13px] font-bold text-amber-900";
 
 type MediaUrls = Partial<Record<PersonaMediaKind, string>>;
+
+/** Per-file write state: a file is « consigné » only in the "saved" state. */
+type MediaSaveState = "saving" | "saved" | "failed";
 
 function mediaSupported(kind: "audio" | "video"): boolean {
   if (typeof window === "undefined") return false;
@@ -88,7 +100,9 @@ export function PersonaDepositBoard() {
   const [checks, setChecks] = useState<PersonaConsentChecks>(emptyPersonaConsentChecks());
   const [resumed, setResumed] = useState(false);
   const [urls, setUrls] = useState<MediaUrls>({});
+  const urlsRef = useRef<MediaUrls>({});
   const [fileNotes, setFileNotes] = useState<Partial<Record<PersonaMediaKind, string>>>({});
+  const [saveStates, setSaveStates] = useState<Partial<Record<PersonaMediaKind, MediaSaveState>>>({});
 
   // Voice recording state.
   const [voiceRecording, setVoiceRecording] = useState(false);
@@ -160,25 +174,26 @@ export function PersonaDepositBoard() {
         if (blob) next[kind] = URL.createObjectURL(blob);
       }
       if (cancelled) {
-        Object.values(next).forEach((u) => u && URL.revokeObjectURL(u));
+        revokePreviewUrls(Object.values(next));
         return;
       }
-      setUrls((prev) => {
-        Object.values(prev).forEach((u) => u && URL.revokeObjectURL(u));
-        return next;
-      });
+      // Replaced previews are released so their blobs can be collected.
+      revokePreviewUrls(Object.values(urlsRef.current));
+      urlsRef.current = next;
+      setUrls(next);
     })();
     return () => {
       cancelled = true;
     };
   }, [deposit]);
 
-  /* Revoke all preview URLs on unmount. */
+  /* Revoke all preview URLs on unmount (via the ref — state would be stale). */
   useEffect(() => {
+    const current = urlsRef;
     return () => {
-      Object.values(urls).forEach((u) => u && URL.revokeObjectURL(u));
+      revokePreviewUrls(Object.values(current.current));
+      current.current = {};
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   /* Never sit on a step the deposit has not unlocked. */
@@ -189,15 +204,15 @@ export function PersonaDepositBoard() {
     }
   }, [deposit, step]);
 
-  /* Stop streams/timers on unmount. */
+  /* Stop streams/timers on unmount — mic and camera must never stay live. */
   useEffect(() => {
     const voiceStream = voiceStreamRef;
     const selfieStream = selfieStreamRef;
     const voiceTimer = voiceTimerRef;
     const selfieTimer = selfieTimerRef;
     return () => {
-      voiceStream.current?.getTracks().forEach((t) => t.stop());
-      selfieStream.current?.getTracks().forEach((t) => t.stop());
+      stopMediaStream(voiceStream.current);
+      stopMediaStream(selfieStream.current);
       if (voiceTimer.current) clearInterval(voiceTimer.current);
       if (selfieTimer.current) clearInterval(selfieTimer.current);
     };
@@ -230,12 +245,25 @@ export function PersonaDepositBoard() {
     setDeposit(next);
   }
 
-  async function storeMedia(kind: PersonaMediaKind, blob: Blob) {
-    if (!deposit) return;
-    await savePersonaMedia(deposit.id, kind, blob);
+  /**
+   * Persist one captured file. Returns true only once the vault write is
+   * CONFIRMED: the metadata record (which unlocks steps and fills the
+   * recap) is written only after savePersonaMedia resolves true, so
+   * nothing is ever displayed as « consigné » before it truly is.
+   */
+  async function storeMedia(kind: PersonaMediaKind, blob: Blob): Promise<boolean> {
+    if (!deposit) return false;
+    setSaveStates((prev) => ({ ...prev, [kind]: "saving" }));
+    const saved = await savePersonaMedia(deposit.id, kind, blob);
+    if (!saved) {
+      setSaveStates((prev) => ({ ...prev, [kind]: "failed" }));
+      return false;
+    }
     persist(
       recordPersonaMedia(deposit, kind, { type: blob.type || "application/octet-stream", size: blob.size }, Date.now()),
     );
+    setSaveStates((prev) => ({ ...prev, [kind]: "saved" }));
+    return true;
   }
 
   /* ------------------------------------------------------------ */
@@ -256,8 +284,9 @@ export function PersonaDepositBoard() {
       setVoiceError(g.micUnsupported);
       return;
     }
+    let stream: MediaStream | null = null;
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       voiceStreamRef.current = stream;
       const mime = pickRecorderMimeType(PERSONA_AUDIO_MIME_CANDIDATES, (t) =>
         MediaRecorder.isTypeSupported(t),
@@ -272,8 +301,17 @@ export function PersonaDepositBoard() {
           type: recorder.mimeType || mime || "audio/webm",
         });
         void storeMedia("voice", blob);
-        voiceStreamRef.current?.getTracks().forEach((t) => t.stop());
+        // Capture over: cut the microphone completely.
+        stopMediaStream(voiceStreamRef.current);
         voiceStreamRef.current = null;
+      };
+      recorder.onerror = () => {
+        if (voiceTimerRef.current) clearInterval(voiceTimerRef.current);
+        setVoiceRecording(false);
+        // Capture failed: cut the microphone completely.
+        stopMediaStream(voiceStreamRef.current);
+        voiceStreamRef.current = null;
+        setVoiceError(g.captureError);
       };
       voiceRecorderRef.current = recorder;
       recorder.start();
@@ -281,6 +319,9 @@ export function PersonaDepositBoard() {
       setVoiceRecording(true);
       voiceTimerRef.current = setInterval(() => setVoiceSeconds((s) => s + 1), 1000);
     } catch {
+      // Refusal or recorder failure: never leave a stream running.
+      stopMediaStream(stream);
+      if (voiceStreamRef.current === stream) voiceStreamRef.current = null;
       setVoiceError(g.micDenied);
     }
   }
@@ -304,8 +345,11 @@ export function PersonaDepositBoard() {
       }));
       return;
     }
-    setFileNotes((prev) => ({ ...prev, [kind]: g.fileSaved }));
-    await storeMedia(kind, file);
+    // Honest transient state first: « consigné » appears only after the
+    // vault write is confirmed; a failed write is reported as a failure.
+    setFileNotes((prev) => ({ ...prev, [kind]: g.fileSaving }));
+    const saved = await storeMedia(kind, file);
+    setFileNotes((prev) => ({ ...prev, [kind]: saved ? g.fileSaved : g.fileSaveFailed }));
   }
 
   /* ------------------------------------------------------------ */
@@ -339,33 +383,59 @@ export function PersonaDepositBoard() {
     if (selfieTimerRef.current) clearInterval(selfieTimerRef.current);
     setSelfieRecording(false);
     selfieRecorderRef.current?.stop();
-    selfieStreamRef.current?.getTracks().forEach((t) => t.stop());
+    // Cut the camera completely and detach it from the preview element.
+    stopMediaStream(selfieStreamRef.current);
     selfieStreamRef.current = null;
+    if (cameraVideoRef.current) cameraVideoRef.current.srcObject = null;
     setCameraOn(false);
   }
 
   function startSelfieRecording() {
     const stream = selfieStreamRef.current;
     if (!stream) return;
-    const mime = pickRecorderMimeType(PERSONA_VIDEO_MIME_CANDIDATES, (t) =>
-      MediaRecorder.isTypeSupported(t),
-    );
-    const recorder = new MediaRecorder(stream, mime ? { mimeType: mime } : undefined);
-    selfieChunksRef.current = [];
-    recorder.ondataavailable = (event) => {
-      if (event.data.size > 0) selfieChunksRef.current.push(event.data);
-    };
-    recorder.onstop = () => {
-      const blob = new Blob(selfieChunksRef.current, {
-        type: recorder.mimeType || mime || "video/webm",
-      });
-      void storeMedia("selfie", blob);
-    };
-    selfieRecorderRef.current = recorder;
-    recorder.start();
-    setSelfieSeconds(0);
-    setSelfieRecording(true);
-    selfieTimerRef.current = setInterval(() => setSelfieSeconds((s) => s + 1), 1000);
+    try {
+      const mime = pickRecorderMimeType(PERSONA_VIDEO_MIME_CANDIDATES, (t) =>
+        MediaRecorder.isTypeSupported(t),
+      );
+      const recorder = new MediaRecorder(stream, mime ? { mimeType: mime } : undefined);
+      selfieChunksRef.current = [];
+      recorder.ondataavailable = (event) => {
+        if (event.data.size > 0) selfieChunksRef.current.push(event.data);
+      };
+      recorder.onstop = () => {
+        const blob = new Blob(selfieChunksRef.current, {
+          type: recorder.mimeType || mime || "video/webm",
+        });
+        void storeMedia("selfie", blob);
+        // Capture over: cut the camera completely.
+        stopMediaStream(selfieStreamRef.current);
+        selfieStreamRef.current = null;
+        if (cameraVideoRef.current) cameraVideoRef.current.srcObject = null;
+        setCameraOn(false);
+      };
+      recorder.onerror = () => {
+        if (selfieTimerRef.current) clearInterval(selfieTimerRef.current);
+        setSelfieRecording(false);
+        // Capture failed: cut the camera completely.
+        stopMediaStream(selfieStreamRef.current);
+        selfieStreamRef.current = null;
+        if (cameraVideoRef.current) cameraVideoRef.current.srcObject = null;
+        setCameraOn(false);
+        setCameraError(g.captureError);
+      };
+      selfieRecorderRef.current = recorder;
+      recorder.start();
+      setSelfieSeconds(0);
+      setSelfieRecording(true);
+      selfieTimerRef.current = setInterval(() => setSelfieSeconds((s) => s + 1), 1000);
+    } catch {
+      // Recorder failure: never leave the camera running.
+      stopMediaStream(selfieStreamRef.current);
+      selfieStreamRef.current = null;
+      if (cameraVideoRef.current) cameraVideoRef.current.srcObject = null;
+      setCameraOn(false);
+      setCameraError(g.captureError);
+    }
   }
 
   function stopSelfieRecording() {
@@ -395,6 +465,11 @@ export function PersonaDepositBoard() {
       await deletePersonaMedia(deposit.id, kind);
     }
     clearPersonaDeposit();
+    // Release every preview of the closed dossier.
+    revokePreviewUrls(Object.values(urlsRef.current));
+    urlsRef.current = {};
+    setUrls({});
+    setSaveStates({});
     setChecks(emptyPersonaConsentChecks());
     setFileNotes({});
     setResumed(false);
@@ -516,6 +591,16 @@ export function PersonaDepositBoard() {
           {voiceRecording ? (
             <p className="mt-2 text-[13px] font-bold text-red-700" data-persona-voice-recording>
               {interpolate(g.voiceRecording, { seconds: String(voiceSeconds) })}
+            </p>
+          ) : null}
+          {saveStates.voice === "saving" ? (
+            <p className="mt-2 text-[13px] font-bold text-slate-800" data-persona-voice-saving>
+              {g.fileSaving}
+            </p>
+          ) : null}
+          {saveStates.voice === "failed" ? (
+            <p role="alert" className={`${alertClass} mt-2`} data-persona-voice-save-error>
+              {g.fileSaveFailed}
             </p>
           ) : null}
           <div className="mt-3 grid gap-2">
@@ -680,9 +765,19 @@ export function PersonaDepositBoard() {
               </p>
             ) : null}
           </div>
+          {saveStates.selfie === "saving" ? (
+            <p className="mt-2 text-[13px] font-bold text-slate-800" data-persona-selfie-saving>
+              {g.fileSaving}
+            </p>
+          ) : null}
+          {saveStates.selfie === "failed" ? (
+            <p role="alert" className={`${alertClass} mt-2`} data-persona-selfie-save-error>
+              {g.fileSaveFailed}
+            </p>
+          ) : null}
           {urls.selfie ? (
             <>
-              
+
               <video controls src={urls.selfie} className="mt-2 max-h-56 w-full rounded-xl" data-persona-selfie-preview />
               <p className="mt-1 text-[13px] text-slate-700">{g.selfieSaved}</p>
             </>
