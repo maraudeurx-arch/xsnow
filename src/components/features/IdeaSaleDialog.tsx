@@ -30,6 +30,7 @@ import {
   type IdeaSaleForm,
 } from "@/lib/idea-sale";
 import {
+  dictationRetryLang,
   dictationSupported,
   getSpeechRecognitionCtor,
   transcriptFromEvent,
@@ -73,7 +74,10 @@ export function IdeaSaleDialog({ onClose }: { onClose: () => void }) {
   const [listening, setListening] = useState(false);
   const [micError, setMicError] = useState("");
   const recogRef = useRef<BrowserSpeechRecognition | null>(null);
-  const retryLangRef = useRef(false);
+  // Dictation language retry (guarded by dictationRetryLang): every
+  // language attempted for this start, plus the one pending fallback.
+  const triedLangsRef = useRef<string[]>([]);
+  const retryLangRef = useRef<string | null>(null);
   // « Mes idées proposées »: the seller's on-device copy of their confirmed
   // submissions (idea-sale-list.ts), shown when they come back to the section.
   const [submissions, setSubmissions] = useState<IdeaSaleSubmission[]>(() =>
@@ -209,6 +213,7 @@ export function IdeaSaleDialog({ onClose }: { onClose: () => void }) {
       setListening(false);
       return;
     }
+    if (!triedLangsRef.current.includes(lang)) triedLangsRef.current.push(lang);
     const recog = new Ctor();
     recogRef.current = recog;
     recog.lang = lang;
@@ -222,18 +227,25 @@ export function IdeaSaleDialog({ onClose }: { onClose: () => void }) {
     };
     recog.onerror = (event) => {
       if (event.error === "aborted") return;
-      if (event.error === "language-not-supported" && !retryLangRef.current) {
-        retryLangRef.current = true;
-        return;
+      if (event.error === "language-not-supported") {
+        // At most one fallback, never toward a language already tried:
+        // when none remains, fall through to the clean stop + message
+        // instead of restarting recognition forever.
+        const retry = dictationRetryLang(lang, triedLangsRef.current);
+        if (retry) {
+          retryLangRef.current = retry;
+          return;
+        }
       }
       setListening(false);
       setMicError(g.micError);
     };
     recog.onend = () => {
       if (recogRef.current !== recog) return;
-      if (retryLangRef.current) {
-        retryLangRef.current = false;
-        beginDictation(locale === "fr" ? "fr-FR" : locale === "es" ? "es-MX" : "en-GB");
+      const retry = retryLangRef.current;
+      if (retry) {
+        retryLangRef.current = null;
+        beginDictation(retry);
         return;
       }
       recogRef.current = null;
@@ -256,7 +268,8 @@ export function IdeaSaleDialog({ onClose }: { onClose: () => void }) {
       return;
     }
     setMicError("");
-    retryLangRef.current = false;
+    triedLangsRef.current = [];
+    retryLangRef.current = null;
     beginDictation(dictationLang(locale, localeHint));
   }
 
