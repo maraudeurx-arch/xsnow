@@ -1,9 +1,12 @@
-import { LocalizedStubFeature } from "@/components/LocalizedStub";
+import { LocalizedFeature } from "@/components/LocalizedFeature";
+import { PersonaDepositBoard } from "@/components/features/PersonaDepositBoard";
 
 export const metadata = { title: "Monétisez-vous : votre image, votre voix." };
 
 export default function MonetisePage() {
   return (
-    <LocalizedStubFeature feature="monetise" stub="monetise" />
+    <LocalizedFeature feature="monetise" compact>
+      <PersonaDepositBoard />
+    </LocalizedFeature>
   );
 }

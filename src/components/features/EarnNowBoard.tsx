@@ -7,6 +7,7 @@ import { ONLINE_WORK_LINKS } from "@/lib/online-work";
 import { useI18n } from "@/lib/i18n/locale";
 import { ProjectLeadDialog } from "@/components/features/ProjectLeadDialog";
 import { IdeaSaleDialog } from "@/components/features/IdeaSaleDialog";
+import { PERSONA_COLLECTION_ENABLED } from "@/lib/persona-deposit";
 
 const ctaClass =
   "tap inline-flex min-h-12 w-full items-center justify-between rounded-2xl border border-slate-200 bg-white px-3.5 text-left text-[15px] font-bold text-slate-900 shadow-[0_8px_20px_rgba(15,23,42,0.05)]";
@@ -123,6 +124,20 @@ export function EarnNowBoard() {
         >
           {copy.ideaSale.cta}
         </button>
+        {PERSONA_COLLECTION_ENABLED ? (
+          <Link href="/monetise/" className={ctaClass} data-earn-persona-cta>
+            {copy.personaMonetise.cta}
+          </Link>
+        ) : (
+          // Collection OFF until Indiana Lane (IA) validates the consent
+          // text: sober « En préparation » state, not a link (07/11/2026).
+          <div className={ctaClass} data-earn-persona-cta data-persona-disabled aria-disabled="true">
+            <span>{copy.personaMonetise.cta}</span>
+            <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-extrabold uppercase tracking-wide text-amber-900">
+              {copy.personaMonetise.preparingTitle}
+            </span>
+          </div>
+        )}
         <Link href="/arbitrage/" className={ctaClass} data-earn-arbiter-cta>
           {copy.arbiterCta}
         </Link>

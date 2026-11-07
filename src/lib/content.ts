@@ -168,7 +168,7 @@ export const FEATURE_COPY = {
   },
   monetise: {
     title: "Monétisez-vous : votre image, votre voix.",
-    lead: "Proposez votre image ou votre voix à la communauté. Bientôt branché sur vos services.",
+    lead: "Proposez votre voix et votre image aux jumeaux numériques. Parcours ouvert : consentement, voix, image, vérification, dépôt.",
   },
   sondages: {
     title: "Répondre à des sondages et gagner de l’argent",
