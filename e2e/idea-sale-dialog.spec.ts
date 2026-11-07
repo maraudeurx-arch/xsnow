@@ -1,5 +1,65 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 import { seedLocalProfile, skipConsent, stubIdeaInbox } from "./helpers";
+
+type WorkerPost = { path: string; body: Record<string, unknown> | null };
+
+/** Capture every Worker POST the dialog makes (same net as the « complete
+ * proposal » test), so a test can verify what actually leaves the device. */
+function captureWorkerPosts(page: Page): WorkerPost[] {
+  const posts: WorkerPost[] = [];
+  page.on("request", (request) => {
+    if (request.method() !== "POST") return;
+    let path = "";
+    try {
+      path = new URL(request.url()).pathname;
+    } catch {
+      return;
+    }
+    if (!/\/(ideas|register|idea-sale-confirmation|idea-attachments)$/.test(path)) return;
+    let body: Record<string, unknown> | null = null;
+    try {
+      body = request.postDataJSON() as Record<string, unknown>;
+    } catch {
+      body = null;
+    }
+    posts.push({ path, body });
+  });
+  return posts;
+}
+
+/** The seller receipt route answers like the real Worker on success;
+ * stubbed here too, or the fixture would hit production. */
+async function stubConfirmationRoute(page: Page) {
+  await page.route(/\/idea-sale-confirmation(\?|$)/, async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      headers: { "Access-Control-Allow-Origin": "*" },
+      body: JSON.stringify({ ok: true, emailed: true }),
+    });
+  });
+}
+
+function confirmationPosts(posts: WorkerPost[]) {
+  return posts.filter((p) => p.path.endsWith("/idea-sale-confirmation"));
+}
+
+/** Fill the open dialog with one complete, valid proposal (contact fields
+ * stay prefilled from the seeded device profile, as in the main test). */
+async function fillCompleteProposal(
+  page: Page,
+  input: { title: string; description: string; summary: string; price: string },
+) {
+  const form = page.locator("[data-idea-sale-form]");
+  await form.getByLabel("Titre de l’idée").fill(input.title);
+  await form.locator("select").selectOption("divertissement");
+  await form.getByLabel("Description : l’idée").fill(input.description);
+  await form.locator("[data-idea-sale-summary-generate]").click();
+  await form.locator("[data-idea-sale-summary]").fill(input.summary);
+  await form.getByLabel("J’approuve ce résumé").check();
+  await form.getByLabel("Prix souhaité (en dollars US)").fill(input.price);
+  await form.getByLabel("J’accepte que l’équipe").check();
+}
 
 // « Vendre mes idées » (décision Popol, 06/11/2026) — mobile viewport (390×844, see playwright.config.ts).
 test.describe("Vendre mes idées dialog on mobile", () => {
@@ -154,5 +214,93 @@ test.describe("Vendre mes idées dialog on mobile", () => {
 
     // No attachment was chosen, so none may be uploaded.
     expect(posts.filter((p) => p.path.endsWith("/idea-attachments"))).toHaveLength(0);
+  });
+
+  // The receipt e-mail makes a promise — « ton idée a été reçue » — so its
+  // defining behaviour is causal: it may only leave after a proposal that
+  // actually arrived. (Indiana Lane (IA), via Regie, 07/11/2026: the spec
+  // verified the happy-path payload but nothing about this.)
+  test("a failed proposal sends no confirmation e-mail and keeps no copy", async ({ page }) => {
+    const posts = captureWorkerPosts(page);
+    await stubConfirmationRoute(page);
+    // The inbox refuses everything (registered after the beforeEach stub,
+    // so this « failed » variant wins): the proposal never arrives.
+    await stubIdeaInbox(page, "failed");
+
+    await page.locator("[data-earn-idea-sale-cta]").click();
+    const form = page.locator("[data-idea-sale-form]");
+    await expect(form).toBeVisible();
+    await fillCompleteProposal(page, {
+      title: "Cours de cuisine du quartier",
+      description:
+        "Des ateliers de cuisine locale pour les nouveaux arrivants, animés par des voisins. Petit prix, groupes de huit, recettes à emporter.",
+      summary:
+        "Ateliers de cuisine locale pour les nouveaux arrivants, animés par des voisins, en groupes de huit.",
+      price: "250",
+    });
+    await form.locator('button[type="submit"]').click();
+
+    // The failure is shown to the seller, and the proposal POST really was
+    // attempted (and refused) — the silence below is not a form that
+    // never submitted.
+    await expect(form.locator('[role="alert"]')).toContainText("Envoi impossible");
+    await expect.poll(() => posts.filter((p) => p.path.endsWith("/ideas")).length).toBe(1);
+
+    // Give a wrongly-fired confirmation every chance to appear, then
+    // verify the observable truth: no receipt e-mail, no on-device copy,
+    // no « received » screen.
+    await page.waitForTimeout(1000);
+    expect(confirmationPosts(posts)).toHaveLength(0);
+    await expect(page.locator("[data-idea-sale-my-idea]")).toHaveCount(0);
+    await expect(page.locator("[data-idea-sale-sent]")).toHaveCount(0);
+  });
+
+  test("a second idea is confirmed as idea nº 2, matching the on-screen list", async ({ page }) => {
+    const posts = captureWorkerPosts(page);
+    await stubConfirmationRoute(page);
+
+    await page.locator("[data-earn-idea-sale-cta]").click();
+    const form = page.locator("[data-idea-sale-form]");
+    await expect(form).toBeVisible();
+
+    await fillCompleteProposal(page, {
+      title: "Première idée de Marie",
+      description:
+        "Un service de raccompagnement pour les aînés du quartier, assuré par des voisins vérifiés, sur appel ou par l'application.",
+      summary: "Raccompagnement des aînés du quartier par des voisins vérifiés, sur appel.",
+      price: "100",
+    });
+    await form.locator('button[type="submit"]').click();
+    await expect(page.locator("[data-idea-sale-sent]")).toContainText("a reçu ton idée");
+    await expect.poll(() => confirmationPosts(posts).length).toBe(1);
+    expect(confirmationPosts(posts)[0]!.body).toMatchObject({ title: "Première idée de Marie", number: 1 });
+
+    // « Proposer une autre idée » reopens the form (contact kept); the
+    // second receipt must carry the number the seller sees on screen.
+    await page.locator("[data-idea-sale-another]").click();
+    await expect(form).toBeVisible();
+    await fillCompleteProposal(page, {
+      title: "Deuxième idée de Marie",
+      description:
+        "Une bibliothèque d'outils partagée pour le quartier : perceuses, échelles et tondeuses prêtées entre voisins inscrits.",
+      summary: "Bibliothèque d'outils partagée entre voisins inscrits du quartier.",
+      price: "150",
+    });
+    await form.locator('button[type="submit"]').click();
+    await expect(page.locator("[data-idea-sale-sent]")).toContainText("a reçu ton idée");
+
+    await expect.poll(() => confirmationPosts(posts).length).toBe(2);
+    expect(confirmationPosts(posts)[1]!.body).toMatchObject({
+      email: "marie@voisin.test",
+      title: "Deuxième idée de Marie",
+      number: 2,
+      lang: "fr",
+    });
+
+    const myIdeas = page.locator("[data-idea-sale-my-idea]");
+    await expect(myIdeas).toHaveCount(2);
+    await expect(myIdeas.nth(0)).toContainText("Idée nº 1");
+    await expect(myIdeas.nth(1)).toContainText("Idée nº 2");
+    await expect(myIdeas.nth(1)).toContainText("Deuxième idée de Marie");
   });
 });
