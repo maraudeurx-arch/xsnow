@@ -24,6 +24,8 @@ import {
   type LeadThreadTurn,
 } from "@/lib/lead-project-chat";
 import { leadProjectsFor, type LeadProject } from "@/lib/lead-projects";
+import { leadTestForProject } from "@/lib/lead-test-propositions";
+import { LeadTestPanel } from "./LeadTestPanel";
 import { PROJECT_LEAD_TOKEN_KEY } from "@/lib/project-lead-registration";
 import { CHAT_TEXT_MAX, sanitizeUntrustedText } from "@/lib/sanitize";
 import { useLocalProfile } from "@/lib/useLocalProfile";
@@ -194,6 +196,14 @@ function LeadProjectDetail({ project, opcId, onBack }: { project: LeadProject; o
         <h4 className="text-[13px] font-extrabold">{t.summaryTitle}</h4>
         <p className="text-[13px] leading-snug text-slate-700">{project.summary}</p>
       </section>
+
+      {/* Test de formation du 08/11/2026 : seulement si CE projet est en test.
+          Le panneau n'existe que sur la page du projet du chef vérifié —
+          un chef ne voit jamais les propositions d'un autre projet. */}
+      {(() => {
+        const test = leadTestForProject(project.id);
+        return test ? <LeadTestPanel test={test} project={project} opcId={opcId} /> : null;
+      })()}
 
       <section className={card} data-lead-project-steps>
         <h4 className="text-[14px] font-extrabold">{t.stepsTitle}</h4>

@@ -11,6 +11,7 @@
  * `POST /ideas` = sanitized visitor ideas; emails opencommunity.opc@gmail.com
  * `POST /business-ads` = business photo ad for review; emails opencommunity.opc@gmail.com with attachment
  * `POST /register` = optional registration notice to the same inbox
+ * `POST /lead-test-answer` = project-lead test answer (08/11/2026); emails essaim.agents@gmail.com
  * `GET /ideas` = owner list (JSON or HTML) behind `IDEAS_OWNER_SECRET`
  * `POST /alerts` = guardian registers a consented proximity alert (schedule + place)
  * `GET /alerts?token=` = invite preview for the proche (no phone)
@@ -35,6 +36,7 @@ import { corsHeaders } from "./cors";
 import { d1ArbStore, handleArbitrage, isArbitragePath, type D1Full } from "./arbitrage";
 import { parseLatLon, reverseGeocode } from "./geo";
 import { handleIdeasGet, handleIdeasPost, handleRegisterPost, isIdeasPath, isRegisterPath } from "./ideas";
+import { handleLeadTestAnswerPost, isLeadTestAnswerPath } from "./lead-test";
 import { handleBusinessAdsPost, isBusinessAdsPath } from "./business-ads";
 import { fetchCityNews, parseCityParam, parseLangParam } from "./news";
 import { CHAT_TEXT_MAX, isJsonContentType, sanitizeUntrustedText } from "../../../src/lib/sanitize.ts";
@@ -400,6 +402,19 @@ async function handleRegister(request: Request, env: Env, origin: string | null)
   return json(result.data, result.status, origin);
 }
 
+async function handleLeadTestAnswer(request: Request, env: Env, origin: string | null): Promise<Response> {
+  if (request.method !== "POST") {
+    return json({ error: "method_not_allowed" }, 405, origin);
+  }
+  if (tooMany(clientIp(request))) {
+    return json({ error: "rate_limited" }, 429, origin);
+  }
+  const body = await readJsonBody(request, origin);
+  if (!body.ok) return body.response;
+  const result = await handleLeadTestAnswerPost(body.value, env);
+  return json(result.data, result.status, origin);
+}
+
 async function handleNews(request: Request, origin: string | null): Promise<Response> {
   if (request.method !== "GET") {
     return json({ error: "method_not_allowed" }, 405, origin);
@@ -510,6 +525,10 @@ export default {
 
     if (isRegisterPath(pathname)) {
       return handleRegister(request, env, origin);
+    }
+
+    if (isLeadTestAnswerPath(pathname)) {
+      return handleLeadTestAnswer(request, env, origin);
     }
 
     if (request.method !== "POST") {
