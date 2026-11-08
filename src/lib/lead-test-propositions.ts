@@ -1,21 +1,35 @@
 /**
- * « Test des chefs de projet » (08/11/2026) — banque des propositions.
+ * « Test des chefs de projet » — les deux DOSSIERS MODÈLES et leur questionnaire.
  *
- * Test de formation d'une journée, décidé par l'équipe d'Essaim-Agents : chaque
- * chef de projet Clé en Main reçoit, DANS son espace « Mes projets » (page de
- * SON projet), 12 propositions tirées du cahier des charges de son projet.
- * Chaque proposition offre trois choix (A / B / C) et la suggestion de l'IA du
- * projet, visible AVANT de répondre : le but du test est d'apprendre au chef à
- * suivre les suggestions de l'IA de son projet, sauf raison concrète contraire.
+ * MODÈLE PERMANENT D'ACCUEIL des chefs de projet Clé en Main (décision du
+ * fondateur, 08/11/2026 — ce n'est pas un événement d'un jour) : les deux
+ * dossiers ci-dessous, « Éducation » et « Haute couture », sont les deux
+ * DOSSIERS DE TEST officiels des futurs chefs. Leurs 12 propositions chacun
+ * forment le questionnaire d'accueil, conservé en permanence avec le dossier :
+ * un nouveau chef reçoit l'un des deux dossiers en test et répond aux douze
+ * questions, chacune accompagnée de la suggestion de l'IA du projet, visible
+ * AVANT de répondre — il apprend ainsi à suivre les instructions de l'IA.
+ *
+ * Première instance du modèle : Steve Badinga et Alex Kumba passent le test
+ * le 8 novembre 2026 sur leur vrai projet (leur dossier assigné EST leur
+ * projet) ; leur statut suit ensuite le même mécanisme que les futurs chefs.
  *
  * Textes repris fidèlement de la banque préparée par l'équipe
  * (test-chefs-2026-11-08/propositions.md) ; seul l'habillage courriel
  * (« Bonjour… », « Réponds à ce courriel… », signature) est retiré — dans
  * l'application, les boutons SONT la réponse.
  *
- * LANGUE : français seulement. Test interne d'un jour, chefs francophones ;
- * le panneau (LeadTestPanel) n'est donc pas branché sur l'i18n du site.
+ * LANGUE : français seulement, volontairement — section interne des chefs,
+ * chefs francophones ; le panneau (LeadTestPanel) n'est pas branché sur
+ * l'i18n du site.
  */
+
+/**
+ * L'instruction permanente du fondateur, affichée telle quelle dans la
+ * section chef de l'application (espace « Mes projets »). Ne pas reformuler.
+ */
+export const LEAD_TEST_ONBOARDING_INSTRUCTION =
+  "Lorsqu'un nouveau chef de projet s'inscrit, l'équipe lui assigne l'un des deux dossiers modèles (Éducation ou Haute couture) comme dossier de test, et il répond aux douze questions du dossier, chacune accompagnée de la suggestion de l'IA du projet. Ce n'est qu'après avoir donné satisfaction dans sa façon de suivre les instructions de l'IA qu'il peut effectivement débuter son travail de chef de projet.";
 
 export type LeadTestChoice = "A" | "B" | "C";
 
@@ -49,10 +63,55 @@ export type LeadTestProjectTest = {
 };
 
 /**
- * Début du test — UN SEUL endroit où le changer.
- * 2026-11-08T16:00:00Z = dimanche 8 novembre 2026, 11 h 00, heure de l'Est (HNE).
+ * Début du test de la première instance (Steve et Alex, 08/11/2026) —
+ * UN SEUL endroit où le changer. 2026-11-08T16:00:00Z = dimanche
+ * 8 novembre 2026, 11 h 00, heure de l'Est (HNE). Pour un futur chef, c'est
+ * le `startIso` de SON assignation qui fait foi (voir LEAD_TEST_ASSIGNMENTS).
  */
 export const LEAD_TEST_START_ISO = "2026-11-08T16:00:00Z";
+
+/**
+ * Assignation d'un dossier de test à un chef (modèle permanent d'accueil).
+ * Le parcours d'un chef démarre à SA date d'assignation (startIso), pas à
+ * une date globale : les 12 propositions se déverrouillent à partir de là,
+ * une toutes les 15 minutes, fenêtre de 6 heures.
+ */
+export type LeadTestAssignment = {
+  /** Identifiant du dossier modèle assigné (« education » ou « haute-couture »). */
+  dossierId: string;
+  /** Début du parcours de CE chef (ISO) — sa date d'assignation. */
+  startIso: string;
+  /**
+   * true quand l'équipe a jugé les réponses satisfaisantes (à partir des
+   * courriels reçus et du taux de suivi) : le chef devient « Confirmé » et
+   * peut débuter son travail. Posé par l'équipe, jamais par le client.
+   */
+  confirmed: boolean;
+};
+
+/**
+ * Assignations en vigueur, indexées par le code OPC du chef — même patron
+ * que le registre des projets (src/lib/lead-projects.ts) : l'équipe assigne
+ * un futur chef en ajoutant une entrée ici (son code, le dossier modèle,
+ * SA date de début), et pose `confirmed: true` quand il a donné
+ * satisfaction. Aucune auto-assignation côté client : le client ne fait
+ * que lire ce registre.
+ */
+export const LEAD_TEST_ASSIGNMENTS: Readonly<Record<string, LeadTestAssignment>> = {
+  // Steve Badinga — première instance : son dossier de test est son vrai projet.
+  "OPC-5X78": { dossierId: "education", startIso: LEAD_TEST_START_ISO, confirmed: false },
+  // Alex Kumba — première instance : son dossier de test est son vrai projet.
+  "OPC-UBNZ": { dossierId: "haute-couture", startIso: LEAD_TEST_START_ISO, confirmed: false },
+};
+
+/** L'assignation de test de ce chef (casse et espaces tolérés), ou null. */
+export function leadTestAssignmentFor(
+  opcId: unknown,
+  assignments: Readonly<Record<string, LeadTestAssignment>> = LEAD_TEST_ASSIGNMENTS,
+): LeadTestAssignment | null {
+  if (typeof opcId !== "string") return null;
+  return assignments[opcId.trim().toUpperCase()] ?? null;
+}
 
 const EDUCATION_PROPOSITIONS: readonly LeadTestProposition[] = [
   {
@@ -353,8 +412,11 @@ const HAUTE_COUTURE_PROPOSITIONS: readonly LeadTestProposition[] = [
 ];
 
 /**
- * Les deux tests du 8 novembre 2026, indexés par l'identifiant du projet dans
- * le registre des chefs. Un projet sans entrée ici n'affiche aucun panneau.
+ * Les deux DOSSIERS MODÈLES officiels, indexés par l'identifiant du projet
+ * dans le registre des chefs : « Éducation » et « Haute couture », chacun
+ * avec son questionnaire d'accueil permanent de 12 propositions. Un dossier
+ * assigné s'ouvre via LEAD_TEST_ASSIGNMENTS ; un projet sans entrée ici
+ * n'affiche aucun panneau.
  */
 export const LEAD_TESTS_BY_PROJECT_ID: Readonly<Record<string, LeadTestProjectTest>> = {
   education: {

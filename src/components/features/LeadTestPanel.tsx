@@ -1,34 +1,40 @@
 "use client";
 
 /**
- * « Test de l'équipe — propositions » (08/11/2026).
+ * « Test de l'équipe — propositions » — questionnaire d'accueil des chefs.
  *
- * Panneau du test de formation des chefs de projet, affiché dans « Mes
- * projets » sur la page du projet DU chef (le parent, LeadProjectsBoard, ne
- * le rend que pour un chef vérifié, sur son propre projet, et seulement si
- * ce projet est en test — src/lib/lead-test-propositions.ts).
+ * Panneau du test d'accueil, affiché dans « Mes projets » sur le DOSSIER
+ * assigné au chef vérifié (le parent, LeadProjectsBoard, ne le rend que
+ * pour le dossier de SON assignation — src/lib/lead-test-propositions.ts :
+ * pour Steve et Alex, leur vrai projet ; pour un futur chef, le dossier
+ * modèle que l'équipe lui a assigné).
  *
  * Mécanique : 12 propositions, une nouvelle toutes les 15 minutes à partir
- * de LEAD_TEST_START_ISO ; les propositions ouvertes non répondues restent
- * répondables ; la fenêtre se ferme 6 heures après le début (score final).
- * La suggestion de l'IA est visible AVANT de répondre — c'est le principe
- * du test : apprendre à la suivre, sauf raison concrète contraire.
- * Chaque réponse est conservée sur l'appareil (localStorage) et signalée
- * au Worker (/lead-test-answer), qui courrielle l'équipe Essaim-Agents ;
- * un signalement échoué est renvoyé au prochain chargement.
+ * du début PROPRE au chef (sa date d'assignation) ; les propositions
+ * ouvertes non répondues restent répondables ; la fenêtre se ferme 6
+ * heures après son début (score final). La suggestion de l'IA est visible
+ * AVANT de répondre — c'est le principe du test : apprendre à la suivre,
+ * sauf raison concrète contraire. Chaque réponse est conservée sur
+ * l'appareil (localStorage) et signalée au Worker (/lead-test-answer),
+ * qui courrielle l'équipe Essaim-Agents pour son évaluation ; un
+ * signalement échoué est renvoyé au prochain chargement. Le statut du
+ * chef (« En test » / « Confirmé ») suit l'évaluation de l'équipe,
+ * consignée dans son assignation.
  *
- * LANGUE : français seulement, volontairement hors i18n — test interne
- * d'une journée pour deux chefs francophones.
+ * LANGUE : français seulement, volontairement hors i18n — section interne
+ * des chefs de projet, chefs francophones.
  */
 import { useEffect, useRef, useState } from "react";
 import {
   LEAD_TEST_REASON_MAX,
   LEAD_TEST_TOTAL,
   flushUnsentLeadTestAnswers,
+  leadTestChiefStatus,
   leadTestNextUnlockMs,
   leadTestPhase,
   leadTestPropState,
   leadTestScore,
+  leadTestStartMsFor,
   leadTestUnlockAtMs,
   readLeadTestAnswers,
   writeLeadTestAnswers,
@@ -37,6 +43,7 @@ import {
 } from "@/lib/lead-test";
 import {
   LEAD_TEST_CHOICES,
+  type LeadTestAssignment,
   type LeadTestChoice,
   type LeadTestProjectTest,
 } from "@/lib/lead-test-propositions";
@@ -76,11 +83,16 @@ export function LeadTestPanel({
   test,
   project,
   opcId,
+  assignment,
+  chefName = "",
 }: {
   test: LeadTestProjectTest;
   project: LeadProject;
   opcId: string;
+  assignment: LeadTestAssignment;
+  chefName?: string;
 }) {
+  const startMs = leadTestStartMsFor(assignment);
   const [answers, setAnswers] = useState<LeadTestAnswers>(() => readLeadTestAnswers(opcId, project.id));
   const [drafts, setDrafts] = useState<Record<string, string>>({});
   const [nowMs, setNowMs] = useState(() => Date.now());
@@ -99,11 +111,15 @@ export function LeadTestPanel({
   // Au chargement : renvoyer à l'équipe les réponses dont le signalement avait échoué.
   useEffect(() => {
     let live = true;
-    void flushUnsentLeadTestAnswers(opcId, project.id, readLeadTestAnswers(opcId, project.id)).then(
-      (flushed) => {
-        if (live) setAnswers((prev) => mergeSentFlags(prev, flushed));
-      },
-    );
+    void flushUnsentLeadTestAnswers(
+      opcId,
+      project.id,
+      readLeadTestAnswers(opcId, project.id),
+      fetch,
+      chefName,
+    ).then((flushed) => {
+      if (live) setAnswers((prev) => mergeSentFlags(prev, flushed));
+    });
     return () => {
       live = false;
     };
@@ -115,7 +131,7 @@ export function LeadTestPanel({
     if (flushBusyRef.current) return;
     flushBusyRef.current = true;
     try {
-      const flushed = await flushUnsentLeadTestAnswers(opcId, project.id, current);
+      const flushed = await flushUnsentLeadTestAnswers(opcId, project.id, current, fetch, chefName);
       setAnswers((prev) => mergeSentFlags(prev, flushed));
     } finally {
       flushBusyRef.current = false;
@@ -137,28 +153,47 @@ export function LeadTestPanel({
     void flush(next);
   }
 
-  const phase = leadTestPhase(nowMs);
+  const phase = leadTestPhase(nowMs, startMs);
   const score = leadTestScore(test, answers);
-  const nextUnlock = leadTestNextUnlockMs(nowMs);
+  const status = leadTestChiefStatus(assignment, test, answers);
+  const nextUnlock = leadTestNextUnlockMs(nowMs, startMs);
 
   return (
     <section className={card} data-lead-test="panel" data-lead-test-project={project.id}>
-      <h4 className="text-[14px] font-extrabold">Test de l’équipe — propositions</h4>
+      <div className="flex items-center gap-2">
+        <h4 className="text-[14px] font-extrabold">Test de l’équipe — propositions</h4>
+        <span
+          className={`ml-auto rounded-full px-2 py-0.5 text-[12px] font-bold ${
+            status.state === "confirme"
+              ? "bg-emerald-100 text-emerald-900"
+              : "bg-amber-100 text-amber-900"
+          }`}
+          data-lead-test-status={status.state}
+        >
+          {status.state === "confirme" ? "Confirmé" : "En test"}
+        </span>
+      </div>
       <p className="text-[13px] leading-snug text-slate-700">
-        Test de formation, aujourd’hui seulement : 12 propositions sur ton projet. Pour chacune,
-        l’IA de ton projet te donne sa suggestion <b>avant</b> que tu répondes. Suis-la, sauf si tu
-        as une raison concrète de faire autrement — dis-la alors en une ligne. Tes réponses sont
-        envoyées à l’équipe.
+        Questionnaire d’accueil des chefs de projet, sur ce dossier
+        {test.chefOpcId === opcId.trim().toUpperCase() ? "" : " modèle"} : 12 propositions. Pour
+        chacune, l’IA du projet
+        te donne sa suggestion <b>avant</b> que tu répondes. Suis-la, sauf si tu as une raison
+        concrète de faire autrement — dis-la alors en une ligne. Tes réponses sont envoyées à
+        l’équipe, qui évalue ta façon de suivre les instructions de l’IA.
       </p>
 
       <div className="rounded-xl bg-slate-100 p-2" data-lead-test-score>
         <p className="text-[13px] font-bold">
           Répondues : {score.answered}/{LEAD_TEST_TOTAL} · Suggestions suivies : {score.followed}
         </p>
-        {phase === "before" ? (
+        {status.state === "confirme" ? (
+          <p className="text-[13px] font-bold text-emerald-900" data-lead-test-confirmed>
+            ✅ L’équipe a confirmé ton test — tu peux débuter ton travail de chef de projet.
+          </p>
+        ) : phase === "before" ? (
           <p className="text-[13px] text-slate-700">
-            Le test commence à {fmtClock(leadTestUnlockAtMs(1))} — première proposition dans{" "}
-            {fmtCountdown(leadTestUnlockAtMs(1) - nowMs)}.
+            Ton test commence à {fmtClock(startMs)} — première proposition dans{" "}
+            {fmtCountdown(startMs - nowMs)}.
           </p>
         ) : phase === "open" && nextUnlock !== null ? (
           <p className="text-[13px] text-slate-700">
@@ -168,11 +203,16 @@ export function LeadTestPanel({
           <p className="text-[13px] text-slate-700">
             Toutes les propositions sont ouvertes — réponds à celles qui restent avant la fin du test.
           </p>
+        ) : status.complete ? (
+          <p className="text-[13px] font-bold" data-lead-test-final>
+            Test terminé — 12/12 réponses données. L’équipe évalue ton dossier ; ton statut passera
+            à « Confirmé » quand elle aura donné satisfaction.
+          </p>
         ) : (
           <p className="text-[13px] font-bold" data-lead-test-final>
             Test terminé — score final : {score.answered}/{LEAD_TEST_TOTAL} répondues,{" "}
             {score.followed} suggestion{score.followed > 1 ? "s" : ""} suivie
-            {score.followed > 1 ? "s" : ""}. Merci !
+            {score.followed > 1 ? "s" : ""}. L’équipe évalue ton dossier.
           </p>
         )}
       </div>
@@ -180,7 +220,7 @@ export function LeadTestPanel({
       <div className="grid gap-3">
         {test.propositions.map((proposition) => {
           const entry = answers[String(proposition.n)];
-          const state = leadTestPropState(proposition.n, Boolean(entry), nowMs);
+          const state = leadTestPropState(proposition.n, Boolean(entry), nowMs, startMs);
           if (state === "locked") {
             return (
               <div
@@ -191,7 +231,7 @@ export function LeadTestPanel({
               >
                 <p className="text-[13px] font-bold">
                   Proposition nº {proposition.n}/{LEAD_TEST_TOTAL} — se déverrouille à{" "}
-                  {fmtClock(leadTestUnlockAtMs(proposition.n))}
+                  {fmtClock(leadTestUnlockAtMs(proposition.n, startMs))}
                 </p>
               </div>
             );

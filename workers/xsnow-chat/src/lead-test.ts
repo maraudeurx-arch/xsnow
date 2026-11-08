@@ -1,5 +1,7 @@
 /**
- * « Test des chefs de projet » — signalement des réponses.
+ * « Test des chefs de projet » — signalement des réponses (modèle permanent
+ * d'accueil : dossiers modèles « Éducation » / « Haute couture », assignés
+ * par l'équipe aux nouveaux chefs).
  * POST /lead-test-answer — une réponse du test (chef, projet, proposition,
  * choix) ; courrielle l'équipe Essaim-Agents (essaim.agents@gmail.com).
  *

@@ -7,9 +7,11 @@ import {
   LEAD_TEST_TOTAL,
   buildLeadTestAnswerMail,
   flushUnsentLeadTestAnswers,
+  leadTestChiefStatus,
   leadTestPhase,
   leadTestPropState,
   leadTestScore,
+  leadTestStartMsFor,
   leadTestUnlockAtMs,
   leadTestUnlockedCount,
   leadTestNextUnlockMs,
@@ -18,9 +20,13 @@ import {
   type LeadTestAnswers,
 } from "./lead-test.ts";
 import {
+  LEAD_TEST_ASSIGNMENTS,
+  LEAD_TEST_ONBOARDING_INSTRUCTION,
   LEAD_TEST_START_ISO,
   LEAD_TESTS_BY_PROJECT_ID,
+  leadTestAssignmentFor,
   leadTestForProject,
+  type LeadTestAssignment,
 } from "./lead-test-propositions.ts";
 import { ESSAIM_AGENTS_INBOX_TO } from "./owner-mail.ts";
 
@@ -203,5 +209,125 @@ describe("test des chefs — réponses, score et signalement", () => {
       new Response(JSON.stringify({ ok: false }), { status: 502 })) as typeof fetch;
     const unflushed = await flushUnsentLeadTestAnswers("OPC-5X78", "education", answers, failFetch);
     assert.equal(unflushed["1"]?.sent, false);
+  });
+});
+
+describe("modèle permanent d'accueil — instruction, assignations, statut", () => {
+  it("l'instruction du fondateur est conservée mot pour mot", () => {
+    assert.equal(
+      LEAD_TEST_ONBOARDING_INSTRUCTION,
+      "Lorsqu'un nouveau chef de projet s'inscrit, l'équipe lui assigne l'un des deux dossiers modèles (Éducation ou Haute couture) comme dossier de test, et il répond aux douze questions du dossier, chacune accompagnée de la suggestion de l'IA du projet. Ce n'est qu'après avoir donné satisfaction dans sa façon de suivre les instructions de l'IA qu'il peut effectivement débuter son travail de chef de projet.",
+    );
+  });
+
+  it("Steve et Alex sont assignés à leur propre projet, départ du 08/11/2026", () => {
+    assert.deepEqual(leadTestAssignmentFor("OPC-5X78"), {
+      dossierId: "education",
+      startIso: LEAD_TEST_START_ISO,
+      confirmed: false,
+    });
+    assert.deepEqual(leadTestAssignmentFor("opc-ubnz"), {
+      dossierId: "haute-couture",
+      startIso: LEAD_TEST_START_ISO,
+      confirmed: false,
+    });
+    assert.equal(leadTestAssignmentFor("OPC-ZZZZ"), null);
+    assert.equal(leadTestAssignmentFor(""), null);
+    assert.equal(Object.keys(LEAD_TEST_ASSIGNMENTS).length, 2);
+  });
+
+  it("le départ est propre à chaque chef : l'horaire suit SON assignation", () => {
+    const futureStart = Date.parse("2027-01-15T14:00:00Z");
+    assert.equal(leadTestPhase(futureStart - 1, futureStart), "before");
+    assert.equal(leadTestUnlockedCount(futureStart - 1, futureStart), 0);
+    assert.equal(leadTestUnlockedCount(futureStart, futureStart), 1);
+    assert.equal(leadTestUnlockedCount(futureStart + 15 * MIN, futureStart), 2);
+    assert.equal(leadTestPropState(1, false, futureStart, futureStart), "open");
+    assert.equal(leadTestPropState(2, false, futureStart, futureStart), "locked");
+    assert.equal(leadTestPropState(1, false, futureStart + 6 * 60 * MIN, futureStart), "expired");
+    // Le début par défaut (première instance) n'a pas bougé.
+    assert.equal(leadTestUnlockedCount(LEAD_TEST_START_MS), 1);
+    assert.equal(leadTestStartMsFor({ dossierId: "education", startIso: "2027-01-15T14:00:00Z", confirmed: false }), futureStart);
+  });
+
+  it("statut du chef : « En test » jusqu'à la confirmation de l'équipe, puis « Confirmé »", () => {
+    const education = leadTestForProject("education");
+    assert.ok(education);
+    const assignment: LeadTestAssignment = {
+      dossierId: "education",
+      startIso: LEAD_TEST_START_ISO,
+      confirmed: false,
+    };
+    const partial: LeadTestAnswers = {
+      "1": { n: 1, choice: "B", reason: "", at: "", sent: true },
+    };
+    assert.deepEqual(leadTestChiefStatus(assignment, education, partial), {
+      state: "en_test",
+      answered: 1,
+      followed: 1,
+      complete: false,
+    });
+    const full: LeadTestAnswers = {};
+    for (const proposition of education.propositions) {
+      full[String(proposition.n)] = {
+        n: proposition.n,
+        choice: proposition.suggestion,
+        reason: "",
+        at: "",
+        sent: true,
+      };
+    }
+    const done = leadTestChiefStatus(assignment, education, full);
+    assert.equal(done.complete, true);
+    assert.equal(done.state, "en_test"); // 12/12 réponses ≠ satisfaction : l'équipe juge
+    assert.equal(done.followed, 12);
+    assert.equal(
+      leadTestChiefStatus({ ...assignment, confirmed: true }, education, full).state,
+      "confirme",
+    );
+  });
+
+  it("un futur chef ASSIGNÉ peut signaler ses réponses ; un non-assigné est refusé", () => {
+    const futureAssignments: Readonly<Record<string, LeadTestAssignment>> = {
+      "OPC-T3ST": { dossierId: "education", startIso: "2027-01-15T14:00:00Z", confirmed: false },
+    };
+    const report = parseLeadTestReport(
+      {
+        opcId: "OPC-T3ST",
+        projectId: "education",
+        n: 2,
+        choice: "B",
+        reason: "",
+        at: "2027-01-15T14:20:00.000Z",
+        chefName: "Nouveau",
+      },
+      futureAssignments,
+    );
+    assert.ok(report);
+    assert.equal(report.chefName, "Nouveau");
+    assert.equal(report.suggested, "B");
+    assert.equal(report.followed, true);
+
+    // Dossier non assigné à ce chef, et chef sans aucune assignation : refusés.
+    assert.equal(
+      parseLeadTestReport(
+        { opcId: "OPC-T3ST", projectId: "haute-couture", n: 1, choice: "B" },
+        futureAssignments,
+      ),
+      null,
+    );
+    assert.equal(
+      parseLeadTestReport(
+        { opcId: "OPC-ZZZZ", projectId: "education", n: 1, choice: "B" },
+        futureAssignments,
+      ),
+      null,
+    );
+    // Le chef du dossier modèle reste reconnu sans assignation synthétique.
+    const model = parseLeadTestReport(
+      { opcId: "OPC-UBNZ", projectId: "haute-couture", n: 1, choice: "B" },
+      futureAssignments,
+    );
+    assert.equal(model?.chefName, "Alex Kumba");
   });
 });
