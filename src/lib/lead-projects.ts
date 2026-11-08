@@ -263,3 +263,18 @@ export function findLeadProject(opcId: unknown, projectId: unknown): LeadProject
   if (typeof projectId !== "string" || !projectId) return null;
   return leadProjectsFor(opcId).find((p) => p.id === projectId) ?? null;
 }
+
+/**
+ * Un projet du registre par son identifiant, quel que soit le chef auquel il
+ * est rattaché. Sert aux dossiers MODÈLES du test d'accueil : un futur chef
+ * assigné au dossier « Éducation » ou « Haute couture » doit pouvoir ouvrir
+ * CE dossier même s'il n'est pas (encore) rattaché à son code.
+ */
+export function leadProjectById(projectId: unknown): LeadProject | null {
+  if (typeof projectId !== "string" || !projectId) return null;
+  for (const list of Object.values(LEAD_PROJECT_REGISTRY)) {
+    const found = list.find((p) => p.id === projectId);
+    if (found) return found;
+  }
+  return null;
+}

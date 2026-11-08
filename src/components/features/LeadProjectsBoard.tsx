@@ -23,7 +23,16 @@ import {
   writeLeadThread,
   type LeadThreadTurn,
 } from "@/lib/lead-project-chat";
-import { leadProjectsFor, type LeadProject } from "@/lib/lead-projects";
+import { leadProjectById, leadProjectsFor, type LeadProject } from "@/lib/lead-projects";
+import { leadTestChiefStatus, readLeadTestAnswers } from "@/lib/lead-test";
+import {
+  LEAD_TEST_ONBOARDING_INSTRUCTION,
+  leadTestAssignmentFor,
+  leadTestForProject,
+  type LeadTestAssignment,
+  type LeadTestProjectTest,
+} from "@/lib/lead-test-propositions";
+import { LeadTestPanel } from "./LeadTestPanel";
 import { PROJECT_LEAD_TOKEN_KEY } from "@/lib/project-lead-registration";
 import { CHAT_TEXT_MAX, sanitizeUntrustedText } from "@/lib/sanitize";
 import { useLocalProfile } from "@/lib/useLocalProfile";
@@ -51,6 +60,7 @@ export function LeadProjectsBoard() {
   const [token] = useState(() => (typeof window === "undefined" ? "" : readToken()));
   const [gate, setGate] = useState<Gate>("loading");
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [showTestDossier, setShowTestDossier] = useState(false);
 
   useEffect(() => {
     if (!token) return;
@@ -73,6 +83,20 @@ export function LeadProjectsBoard() {
   const projects = useMemo(() => (gate === "verified" ? leadProjectsFor(opcId) : []), [gate, opcId]);
   const selected = projects.find((p) => p.id === selectedId) ?? null;
 
+  // Test d'accueil (modèle permanent) : l'assignation du chef désigne SON
+  // dossier de test — son vrai projet pour Steve et Alex, un dossier modèle
+  // distinct pour un futur chef (auquel cas il s'ouvre hors de ses projets).
+  const assignment = gate === "verified" ? leadTestAssignmentFor(opcId) : null;
+  const assignmentTest = assignment ? leadTestForProject(assignment.dossierId) : null;
+  const dossierProject =
+    assignment && !projects.some((p) => p.id === assignment.dossierId)
+      ? leadProjectById(assignment.dossierId)
+      : null;
+  const chiefStatus =
+    assignment && assignmentTest
+      ? leadTestChiefStatus(assignment, assignmentTest, readLeadTestAnswers(opcId, assignment.dossierId))
+      : null;
+
   if (token && gate === "loading") {
     return <div className={card} data-lead-projects="loading"><p className="text-[13px]">{t.loading}</p></div>;
   }
@@ -90,7 +114,30 @@ export function LeadProjectsBoard() {
   }
 
   if (selected) {
-    return <LeadProjectDetail key={selected.id} project={selected} opcId={opcId} onBack={() => setSelectedId(null)} />;
+    return (
+      <LeadProjectDetail
+        key={selected.id}
+        project={selected}
+        opcId={opcId}
+        assignment={assignment && assignment.dossierId === selected.id ? assignment : null}
+        assignmentTest={assignment && assignment.dossierId === selected.id ? assignmentTest : null}
+        chefName={profile?.firstName ?? ""}
+        onBack={() => setSelectedId(null)}
+      />
+    );
+  }
+
+  if (showTestDossier && dossierProject && assignment && assignmentTest) {
+    return (
+      <LeadTestDossierView
+        dossier={dossierProject}
+        test={assignmentTest}
+        assignment={assignment}
+        opcId={opcId}
+        chefName={profile?.firstName ?? ""}
+        onBack={() => setShowTestDossier(false)}
+      />
+    );
   }
 
   return (
@@ -99,7 +146,51 @@ export function LeadProjectsBoard() {
         <h3 className="text-[15px] font-extrabold">{t.title}</h3>
         <p className="text-[13px] leading-snug text-slate-700">{t.lead}</p>
         <p className="text-[13px] font-bold" data-lead-projects-count>{projects.length}</p>
+        {chiefStatus ? (
+          <p className="text-[13px]" data-lead-test-chief-status={chiefStatus.state}>
+            Statut de chef :{" "}
+            <b>{chiefStatus.state === "confirme" ? "Confirmé" : "En test"}</b>
+            {chiefStatus.state === "en_test"
+              ? ` — dossier de test : ${chiefStatus.answered}/12 réponses, ${chiefStatus.followed} suggestion${chiefStatus.followed > 1 ? "s" : ""} suivie${chiefStatus.followed > 1 ? "s" : ""}${chiefStatus.complete ? " (en attente de l’évaluation de l’équipe)" : ""}`
+              : ""}
+          </p>
+        ) : null}
       </div>
+      <section className={card} data-lead-test-instruction>
+        <h4 className="text-[14px] font-extrabold">Accueil des chefs de projet — le dossier de test</h4>
+        <p className="text-[13px] leading-snug text-slate-700">{LEAD_TEST_ONBOARDING_INSTRUCTION}</p>
+        <p className="text-[13px] leading-snug text-slate-700">
+          Les deux dossiers modèles officiels : <b>Éducation</b> et <b>Haute couture</b> — chacun
+          avec son questionnaire d’accueil de douze questions.
+        </p>
+      </section>
+      {dossierProject && assignmentTest ? (
+        <button
+          type="button"
+          className={card + " tap w-full"}
+          data-lead-test-dossier-card={dossierProject.id}
+          onClick={() => setShowTestDossier(true)}
+        >
+          <p className="flex items-center gap-2">
+            <span className="text-[12px] font-bold uppercase tracking-wide text-slate-500">
+              Dossier de test
+            </span>
+            <span
+              className={`ml-auto rounded-full px-2 py-0.5 text-[12px] font-bold ${
+                chiefStatus?.state === "confirme"
+                  ? "bg-emerald-100 text-emerald-900"
+                  : "bg-amber-100 text-amber-900"
+              }`}
+            >
+              {chiefStatus?.state === "confirme" ? "Confirmé" : "En test"}
+            </span>
+          </p>
+          <p className="text-[16px] font-extrabold">{dossierProject.title}</p>
+          <p className="text-[13px] text-slate-700">
+            Ton dossier modèle assigné par l’équipe — ouvre-le pour répondre à ses douze questions.
+          </p>
+        </button>
+      ) : null}
       {projects.length === 0 ? (
         <div className={card} data-lead-projects-empty>
           <p className="text-[13px] leading-snug text-slate-700">{t.empty}</p>
@@ -135,7 +226,21 @@ export function LeadProjectsBoard() {
   );
 }
 
-function LeadProjectDetail({ project, opcId, onBack }: { project: LeadProject; opcId: string; onBack: () => void }) {
+function LeadProjectDetail({
+  project,
+  opcId,
+  assignment,
+  assignmentTest,
+  chefName,
+  onBack,
+}: {
+  project: LeadProject;
+  opcId: string;
+  assignment: LeadTestAssignment | null;
+  assignmentTest: LeadTestProjectTest | null;
+  chefName: string;
+  onBack: () => void;
+}) {
   const { m, locale } = useI18n();
   const t = m.earnNow.projectLead.projects;
   const [thread, setThread] = useState<LeadThreadTurn[]>(() => readLeadThread(opcId, project.id));
@@ -194,6 +299,19 @@ function LeadProjectDetail({ project, opcId, onBack }: { project: LeadProject; o
         <h4 className="text-[13px] font-extrabold">{t.summaryTitle}</h4>
         <p className="text-[13px] leading-snug text-slate-700">{project.summary}</p>
       </section>
+
+      {/* Test d'accueil : seulement si CE projet est le dossier assigné à
+          CE chef (son assignation fait foi — départ propre au chef inclus).
+          Un chef ne voit jamais les propositions d'un autre dossier. */}
+      {assignment && assignmentTest ? (
+        <LeadTestPanel
+          test={assignmentTest}
+          project={project}
+          opcId={opcId}
+          assignment={assignment}
+          chefName={chefName}
+        />
+      ) : null}
 
       <section className={card} data-lead-project-steps>
         <h4 className="text-[14px] font-extrabold">{t.stepsTitle}</h4>
@@ -260,6 +378,66 @@ function LeadProjectDetail({ project, opcId, onBack }: { project: LeadProject; o
             {busy ? t.chatSending : t.chatSend}
           </button>
         </form>
+      </section>
+    </div>
+  );
+}
+
+/**
+ * Vue d'un DOSSIER MODÈLE assigné en test à un chef qui n'a pas (encore) ce
+ * projet dans ses rattachements : le futur chef ouvre son dossier de test
+ * directement depuis « Mes projets » — résumé et cahier du dossier modèle,
+ * puis le questionnaire d'accueil (LeadTestPanel) branché sur SON
+ * assignation (départ propre, statut propre). Pas de discussion ici : le
+ * canal « IA du projet » appartient aux vrais projets du chef.
+ */
+function LeadTestDossierView({
+  dossier,
+  test,
+  assignment,
+  opcId,
+  chefName,
+  onBack,
+}: {
+  dossier: LeadProject;
+  test: LeadTestProjectTest;
+  assignment: LeadTestAssignment;
+  opcId: string;
+  chefName: string;
+  onBack: () => void;
+}) {
+  const { m } = useI18n();
+  const t = m.earnNow.projectLead.projects;
+  return (
+    <div className="grid gap-3" data-lead-projects="test-dossier" data-lead-test-dossier={dossier.id}>
+      <div>
+        <button type="button" className={ghost} onClick={onBack} data-lead-test-dossier-back>
+          {t.back}
+        </button>
+      </div>
+      <section className={card}>
+        <p className="flex items-center gap-2">
+          <span className="text-[12px] font-bold uppercase tracking-wide text-slate-500">
+            Dossier de test — dossier modèle officiel
+          </span>
+          <span className="ml-auto rounded-full bg-amber-100 px-2 py-0.5 text-[12px] font-bold text-amber-900">
+            Test d’accueil
+          </span>
+        </p>
+        <h3 className="text-[17px] font-extrabold">{dossier.title}</h3>
+        <h4 className="text-[13px] font-extrabold">{t.summaryTitle}</h4>
+        <p className="text-[13px] leading-snug text-slate-700">{dossier.summary}</p>
+      </section>
+
+      <LeadTestPanel test={test} project={dossier} opcId={opcId} assignment={assignment} chefName={chefName} />
+
+      <section className={card} data-lead-project-spec>
+        <h4 className="text-[14px] font-extrabold">{t.specTitle}</h4>
+        {dossier.spec ? (
+          <pre className="whitespace-pre-wrap break-words font-sans text-[13px] leading-snug text-slate-800">{dossier.spec}</pre>
+        ) : (
+          <p className="text-[13px] leading-snug text-slate-700">{t.specPending}</p>
+        )}
       </section>
     </div>
   );

@@ -1,6 +1,7 @@
 /**
  * Owner-facing mail (plain text only).
- * Destination is always opencommunity.opc@gmail.com — never a visitor-controlled address.
+ * Destinations are compile-time constants only (boîte OPC par défaut, boîte de
+ * l'équipe Essaim-Agents pour le test des chefs) — never a visitor-controlled address.
  */
 
 import { clipNeighborhood } from "./ideas.ts";
@@ -8,12 +9,19 @@ import { isOpcMemberId, sanitizePersonName, sanitizeProfileEmail } from "./local
 import { sanitizeUntrustedText } from "./sanitize.ts";
 
 export const OPC_INBOX_TO = "opencommunity.opc@gmail.com";
+/** Boîte de l'équipe Essaim-Agents (signalements du test des chefs de projet). */
+export const ESSAIM_AGENTS_INBOX_TO = "essaim.agents@gmail.com";
 export const RESEND_API_URL = "https://api.resend.com/emails";
 export const DEFAULT_IDEAS_FROM = "Open Community <beth.t@example.com>";
 
 export type OwnerMail = {
   subject: string;
   text: string;
+  /**
+   * Destination fixe alternative (constante du code seulement, p. ex.
+   * ESSAIM_AGENTS_INBOX_TO). Par défaut : OPC_INBOX_TO.
+   */
+  to?: string;
   /** Optional HTML body (inline photo via cid:). */
   html?: string;
   /** Optional Resend attachments (base64 content, no data: prefix). */
@@ -238,7 +246,7 @@ export async function sendOwnerMail(
       },
       body: JSON.stringify({
         from,
-        to: [OPC_INBOX_TO],
+        to: [mail.to ?? OPC_INBOX_TO],
         subject,
         text,
         ...(mail.html ? { html: mail.html } : {}),
