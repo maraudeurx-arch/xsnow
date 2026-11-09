@@ -1180,3 +1180,24 @@ html.opc-modal-open .safe-frame > footer,
 html.opc-modal-open .chrome-panel {
   visibility: hidden;
 }
+
+/* Idea-sale dialog fields (correctif du 08/11/2026, test réel du fondateur
+   sur iPhone) : le texte tapé ou dicté dans la case Description ressortait
+   presque invisible (gris très pâle sur blanc) — sur iOS, c'est
+   -webkit-text-fill-color qui peint le texte des champs, pas seulement
+   color. Même remède que le formulaire d'arbitre ci-dessus : on épingle
+   fond blanc, texte foncé et couleur de remplissage iOS pour TOUS les
+   champs de ce dialogue, quel que soit le thème ou l'état du champ.
+   Tout ce que la personne dicte ou adopte (résumé) vit dans la case
+   Description, visible et corrigeable au clavier. */
+[data-idea-sale-dialog] :is(input, textarea, select) {
+  background-color: #ffffff;
+  color: #111827;
+  -webkit-text-fill-color: #111827;
+  caret-color: #111827;
+  opacity: 1;
+}
+[data-idea-sale-dialog] :is(input, textarea, select)::placeholder {
+  color: #6b7280;
+  -webkit-text-fill-color: #6b7280;
+}
