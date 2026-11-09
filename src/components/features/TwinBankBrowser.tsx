@@ -14,8 +14,11 @@ import {
   fetchTwinBank,
   fetchTwinBankUsage,
   recordTwinBankUse,
+  reportTwinAbuse,
+  requestTwinOutputLabel,
   testSubscriberId,
   type TwinBankItem,
+  type TwinGenerateResult,
 } from "@/lib/twin-bank-client";
 
 const cardClass =
@@ -23,6 +26,9 @@ const cardClass =
 const primaryClass =
   "tap inline-flex min-h-11 w-full items-center justify-center rounded-2xl bg-slate-900 px-3 text-[14px] font-bold text-white disabled:opacity-40";
 const checkRowClass = "flex items-start gap-2 text-[13px] leading-snug text-slate-800";
+const buttonClass =
+  "tap inline-flex min-h-11 w-full items-center justify-center rounded-2xl border border-slate-300 bg-white px-3 text-[14px] font-bold text-slate-900 disabled:opacity-40";
+const fieldClass = "mt-1 w-full rounded-xl border border-slate-300 p-2 text-[14px] text-slate-900";
 
 type Load = "loading" | "ok" | "not-configured" | "failed";
 
@@ -39,6 +45,11 @@ export function TwinBankBrowser() {
   const [notes, setNotes] = useState<Record<string, string>>({});
   const [links, setLinks] = useState<Record<string, Record<string, string>>>({});
   const [summary, setSummary] = useState<{ count: number; totalCents: number } | null>(null);
+  const [prompts, setPrompts] = useState<Record<string, string>>({});
+  const [outputs, setOutputs] = useState<Record<string, TwinGenerateResult>>({});
+  const [reportOpen, setReportOpen] = useState<Record<string, boolean>>({});
+  const [reportText, setReportText] = useState<Record<string, string>>({});
+  const [reportNotes, setReportNotes] = useState<Record<string, string>>({});
 
   useEffect(() => {
     const sub = testSubscriberId();
@@ -69,6 +80,30 @@ export function TwinBankBrowser() {
     setLinks((l) => ({ ...l, [key]: result.media }));
     const usage = await fetchTwinBankUsage(subscriber);
     if (usage) setSummary(usage);
+  }
+
+  async function labelOutput(item: TwinBankItem, kind: TwinBankKind) {
+    const key = `${item.id}:${kind}`;
+    const result = await requestTwinOutputLabel({ subscriberId: subscriber, itemId: item.id, kind, prompt: prompts[key] ?? "" });
+    setOutputs((o) => ({ ...o, [key]: result }));
+  }
+
+  async function sendReport(key: string, outputId: string) {
+    const result = await reportTwinAbuse({ outputId, reason: reportText[key] ?? "" });
+    setReportNotes((n) => ({ ...n, [key]: result === "received" ? t.reportDone : t.reportFailed }));
+    if (result === "received") setReportOpen((r) => ({ ...r, [key]: false }));
+  }
+
+  function outputNote(result: TwinGenerateResult | undefined): string {
+    if (!result) return "";
+    if (result.state === "refused") {
+      const reason = t.reasons[result.reason as keyof typeof t.reasons] ?? result.reason;
+      return interpolate(t.generateRefused, { reason });
+    }
+    if (result.state === "needs-use") return t.generateNeedsUse;
+    if (result.state === "locked") return t.generateLocked;
+    if (result.state === "failed") return t.generateFailed;
+    return "";
   }
 
   const kindLabel = (k: TwinBankKind) => (k === "voice" ? t.kindVoice : t.kindImage);
@@ -138,6 +173,73 @@ export function TwinBankBrowser() {
                       {t.openMedia} ({asset})
                     </a>
                   ))}
+                  {notes[key] && notes[key] !== t.useFailed ? (
+                    <div className="mt-2 rounded-xl border border-slate-200 bg-slate-50 p-2.5" data-twin-generate={kind}>
+                      <p className="text-[13px] font-extrabold text-slate-900">{t.generateTitle}</p>
+                      <p className="mt-1 text-[12px] leading-snug text-slate-700">{t.generateLead}</p>
+                      <textarea
+                        className={fieldClass}
+                        rows={2}
+                        maxLength={2000}
+                        placeholder={t.generatePlaceholder}
+                        value={prompts[key] ?? ""}
+                        onChange={(e) => setPrompts((p) => ({ ...p, [key]: e.target.value }))}
+                        data-twin-prompt
+                      />
+                      <button type="button" className={`${buttonClass} mt-2`} onClick={() => void labelOutput(item, kind)} data-twin-generate-button>
+                        {t.generateButton}
+                      </button>
+                      {outputNote(outputs[key]) ? (
+                        <p role="status" className="mt-1 text-[13px] font-bold text-red-800" data-twin-generate-note>
+                          {outputNote(outputs[key])}
+                        </p>
+                      ) : null}
+                      {(() => {
+                        const out = outputs[key];
+                        if (!out || out.state !== "labelled") return null;
+                        return (
+                          <div className="mt-2 rounded-lg border-2 border-slate-900 bg-white p-2" data-twin-ai-label>
+                            <p className="text-[12px] font-extrabold uppercase tracking-wide text-slate-900">{t.labelTitle}</p>
+                            <p className="mt-1 text-[13px] font-bold text-slate-900">{out.label.visible[loc]}</p>
+                            <p className="mt-1 text-[12px] text-slate-700">
+                              {t.labelAudible} : « {out.label.audibleIntro[loc]} »
+                            </p>
+                            <p className="mt-1 text-[12px] text-slate-700">{t.labelYoutube}</p>
+                            {out.verifyUrl ? (
+                              <a href={out.verifyUrl} target="_blank" rel="noreferrer" className="mt-1 block text-[12px] font-bold text-blue-800 underline">
+                                {t.labelVerify}
+                              </a>
+                            ) : null}
+                            {reportOpen[key] ? (
+                              <div className="mt-2">
+                                <textarea
+                                  className={fieldClass}
+                                  rows={2}
+                                  maxLength={500}
+                                  placeholder={t.reportPlaceholder}
+                                  value={reportText[key] ?? ""}
+                                  onChange={(e) => setReportText((r) => ({ ...r, [key]: e.target.value }))}
+                                  data-twin-report-text
+                                />
+                                <button type="button" className={`${buttonClass} mt-1`} onClick={() => void sendReport(key, out.outputId)} data-twin-report-send>
+                                  {t.reportSend}
+                                </button>
+                              </div>
+                            ) : (
+                              <button type="button" className="mt-2 text-[12px] font-bold text-red-800 underline" onClick={() => setReportOpen((r) => ({ ...r, [key]: true }))} data-twin-report>
+                                {t.reportButton}
+                              </button>
+                            )}
+                          </div>
+                        );
+                      })()}
+                      {reportNotes[key] ? (
+                        <p role="status" className="mt-1 text-[12px] font-bold text-slate-900" data-twin-report-note>
+                          {reportNotes[key]}
+                        </p>
+                      ) : null}
+                    </div>
+                  ) : null}
                 </div>
               );
             })}

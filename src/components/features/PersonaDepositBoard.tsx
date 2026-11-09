@@ -34,7 +34,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import { interpolate } from "@/lib/i18n/locales";
-import { cleanCountry, cleanPseudonym } from "@/lib/twin-bank";
+import { cleanCountry, cleanPseudonym, formatCad } from "@/lib/twin-bank";
+import { fetchLenderUsageLog, type LenderUsageLog } from "@/lib/twin-bank-client";
 import { useI18n } from "@/lib/i18n/locale";
 import {
   canOpenPersonaStep,
@@ -105,6 +106,8 @@ export function PersonaDepositBoard() {
   const [choice, setChoice] = useState({ voice: false, image: false, pseudonym: "", country: "" });
   const [withdrawAsk, setWithdrawAsk] = useState(false);
   const [withdrawNote, setWithdrawNote] = useState("");
+  const [usageLog, setUsageLog] = useState<LenderUsageLog | null>(null);
+  const [usageLogNote, setUsageLogNote] = useState("");
   const [checks, setChecks] = useState<PersonaConsentChecks>(emptyPersonaConsentChecks());
   const [resumed, setResumed] = useState(false);
   const [urls, setUrls] = useState<MediaUrls>({});
@@ -499,6 +502,23 @@ export function PersonaDepositBoard() {
   }
 
   /** Withdraw: server deletion first (when the dossier reached the bank), then the device copy. */
+  async function loadUsageLog() {
+    if (!deposit) return;
+    setUsageLogNote("");
+    const log = await fetchLenderUsageLog({ id: deposit.id, withdrawToken: deposit.withdrawToken ?? "" });
+    if (!log) {
+      setUsageLog(null);
+      setUsageLogNote(g.logFailed);
+      return;
+    }
+    setUsageLog(log);
+    if (log.uses.length === 0 && log.outputs.length === 0) setUsageLogNote(g.logEmpty);
+  }
+
+  const logLoc = locale === "en" ? "en" : locale === "es" ? "es" : "fr";
+  const logDate = (at: number) =>
+    new Date(at).toLocaleString(locale === "en" ? "en-CA" : locale === "es" ? "es" : "fr-CA", { dateStyle: "medium", timeStyle: "short" });
+
   async function withdraw() {
     if (!deposit) return;
     setWithdrawNote("");
@@ -985,6 +1005,43 @@ export function PersonaDepositBoard() {
                 <button type="button" className={`${primaryClass} mt-2`} disabled={finalizing} onClick={() => void retryUpload()} data-persona-retry>
                   {g.retryUpload}
                 </button>
+              ) : null}
+              {deposit.upload === "sent" && deposit.withdrawToken ? (
+                <div className="mt-3 rounded-xl border border-slate-200 bg-slate-50 p-3" data-persona-usage-log>
+                  <p className="text-[13px] font-extrabold text-slate-900">{g.logTitle}</p>
+                  <p className="mt-1 text-[13px] leading-snug text-slate-700">{g.logLead}</p>
+                  <button type="button" className={`${buttonClass} mt-2`} onClick={() => void loadUsageLog()} data-persona-usage-log-button>
+                    {g.logButton}
+                  </button>
+                  {usageLog && (usageLog.uses.length > 0 || usageLog.outputs.length > 0) ? (
+                    <>
+                      <ul className="mt-2 grid gap-1 text-[12px] leading-snug text-slate-800" data-persona-usage-log-lines>
+                        {usageLog.uses.map((u) => (
+                          <li key={`u-${u.at}-${u.subscriber}-${u.kind}`}>
+                            {interpolate(g.logUse, { date: logDate(u.at), who: u.subscriber, kind: u.kind === "voice" ? g.logVoice : g.logImage, month: u.month })}
+                          </li>
+                        ))}
+                        {usageLog.outputs.map((o) => (
+                          <li key={`o-${o.at}-${o.subscriber}`}>
+                            {interpolate(g.logOutput, { date: logDate(o.at), who: o.subscriber, summary: o.summary })}
+                          </li>
+                        ))}
+                      </ul>
+                      <p className="mt-2 text-[12px] font-bold text-slate-800" data-persona-usage-log-totals>
+                        {interpolate(g.logTotals, {
+                          uses: String(usageLog.totals.uses),
+                          outputs: String(usageLog.totals.outputs),
+                          amount: formatCad(usageLog.totals.lenderCentsAccrued, logLoc),
+                        })}
+                      </p>
+                    </>
+                  ) : null}
+                  {usageLogNote ? (
+                    <p role="status" className="mt-2 text-[12px] text-slate-700" data-persona-usage-log-note>
+                      {usageLogNote}
+                    </p>
+                  ) : null}
+                </div>
               ) : null}
               <div className="mt-3 rounded-xl border border-red-200 bg-red-50 p-3" data-persona-withdraw>
                 <p className="text-[13px] font-extrabold text-red-900">{g.withdrawTitle}</p>

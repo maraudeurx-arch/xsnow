@@ -17,8 +17,15 @@
  *   POST /twin-bank/use               {subscriberId, itemId, kind, acceptCost, acceptRules}
  *   GET  /twin-bank/usage             ?subscriberId=
  *   GET  /twin-bank/media             ?item=&asset=&sub=&exp=&sig=  (HMAC, short-lived)
+ *   POST /twin-bank/subscribers       Bearer TWIN_APP_SECRET {twinAccountId, tier} → linked subscriberId
+ *   POST /twin-bank/generate          {subscriberId, itemId, kind, prompt, outputSha256?, publishedUrl?}
+ *                                     → banned-use filter, usage log line, « généré par IA » label + provenance
+ *   GET  /twin-bank/provenance        ?id=  public check of an output label
+ *   POST /twin-bank/report            {outputId?|itemId?, reason} « Signaler un abus »
+ *   GET  /persona-deposits/usage      ?id=&token=  lender usage log (who used my voice/image, when)
  *
- * Storage: R2 binding PERSONA_BANK (private bucket, never public) + D1 (migration 0016).
+ * Full contract for the twin app: docs/jumeau-banque-api.md.
+ * Storage: R2 binding PERSONA_BANK (private bucket, never public) + D1 (migrations 0016, 0017).
  * Without either binding every route answers 503 storage_not_configured.
  */
 
@@ -40,6 +47,13 @@ import {
   TWIN_BANK_PRICE_CAD_CENTS,
   type TwinBankKind,
 } from "../../../src/lib/twin-bank.ts";
+import {
+  twinAudibleIntro,
+  twinPromptIssue,
+  twinProvenance,
+  twinVisibleLabel,
+  TWIN_REFUSALS_BEFORE_REVIEW,
+} from "../../../src/lib/twin-safety.ts";
 
 export type PersonaAsset = "voice" | "image" | "video" | "selfie";
 const ASSETS: PersonaAsset[] = ["voice", "image", "video", "selfie"];
@@ -93,6 +107,55 @@ export type UsageRow = {
   created_at: number;
 };
 
+export type TwinTier = "decouverte" | "createur" | "pro";
+/** Internal tier for an unlinked test-mode id that had to be suspended (never settable through the API). */
+export type SubscriberTier = TwinTier | "test";
+export const TWIN_TIERS: TwinTier[] = ["decouverte", "createur", "pro"];
+/** Cahier Jumeau § 7.1: the bank is reserved to paid tiers. */
+export const TWIN_BANK_TIERS: TwinTier[] = ["createur", "pro"];
+
+export type SubscriberRow = {
+  subscriber_id: string;
+  account_hash: string;
+  tier: SubscriberTier;
+  linked_at: number;
+  updated_at: number;
+  suspended_at: number | null;
+};
+
+export type OutputRow = {
+  id: string;
+  subscriber_id: string;
+  lender_id: string;
+  kind: TwinBankKind;
+  prompt_sha256: string;
+  prompt_summary: string;
+  output_sha256: string | null;
+  published_url: string | null;
+  provenance_json: string;
+  signature: string;
+  created_at: number;
+};
+
+export type RefusalRow = {
+  subscriber_id: string;
+  lender_id: string;
+  reason: string;
+  prompt_sha256: string;
+  created_at: number;
+  reviewed_at: number | null;
+};
+
+export type ReportRow = {
+  id: string;
+  output_id: string | null;
+  lender_id: string | null;
+  subscriber_id: string | null;
+  reason: string;
+  created_at: number;
+  closed_at: number | null;
+};
+
 export interface BankStore {
   insertLender(row: LenderRow): Promise<boolean>;
   getLender(id: string): Promise<LenderRow | null>;
@@ -104,6 +167,19 @@ export interface BankStore {
   /** Returns false when the (subscriber, lender, kind, month) line already exists. */
   insertUsage(row: UsageRow): Promise<boolean>;
   usageFor(subscriberId: string, month: string): Promise<UsageRow[]>;
+  usageForLender(lenderId: string): Promise<UsageRow[]>;
+  getSubscriber(id: string): Promise<SubscriberRow | null>;
+  upsertSubscriber(row: SubscriberRow): Promise<void>;
+  setSubscriberSuspended(id: string, at: number | null): Promise<void>;
+  insertOutput(row: OutputRow): Promise<void>;
+  getOutput(id: string): Promise<OutputRow | null>;
+  outputsForLender(lenderId: string): Promise<OutputRow[]>;
+  insertRefusal(row: RefusalRow): Promise<void>;
+  openRefusals(subscriberId: string): Promise<number>;
+  subscribersNeedingReview(threshold: number): Promise<Array<{ subscriber_id: string; refusals: number }>>;
+  clearRefusals(subscriberId: string, at: number): Promise<void>;
+  insertReport(row: ReportRow): Promise<void>;
+  openReports(): Promise<ReportRow[]>;
 }
 
 export interface BlobStore {
@@ -120,6 +196,8 @@ export type BankDeps = {
   signingKey?: string;
   /** "on" lists pending (not yet team-verified) items to twin testers, flagged verified:false. */
   testMode?: string;
+  /** Server-to-server secret shared with the twin app backend (Starks). Links real twin accounts. */
+  twinAppSecret?: string;
 };
 
 type Json = Record<string, unknown>;
@@ -262,6 +340,76 @@ function listableStatuses(deps: BankDeps): LenderStatus[] {
   return deps.testMode === "on" ? ["approved", "pending_review"] : ["approved"];
 }
 
+function isTwinApp(request: Request, deps: BankDeps): boolean {
+  return Boolean(deps.twinAppSecret) && safeEqual(bearer(request), deps.twinAppSecret as string);
+}
+
+export async function linkedSubscriberId(secret: string, twinAccountId: string): Promise<string> {
+  const sig = await signMedia(secret, `twin-account.${twinAccountId}`);
+  return `sub-${(await sha256Hex(sig)).slice(0, 32)}`;
+}
+
+type SubscriberCheck = { ok: true; linked: boolean } | { ok: false; res: Response };
+
+/**
+ * Who may use the bank:
+ *  - a LINKED twin account (call from the twin backend with Bearer TWIN_APP_SECRET),
+ *    paid tier (Créateur / Pro), not suspended;
+ *  - in TEST MODE only, an unlinked test id (sub-…) from the browser.
+ * A linked id can never be used from a browser without the app secret.
+ */
+async function checkSubscriber(request: Request, deps: BankDeps, store: BankStore, subscriberId: string): Promise<SubscriberCheck> {
+  const linked = await store.getSubscriber(subscriberId);
+  if (isTwinApp(request, deps)) {
+    if (!linked) return { ok: false, res: jsonResponse({ error: "subscriber_not_linked" }, 404) };
+    if (linked.suspended_at != null) return { ok: false, res: jsonResponse({ error: "subscriber_suspended" }, 423) };
+    if (!TWIN_BANK_TIERS.includes(linked.tier as TwinTier)) return { ok: false, res: jsonResponse({ error: "tier_required", tiers: TWIN_BANK_TIERS }, 402) };
+    return { ok: true, linked: true };
+  }
+  if (linked && linked.tier !== "test") return { ok: false, res: jsonResponse({ error: "app_auth_required" }, 401) };
+  if (deps.testMode !== "on") return { ok: false, res: jsonResponse({ error: "app_auth_required" }, 401) };
+  if (linked?.suspended_at != null) return { ok: false, res: jsonResponse({ error: "subscriber_suspended" }, 423) };
+  return { ok: true, linked: false };
+}
+
+async function suspendSubscriber(store: BankStore, subscriberId: string, at: number | null): Promise<void> {
+  const row = await store.getSubscriber(subscriberId);
+  if (row) {
+    await store.setSubscriberSuspended(subscriberId, at);
+    return;
+  }
+  if (at == null) return;
+  await store.upsertSubscriber({
+    subscriber_id: subscriberId, account_hash: `test:${subscriberId}`, tier: "test", linked_at: at, updated_at: at, suspended_at: at,
+  });
+}
+
+function promptSummary(prompt: string): string {
+  const flat = prompt.replace(/[\u0000-\u001f]+/g, " ").replace(/\s+/g, " ").trim();
+  return flat.length > 140 ? `${flat.slice(0, 139)}…` : flat;
+}
+
+function cleanUrl(raw: unknown): string | null {
+  if (typeof raw !== "string" || raw.length > 500) return null;
+  try {
+    const u = new URL(raw);
+    return u.protocol === "https:" ? u.toString() : null;
+  } catch {
+    return null;
+  }
+}
+
+function newId(prefix: string): string {
+  const bytes = new Uint8Array(10);
+  crypto.getRandomValues(bytes);
+  return `${prefix}-${[...bytes].map((b) => b.toString(16).padStart(2, "0")).join("")}`;
+}
+
+/** Per-lender pseudonym of a subscriber: the lender sees « abonné-1a2b3c », never the account. */
+async function subscriberAlias(subscriberId: string, lenderId: string): Promise<string> {
+  return `abonne-${(await sha256Hex(`${lenderId}.${subscriberId}`)).slice(0, 6)}`;
+}
+
 export async function handlePersonaBank(request: Request, deps: BankDeps): Promise<Response> {
   const { store, blobs } = deps;
   if (!store || !blobs) return jsonResponse({ error: "storage_not_configured" }, 503);
@@ -339,6 +487,38 @@ export async function handlePersonaBank(request: Request, deps: BankDeps): Promi
     return jsonResponse({ ok: true, id, status: row.status });
   }
 
+  /* ---- lender: usage log ---- */
+  if (path.endsWith("/persona-deposits/usage")) {
+    if (request.method !== "GET") return jsonResponse({ error: "method_not_allowed" }, 405);
+    const id = url.searchParams.get("id") || "";
+    const token = url.searchParams.get("token") || "";
+    const row = isPersonaId(id) ? await store.getLender(id) : null;
+    if (!row || !token || !safeEqual(await sha256Hex(token), row.withdraw_hash)) return jsonResponse({ error: "not_found" }, 404);
+    const uses = await store.usageForLender(id);
+    const outputs = await store.outputsForLender(id);
+    return jsonResponse({
+      ok: true,
+      id,
+      status: row.status,
+      testMode: true,
+      paid: false,
+      uses: await Promise.all(uses.map(async (u) => ({
+        at: u.created_at, month: u.month, kind: u.kind,
+        subscriber: await subscriberAlias(u.subscriber_id, id),
+        lenderCents: u.lender_cents, payoutAfter: u.payout_after, testMode: u.test_mode === 1,
+      }))),
+      outputs: await Promise.all(outputs.map(async (o) => ({
+        at: o.created_at, kind: o.kind, outputId: o.id, summary: o.prompt_summary,
+        subscriber: await subscriberAlias(o.subscriber_id, id), publishedUrl: o.published_url,
+      }))),
+      totals: {
+        uses: uses.length,
+        outputs: outputs.length,
+        lenderCentsAccrued: uses.reduce((t, u) => t + u.lender_cents, 0),
+      },
+    });
+  }
+
   /* ---- lender: withdraw (real deletion) ---- */
   if (path.endsWith("/persona-deposits/withdraw")) {
     if (request.method !== "POST") return jsonResponse({ error: "method_not_allowed" }, 405);
@@ -373,12 +553,26 @@ export async function handlePersonaBank(request: Request, deps: BankDeps): Promi
           offer: { voice: !!r.offer_voice, image: !!r.offer_image },
           livenessCode: r.liveness_code, consentVersion: r.consent_version, createdAt: r.created_at,
         })),
+        reports: (await store.openReports()).map((r) => ({
+          id: r.id, outputId: r.output_id, itemId: r.lender_id, subscriberId: r.subscriber_id, reason: r.reason, createdAt: r.created_at,
+        })),
+        subscribersToReview: await store.subscribersNeedingReview(TWIN_REFUSALS_BEFORE_REVIEW),
       });
     }
     if (request.method !== "POST") return jsonResponse({ error: "method_not_allowed" }, 405);
     const body = await readJson(request);
     const id = body?.id;
     const decision = body?.decision;
+    if (decision === "suspend-subscriber" || decision === "clear-subscriber") {
+      const sub = body?.subscriberId;
+      if (!isSubscriberId(sub)) return jsonResponse({ error: "bad_request" }, 400);
+      if (decision === "suspend-subscriber") await suspendSubscriber(store, sub, now);
+      else {
+        await store.clearRefusals(sub, now);
+        await suspendSubscriber(store, sub, null);
+      }
+      return jsonResponse({ ok: true, subscriberId: sub, decision });
+    }
     if (!isPersonaId(id) || (decision !== "approve" && decision !== "reject")) return jsonResponse({ error: "bad_request" }, 400);
     const row = await store.getLender(id);
     if (!row || row.status === "revoked") return jsonResponse({ error: "not_found" }, 404);
@@ -411,6 +605,9 @@ export async function handlePersonaBank(request: Request, deps: BankDeps): Promi
     const { subscriberId, itemId, kind } = body;
     if (!isSubscriberId(subscriberId) || !isPersonaId(itemId) || !isTwinBankKind(kind)) return jsonResponse({ error: "bad_request" }, 400);
     if (body.acceptCost !== true || body.acceptRules !== true) return jsonResponse({ error: "notice_not_accepted" }, 400);
+    const who = await checkSubscriber(request, deps, store, subscriberId);
+    if (!who.ok) return who.res;
+    if ((await store.openRefusals(subscriberId)) >= TWIN_REFUSALS_BEFORE_REVIEW) return jsonResponse({ error: "human_review_required" }, 423);
     const row = await store.getLender(itemId);
     if (!row || row.revoked_at != null || !listableStatuses(deps).includes(row.status)) return jsonResponse({ error: "not_available" }, 404);
     if (!(await availableKinds(store, row)).includes(kind)) return jsonResponse({ error: "not_available" }, 404);
@@ -436,6 +633,7 @@ export async function handlePersonaBank(request: Request, deps: BankDeps): Promi
       ok: true,
       testMode: true,
       charged: false,
+      linked: who.linked,
       alreadyCountedThisMonth: !inserted,
       month,
       monthTotalCadCents: usage.reduce((s, u) => s + u.amount_cad_cents, 0),
@@ -458,6 +656,123 @@ export async function handlePersonaBank(request: Request, deps: BankDeps): Promi
       lines: usage.map((u) => ({ itemId: u.lender_id, kind: u.kind, amountCadCents: u.amount_cad_cents })),
       totalCadCents: usage.reduce((s, u) => s + u.amount_cad_cents, 0),
     });
+  }
+
+  /* ---- twin app: link a real twin account (server to server) ---- */
+  if (path.endsWith("/twin-bank/subscribers")) {
+    if (request.method !== "POST") return jsonResponse({ error: "method_not_allowed" }, 405);
+    if (!deps.twinAppSecret) return jsonResponse({ error: "not_configured" }, 503);
+    if (!isTwinApp(request, deps)) return jsonResponse({ error: "unauthorized" }, 401);
+    const body = await readJson(request);
+    const account = typeof body?.twinAccountId === "string" ? body.twinAccountId.trim() : "";
+    const tier = body?.tier as TwinTier;
+    if (account.length < 3 || account.length > 128 || !TWIN_TIERS.includes(tier)) return jsonResponse({ error: "bad_request" }, 400);
+    const subscriberId = await linkedSubscriberId(deps.twinAppSecret, account);
+    const existing = await store.getSubscriber(subscriberId);
+    if (existing && existing.tier === "test") return jsonResponse({ error: "conflict" }, 409);
+    await store.upsertSubscriber({
+      subscriber_id: subscriberId,
+      account_hash: await sha256Hex(account),
+      tier,
+      linked_at: existing?.linked_at ?? now,
+      updated_at: now,
+      suspended_at: existing?.suspended_at ?? null,
+    });
+    return jsonResponse({
+      ok: true,
+      subscriberId,
+      tier,
+      bankAccess: TWIN_BANK_TIERS.includes(tier) && existing?.suspended_at == null,
+      suspended: existing?.suspended_at != null,
+    });
+  }
+
+  /* ---- twin: check a prompt, log the output, get the « généré par IA » label ---- */
+  if (path.endsWith("/twin-bank/generate")) {
+    if (request.method !== "POST") return jsonResponse({ error: "method_not_allowed" }, 405);
+    if (!deps.signingKey) return jsonResponse({ error: "not_configured" }, 503);
+    const body = await readJson(request);
+    if (!body) return jsonResponse({ error: "bad_request" }, 400);
+    const { subscriberId, itemId, kind } = body;
+    if (!isSubscriberId(subscriberId) || !isPersonaId(itemId) || !isTwinBankKind(kind)) return jsonResponse({ error: "bad_request" }, 400);
+    const who = await checkSubscriber(request, deps, store, subscriberId);
+    if (!who.ok) return who.res;
+    if ((await store.openRefusals(subscriberId)) >= TWIN_REFUSALS_BEFORE_REVIEW) return jsonResponse({ error: "human_review_required" }, 423);
+    const prompt = typeof body.prompt === "string" ? body.prompt.slice(0, 4000) : "";
+    const promptHash = await sha256Hex(prompt);
+    const issue = twinPromptIssue(prompt);
+    if (issue) {
+      if (issue !== "empty") {
+        await store.insertRefusal({ subscriber_id: subscriberId, lender_id: itemId, reason: issue, prompt_sha256: promptHash, created_at: now, reviewed_at: null });
+      }
+      const refusals = await store.openRefusals(subscriberId);
+      return jsonResponse({ error: issue === "empty" ? "prompt_required" : "banned_use", reason: issue, refusals, humanReview: refusals >= TWIN_REFUSALS_BEFORE_REVIEW }, 422);
+    }
+    const row = await store.getLender(itemId);
+    if (!row || row.revoked_at != null || !listableStatuses(deps).includes(row.status)) return jsonResponse({ error: "not_available" }, 404);
+    const month = twinBankMonth(now);
+    const used = (await store.usageFor(subscriberId, month)).some((u) => u.lender_id === itemId && u.kind === kind);
+    if (!used) return jsonResponse({ error: "use_required" }, 402);
+    const outputSha = typeof body.outputSha256 === "string" && /^[a-f0-9]{64}$/.test(body.outputSha256) ? body.outputSha256 : null;
+    const outputId = newId("out");
+    const lenderRef = `pr-${(await sha256Hex(`lender.${itemId}`)).slice(0, 12)}`;
+    const provenance = twinProvenance({ outputId, licenseId: `${itemId}.${kind}.${month}`, lenderRef, kind, outputSha256: outputSha, createdAt: now });
+    const provenanceJson = JSON.stringify(provenance);
+    const signature = await signMedia(deps.signingKey, provenanceJson);
+    await store.insertOutput({
+      id: outputId, subscriber_id: subscriberId, lender_id: itemId, kind,
+      prompt_sha256: promptHash, prompt_summary: promptSummary(prompt), output_sha256: outputSha,
+      published_url: cleanUrl(body.publishedUrl), provenance_json: provenanceJson, signature, created_at: now,
+    });
+    return jsonResponse({
+      ok: true,
+      outputId,
+      aiGenerated: true,
+      label: { visible: twinVisibleLabel(row.pseudonym, kind), audibleIntro: twinAudibleIntro(kind), mustDisplay: true },
+      youtube: { syntheticContent: true },
+      provenance,
+      signature,
+      verifyUrl: `/twin-bank/provenance?id=${outputId}`,
+    });
+  }
+
+  /* ---- public: verify an output label ---- */
+  if (path.endsWith("/twin-bank/provenance")) {
+    if (request.method !== "GET") return jsonResponse({ error: "method_not_allowed" }, 405);
+    const id = url.searchParams.get("id") || "";
+    const out = /^out-[a-f0-9]{20}$/.test(id) ? await store.getOutput(id) : null;
+    if (!out) return jsonResponse({ error: "not_found" }, 404);
+    const valid = deps.signingKey ? safeEqual(await signMedia(deps.signingKey, out.provenance_json), out.signature) : false;
+    const lender = await store.getLender(out.lender_id);
+    return jsonResponse({
+      ok: true,
+      outputId: out.id,
+      aiGenerated: true,
+      kind: out.kind,
+      createdAt: out.created_at,
+      lenderWithdrawn: !lender || lender.revoked_at != null,
+      signatureValid: valid,
+      provenance: JSON.parse(out.provenance_json),
+    });
+  }
+
+  /* ---- anyone: « Signaler un abus » ---- */
+  if (path.endsWith("/twin-bank/report")) {
+    if (request.method !== "POST") return jsonResponse({ error: "method_not_allowed" }, 405);
+    const body = await readJson(request);
+    const reason = typeof body?.reason === "string" ? body.reason.trim().slice(0, 500) : "";
+    const outputId = typeof body?.outputId === "string" && /^out-[a-f0-9]{20}$/.test(body.outputId) ? body.outputId : null;
+    const itemId = isPersonaId(body?.itemId) ? (body?.itemId as string) : null;
+    if (reason.length < 3 || (!outputId && !itemId)) return jsonResponse({ error: "bad_request" }, 400);
+    const out = outputId ? await store.getOutput(outputId) : null;
+    if (outputId && !out) return jsonResponse({ error: "not_found" }, 404);
+    await store.insertReport({
+      id: newId("rep"), output_id: outputId, lender_id: out?.lender_id ?? itemId, subscriber_id: out?.subscriber_id ?? null,
+      reason, created_at: now, closed_at: null,
+    });
+    // Cahier § 7.7: the output's subscriber is suspended at once, pending human review (24 h).
+    if (out) await suspendSubscriber(store, out.subscriber_id, now);
+    return jsonResponse({ ok: true, received: true, suspendedPendingReview: Boolean(out) }, 202);
   }
 
   /* ---- twin: signed media ---- */
@@ -567,6 +882,84 @@ export function d1BankStore(db: D1ForBank): BankStore {
       } catch {
         return false; // UNIQUE (subscriber_id, lender_id, kind, month)
       }
+    },
+    async usageForLender(lenderId) {
+      const res = await db
+        .prepare(`SELECT * FROM twin_bank_usage WHERE lender_id = ? ORDER BY created_at DESC LIMIT 500`)
+        .bind(lenderId)
+        .all<UsageRow>();
+      return res.results ?? [];
+    },
+    async getSubscriber(id) {
+      return db.prepare(`SELECT * FROM twin_subscribers WHERE subscriber_id = ?`).bind(id).first<SubscriberRow>();
+    },
+    async upsertSubscriber(r) {
+      await db
+        .prepare(
+          `INSERT INTO twin_subscribers (subscriber_id, account_hash, tier, linked_at, updated_at, suspended_at) VALUES (?,?,?,?,?,?)
+           ON CONFLICT(subscriber_id) DO UPDATE SET tier = excluded.tier, updated_at = excluded.updated_at`,
+        )
+        .bind(r.subscriber_id, r.account_hash, r.tier, r.linked_at, r.updated_at, r.suspended_at)
+        .run();
+    },
+    async setSubscriberSuspended(id, at) {
+      await db.prepare(`UPDATE twin_subscribers SET suspended_at = ? WHERE subscriber_id = ?`).bind(at, id).run();
+    },
+    async insertOutput(o) {
+      await db
+        .prepare(
+          `INSERT INTO twin_outputs (id, subscriber_id, lender_id, kind, prompt_sha256, prompt_summary, output_sha256, published_url,
+           provenance_json, signature, created_at) VALUES (?,?,?,?,?,?,?,?,?,?,?)`,
+        )
+        .bind(o.id, o.subscriber_id, o.lender_id, o.kind, o.prompt_sha256, o.prompt_summary, o.output_sha256, o.published_url,
+          o.provenance_json, o.signature, o.created_at)
+        .run();
+    },
+    async getOutput(id) {
+      return db.prepare(`SELECT * FROM twin_outputs WHERE id = ?`).bind(id).first<OutputRow>();
+    },
+    async outputsForLender(lenderId) {
+      const res = await db
+        .prepare(`SELECT * FROM twin_outputs WHERE lender_id = ? ORDER BY created_at DESC LIMIT 500`)
+        .bind(lenderId)
+        .all<OutputRow>();
+      return res.results ?? [];
+    },
+    async insertRefusal(r) {
+      await db
+        .prepare(`INSERT INTO twin_prompt_refusals (subscriber_id, lender_id, reason, prompt_sha256, created_at, reviewed_at) VALUES (?,?,?,?,?,?)`)
+        .bind(r.subscriber_id, r.lender_id, r.reason, r.prompt_sha256, r.created_at, r.reviewed_at)
+        .run();
+    },
+    async openRefusals(subscriberId) {
+      const row = await db
+        .prepare(`SELECT COUNT(*) AS n FROM twin_prompt_refusals WHERE subscriber_id = ? AND reviewed_at IS NULL`)
+        .bind(subscriberId)
+        .first<{ n: number }>();
+      return Number(row?.n ?? 0);
+    },
+    async subscribersNeedingReview(threshold) {
+      const res = await db
+        .prepare(
+          `SELECT subscriber_id, COUNT(*) AS refusals FROM twin_prompt_refusals WHERE reviewed_at IS NULL
+           GROUP BY subscriber_id HAVING COUNT(*) >= ? ORDER BY refusals DESC LIMIT 100`,
+        )
+        .bind(threshold)
+        .all<{ subscriber_id: string; refusals: number }>();
+      return res.results ?? [];
+    },
+    async clearRefusals(subscriberId, at) {
+      await db.prepare(`UPDATE twin_prompt_refusals SET reviewed_at = ? WHERE subscriber_id = ? AND reviewed_at IS NULL`).bind(at, subscriberId).run();
+    },
+    async insertReport(r) {
+      await db
+        .prepare(`INSERT INTO twin_abuse_reports (id, output_id, lender_id, subscriber_id, reason, created_at, closed_at) VALUES (?,?,?,?,?,?,?)`)
+        .bind(r.id, r.output_id, r.lender_id, r.subscriber_id, r.reason, r.created_at, r.closed_at)
+        .run();
+    },
+    async openReports() {
+      const res = await db.prepare(`SELECT * FROM twin_abuse_reports WHERE closed_at IS NULL ORDER BY created_at DESC LIMIT 200`).bind().all<ReportRow>();
+      return res.results ?? [];
     },
     async usageFor(subscriberId, month) {
       const res = await db

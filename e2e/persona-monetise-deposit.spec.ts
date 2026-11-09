@@ -42,6 +42,14 @@ test.describe("Monétise-toi — dépôt complet (micro simulé) puis retrait", 
     await expect(page.locator("[data-persona-upload-note]")).toHaveAttribute("data-persona-upload", "sent");
     expect(calls).toContain("POST /persona-deposits");
 
+    // lender usage log: who used my voice, and when (pseudonymised)
+    await page.locator("[data-persona-usage-log-button]").click();
+    const lines = page.locator("[data-persona-usage-log-lines]");
+    await expect(lines).toContainText("abonne-1a2b3c");
+    await expect(lines).toContainText("cuisine");
+    await expect(page.locator("[data-persona-usage-log-totals]")).toContainText("1,80 $");
+    expect(calls).toContain("GET /persona-deposits/usage");
+
     await page.locator("[data-persona-withdraw-button]").click();
     await page.locator("[data-persona-withdraw-confirm]").click();
     await expect(page.locator("[data-persona-withdraw-note]")).toContainText("retirées et effacées");

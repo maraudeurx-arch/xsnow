@@ -12,12 +12,12 @@ import {
   TWIN_BANK_PRICE_CAD_CENTS,
   TWIN_BANK_SPLIT,
 } from "./twin-bank.ts";
-import { fetchTwinBank, newSubscriberId, recordTwinBankUse } from "./twin-bank-client.ts";
+import { fetchLenderUsageLog, fetchTwinBank, newSubscriberId, recordTwinBankUse, reportTwinAbuse, requestTwinOutputLabel } from "./twin-bank-client.ts";
 import { fr } from "./i18n/fr.ts";
 import { en } from "./i18n/en.ts";
 import { es } from "./i18n/es.ts";
 
-describe("banque jumeau — tarif proposé (en attente de l'accord de Popol)", () => {
+describe("banque jumeau — tarif de base retenu le 09/11 (facturation réelle fermée)", () => {
   it("3 $ CA per borrowed item per month, split 60/30/10, live billing OFF", () => {
     assert.equal(TWIN_BANK_PRICE_CAD_CENTS, 300);
     assert.ok(Math.abs(TWIN_BANK_SPLIT.lender + TWIN_BANK_SPLIT.opc + TWIN_BANK_SPLIT.platform - 1) < 1e-9);
@@ -75,6 +75,55 @@ describe("banque jumeau — client côté jumeau", () => {
       assert.match(t.priceNotice, /\{price\}/);
       assert.match(t.testBadge, /test|prueba/i);
       assert.match(t.acceptRules, /IA|AI/);
+    }
+  });
+});
+
+describe("banque jumeau — étiquette IA, signalement et journal côté client", () => {
+  const trio = { fr: "Contenu généré par IA", en: "AI-generated content", es: "Contenido generado por IA" };
+  it("returns the label only when the server says aiGenerated, and maps refusals / missing use / review lock", async () => {
+    const ok = (async () => new Response(JSON.stringify({ ok: true, aiGenerated: true, outputId: "out-0123456789abcdef0123", label: { visible: trio, audibleIntro: trio }, verifyUrl: "/twin-bank/provenance?id=out-0123456789abcdef0123" }), { status: 200 })) as typeof fetch;
+    const r = await requestTwinOutputLabel({ subscriberId: "sub-abcdefgh12", itemId: "persona-a-1", kind: "voice", prompt: "Bonjour" }, ok, "https://w.example");
+    assert.equal(r.state, "labelled");
+    if (r.state === "labelled") assert.equal(r.verifyUrl, "https://w.example/twin-bank/provenance?id=out-0123456789abcdef0123");
+    const noAi = (async () => new Response(JSON.stringify({ ok: true, outputId: "out-x", label: { visible: trio, audibleIntro: trio } }), { status: 200 })) as typeof fetch;
+    assert.equal((await requestTwinOutputLabel({ subscriberId: "sub-abcdefgh12", itemId: "persona-a-1", kind: "voice", prompt: "x" }, noAi)).state, "failed");
+    const refused = (async () => new Response(JSON.stringify({ error: "banned_use", reason: "political", refusals: 3, humanReview: true }), { status: 422 })) as typeof fetch;
+    const rr = await requestTwinOutputLabel({ subscriberId: "sub-abcdefgh12", itemId: "persona-a-1", kind: "voice", prompt: "x" }, refused);
+    assert.deepEqual(rr, { state: "refused", reason: "political", refusals: 3, humanReview: true });
+    const need = (async () => new Response(JSON.stringify({ error: "use_required" }), { status: 402 })) as typeof fetch;
+    assert.equal((await requestTwinOutputLabel({ subscriberId: "sub-abcdefgh12", itemId: "persona-a-1", kind: "voice", prompt: "x" }, need)).state, "needs-use");
+    const locked = (async () => new Response(JSON.stringify({ error: "human_review_required" }), { status: 423 })) as typeof fetch;
+    assert.equal((await requestTwinOutputLabel({ subscriberId: "sub-abcdefgh12", itemId: "persona-a-1", kind: "voice", prompt: "x" }, locked)).state, "locked");
+  });
+
+  it("report is accepted only on 202 received", async () => {
+    const ok = (async () => new Response(JSON.stringify({ ok: true, received: true }), { status: 202 })) as typeof fetch;
+    assert.equal(await reportTwinAbuse({ outputId: "out-1", reason: "abus" }, ok), "received");
+    const bad = (async () => new Response(JSON.stringify({ error: "bad_request" }), { status: 400 })) as typeof fetch;
+    assert.equal(await reportTwinAbuse({ outputId: "out-1", reason: "" }, bad), "failed");
+  });
+
+  it("the lender log needs the withdraw token and is parsed defensively", async () => {
+    let called = false;
+    const spy = (async () => { called = true; return new Response("{}"); }) as typeof fetch;
+    assert.equal(await fetchLenderUsageLog({ id: "persona-a-1", withdrawToken: "" }, spy), null);
+    assert.equal(called, false);
+    const ok = (async (url: string) => {
+      assert.match(String(url), /\/persona-deposits\/usage\?id=persona-a-1&token=tok/);
+      return new Response(JSON.stringify({ ok: true, uses: [{ at: 1, month: "2026-11", kind: "image", subscriber: "abonne-1a2b3c", lenderCents: 180 }], outputs: [{ at: 2, kind: "voice", subscriber: "abonne-1a2b3c", summary: "Météo" }], totals: { uses: 1, outputs: 1, lenderCentsAccrued: 180 } }), { status: 200 });
+    }) as unknown as typeof fetch;
+    const log = await fetchLenderUsageLog({ id: "persona-a-1", withdrawToken: "tok" }, ok, "https://w.example");
+    assert.equal(log?.uses[0].kind, "image");
+    assert.equal(log?.totals.lenderCentsAccrued, 180);
+  });
+
+  it("new copy exists in FR, EN and ES with every banned-use reason", () => {
+    for (const lang of [fr, en, es]) {
+      assert.match(lang.twinBank.generateRefused, /\{reason\}/);
+      for (const k of ["sexual", "political", "impersonation", "fraud", "hate", "minors", "advice", "empty"] as const) assert.ok(lang.twinBank.reasons[k]);
+      assert.match(lang.earnNow.personaMonetise.logTotals, /\{amount\}/);
+      assert.doesNotMatch(lang.twinBank.pricingProposal, /en attente|awaiting|pendiente/i);
     }
   });
 });

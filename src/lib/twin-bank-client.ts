@@ -129,3 +129,117 @@ export async function fetchTwinBankUsage(
     return null;
   }
 }
+
+/* ---------- « généré par IA » label + banned-use filter (POST /twin-bank/generate) ---------- */
+
+export type TwinLabel = {
+  visible: { fr: string; en: string; es: string };
+  audibleIntro: { fr: string; en: string; es: string };
+};
+
+export type TwinGenerateResult =
+  | { state: "labelled"; outputId: string; label: TwinLabel; verifyUrl: string }
+  | { state: "refused"; reason: string; refusals: number; humanReview: boolean }
+  | { state: "needs-use" }
+  | { state: "locked" }
+  | { state: "failed" };
+
+function trio(raw: unknown): { fr: string; en: string; es: string } | null {
+  if (!raw || typeof raw !== "object") return null;
+  const r = raw as Record<string, unknown>;
+  return typeof r.fr === "string" && typeof r.en === "string" && typeof r.es === "string" ? { fr: r.fr, en: r.en, es: r.es } : null;
+}
+
+export async function requestTwinOutputLabel(
+  input: { subscriberId: string; itemId: string; kind: TwinBankKind; prompt: string; outputSha256?: string; publishedUrl?: string },
+  fetchImpl: typeof fetch = fetch,
+  base?: string,
+): Promise<TwinGenerateResult> {
+  try {
+    const res = await fetchImpl(`${chatApiBase(base)}/twin-bank/generate`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(input),
+      credentials: "omit",
+    });
+    const body = (await res.json().catch(() => null)) as Record<string, unknown> | null;
+    if (!body) return { state: "failed" };
+    if (res.status === 422) {
+      return {
+        state: "refused",
+        reason: String(body.reason ?? "empty"),
+        refusals: typeof body.refusals === "number" ? body.refusals : 0,
+        humanReview: body.humanReview === true,
+      };
+    }
+    if (res.status === 402 && body.error === "use_required") return { state: "needs-use" };
+    if (res.status === 423) return { state: "locked" };
+    const label = body.label as Record<string, unknown> | undefined;
+    const visible = trio(label?.visible);
+    const audibleIntro = trio(label?.audibleIntro);
+    if (!res.ok || body.aiGenerated !== true || typeof body.outputId !== "string" || !visible || !audibleIntro) return { state: "failed" };
+    const verify = typeof body.verifyUrl === "string" && body.verifyUrl.startsWith("/twin-bank/provenance?") ? `${chatApiBase(base)}${body.verifyUrl}` : "";
+    return { state: "labelled", outputId: body.outputId, label: { visible, audibleIntro }, verifyUrl: verify };
+  } catch {
+    return { state: "failed" };
+  }
+}
+
+export async function reportTwinAbuse(
+  input: { outputId?: string; itemId?: string; reason: string },
+  fetchImpl: typeof fetch = fetch,
+  base?: string,
+): Promise<"received" | "failed"> {
+  try {
+    const res = await fetchImpl(`${chatApiBase(base)}/twin-bank/report`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(input),
+      credentials: "omit",
+    });
+    const body = (await res.json().catch(() => null)) as Record<string, unknown> | null;
+    return res.status === 202 && body?.received === true ? "received" : "failed";
+  } catch {
+    return "failed";
+  }
+}
+
+/* ---------- lender usage log (GET /persona-deposits/usage) ---------- */
+
+export type LenderUsageLog = {
+  uses: Array<{ at: number; month: string; kind: TwinBankKind; subscriber: string; lenderCents: number }>;
+  outputs: Array<{ at: number; kind: TwinBankKind; subscriber: string; summary: string }>;
+  totals: { uses: number; outputs: number; lenderCentsAccrued: number };
+};
+
+export async function fetchLenderUsageLog(
+  dossier: { id: string; withdrawToken: string },
+  fetchImpl: typeof fetch = fetch,
+  base?: string,
+): Promise<LenderUsageLog | null> {
+  if (!dossier.withdrawToken) return null;
+  try {
+    const q = `id=${encodeURIComponent(dossier.id)}&token=${encodeURIComponent(dossier.withdrawToken)}`;
+    const res = await fetchImpl(`${chatApiBase(base)}/persona-deposits/usage?${q}`, { credentials: "omit" });
+    const body = (await res.json().catch(() => null)) as Record<string, unknown> | null;
+    if (!res.ok || !body || body.ok !== true || !Array.isArray(body.uses) || !Array.isArray(body.outputs)) return null;
+    const kind = (k: unknown): TwinBankKind => (k === "image" ? "image" : "voice");
+    const totals = (body.totals ?? {}) as Record<string, unknown>;
+    return {
+      uses: body.uses.map((u: Record<string, unknown>) => ({
+        at: Number(u.at) || 0, month: String(u.month ?? ""), kind: kind(u.kind),
+        subscriber: String(u.subscriber ?? "").slice(0, 20), lenderCents: Number(u.lenderCents) || 0,
+      })),
+      outputs: body.outputs.map((o: Record<string, unknown>) => ({
+        at: Number(o.at) || 0, kind: kind(o.kind), subscriber: String(o.subscriber ?? "").slice(0, 20), summary: String(o.summary ?? "").slice(0, 160),
+      })),
+      totals: {
+        uses: Number(totals.uses) || 0,
+        outputs: Number(totals.outputs) || 0,
+        lenderCentsAccrued: Number(totals.lenderCentsAccrued) || 0,
+      },
+    };
+  } catch {
+    return null;
+  }
+}

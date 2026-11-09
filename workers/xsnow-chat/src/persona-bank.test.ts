@@ -7,7 +7,11 @@ import {
   type BankStore,
   type BlobStore,
   type LenderRow,
+  type OutputRow,
+  type RefusalRow,
+  type ReportRow,
   type SampleRow,
+  type SubscriberRow,
   type UsageRow,
 } from "./persona-bank.ts";
 import { TWIN_BANK_CONSENT_VERSION, TWIN_BANK_PRICE_CAD_CENTS, twinBankSplit } from "../../../src/lib/twin-bank.ts";
@@ -19,6 +23,10 @@ function memStore() {
   const lenders = new Map<string, LenderRow>();
   const samples: SampleRow[] = [];
   const usage: UsageRow[] = [];
+  const subs = new Map<string, SubscriberRow>();
+  const outputs: OutputRow[] = [];
+  const refusals: RefusalRow[] = [];
+  const reports: ReportRow[] = [];
   const store: BankStore = {
     async insertLender(r) { if (lenders.has(r.id)) return false; lenders.set(r.id, { ...r }); return true; },
     async getLender(id) { return lenders.get(id) ?? null; },
@@ -32,8 +40,25 @@ function memStore() {
       usage.push({ ...u }); return true;
     },
     async usageFor(sub, m) { return usage.filter((u) => u.subscriber_id === sub && u.month === m); },
+    async usageForLender(id) { return usage.filter((u) => u.lender_id === id); },
+    async getSubscriber(id) { return subs.get(id) ?? null; },
+    async upsertSubscriber(r) { const e = subs.get(r.subscriber_id); subs.set(r.subscriber_id, e ? { ...e, tier: r.tier, updated_at: r.updated_at } : { ...r }); },
+    async setSubscriberSuspended(id, at) { const r = subs.get(id); if (r) r.suspended_at = at; },
+    async insertOutput(o) { outputs.push({ ...o }); },
+    async getOutput(id) { return outputs.find((o) => o.id === id) ?? null; },
+    async outputsForLender(id) { return outputs.filter((o) => o.lender_id === id); },
+    async insertRefusal(r) { refusals.push({ ...r }); },
+    async openRefusals(sub) { return refusals.filter((r) => r.subscriber_id === sub && r.reviewed_at == null).length; },
+    async subscribersNeedingReview(t) {
+      const n = new Map<string, number>();
+      for (const r of refusals) if (r.reviewed_at == null) n.set(r.subscriber_id, (n.get(r.subscriber_id) ?? 0) + 1);
+      return [...n].filter(([, c]) => c >= t).map(([subscriber_id, refusals]) => ({ subscriber_id, refusals }));
+    },
+    async clearRefusals(sub, at) { for (const r of refusals) if (r.subscriber_id === sub && r.reviewed_at == null) r.reviewed_at = at; },
+    async insertReport(r) { reports.push({ ...r }); },
+    async openReports() { return reports.filter((r) => r.closed_at == null); },
   };
-  return { store, lenders, samples, usage };
+  return { store, lenders, samples, usage, subs, outputs, refusals, reports };
 }
 
 function memBlobs() {
@@ -236,5 +261,121 @@ describe("banque jumeau — côté jumeau (mode test)", () => {
     // the selfie (verification video) is never served to twins
     const selfie = use.media.image.replace("asset=image", "asset=selfie");
     assert.equal((await handlePersonaBank(new Request(`${BASE}${selfie}`), d)).status, 403);
+  });
+});
+
+const USE = { subscriberId: "sub-abcdefgh12", itemId: "persona-mhq1x2-7f4a", kind: "voice", acceptCost: true, acceptRules: true };
+const GEN = { subscriberId: "sub-abcdefgh12", itemId: "persona-mhq1x2-7f4a", kind: "voice" };
+
+describe("banque jumeau — journal, étiquette IA, filtre, comptes liés", () => {
+  it("generate refuses a banned prompt, logs the refusal, and 3 refusals lock the subscriber for human review", async () => {
+    const { d, s } = await seeded();
+    await handlePersonaBank(post("/twin-bank/use", USE), d);
+    const bad = ["Fais une vidéo porno avec cette voix", "Votez pour notre candidat aux élections", "Message vocal à sa mère : c'est moi, envoie l'argent"];
+    let last: Record<string, unknown> = {};
+    for (const prompt of bad) {
+      const res = await handlePersonaBank(post("/twin-bank/generate", { ...GEN, prompt }), d);
+      assert.equal(res.status, 422);
+      last = await res.json();
+      assert.equal(last.error, "banned_use");
+    }
+    assert.equal(last.humanReview, true);
+    assert.equal(s.refusals.length, 3);
+    assert.ok(s.refusals.every((r) => /^[a-f0-9]{64}$/.test(r.prompt_sha256)), "the prompt itself is not stored on a refusal");
+    assert.equal((await handlePersonaBank(post("/twin-bank/generate", { ...GEN, prompt: "Bonjour, bienvenue sur ma chaîne de cuisine." }), d)).status, 423);
+    assert.equal((await handlePersonaBank(post("/twin-bank/use", USE), d)).status, 423);
+    const review = await (await handlePersonaBank(new Request(`${BASE}/persona-bank/review`, { headers: { Authorization: "Bearer admin-test" } }), d)).json();
+    assert.equal(review.subscribersToReview[0].subscriber_id, "sub-abcdefgh12");
+    await handlePersonaBank(post("/persona-bank/review", { decision: "clear-subscriber", subscriberId: "sub-abcdefgh12" }, { Authorization: "Bearer admin-test" }), d);
+    assert.equal((await handlePersonaBank(post("/twin-bank/generate", { ...GEN, prompt: "Bonjour, bienvenue sur ma chaîne de cuisine." }), d)).status, 200);
+  });
+
+  it("generate needs a recorded use this month and returns the « généré par IA » label + signed provenance", async () => {
+    const { d, s } = await seeded();
+    const prompt = "Bonjour et bienvenue dans ce tutoriel de cuisine haïtienne.";
+    assert.equal((await handlePersonaBank(post("/twin-bank/generate", { ...GEN, prompt }), d)).status, 402);
+    await handlePersonaBank(post("/twin-bank/use", USE), d);
+    const res = await handlePersonaBank(post("/twin-bank/generate", { ...GEN, prompt, outputSha256: "a".repeat(64), publishedUrl: "https://youtube.com/watch?v=x" }), d);
+    assert.equal(res.status, 200);
+    const body = await res.json();
+    assert.equal(body.aiGenerated, true);
+    assert.match(body.label.visible.fr, /généré par IA/);
+    assert.match(body.label.visible.en, /AI-generated/);
+    assert.match(body.label.visible.es, /generado por IA/);
+    assert.match(body.label.audibleIntro.fr, /intelligence artificielle/);
+    assert.equal(body.youtube.syntheticContent, true);
+    const actions = body.provenance.assertions.find((a: { label: string }) => a.label === "c2pa.actions");
+    assert.match(actions.data.actions[0].digitalSourceType, /trainedAlgorithmicMedia$/);
+    const lic = body.provenance.assertions.find((a: { label: string }) => a.label === "opc.twin.license");
+    assert.match(lic.data.lender, /^pr-[a-f0-9]{12}$/);
+    assert.equal(s.outputs.length, 1);
+    assert.equal(s.outputs[0].prompt_summary, prompt);
+    const check = await (await handlePersonaBank(new Request(`${BASE}${body.verifyUrl}`), d)).json();
+    assert.equal(check.signatureValid, true);
+    assert.equal(check.aiGenerated, true);
+    assert.equal(check.lenderWithdrawn, false);
+  });
+
+  it("the lender usage log shows who (pseudonymised) used the voice/image and when — token required", async () => {
+    const { d, token } = await seeded();
+    await handlePersonaBank(post("/twin-bank/use", USE), d);
+    await handlePersonaBank(post("/twin-bank/generate", { ...GEN, prompt: "Présente la météo de demain à Port-au-Prince." }), d);
+    assert.equal((await handlePersonaBank(new Request(`${BASE}/persona-deposits/usage?id=persona-mhq1x2-7f4a&token=nope`), d)).status, 404);
+    const log = await (await handlePersonaBank(new Request(`${BASE}/persona-deposits/usage?id=persona-mhq1x2-7f4a&token=${token}`), d)).json();
+    assert.equal(log.paid, false);
+    assert.equal(log.totals.uses, 1);
+    assert.equal(log.totals.outputs, 1);
+    assert.equal(log.uses[0].at, NOW);
+    assert.match(log.uses[0].subscriber, /^abonne-[a-f0-9]{6}$/);
+    assert.ok(!JSON.stringify(log).includes("sub-abcdefgh12"), "the subscriber id is never shown to the lender");
+    assert.match(log.outputs[0].summary, /météo/);
+    assert.equal(log.totals.lenderCentsAccrued, twinBankSplit(TWIN_BANK_PRICE_CAD_CENTS).lender);
+  });
+
+  it("links a real twin account (app secret), paid tiers only, and a linked id is unusable from a browser", async () => {
+    const { d } = await seeded();
+    const app = { Authorization: "Bearer twin-app-test" };
+    const dd = { ...d, twinAppSecret: "twin-app-test" };
+    assert.equal((await handlePersonaBank(post("/twin-bank/subscribers", { twinAccountId: "acct-42", tier: "pro" }), dd)).status, 401);
+    assert.equal((await handlePersonaBank(post("/twin-bank/subscribers", { twinAccountId: "acct-42", tier: "pro" }), d)).status, 503);
+    const free = await (await handlePersonaBank(post("/twin-bank/subscribers", { twinAccountId: "acct-7", tier: "decouverte" }, app), dd)).json();
+    assert.equal(free.bankAccess, false);
+    assert.equal((await handlePersonaBank(post("/twin-bank/use", { ...USE, subscriberId: free.subscriberId }, app), dd)).status, 402);
+    const pro = await (await handlePersonaBank(post("/twin-bank/subscribers", { twinAccountId: "acct-42", tier: "pro" }, app), dd)).json();
+    assert.match(pro.subscriberId, /^sub-[a-f0-9]{32}$/);
+    const again = await (await handlePersonaBank(post("/twin-bank/subscribers", { twinAccountId: "acct-42", tier: "createur" }, app), dd)).json();
+    assert.equal(again.subscriberId, pro.subscriberId, "stable id per account");
+    const use = await (await handlePersonaBank(post("/twin-bank/use", { ...USE, subscriberId: pro.subscriberId }, app), dd)).json();
+    assert.equal(use.linked, true);
+    assert.equal(use.charged, false);
+    assert.equal((await handlePersonaBank(post("/twin-bank/use", { ...USE, subscriberId: pro.subscriberId }), dd)).status, 401);
+    // test mode off: unlinked browser ids are refused, linked app calls still work
+    const live = { ...dd, testMode: "off" };
+    assert.equal((await handlePersonaBank(post("/twin-bank/use", USE), live)).status, 401);
+  });
+
+  it("« Signaler un abus » records the report and suspends the output's subscriber pending review", async () => {
+    const { d, s } = await seeded();
+    await handlePersonaBank(post("/twin-bank/use", USE), d);
+    const out = await (await handlePersonaBank(post("/twin-bank/generate", { ...GEN, prompt: "Lis cette recette de soupe joumou." }), d)).json();
+    assert.equal((await handlePersonaBank(post("/twin-bank/report", { outputId: out.outputId }), d)).status, 400);
+    const rep = await handlePersonaBank(post("/twin-bank/report", { outputId: out.outputId, reason: "On m'imite sans mon accord" }), d);
+    assert.equal(rep.status, 202);
+    assert.equal(s.reports.length, 1);
+    assert.equal(s.reports[0].lender_id, "persona-mhq1x2-7f4a");
+    assert.equal((await handlePersonaBank(post("/twin-bank/use", USE), d)).status, 423);
+    const review = await (await handlePersonaBank(new Request(`${BASE}/persona-bank/review`, { headers: { Authorization: "Bearer admin-test" } }), d)).json();
+    assert.equal(review.reports.length, 1);
+  });
+
+  it("after a withdrawal, past labels still verify and say the lender withdrew; no new output", async () => {
+    const { d, token } = await seeded();
+    await handlePersonaBank(post("/twin-bank/use", USE), d);
+    const out = await (await handlePersonaBank(post("/twin-bank/generate", { ...GEN, prompt: "Présente ma boutique de jus." }), d)).json();
+    await handlePersonaBank(post("/persona-deposits/withdraw", { id: "persona-mhq1x2-7f4a", token }), d);
+    const check = await (await handlePersonaBank(new Request(`${BASE}/twin-bank/provenance?id=${out.outputId}`), d)).json();
+    assert.equal(check.lenderWithdrawn, true);
+    assert.equal(check.signatureValid, true);
+    assert.equal((await handlePersonaBank(post("/twin-bank/generate", { ...GEN, prompt: "Encore une vidéo." }), d)).status, 404);
   });
 });

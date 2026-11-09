@@ -64,4 +64,31 @@ test.describe("Jumeau — banque d'images et de voix (mode test)", () => {
     await expect(page.locator("[data-twin-summary]")).toContainText("3,00 $ CA");
     expect(calls.some((c) => c === "POST /twin-bank/use")).toBe(true);
   });
+
+  test("after a use: the banned-use filter refuses, an accepted text gets the « généré par IA » label, abuse can be reported", async ({ page }) => {
+    const calls: string[] = [];
+    await stubBank(page, "ok", calls);
+    await page.goto("jumeau-banque/");
+    await page.locator('[data-twin-accept="cost"]').check();
+    await page.locator('[data-twin-accept="rules"]').check();
+    const item = page.locator('[data-twin-item="persona-abc-1234"]');
+    await item.locator('[data-twin-use="voice"]').click();
+    const gen = item.locator('[data-twin-generate="voice"]');
+    await expect(gen).toBeVisible();
+    await gen.locator("[data-twin-prompt]").fill("Votez pour nous à l’élection");
+    await gen.locator("[data-twin-generate-button]").click();
+    await expect(gen.locator("[data-twin-generate-note]")).toContainText("politique");
+    await expect(gen.locator("[data-twin-ai-label]")).toHaveCount(0);
+    await gen.locator("[data-twin-prompt]").fill("Bienvenue sur ma chaîne de cuisine");
+    await gen.locator("[data-twin-generate-button]").click();
+    const label = gen.locator("[data-twin-ai-label]");
+    await expect(label).toContainText("Contenu généré par IA");
+    await expect(label).toContainText("intelligence artificielle");
+    await label.locator("[data-twin-report]").click();
+    await label.locator("[data-twin-report-text]").fill("Usage sans accord");
+    await label.locator("[data-twin-report-send]").click();
+    await expect(gen.locator("[data-twin-report-note]")).toContainText("Signalement reçu");
+    expect(calls.filter((c) => c === "POST /twin-bank/generate")).toHaveLength(2);
+    expect(calls).toContain("POST /twin-bank/report");
+  });
 });

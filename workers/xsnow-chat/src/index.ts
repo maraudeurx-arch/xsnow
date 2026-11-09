@@ -78,6 +78,8 @@ export interface Env {
   TWIN_BANK_SIGNING_KEY?: string;
   /** "on" = twin testers also see dossiers still pending team review (flagged verified:false). */
   TWIN_BANK_TEST_MODE?: string;
+  /** Server-to-server secret shared with the twin app backend (links real twin accounts). `npx wrangler secret put TWIN_APP_SECRET`. */
+  TWIN_APP_SECRET?: string;
 }
 
 const MODEL = "@cf/meta/llama-3.2-3b-instruct";
@@ -513,6 +515,7 @@ export default {
         adminSecret: env.PERSONA_ADMIN_SECRET,
         signingKey: env.TWIN_BANK_SIGNING_KEY,
         testMode: env.TWIN_BANK_TEST_MODE,
+        twinAppSecret: env.TWIN_APP_SECRET,
       });
       const headers = new Headers(res.headers);
       for (const [k, v] of Object.entries(corsHeaders(origin))) headers.set(k, v);

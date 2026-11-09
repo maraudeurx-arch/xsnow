@@ -3,8 +3,11 @@
  * Shared by the OPC client (src/), the twin bank browser and the
  * xsnow-chat Worker (workers/xsnow-chat/src/persona-bank.ts).
  *
- * PRICING = PROPOSAL by Indiana (09/11/2026). Popol must still OK the money
- * part. Until he does, and until a real payment step exists, every use is
+ * PRICING = WORKING BASE adopted 09/11/2026: Indiana's proposal (3 $ CA per
+ * item per month, 60/30/10, lender paid after 30 days), backed by Popol as his
+ * orientation (Yves, mails 1a1c154b + 1a1c1552). The final price is set by
+ * Indiana; it replaces the 5 $ model of 03/11. Until a real payment step
+ * exists AND Popol gives his written OK to open billing, every use is
  * recorded in TEST MODE only: nothing is ever charged.
  */
 
@@ -14,7 +17,7 @@ export const TWIN_BANK_LIVE_BILLING = false as const;
 /** Supplement per borrowed voice or image, per calendar month, before taxes (cents CAD). */
 export const TWIN_BANK_PRICE_CAD_CENTS = 300;
 
-/** Split of each supplement (proposal, sums to 1). */
+/** Split of each supplement (working base adopted 09/11, sums to 1). Supersedes the 70/30 of the twin spec § 7.8. */
 export const TWIN_BANK_SPLIT = { lender: 0.6, opc: 0.3, platform: 0.1 } as const;
 
 /** Lender payouts are released only after the subscriber refund window (days). */

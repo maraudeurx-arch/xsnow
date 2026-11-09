@@ -30,8 +30,9 @@ migrations_dir = "migrations"
 
 # Twin image & voice bank (OPC « Monétise-toi » → Jumeau). PRIVATE bucket, never public.
 # 1) npx wrangler r2 bucket create xsnow-persona-bank   (R2 free tier: 10 GB; check before, no paid plan without Popol)
-# 2) uncomment the block below, 3) d1 migrations apply (0016_persona_bank.sql),
-# 4) npx wrangler secret put PERSONA_ADMIN_SECRET  and  TWIN_BANK_SIGNING_KEY, 5) deploy.
+# 2) uncomment the block below, 3) d1 migrations apply (0016_persona_bank.sql + 0017_twin_bank_links_log.sql),
+# 4) npx wrangler secret put PERSONA_ADMIN_SECRET, TWIN_BANK_SIGNING_KEY and (when Starks' backend exists) TWIN_APP_SECRET, 5) deploy.
+# API contract for the twin app: docs/jumeau-banque-api.md.
 # Without the binding every bank route answers 503 storage_not_configured (deposits stay on the device).
 # [[r2_buckets]]
 # binding = "PERSONA_BANK"
