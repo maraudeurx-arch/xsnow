@@ -3,9 +3,17 @@ import assert from "node:assert/strict";
 import { IDEA_TEXT_MAX } from "./ideas.ts";
 import { parseIdeaInboxInput } from "./idea-inbox.ts";
 import {
+  appendDictationToDescription,
+  clipIdeaSaleSummary,
   emptyIdeaSaleForm,
+  formatIdeaSalePrice,
   ideaSaleInboxText,
   ideaSaleIssues,
+  ideaSaleSummarySystemPrompt,
+  parseIdeaSalePrice,
+  IDEA_SALE_DESCRIPTION_MAX,
+  IDEA_SALE_PRICE_MAX,
+  IDEA_SALE_SUMMARY_MAX,
   IDEA_SALE_TAG,
   type IdeaSaleForm,
 } from "./idea-sale.ts";
@@ -17,14 +25,123 @@ const validForm: IdeaSaleForm = {
   title: "Cours de cuisine du quartier",
   category: "divertissement",
   description: "Des ateliers de cuisine locale pour les nouveaux arrivants, animés par des voisins. Petit prix, groupes de huit, recettes à emporter.",
+  price: "250",
   name: "Marie Tremblay",
   email: "marie@voisin.test",
   consent: true,
 };
 
+describe("vendre mes idées — micro et résumé (demande du fondateur, 08/11/2026)", () => {
+  it("appends a final dictation transcript to the text already written", () => {
+    assert.equal(appendDictationToDescription("", "Une idée simple"), "Une idée simple");
+    assert.equal(appendDictationToDescription("Une idée", "simple"), "Une idée simple");
+    // No double space when the current text already ends with whitespace.
+    assert.equal(appendDictationToDescription("Une idée ", "simple"), "Une idée simple");
+    // Whitespace inside the transcript is collapsed; an empty one changes nothing.
+    assert.equal(appendDictationToDescription("Une idée", "  très\n simple  "), "Une idée très simple");
+    assert.equal(appendDictationToDescription("Une idée", "   "), "Une idée");
+    assert.equal(appendDictationToDescription("Une idée", ""), "Une idée");
+  });
+
+  it("never lets dictation push the description past the maximum", () => {
+    const almostFull = "x".repeat(IDEA_SALE_DESCRIPTION_MAX - 5);
+    const result = appendDictationToDescription(almostFull, "mot en trop qui dépasse largement");
+    assert.equal(result.length, IDEA_SALE_DESCRIPTION_MAX);
+    assert.ok(result.startsWith(almostFull));
+  });
+
+  it("builds the summary system prompt in the interface language", () => {
+    const frPrompt = ideaSaleSummarySystemPrompt("fr");
+    assert.match(frPrompt, /uniquement par le résumé/);
+    assert.match(frPrompt, new RegExp(String(IDEA_SALE_SUMMARY_MAX)));
+    assert.match(frPrompt, /à qui elle s'adresse/);
+    const enPrompt = ideaSaleSummarySystemPrompt("en");
+    assert.match(enPrompt, /summary only/);
+    assert.match(enPrompt, /who it is for/);
+    const esPrompt = ideaSaleSummarySystemPrompt("es");
+    assert.match(esPrompt, /únicamente con el resumen/);
+    assert.match(esPrompt, /a quién va dirigida/);
+    // Any other locale falls back to French, the team's language.
+    assert.equal(ideaSaleSummarySystemPrompt("de"), frPrompt);
+  });
+
+  it("clips a proposed summary into a valid one-line description", () => {
+    assert.equal(clipIdeaSaleSummary("  Un résumé\nsur deux lignes.  "), "Un résumé sur deux lignes.");
+    const clipped = clipIdeaSaleSummary("y".repeat(IDEA_SALE_DESCRIPTION_MAX + 100));
+    assert.equal(clipped.length, IDEA_SALE_DESCRIPTION_MAX);
+    assert.equal(clipIdeaSaleSummary(""), "");
+  });
+
+  it("micro and summary copy exists in FR/EN/ES, with no promised figure", () => {
+    assert.equal(fr.earnNow.ideaSale.micStart, "Dicter mon idée");
+    assert.equal(en.earnNow.ideaSale.micStart, "Dictate my idea");
+    assert.equal(es.earnNow.ideaSale.micStart, "Dictar mi idea");
+    for (const m of [fr, en, es]) {
+      const g = m.earnNow.ideaSale;
+      assert.ok(g.micStop && g.micUnsupported && g.micPermission && g.micError);
+      // Recorder states (the browser's own speech recognition failed live on iPhone).
+      assert.ok(g.micRecording && g.micTranscribing && g.micNoDevice && g.micTranscribeFailed);
+      assert.ok(g.summarize && g.summarizing && g.summaryTitle);
+      assert.ok(g.summaryUse && g.summaryKeep && g.summaryFailed);
+      assert.ok(g.price);
+      const added = JSON.stringify({
+        a: g.micStart, b: g.micStop, c: g.micUnsupported, d: g.micPermission, e: g.micError,
+        f: g.summarize, g: g.summarizing, h: g.summaryTitle, i: g.summaryUse, j: g.summaryKeep,
+        k: g.summaryFailed, l: g.micRecording, m: g.micTranscribing, n: g.micNoDevice,
+        o: g.micTranscribeFailed, p: g.price,
+      });
+      assert.doesNotMatch(added, /[$€]|\d+\s?%|\d+\s?(USD|CAD)/);
+      assert.doesNotMatch(added, /crypto|token|jeton|solidaire|solidari/i);
+    }
+  });
+});
+
+describe("vendre mes idées — prix souhaité (demande du fondateur, 08/11/2026)", () => {
+  it("parses a strictly positive price, dot or comma decimals, capped", () => {
+    assert.equal(parseIdeaSalePrice("250"), 250);
+    assert.equal(parseIdeaSalePrice("250.50"), 250.5);
+    assert.equal(parseIdeaSalePrice("250,50"), 250.5);
+    assert.equal(parseIdeaSalePrice(" 1 000 "), 1000);
+    assert.equal(parseIdeaSalePrice("0.99"), 0.99);
+    assert.equal(parseIdeaSalePrice(String(IDEA_SALE_PRICE_MAX)), IDEA_SALE_PRICE_MAX);
+    assert.equal(parseIdeaSalePrice(""), null);
+    assert.equal(parseIdeaSalePrice("0"), null);
+    assert.equal(parseIdeaSalePrice("0.00"), null);
+    assert.equal(parseIdeaSalePrice("-10"), null);
+    assert.equal(parseIdeaSalePrice("deux cents"), null);
+    assert.equal(parseIdeaSalePrice("12.345"), null);
+    assert.equal(parseIdeaSalePrice(String(IDEA_SALE_PRICE_MAX + 1)), null);
+    assert.equal(parseIdeaSalePrice(undefined), null);
+  });
+
+  it("formats the price stably for the inbox text", () => {
+    assert.equal(formatIdeaSalePrice("250"), "250");
+    assert.equal(formatIdeaSalePrice("250.50"), "250.5");
+    assert.equal(formatIdeaSalePrice("250,05"), "250.05");
+    assert.equal(formatIdeaSalePrice("abc"), null);
+  });
+
+  it("the price is required: missing, zero, negative or text values are an issue", () => {
+    assert.deepEqual(ideaSaleIssues({ ...validForm, price: "" }), ["price"]);
+    assert.deepEqual(ideaSaleIssues({ ...validForm, price: "0" }), ["price"]);
+    assert.deepEqual(ideaSaleIssues({ ...validForm, price: "-5" }), ["price"]);
+    assert.deepEqual(ideaSaleIssues({ ...validForm, price: "gratuit" }), ["price"]);
+    assert.deepEqual(ideaSaleIssues({ ...validForm, price: "99,99" }), []);
+  });
+
+  it("the asking price travels in the inbox text, in US dollars, without contact info", () => {
+    const text = ideaSaleInboxText(validForm);
+    assert.match(text, /Prix souhaité: 250 \$ US \|/);
+    assert.ok(!text.includes("marie@voisin.test"));
+    assert.ok(!text.includes("Marie Tremblay"));
+    // An invalid price is simply left out (a submitted form always has a valid one).
+    assert.ok(!ideaSaleInboxText({ ...validForm, price: "" }).includes("Prix souhaité"));
+  });
+});
+
 describe("vendre mes idées", () => {
-  it("requires title, description, name, a valid e-mail and consent", () => {
-    assert.deepEqual(ideaSaleIssues(emptyIdeaSaleForm()), ["title", "description", "name", "email", "consent"]);
+  it("requires title, description, price, name, a valid e-mail and consent", () => {
+    assert.deepEqual(ideaSaleIssues(emptyIdeaSaleForm()), ["title", "description", "price", "name", "email", "consent"]);
     assert.deepEqual(ideaSaleIssues(validForm), []);
     assert.deepEqual(ideaSaleIssues({ ...validForm, email: "pas-un-courriel" }), ["email"]);
     assert.deepEqual(ideaSaleIssues({ ...validForm, category: "inconnue" as never }), ["category"]);
@@ -36,6 +153,7 @@ describe("vendre mes idées", () => {
       title: "Titre\navec | retours",
       category: "affaires",
       description: "x".repeat(2000),
+      price: "1500",
       name: "A".repeat(200),
       email: "a@b.co",
       consent: true,
