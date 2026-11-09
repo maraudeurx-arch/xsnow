@@ -14,7 +14,8 @@
  * - the proposal itself goes to the Vos idées inbox (same Worker, same
  *   e-mail to the team), flattened into a short tagged text. That inbox is
  *   a no-PII channel by design — it redacts e-mails — so the text carries
- *   only the title, the category, the description and the OPC id beside it;
+ *   only the title, the category, the description, the seller's asking
+ *   price (in US dollars) and the OPC id beside it;
  * - the seller's name and e-mail (form fields, covered by the mandatory
  *   consent checkbox) reach the same team inbox through the register
  *   notice, keyed by the OPC id, so the team can reply about the review
@@ -42,18 +43,44 @@ export const IDEA_SALE_DESCRIPTION_MIN = 20;
 export const IDEA_SALE_SUMMARY_MAX = 320;
 export const IDEA_SALE_NAME_MAX = 40;
 export const IDEA_SALE_EMAIL_MAX = 60;
+/** The seller states the price they ask for their idea, in US dollars (founder's request). */
+export const IDEA_SALE_PRICE_MAX = 1_000_000;
 
 export type IdeaSaleForm = {
   title: string;
   category: IdeaSaleCategory;
   description: string;
+  /** Raw text as typed (e.g. "250" or "250,50"); validated by parseIdeaSalePrice. */
+  price: string;
   name: string;
   email: string;
   consent: boolean;
 };
 
 export function emptyIdeaSaleForm(): IdeaSaleForm {
-  return { title: "", category: "affaires", description: "", name: "", email: "", consent: false };
+  return { title: "", category: "affaires", description: "", price: "", name: "", email: "", consent: false };
+}
+
+/**
+ * Parse the seller's asking price: a strictly positive number, dot or comma
+ * decimals (at most two), capped at IDEA_SALE_PRICE_MAX. Returns null when
+ * the raw text is not such a price (empty, text, zero, negative, too big).
+ */
+export function parseIdeaSalePrice(value: unknown): number | null {
+  const raw = String(value ?? "").replace(/\s+/g, "").replace(",", ".");
+  if (!/^\d+(\.\d{1,2})?$/.test(raw)) return null;
+  const amount = Number(raw);
+  if (!Number.isFinite(amount) || amount <= 0 || amount > IDEA_SALE_PRICE_MAX) return null;
+  return amount;
+}
+
+/**
+ * Stable rendering of a valid asking price for the team inbox text:
+ * "250", "250.5" (trailing zeros dropped). Null when the price is invalid.
+ */
+export function formatIdeaSalePrice(value: unknown): string | null {
+  const amount = parseIdeaSalePrice(value);
+  return amount === null ? null : String(amount);
 }
 
 function clipField(value: unknown, max: number) {
@@ -62,13 +89,14 @@ function clipField(value: unknown, max: number) {
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
-export type IdeaSaleIssue = "title" | "category" | "description" | "name" | "email" | "consent";
+export type IdeaSaleIssue = "title" | "category" | "description" | "price" | "name" | "email" | "consent";
 
 export function ideaSaleIssues(form: IdeaSaleForm): IdeaSaleIssue[] {
   const issues: IdeaSaleIssue[] = [];
   if (clipField(form.title, IDEA_SALE_TITLE_MAX).length < 3) issues.push("title");
   if (!IDEA_SALE_CATEGORIES.includes(form.category)) issues.push("category");
   if (clipField(form.description, IDEA_SALE_DESCRIPTION_MAX).length < IDEA_SALE_DESCRIPTION_MIN) issues.push("description");
+  if (parseIdeaSalePrice(form.price) === null) issues.push("price");
   if (clipField(form.name, IDEA_SALE_NAME_MAX).length < 2) issues.push("name");
   if (!EMAIL_RE.test(clipField(form.email, IDEA_SALE_EMAIL_MAX))) issues.push("email");
   if (form.consent !== true) issues.push("consent");
@@ -113,11 +141,15 @@ export function ideaSaleSummarySystemPrompt(locale: string): string {
  * The seller's contact travels by the register notice (see file header).
  */
 export function ideaSaleInboxText(form: IdeaSaleForm): string {
+  const price = formatIdeaSalePrice(form.price);
   const parts = [
     IDEA_SALE_TAG,
     `Titre: ${clipField(form.title, IDEA_SALE_TITLE_MAX)}`,
     `Catégorie: ${IDEA_SALE_CATEGORY_LABELS_FR[form.category] ?? IDEA_SALE_CATEGORY_LABELS_FR.autre}`,
     `Description: ${clipField(form.description, IDEA_SALE_DESCRIPTION_MAX)}`,
+    // The asking price is part of the proposal (no name, no e-mail here);
+    // it is only included when it parses — a submitted form always has one.
+    ...(price === null ? [] : [`Prix souhaité: ${price} $ US`]),
     "Accord: oui",
   ];
   return parts.join(" | ").slice(0, IDEA_TEXT_MAX);

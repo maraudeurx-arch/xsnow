@@ -49,9 +49,11 @@ test.describe("Vendre mes idées dialog on mobile", () => {
     const form = page.locator("[data-idea-sale-form]");
     await expect(form).toBeVisible();
     // Name + e-mail are prefilled from the seeded device profile (Marie Tremblay).
-    await expect(form.locator("input").nth(1)).toHaveValue("Marie Tremblay");
-    await expect(form.locator("input").nth(2)).toHaveValue("marie@voisin.test");
+    // Input order: title (0), asking price (1), name (2), e-mail (3).
+    await expect(form.locator("input").nth(2)).toHaveValue("Marie Tremblay");
+    await expect(form.locator("input").nth(3)).toHaveValue("marie@voisin.test");
     await form.locator("input").nth(0).fill("Cours de cuisine du quartier");
+    await form.locator("input").nth(1).fill("250");
     await form.locator("select").selectOption("divertissement");
     await form.locator("textarea").fill(
       "Des ateliers de cuisine locale pour les nouveaux arrivants, animés par des voisins. Petit prix, groupes de huit, recettes à emporter.",

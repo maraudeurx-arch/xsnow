@@ -25,14 +25,11 @@ import {
   type IdeaSaleForm,
 } from "@/lib/idea-sale";
 import {
-  classifyDictationError,
-  dictationSupported,
-  getSpeechRecognitionCtor,
-  transcriptFromEvent,
-  type BrowserSpeechRecognition,
-  type DictationErrorKind,
-} from "@/lib/dictation";
-import { dictationLang } from "@/lib/voices";
+  pickRecorderMimeType,
+  recorderSupported,
+  transcribeAudio,
+  TranscribeError,
+} from "@/lib/transcribe";
 import { completeChat } from "@/lib/llm";
 
 const inputClass =
@@ -43,7 +40,7 @@ const buttonClass =
 export function IdeaSaleDialog({ onClose }: { onClose: () => void }) {
   const { locale, m } = useI18n();
   const g = m.earnNow.ideaSale;
-  const { city, localeHint } = usePlace();
+  const { city } = usePlace();
   const [profile] = useLocalProfile();
   const titleId = useId();
   const closeRef = useRef<HTMLButtonElement | null>(null);
@@ -57,12 +54,18 @@ export function IdeaSaleDialog({ onClose }: { onClose: () => void }) {
   });
   const [state, setState] = useState<"idle" | "invalid" | "sending" | IdeaInboxPostResult>("idle");
 
-  // Dictation (micro) for the description — same lifecycle pattern as AvatarChat.
-  const [listening, setListening] = useState(false);
+  // Dictation (micro) for the description: MediaRecorder + the Worker's
+  // /transcribe route (Whisper). Browser speech recognition is missing or
+  // failing on iPhone — especially in the installed app — so the recording
+  // is transcribed server-side instead (founder's live test, 08/11/2026).
+  const [recPhase, setRecPhase] = useState<"idle" | "recording" | "transcribing">("idle");
   const [micError, setMicError] = useState<string | null>(null);
-  const [micSupported, setMicSupported] = useState<boolean>(() => dictationSupported());
-  const recogRef = useRef<BrowserSpeechRecognition | null>(null);
-  const listeningRef = useRef(false);
+  const [recSupported, setRecSupported] = useState<boolean>(() => recorderSupported());
+  const recorderRef = useRef<MediaRecorder | null>(null);
+  const streamRef = useRef<MediaStream | null>(null);
+  const chunksRef = useRef<Blob[]>([]);
+  const discardRef = useRef(false);
+  const aliveRef = useRef(true);
   // « Résumer mon idée » — the AI rewrite is only a proposal until accepted.
   const [summaryBusy, setSummaryBusy] = useState(false);
   const [summaryFailed, setSummaryFailed] = useState(false);
@@ -73,21 +76,24 @@ export function IdeaSaleDialog({ onClose }: { onClose: () => void }) {
   const viewport = useModalViewport();
 
   useEffect(() => {
+    aliveRef.current = true;
     return () => {
+      aliveRef.current = false;
       summaryAbortRef.current?.abort();
-      const recog = recogRef.current;
-      recogRef.current = null;
-      listeningRef.current = false;
-      if (!recog) return;
-      recog.onresult = null;
-      recog.onerror = null;
-      recog.onend = null;
-      recog.onstart = null;
-      try {
-        recog.abort();
-      } catch {
-        // Already stopped.
+      // Closing the dialog mid-recording discards the take and frees the mic.
+      discardRef.current = true;
+      const recorder = recorderRef.current;
+      recorderRef.current = null;
+      if (recorder && recorder.state !== "inactive") {
+        try {
+          recorder.stop();
+        } catch {
+          // Already stopped.
+        }
       }
+      const stream = streamRef.current;
+      streamRef.current = null;
+      stream?.getTracks().forEach((track) => track.stop());
     };
   }, []);
 
@@ -134,98 +140,127 @@ export function IdeaSaleDialog({ onClose }: { onClose: () => void }) {
   const patch = (key: keyof IdeaSaleForm, value: string | boolean) =>
     setForm((prev) => ({ ...prev, [key]: value }));
 
-  function micCopy(kind: DictationErrorKind) {
-    if (kind === "unsupported") return g.micUnsupported;
-    if (kind === "permission") return g.micPermission;
+  function micErrorCopy(error: unknown) {
+    const name = error instanceof DOMException ? error.name : "";
+    if (name === "NotAllowedError" || name === "SecurityError") return g.micPermission;
+    if (name === "NotFoundError" || name === "OverconstrainedError") return g.micNoDevice;
     return g.micError;
   }
 
-  function stopDictation() {
-    const recog = recogRef.current;
-    recogRef.current = null;
-    listeningRef.current = false;
-    setListening(false);
-    if (!recog) return;
-    recog.onresult = null;
-    recog.onerror = null;
-    recog.onend = null;
-    recog.onstart = null;
-    try {
-      recog.stop();
-    } catch {
+  /** Stop any live recording without transcribing it (close, summarize…). */
+  function discardRecording() {
+    const recorder = recorderRef.current;
+    if (!recorder) return;
+    discardRef.current = true;
+    if (recorder.state !== "inactive") {
       try {
-        recog.abort();
+        recorder.stop();
       } catch {
-        // Already stopped.
+        // Already stopped; onstop may not fire, so reset the phase here.
+        setRecPhase("idle");
       }
+    }
+  }
+
+  async function transcribeRecording(blob: Blob) {
+    setRecPhase("transcribing");
+    try {
+      const text = await transcribeAudio(blob, locale);
+      if (!aliveRef.current) return;
+      setForm((prev) => ({
+        ...prev,
+        description: appendDictationToDescription(prev.description, text),
+      }));
+      // The text changed: any summary proposed for the old text is stale.
+      setProposedSummary(null);
+      setMicError(null);
+    } catch (error) {
+      if (!aliveRef.current) return;
+      setMicError(error instanceof TranscribeError ? g.micTranscribeFailed : g.micError);
+    } finally {
+      if (aliveRef.current) setRecPhase("idle");
+    }
+  }
+
+  async function startRecording() {
+    if (recPhase !== "idle") return;
+    setMicError(null);
+    if (!recorderSupported()) {
+      setRecSupported(false);
+      return;
+    }
+    let stream: MediaStream;
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    } catch (error) {
+      setMicError(micErrorCopy(error));
+      return;
+    }
+    if (!aliveRef.current) {
+      stream.getTracks().forEach((track) => track.stop());
+      return;
+    }
+    try {
+      const mimeType = pickRecorderMimeType();
+      const recorder = mimeType ? new MediaRecorder(stream, { mimeType }) : new MediaRecorder(stream);
+      chunksRef.current = [];
+      discardRef.current = false;
+      recorder.ondataavailable = (event) => {
+        if (event.data && event.data.size > 0) chunksRef.current.push(event.data);
+      };
+      recorder.onerror = () => {
+        discardRef.current = true;
+        if (aliveRef.current) setMicError(g.micError);
+      };
+      recorder.onstop = () => {
+        streamRef.current?.getTracks().forEach((track) => track.stop());
+        streamRef.current = null;
+        if (recorderRef.current === recorder) recorderRef.current = null;
+        const chunks = chunksRef.current;
+        chunksRef.current = [];
+        const discard = discardRef.current;
+        discardRef.current = false;
+        if (!aliveRef.current) return;
+        if (discard) {
+          setRecPhase("idle");
+          return;
+        }
+        const blob = new Blob(chunks, { type: recorder.mimeType || "audio/mp4" });
+        if (blob.size === 0) {
+          setRecPhase("idle");
+          setMicError(g.micTranscribeFailed);
+          return;
+        }
+        void transcribeRecording(blob);
+      };
+      recorderRef.current = recorder;
+      streamRef.current = stream;
+      recorder.start();
+      setRecPhase("recording");
+    } catch {
+      stream.getTracks().forEach((track) => track.stop());
+      setMicError(g.micError);
     }
   }
 
   function toggleDictation() {
-    if (listeningRef.current) {
-      stopDictation();
-      return;
-    }
-    setMicError(null);
-    const Ctor = getSpeechRecognitionCtor();
-    if (!Ctor) {
-      setMicSupported(false);
-      setMicError(g.micUnsupported);
-      return;
-    }
-    const recog = new Ctor();
-    recogRef.current = recog;
-    recog.lang = dictationLang(locale, localeHint);
-    recog.continuous = true;
-    recog.interimResults = true;
-    recog.maxAlternatives = 1;
-
-    recog.onstart = () => {
-      listeningRef.current = true;
-      setListening(true);
-    };
-
-    recog.onresult = (event) => {
-      // Only final transcripts are appended, once each, to what is written.
-      const { finalText } = transcriptFromEvent(event);
-      if (finalText) {
-        setForm((prev) => ({
-          ...prev,
-          description: appendDictationToDescription(prev.description, finalText),
-        }));
+    if (recPhase === "recording") {
+      // The recorder's onstop assembles the take and transcribes it.
+      try {
+        recorderRef.current?.stop();
+      } catch {
+        setRecPhase("idle");
       }
-    };
-
-    recog.onerror = (event) => {
-      if (event.error === "aborted") return;
-      if (recogRef.current === recog) recogRef.current = null;
-      listeningRef.current = false;
-      setListening(false);
-      setMicError(micCopy(classifyDictationError(event.error)));
-    };
-
-    recog.onend = () => {
-      if (recogRef.current !== recog) return;
-      recogRef.current = null;
-      listeningRef.current = false;
-      setListening(false);
-    };
-
-    try {
-      recog.start();
-    } catch {
-      recogRef.current = null;
-      listeningRef.current = false;
-      setListening(false);
-      setMicError(g.micError);
+      return;
     }
+    void startRecording();
   }
 
   const descriptionReady = form.description.trim().length >= IDEA_SALE_DESCRIPTION_MIN;
 
   async function onSummarize() {
     if (summaryBusy || !descriptionReady) return;
-    stopDictation();
+    discardRecording();
     setSummaryFailed(false);
     setProposedSummary(null);
     setSummaryBusy(true);
@@ -305,19 +340,27 @@ export function IdeaSaleDialog({ onClose }: { onClose: () => void }) {
                   <textarea className={`${inputClass} min-h-24 py-2`} value={form.description} maxLength={IDEA_SALE_DESCRIPTION_MAX} onChange={(e) => { patch("description", e.target.value); setProposedSummary(null); }} />
                 </label>
                 <div className="grid gap-2" data-idea-sale-desc-tools>
-                  {micSupported === false ? (
+                  {recSupported === false ? (
                     <p className="text-[13px] text-snow/90">{g.micUnsupported}</p>
                   ) : (
                     <button
                       type="button"
                       className={`${buttonClass} disabled:opacity-50`}
-                      aria-pressed={listening}
+                      aria-pressed={recPhase === "recording"}
+                      disabled={recPhase === "transcribing"}
                       onClick={toggleDictation}
                       data-idea-sale-mic
                     >
-                      {listening ? g.micStop : g.micStart}
+                      {recPhase === "recording"
+                        ? g.micStop
+                        : recPhase === "transcribing"
+                          ? g.micTranscribing
+                          : g.micStart}
                     </button>
                   )}
+                  {recPhase === "recording" ? (
+                    <p role="status" className="text-[13px]">{g.micRecording}</p>
+                  ) : null}
                   {micError ? <p role="status" className="text-[13px]">{micError}</p> : null}
                   <button
                     type="button"
@@ -342,6 +385,9 @@ export function IdeaSaleDialog({ onClose }: { onClose: () => void }) {
                     </div>
                   ) : null}
                 </div>
+                <label className="grid gap-1 text-[13px]">{g.price}
+                  <input className={inputClass} value={form.price} inputMode="decimal" autoComplete="off" onChange={(e) => patch("price", e.target.value)} data-idea-sale-price />
+                </label>
                 <label className="grid gap-1 text-[13px]">{g.name}
                   <input className={inputClass} value={form.name} maxLength={IDEA_SALE_NAME_MAX} autoComplete="name" onChange={(e) => patch("name", e.target.value)} />
                 </label>
