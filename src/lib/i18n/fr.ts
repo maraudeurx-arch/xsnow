@@ -1520,4 +1520,26 @@ export const fr = {
     cityUnknown: "Ville non indiquée",
     exportJson: "Exporter JSON",
   },
+  installWall: {
+    title: "Installe d’abord OPC sur ton écran d’accueil",
+    lead: "Open Community s’utilise comme une vraie application, depuis l’écran d’accueil de ton téléphone, sans magasin d’applications. Tant qu’elle est ouverte dans le navigateur, rien d’autre ne s’affiche : installe-la, puis ouvre-la par son icône.",
+    videoPlaceholder: "Vidéo : installer OPC (1 min) — bientôt ici",
+    iosTitle: "Sur iPhone / iPad (Safari)",
+    iosSteps: [
+      "Touche le bouton Partager (le carré avec une flèche vers le haut), en bas ou en haut de Safari.",
+      "Fais défiler, puis touche « Sur l’écran d’accueil ».",
+      "Touche « Ajouter » en haut à droite : l’icône OPC apparaît sur ton écran d’accueil.",
+    ],
+    androidTitle: "Sur Android (Chrome)",
+    androidSteps: [
+      "Touche le menu ⋮ en haut à droite de Chrome.",
+      "Touche « Installer l’application » ou « Ajouter à l’écran d’accueil ».",
+      "Confirme : l’icône OPC apparaît sur ton écran d’accueil.",
+    ],
+    inAppNote: "Tu as ouvert ce lien depuis une autre app (Facebook, WhatsApp, courriel…) ? Ouvre-le d’abord dans Safari (iPhone) ou Chrome (Android).",
+    then: "Ensuite, ferme cet onglet et touche l’icône OPC sur ton écran d’accueil.",
+    installButton: "INSTALLER L’APP MAINTENANT",
+    terms: "Conditions",
+    privacy: "Vie privée",
+  },
 };

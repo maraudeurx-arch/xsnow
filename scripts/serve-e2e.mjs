@@ -3,7 +3,7 @@
  * Default: domain-root (custom domain / CUSTOM_DOMAIN=1).
  * `E2E_BASE_PATH=/xsnow` matches a project-Pages export (`CUSTOM_DOMAIN=0`).
  */
-import { createReadStream, existsSync, statSync } from "node:fs";
+import { createReadStream, existsSync, readFileSync, statSync } from "node:fs";
 import { createServer } from "node:http";
 import { extname, join, normalize, relative, resolve } from "node:path";
 
@@ -28,6 +28,9 @@ const MIME = {
   ".woff2": "font/woff2",
   ".map": "application/json",
 };
+
+const STANDALONE_SHIM =
+  "<script>try{Object.defineProperty(window.navigator,'standalone',{get:function(){return true},configurable:true})}catch(e){}</script>";
 
 function send(res, status, headers = {}, body) {
   res.writeHead(status, headers);
@@ -88,6 +91,17 @@ const server = createServer((req, res) => {
     "Content-Type": type,
     "Cache-Control": html ? "no-store" : "public, max-age=60",
   });
+  if (html && !/(?:^|;\s*)xsnow_e2e_install_wall=on/.test(req.headers.cookie || "")) {
+    // E2E only (never in production): emulate the installed (standalone) app so the
+    // mandatory install wall stays out of the way. The wall's own spec sets the
+    // cookie xsnow_e2e_install_wall=on to see the real browser behaviour.
+    const page = readFileSync(mapped.file, "utf8").replace(
+      "<head>",
+      `<head>${STANDALONE_SHIM}`,
+    );
+    res.end(page);
+    return;
+  }
   createReadStream(mapped.file).pipe(res);
 });
 
