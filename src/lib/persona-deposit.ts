@@ -1,52 +1,43 @@
 /**
  * « Monétise-toi : image et voix » — persona deposit for the digital-twin
- * sound & image bank (decision by Popol, 07/11/2026: the section lives in
- * « Aider une IA » on the Earn Now board and must go live).
+ * image & voice bank (Popol 07/11 + 09/11/2026: live, connected to the twin).
  *
- * Flow (5 steps): consent (the gate) → voice sample → image + video upload →
- * biometric selfie → deposit recap. Nothing is reachable before the consent
- * is accepted and recorded; the deposit ends in the honest status
- * « en vérification » — this module never fabricates an identity verdict.
+ * Flow: choice (voice and/or image + pseudonym + country) → consent (the
+ * gate: 18+, own voice/image only, scope, withdrawal any time with real
+ * deletion, forbidden uses, no income guarantee) → voice → image + video →
+ * selfie video saying a 6-digit code (self-only / liveness check, reviewed by
+ * the team) → deposit. Nothing opens before the consent is recorded; a
+ * finished deposit is only « en vérification » — no fabricated verdict.
  *
- * Everything stays on the device: metadata in durable storage (this file),
- * media blobs in IndexedDB (persona-media.ts). A best-effort notice with the
- * deposit METADATA ONLY is POSTed to a proposed Worker route
- * (PERSONA_DEPOSIT_ROUTE) — see the comment at postPersonaDepositNotice.
- * No price is ever attached: if the voice or image are used, the person
- * receives a small compensation whose amount is NOT yet fixed (set by
- * Indiana Lane (IA)).
+ * Media are kept on the device (persona-media.ts) and uploaded, with the
+ * consent record, to the xsnow-chat Worker bank route (PERSONA_DEPOSIT_ROUTE,
+ * private R2 storage). The person keeps a withdraw token on the device: one
+ * tap withdraws and deletes the media from the bank.
  */
 
 import { durableGet, durableSet } from "./durable-storage.ts";
+import {
+  isLivenessCode,
+  newLivenessCode,
+  requiredMediaFor,
+  TWIN_BANK_CONSENT_VERSION,
+  TWIN_BANK_MAX_BYTES,
+} from "./twin-bank.ts";
 
 /**
- * Master switch for the whole « Monétise-toi » collection journey.
- *
- * FALSE — and it must stay false until Indiana Lane (IA) validates the
- * definitive consent text. Her ruling (07/11/2026, relayed by Popol):
- * NOTHING may be collected while the consent text is unvalidated. Flip
- * this to true ONLY once her validated text — bracketed fields completed —
- * has replaced the provisional i18n copy (earnNow.personaMonetise).
- *
- * While false: the « Aider une IA » entry on the Earn Now board shows a
- * sober « En préparation » state, and the board itself renders no capture,
- * no upload and no deposit — even by direct navigation.
+ * Master switch. TRUE since 09/11/2026: Indiana's consent text v1
+ * (TWIN_BANK_CONSENT_VERSION, FR/EN/ES) replaced the provisional copy, at
+ * Popol's request that the section go live for the twin tests.
  */
-export const PERSONA_COLLECTION_ENABLED = false;
+export const PERSONA_COLLECTION_ENABLED = true;
 
-/**
- * Version of the consent text the person accepted. The current text is
- * PROVISIONAL copy (i18n key earnNow.personaMonetise.consentItems) written
- * by the team until Indiana Lane (IA) delivers the definitive legal consent
- * form; bump this version when her text replaces it, so a recorded consent
- * always names the exact text that was accepted.
- */
-export const PERSONA_CONSENT_TEXT_VERSION = "provisoire-2026-11-07-r2";
+/** Version of the consent text the person accepted (shared with the Worker). */
+export const PERSONA_CONSENT_TEXT_VERSION = TWIN_BANK_CONSENT_VERSION;
 
 /** Durable-storage key for the current deposit metadata (media live in IndexedDB). */
 export const PERSONA_DEPOSIT_KEY = "xsnow.personaDeposit";
 
-export const PERSONA_STEPS = ["consent", "voice", "media", "biometry", "done"] as const;
+export const PERSONA_STEPS = ["choice", "consent", "voice", "media", "biometry", "done"] as const;
 export type PersonaStep = (typeof PERSONA_STEPS)[number];
 
 export const PERSONA_MEDIA_KINDS = ["voice", "image", "video", "selfie"] as const;
@@ -65,34 +56,49 @@ export type PersonaConsentRecord = {
 };
 
 export type PersonaConsentChecks = {
-  /** « J'ai lu et j'accepte les conditions. » */
+  /** « J'ai lu et j'accepte ces conditions. » */
   terms: boolean;
   /** « J'ai 18 ans ou plus. » — adults only. */
   adult: boolean;
-  /** « Je comprends que le montant de la compensation n'est pas encore fixé. » */
+  /** « Je comprends qu'aucun revenu n'est garanti. » */
   compensation: boolean;
+  /** « Ce sont ma propre voix et ma propre image. » */
+  selfOnly: boolean;
 };
 
 export function emptyPersonaConsentChecks(): PersonaConsentChecks {
-  return { terms: false, adult: false, compensation: false };
+  return { terms: false, adult: false, compensation: false, selfOnly: false };
 }
 
 /** The gate: every box must be ticked before anything else opens. */
 export function personaConsentComplete(checks: PersonaConsentChecks): boolean {
-  return checks.terms === true && checks.adult === true && checks.compensation === true;
+  return (
+    checks.terms === true &&
+    checks.adult === true &&
+    checks.compensation === true &&
+    checks.selfOnly === true
+  );
 }
 
-export type PersonaDepositStatus = "en-cours" | "en-verification";
-export type PersonaUploadStatus = "pending" | "sent" | "failed";
+export type PersonaDepositStatus = "en-cours" | "en-verification" | "retire";
+export type PersonaUploadStatus = "pending" | "sent" | "failed" | "not-configured";
+export type PersonaOffer = { voice: boolean; image: boolean };
 
 export type PersonaDeposit = {
   id: string;
   createdAt: number;
   updatedAt: number;
+  offer: PersonaOffer;
+  pseudonym: string;
+  country: string;
+  /** 6-digit code said aloud in the selfie video. */
+  livenessCode: string;
   consent: PersonaConsentRecord | null;
   media: Partial<Record<PersonaMediaKind, PersonaMediaInfo>>;
   status: PersonaDepositStatus;
   upload: PersonaUploadStatus;
+  /** Returned by the bank on upload; kept on the device only, needed to withdraw. */
+  withdrawToken: string;
 };
 
 /** Dossier number shown to the person, e.g. « persona-m3k9x2-7f4a ». */
@@ -105,16 +111,43 @@ export function newPersonaDepositId(now: number, random: number): string {
   return `persona-${stamp}-${suffix}`;
 }
 
-export function emptyPersonaDeposit(id: string, now: number): PersonaDeposit {
+export function emptyPersonaDeposit(id: string, now: number, random: () => number = Math.random): PersonaDeposit {
   return {
     id,
     createdAt: now,
     updatedAt: now,
+    offer: { voice: false, image: false },
+    pseudonym: "",
+    country: "",
+    livenessCode: newLivenessCode(random),
     consent: null,
     media: {},
     status: "en-cours",
     upload: "pending",
+    withdrawToken: "",
   };
+}
+
+export function recordPersonaChoice(
+  deposit: PersonaDeposit,
+  choice: { offer: PersonaOffer; pseudonym: string; country: string },
+  now: number,
+): PersonaDeposit {
+  return {
+    ...deposit,
+    offer: { voice: choice.offer.voice === true, image: choice.offer.image === true },
+    pseudonym: choice.pseudonym,
+    country: choice.country,
+    updatedAt: now,
+  };
+}
+
+export function personaChoiceComplete(deposit: PersonaDeposit): boolean {
+  return (
+    (deposit.offer.voice || deposit.offer.image) &&
+    deposit.pseudonym.trim().length >= 2 &&
+    deposit.country.trim().length >= 2
+  );
 }
 
 export function recordPersonaConsent(
@@ -145,22 +178,55 @@ export function personaHasMedia(deposit: PersonaDeposit, kind: PersonaMediaKind)
   return deposit.media[kind] != null;
 }
 
+/** Whether a step applies to this offer (voice step only for a voice offer, media only for an image offer). */
+export function personaStepApplies(deposit: PersonaDeposit, step: PersonaStep): boolean {
+  if (step === "voice") return deposit.offer.voice;
+  if (step === "media") return deposit.offer.image;
+  return true;
+}
+
 /** The furthest step the deposit may open — earlier steps stay revisitable, later ones never. */
 export function personaFurthestStep(deposit: PersonaDeposit): PersonaStep {
+  // A withdrawn dossier has no media left: it stays on the final screen.
+  if (deposit.status === "retire") return "done";
+  if (!personaChoiceComplete(deposit)) return "choice";
   if (!deposit.consent) return "consent";
-  if (!personaHasMedia(deposit, "voice")) return "voice";
-  if (!personaHasMedia(deposit, "image") || !personaHasMedia(deposit, "video")) return "media";
+  if (deposit.offer.voice && !personaHasMedia(deposit, "voice")) return "voice";
+  if (deposit.offer.image && (!personaHasMedia(deposit, "image") || !personaHasMedia(deposit, "video"))) return "media";
   if (!personaHasMedia(deposit, "selfie")) return "biometry";
   return "done";
 }
 
 export function canOpenPersonaStep(deposit: PersonaDeposit, step: PersonaStep): boolean {
+  if (!personaStepApplies(deposit, step)) return false;
   return PERSONA_STEPS.indexOf(step) <= PERSONA_STEPS.indexOf(personaFurthestStep(deposit));
+}
+
+/** Next applicable step after `step` (skips voice or media when not offered). */
+export function nextPersonaStep(deposit: PersonaDeposit, step: PersonaStep): PersonaStep {
+  for (let i = PERSONA_STEPS.indexOf(step) + 1; i < PERSONA_STEPS.length; i += 1) {
+    if (personaStepApplies(deposit, PERSONA_STEPS[i])) return PERSONA_STEPS[i];
+  }
+  return "done";
+}
+
+export function prevPersonaStep(deposit: PersonaDeposit, step: PersonaStep): PersonaStep {
+  for (let i = PERSONA_STEPS.indexOf(step) - 1; i >= 0; i -= 1) {
+    if (personaStepApplies(deposit, PERSONA_STEPS[i])) return PERSONA_STEPS[i];
+  }
+  return "choice";
+}
+
+/** Applicable steps, for the « Étape x sur y » counter. */
+export function personaVisibleSteps(deposit: PersonaDeposit): PersonaStep[] {
+  return PERSONA_STEPS.filter((st) => personaStepApplies(deposit, st));
 }
 
 /** Whether a step's own requirement is satisfied (drives the Continue buttons). */
 export function personaStepSatisfied(deposit: PersonaDeposit, step: PersonaStep): boolean {
   switch (step) {
+    case "choice":
+      return personaChoiceComplete(deposit);
     case "consent":
       return deposit.consent != null;
     case "voice":
@@ -181,10 +247,11 @@ export function personaStepSatisfied(deposit: PersonaDeposit, step: PersonaStep)
 export const PERSONA_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"] as const;
 export const PERSONA_VIDEO_TYPES = ["video/mp4", "video/webm", "video/quicktime"] as const;
 
-/** Generous on-device ceilings; the server-side storage route is Indiana's call. */
-export const PERSONA_IMAGE_MAX_BYTES = 15_000_000;
-export const PERSONA_VIDEO_MAX_BYTES = 200_000_000;
-export const PERSONA_SELFIE_MAX_BYTES = 200_000_000;
+/** Same ceilings as the Worker bank route (total under the Workers 100 MB body limit). */
+export const PERSONA_IMAGE_MAX_BYTES = TWIN_BANK_MAX_BYTES.image;
+export const PERSONA_VIDEO_MAX_BYTES = TWIN_BANK_MAX_BYTES.video;
+export const PERSONA_SELFIE_MAX_BYTES = TWIN_BANK_MAX_BYTES.selfie;
+export const PERSONA_VOICE_MAX_BYTES = TWIN_BANK_MAX_BYTES.voice;
 
 export type PersonaFileIssue = "empty" | "type" | "size";
 
@@ -268,6 +335,8 @@ export function parsePersonaDeposit(raw: unknown): PersonaDeposit | null {
       };
     }
   }
+  // A consent given on an older text must be given again on the current one.
+  if (consent && consent.textVersion !== PERSONA_CONSENT_TEXT_VERSION) consent = null;
 
   const media: PersonaDeposit["media"] = {};
   if (record.media && typeof record.media === "object") {
@@ -276,16 +345,30 @@ export function parsePersonaDeposit(raw: unknown): PersonaDeposit | null {
       if (info) media[kind] = info;
     }
   }
+  const offerRaw = (record.offer && typeof record.offer === "object" ? record.offer : {}) as Record<string, unknown>;
+  const str = (v: unknown, max: number) => (typeof v === "string" ? v.slice(0, max) : "");
 
   return {
     id,
     createdAt,
     updatedAt,
+    offer: { voice: offerRaw.voice === true, image: offerRaw.image === true },
+    pseudonym: str(record.pseudonym, 40),
+    country: str(record.country, 40),
+    livenessCode: isLivenessCode(record.livenessCode) ? record.livenessCode : newLivenessCode(),
     consent,
     media,
-    status: record.status === "en-verification" ? "en-verification" : "en-cours",
+    status:
+      record.status === "en-verification" ? "en-verification" : record.status === "retire" ? "retire" : "en-cours",
     upload:
-      record.upload === "sent" ? "sent" : record.upload === "failed" ? "failed" : "pending",
+      record.upload === "sent"
+        ? "sent"
+        : record.upload === "failed"
+          ? "failed"
+          : record.upload === "not-configured"
+            ? "not-configured"
+            : "pending",
+    withdrawToken: /^[A-Za-z0-9_-]{20,100}$/.test(str(record.withdrawToken, 100)) ? str(record.withdrawToken, 100) : "",
   };
 }
 
@@ -308,83 +391,114 @@ export function clearPersonaDeposit(): void {
 }
 
 /* ------------------------------------------------------------------ */
-/* Best-effort deposit notice                                          */
+/* Upload to the twin bank + withdrawal                                */
 /* ------------------------------------------------------------------ */
 
-/**
- * Proposed Worker route for persona deposits. PROPOSED — the xsnow-chat
- * Worker has no /persona-deposits route yet: activation (route + media
- * storage) belongs to Indiana Lane (IA), because videos far exceed the
- * 400 KB e-mail attachment ceiling of the /business-ads pattern. Until she
- * activates it, the notice fails cleanly and the full dossier stays on the
- * person's device, status « en vérification ».
- */
+/** xsnow-chat Worker bank route (persona-bank.ts). Private R2 storage, never public URLs. */
 export const PERSONA_DEPOSIT_ROUTE = "/persona-deposits";
-export const PERSONA_DEPOSIT_POST_TIMEOUT_MS = 8_000;
+export const PERSONA_WITHDRAW_ROUTE = "/persona-deposits/withdraw";
+export const PERSONA_DEPOSIT_POST_TIMEOUT_MS = 120_000;
 
-export function personaDepositEndpoint(base?: string) {
+export function chatApiBase(base?: string): string {
   const raw =
     base ||
     (typeof process !== "undefined" &&
       (process.env.NEXT_PUBLIC_CHAT_API_URL || process.env.NEXT_PUBLIC_CHAT_API)) ||
     "https://xsnow-chat.xsnowopc.workers.dev";
-  return `${String(raw).replace(/\/+$/, "")}${PERSONA_DEPOSIT_ROUTE}`;
+  return String(raw).replace(/\/+$/, "");
 }
 
-export type PersonaDepositNotice = {
-  id: string;
-  createdAt: number;
-  consent: { acceptedAt: number; textVersion: string } | null;
-  media: Partial<Record<PersonaMediaKind, PersonaMediaInfo>>;
-  status: PersonaDepositStatus;
-};
+export function personaDepositEndpoint(base?: string) {
+  return `${chatApiBase(base)}${PERSONA_DEPOSIT_ROUTE}`;
+}
 
-/**
- * Metadata-only notice: NO media bytes, no name, no e-mail, no amount.
- * The media themselves never leave the device through this channel.
- */
-export function personaDepositNotice(deposit: PersonaDeposit): PersonaDepositNotice {
+/** Consent + offer metadata sent with the media (no e-mail, no real name, no amount). */
+export function personaDepositMeta(deposit: PersonaDeposit) {
   return {
     id: deposit.id,
-    createdAt: deposit.createdAt,
-    consent: deposit.consent
-      ? { acceptedAt: deposit.consent.acceptedAt, textVersion: deposit.consent.textVersion }
-      : null,
-    media: { ...deposit.media },
-    status: deposit.status,
+    pseudonym: deposit.pseudonym,
+    country: deposit.country,
+    offer: { ...deposit.offer },
+    consent: {
+      version: deposit.consent?.textVersion ?? "",
+      acceptedAt: deposit.consent?.acceptedAt ?? 0,
+      terms: deposit.consent != null,
+      adult: deposit.consent != null,
+      noIncomeGuarantee: deposit.consent != null,
+      selfOnly: deposit.consent != null,
+    },
+    livenessCode: deposit.livenessCode,
   };
 }
 
-export type PersonaDepositPostResult = "sent" | "failed";
+export type PersonaUploadResult =
+  | { result: "sent"; withdrawToken: string }
+  | { result: "failed" }
+  | { result: "not-configured" };
 
-export async function postPersonaDepositNotice(
+/**
+ * Upload the dossier (consent metadata + required media) to the bank.
+ * « sent » only on ok + accepted + a withdraw token; a 503
+ * storage_not_configured is reported honestly as « not-configured » (the
+ * dossier then stays complete on the device and can be re-sent).
+ */
+export async function uploadPersonaDeposit(
   deposit: PersonaDeposit,
+  loadBlob: (kind: PersonaMediaKind) => Promise<Blob | null>,
   fetchImpl: typeof fetch = fetch,
-): Promise<PersonaDepositPostResult> {
+  base?: string,
+): Promise<PersonaUploadResult> {
+  const form = new FormData();
+  form.set("meta", JSON.stringify(personaDepositMeta(deposit)));
+  for (const kind of requiredMediaFor(deposit.offer)) {
+    const blob = await loadBlob(kind);
+    if (!blob) return { result: "failed" };
+    form.set(kind, blob, `${kind}`);
+  }
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), PERSONA_DEPOSIT_POST_TIMEOUT_MS);
   try {
-    const response = await fetchImpl(personaDepositEndpoint(), {
+    const response = await fetchImpl(personaDepositEndpoint(base), {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(personaDepositNotice(deposit)),
-      keepalive: true,
+      body: form,
       credentials: "omit",
       signal: controller.signal,
     });
-    if (!response.ok) return "failed";
-    let payload: unknown = null;
+    let payload: Record<string, unknown> | null = null;
     try {
-      payload = await response.json();
+      payload = (await response.json()) as Record<string, unknown>;
     } catch {
-      return "failed";
+      payload = null;
     }
-    if (!payload || typeof payload !== "object") return "failed";
-    const record = payload as { ok?: unknown; accepted?: unknown };
-    return record.ok === true && record.accepted === true ? "sent" : "failed";
+    if (response.status === 503 && payload?.error === "storage_not_configured") return { result: "not-configured" };
+    if (!response.ok || !payload) return { result: "failed" };
+    const token = typeof payload.withdrawToken === "string" ? payload.withdrawToken : "";
+    return payload.ok === true && payload.accepted === true && token ? { result: "sent", withdrawToken: token } : { result: "failed" };
   } catch {
-    return "failed";
+    return { result: "failed" };
   } finally {
     clearTimeout(timer);
+  }
+}
+
+/** One-tap withdrawal: the bank deletes the media at once and hides the item from twins. */
+export async function withdrawPersonaDeposit(
+  deposit: PersonaDeposit,
+  fetchImpl: typeof fetch = fetch,
+  base?: string,
+): Promise<"withdrawn" | "failed"> {
+  if (!deposit.withdrawToken) return "failed";
+  try {
+    const response = await fetchImpl(`${chatApiBase(base)}${PERSONA_WITHDRAW_ROUTE}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: deposit.id, token: deposit.withdrawToken }),
+      credentials: "omit",
+    });
+    if (!response.ok) return "failed";
+    const payload = (await response.json()) as Record<string, unknown>;
+    return payload?.ok === true && payload.status === "revoked" ? "withdrawn" : "failed";
+  } catch {
+    return "failed";
   }
 }

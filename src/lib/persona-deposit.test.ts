@@ -9,7 +9,13 @@ import {
   newPersonaDepositId,
   personaConsentComplete,
   personaDepositEndpoint,
-  personaDepositNotice,
+  personaDepositMeta,
+  nextPersonaStep,
+  prevPersonaStep,
+  personaVisibleSteps,
+  recordPersonaChoice,
+  uploadPersonaDeposit,
+  withdrawPersonaDeposit,
   personaFileIssue,
   personaFurthestStep,
   personaStepSatisfied,
@@ -18,7 +24,6 @@ import {
   PERSONA_IMAGE_MAX_BYTES,
   PERSONA_VIDEO_MAX_BYTES,
   pickRecorderMimeType,
-  postPersonaDepositNotice,
   parsePersonaDeposit,
   recordPersonaConsent,
   recordPersonaMedia,
@@ -45,11 +50,15 @@ import {
 const NOW = 1_730_000_000_000;
 
 function freshDeposit(): PersonaDeposit {
-  return emptyPersonaDeposit(newPersonaDepositId(NOW, 0.5), NOW);
+  return emptyPersonaDeposit(newPersonaDepositId(NOW, 0.5), NOW, () => 0.42);
 }
 
-function consented(): PersonaDeposit {
-  return recordPersonaConsent(freshDeposit(), NOW + 1);
+function chosen(offer = { voice: true, image: true }): PersonaDeposit {
+  return recordPersonaChoice(freshDeposit(), { offer, pseudonym: "Joase", country: "Haïti" }, NOW + 1);
+}
+
+function consented(offer = { voice: true, image: true }): PersonaDeposit {
+  return recordPersonaConsent(chosen(offer), NOW + 1);
 }
 
 function withVoice(): PersonaDeposit {
@@ -67,48 +76,76 @@ function complete(): PersonaDeposit {
 }
 
 describe("monétise-toi — porte de consentement", () => {
-  it("requires all three attestations, including 18+", () => {
+  it("requires all four attestations, including 18+ and own voice/image only", () => {
     const none = emptyPersonaConsentChecks();
     assert.equal(personaConsentComplete(none), false);
     assert.equal(personaConsentComplete({ ...none, terms: true }), false);
-    assert.equal(personaConsentComplete({ ...none, terms: true, adult: true }), false);
-    assert.equal(personaConsentComplete({ terms: true, adult: true, compensation: true }), true);
+    assert.equal(personaConsentComplete({ ...none, terms: true, adult: true, compensation: true }), false);
+    assert.equal(personaConsentComplete({ terms: true, adult: false, compensation: true, selfOnly: true }), false);
+    assert.equal(personaConsentComplete({ terms: true, adult: true, compensation: true, selfOnly: true }), true);
   });
 
-  it("records the acceptance with timestamp and text version", () => {
+  it("records the acceptance with timestamp and the current text version", () => {
     const d = consented();
     assert.equal(d.consent?.acceptedAt, NOW + 1);
     assert.equal(d.consent?.textVersion, PERSONA_CONSENT_TEXT_VERSION);
+    assert.equal(PERSONA_CONSENT_TEXT_VERSION, "indiana-v1-2026-11-09");
   });
 
-  it("keeps every later step closed until consent is recorded", () => {
+  it("keeps every later step closed until the choice and the consent are recorded", () => {
     const d = freshDeposit();
-    assert.equal(personaFurthestStep(d), "consent");
-    assert.equal(canOpenPersonaStep(d, "consent"), true);
-    assert.equal(canOpenPersonaStep(d, "voice"), false);
-    assert.equal(canOpenPersonaStep(d, "media"), false);
-    assert.equal(canOpenPersonaStep(d, "biometry"), false);
-    assert.equal(canOpenPersonaStep(d, "done"), false);
-    assert.equal(personaStepSatisfied(d, "consent"), false);
+    assert.equal(personaFurthestStep(d), "choice");
+    assert.equal(canOpenPersonaStep(d, "consent"), false);
+    assert.equal(personaFurthestStep(chosen()), "consent");
+    for (const step of ["voice", "media", "biometry", "done"] as const) {
+      assert.equal(canOpenPersonaStep(chosen(), step), false);
+    }
+    assert.equal(personaStepSatisfied(chosen(), "consent"), false);
+  });
+
+  it("a consent given on an older (provisional) text must be given again", () => {
+    const parsed = parsePersonaDeposit({ ...consented(), consent: { acceptedAt: NOW, textVersion: "provisoire-2026-11-07-r2" } });
+    assert.equal(parsed?.consent, null);
+  });
+});
+
+describe("monétise-toi — choix voix et/ou image", () => {
+  it("needs at least one offer, a pseudonym and a country", () => {
+    assert.equal(personaFurthestStep(recordPersonaChoice(freshDeposit(), { offer: { voice: false, image: false }, pseudonym: "Joase", country: "Haïti" }, NOW)), "choice");
+    assert.equal(personaFurthestStep(recordPersonaChoice(freshDeposit(), { offer: { voice: true, image: false }, pseudonym: "", country: "Haïti" }, NOW)), "choice");
+  });
+
+  it("voice only skips the image step; image only skips the voice step", () => {
+    const voiceOnly = consented({ voice: true, image: false });
+    assert.deepEqual(personaVisibleSteps(voiceOnly), ["choice", "consent", "voice", "biometry", "done"]);
+    assert.equal(nextPersonaStep(voiceOnly, "voice"), "biometry");
+    assert.equal(canOpenPersonaStep(voiceOnly, "media"), false);
+    const v = recordPersonaMedia(voiceOnly, "voice", { type: "audio/webm", size: 5 }, NOW);
+    assert.equal(personaFurthestStep(v), "biometry");
+
+    const imageOnly = consented({ voice: false, image: true });
+    assert.equal(nextPersonaStep(imageOnly, "consent"), "media");
+    assert.equal(prevPersonaStep(imageOnly, "media"), "consent");
+    assert.equal(personaFurthestStep(imageOnly), "media");
+  });
+
+  it("a withdrawn dossier (media erased) stays on the final screen", () => {
+    assert.equal(personaFurthestStep({ ...complete(), media: {}, status: "retire" }), "done");
+  });
+
+  it("carries a 6-digit code for the selfie (liveness / self-only check)", () => {
+    assert.match(freshDeposit().livenessCode, /^[0-9]{6}$/);
   });
 });
 
 describe("monétise-toi — transitions d'étapes", () => {
-  it("walks consent → voice → media → biometry → done, one requirement at a time", () => {
+  it("walks choice → consent → voice → media → biometry → done, one requirement at a time", () => {
     assert.equal(personaFurthestStep(consented()), "voice");
     assert.equal(canOpenPersonaStep(consented(), "media"), false);
-
     assert.equal(personaFurthestStep(withVoice()), "media");
-    // Only the image: the media step still needs the video too.
-    const imageOnly = recordPersonaMedia(
-      withVoice(),
-      "image",
-      { type: "image/png", size: 10 },
-      NOW + 6,
-    );
+    const imageOnly = recordPersonaMedia(withVoice(), "image", { type: "image/png", size: 10 }, NOW + 6);
     assert.equal(personaFurthestStep(imageOnly), "media");
     assert.equal(personaStepSatisfied(imageOnly, "media"), false);
-
     assert.equal(personaFurthestStep(withMedia()), "biometry");
     assert.equal(personaFurthestStep(complete()), "done");
     assert.equal(personaStepSatisfied(complete(), "done"), true);
@@ -116,18 +153,15 @@ describe("monétise-toi — transitions d'étapes", () => {
 
   it("lets the person revisit earlier steps but never skip ahead", () => {
     const d = withMedia();
-    assert.equal(canOpenPersonaStep(d, "consent"), true);
-    assert.equal(canOpenPersonaStep(d, "voice"), true);
-    assert.equal(canOpenPersonaStep(d, "media"), true);
-    assert.equal(canOpenPersonaStep(d, "biometry"), true);
+    for (const step of ["choice", "consent", "voice", "media", "biometry"] as const) {
+      assert.equal(canOpenPersonaStep(d, step), true);
+    }
     assert.equal(canOpenPersonaStep(d, "done"), false);
   });
 
   it("never fabricates a verified status — a finished deposit is only « en vérification »", () => {
-    const d = complete();
-    assert.equal(d.status, "en-cours");
-    const notice = personaDepositNotice({ ...d, status: "en-verification" });
-    assert.equal(notice.status, "en-verification");
+    assert.equal(complete().status, "en-cours");
+    assert.ok(!JSON.stringify(personaDepositMeta(complete())).includes("verifi"));
   });
 });
 
@@ -135,8 +169,8 @@ describe("monétise-toi — validation des fichiers", () => {
   it("accepts the documented image and video types within the ceilings", () => {
     assert.equal(personaFileIssue("image", { type: "image/jpeg", size: 1_000 }), null);
     assert.equal(personaFileIssue("image", { type: "image/webp", size: PERSONA_IMAGE_MAX_BYTES }), null);
-    assert.equal(personaFileIssue("video", { type: "video/mp4", size: 50_000_000 }), null);
-    assert.equal(personaFileIssue("selfie", { type: "video/quicktime", size: 50_000_000 }), null);
+    assert.equal(personaFileIssue("video", { type: "video/mp4", size: 30_000_000 }), null);
+    assert.equal(personaFileIssue("selfie", { type: "video/quicktime", size: 30_000_000 }), null);
   });
 
   it("refuses empty files, wrong types and oversize files with distinct issues", () => {
@@ -168,7 +202,7 @@ describe("monétise-toi — persistance des métadonnées", () => {
     const parsed = parsePersonaDeposit({
       id: "persona-abc-1234",
       createdAt: NOW,
-      consent: { acceptedAt: NOW, textVersion: "x", junk: true },
+      consent: { acceptedAt: NOW, textVersion: PERSONA_CONSENT_TEXT_VERSION, junk: true },
       media: { voice: { type: "audio/webm", size: 5 }, hacker: { type: "x", size: 1 } },
       status: "verifie-a-vie",
       upload: "envoye",
@@ -202,98 +236,87 @@ describe("monétise-toi — coffre média (IndexedDB, simulé)", () => {
   });
 });
 
-describe("monétise-toi — avis d'envoi best-effort", () => {
-  it("targets the single proposed route constant", () => {
+describe("monétise-toi — envoi vers la banque et retrait", () => {
+  it("targets the Worker bank route", () => {
     assert.equal(PERSONA_DEPOSIT_ROUTE, "/persona-deposits");
-    assert.equal(
-      personaDepositEndpoint("https://worker.example/"),
-      "https://worker.example/persona-deposits",
+    assert.equal(personaDepositEndpoint("https://worker.example/"), "https://worker.example/persona-deposits");
+  });
+
+  it("sends the consent record and only the media of the chosen offer — never an amount", async () => {
+    const d = recordPersonaMedia(
+      recordPersonaMedia(consented({ voice: true, image: false }), "voice", { type: "audio/webm", size: 4 }, NOW),
+      "selfie",
+      { type: "video/webm", size: 4 },
+      NOW,
     );
-  });
-
-  it("sends metadata only — never media bytes, never an amount", () => {
-    const notice = personaDepositNotice(complete());
-    const json = JSON.stringify(notice);
-    assert.equal(notice.id, complete().id);
-    assert.deepEqual(Object.keys(notice.media).sort(), ["image", "selfie", "video", "voice"]);
-    assert.ok(!/amount|price|montant|compensation/i.test(json.replace(/persona/g, "")));
-  });
-
-  it("fails cleanly when the route is absent or errors, succeeds only on ok+accepted", async () => {
-    const d = complete();
-    const notFound = (async () =>
-      new Response(JSON.stringify({ ok: false }), { status: 404 })) as typeof fetch;
-    assert.equal(await postPersonaDepositNotice(d, notFound), "failed");
-
-    const boom = (async () => {
-      throw new Error("network");
+    let sent: FormData | null = null;
+    const fake = (async (_u: unknown, init?: RequestInit) => {
+      sent = init?.body as FormData;
+      return new Response(JSON.stringify({ ok: true, accepted: true, withdrawToken: "t".repeat(43) }), { status: 200 });
     }) as typeof fetch;
-    assert.equal(await postPersonaDepositNotice(d, boom), "failed");
+    const res = await uploadPersonaDeposit(d, async (k) => new Blob([k], { type: k === "voice" ? "audio/webm" : "video/webm" }), fake, "https://w.example");
+    assert.deepEqual(res, { result: "sent", withdrawToken: "t".repeat(43) });
+    const form = sent as unknown as FormData;
+    assert.ok(form.get("voice") && form.get("selfie"));
+    assert.equal(form.get("image"), null);
+    const meta = JSON.parse(String(form.get("meta")));
+    assert.equal(meta.consent.adult, true);
+    assert.equal(meta.consent.version, PERSONA_CONSENT_TEXT_VERSION);
+    assert.ok(!/amount|price|montant/i.test(JSON.stringify(meta)));
+  });
 
-    const okButNotAccepted = (async () =>
-      new Response(JSON.stringify({ ok: true }), { status: 200 })) as typeof fetch;
-    assert.equal(await postPersonaDepositNotice(d, okButNotAccepted), "failed");
+  it("reports « not-configured » honestly when the bank storage is not open, « failed » on errors", async () => {
+    const d = complete();
+    const blob = async () => new Blob(["x"], { type: "video/webm" });
+    const notConf = (async () => new Response(JSON.stringify({ error: "storage_not_configured" }), { status: 503 })) as typeof fetch;
+    assert.equal((await uploadPersonaDeposit(d, blob, notConf)).result, "not-configured");
+    const boom = (async () => { throw new Error("network"); }) as typeof fetch;
+    assert.equal((await uploadPersonaDeposit(d, blob, boom)).result, "failed");
+    const noToken = (async () => new Response(JSON.stringify({ ok: true, accepted: true }), { status: 200 })) as typeof fetch;
+    assert.equal((await uploadPersonaDeposit(d, blob, noToken)).result, "failed");
+    assert.equal((await uploadPersonaDeposit(d, async () => null, noToken)).result, "failed");
+  });
 
-    const accepted = (async () =>
-      new Response(JSON.stringify({ ok: true, accepted: true }), { status: 200 })) as typeof fetch;
-    assert.equal(await postPersonaDepositNotice(d, accepted), "sent");
+  it("withdraws with the on-device token only", async () => {
+    const d = { ...complete(), withdrawToken: "t".repeat(43), upload: "sent" as const };
+    let body = "";
+    const ok = (async (_u: unknown, init?: RequestInit) => {
+      body = String(init?.body);
+      return new Response(JSON.stringify({ ok: true, status: "revoked" }), { status: 200 });
+    }) as typeof fetch;
+    assert.equal(await withdrawPersonaDeposit(d, ok), "withdrawn");
+    assert.deepEqual(JSON.parse(body), { id: d.id, token: "t".repeat(43) });
+    assert.equal(await withdrawPersonaDeposit({ ...d, withdrawToken: "" }, ok), "failed");
   });
 });
 
-describe("monétise-toi — drapeau de collecte (cadrage Indiana, 07/11/2026)", () => {
-  it("stays OFF by default: nothing is collected before the consent text is validated", () => {
-    assert.equal(PERSONA_COLLECTION_ENABLED, false);
+describe("monétise-toi — collecte ouverte (Popol, 09/11/2026)", () => {
+  it("the collection is ON with Indiana's consent text v1", () => {
+    assert.equal(PERSONA_COLLECTION_ENABLED, true);
   });
 
-  it("the provisional consent copy covers Indiana's six points in FR, EN and ES", () => {
+  it("the consent covers scope, 18+, own image only, withdrawal + real deletion, forbidden uses, no income guarantee — FR, EN, ES", () => {
     const locales = [
-      {
-        items: fr.earnNow.personaMonetise.consentItems.join("\n"),
-        country: /pays en développement/,
-        formula: /18 ans ou plus, résidant dans un pays en développement \(hors Canada, États-Unis et Europe\)/,
-        deceive: /tromper/,
-        income: /Aucun revenu garanti/,
-        withdraw: /Retrait en tout temps/,
-      },
-      {
-        items: en.earnNow.personaMonetise.consentItems.join("\n"),
-        country: /developing country/,
-        formula: /18 or older, living in a developing country \(excluding Canada, the United States and Europe\)/,
-        deceive: /deceive/,
-        income: /No guaranteed income/,
-        withdraw: /Withdrawal at any time/,
-      },
-      {
-        items: es.earnNow.personaMonetise.consentItems.join("\n"),
-        country: /país en desarrollo/,
-        formula: /18 años o más, residentes en un país en desarrollo \(fuera de Canadá, Estados Unidos y Europa\)/,
-        deceive: /engañar/,
-        income: /Ningún ingreso garantizado/,
-        withdraw: /Retiro en cualquier momento/,
-      },
+      { items: fr.earnNow.personaMonetise.consentItems.join("\n"), formula: /18 ans ou plus, résidant dans un pays en développement \(hors Canada, États-Unis et Europe\)/, deceive: /faire croire/, income: /Aucun revenu garanti/, withdraw: /Retrait en tout temps, suppression réelle/, scope: /Usage permis/, own: /ta propre voix et ta propre image/ },
+      { items: en.earnNow.personaMonetise.consentItems.join("\n"), formula: /18 or older, living in a developing country \(excluding Canada, the United States and Europe\)/, deceive: /believe you really said/, income: /No income guaranteed/, withdraw: /Withdraw any time, real deletion/, scope: /Allowed use/, own: /your own voice and your own image/ },
+      { items: es.earnNow.personaMonetise.consentItems.join("\n"), formula: /18 años o más, residentes en un país en desarrollo \(fuera de Canadá, Estados Unidos y Europa\)/, deceive: /hacer creer/, income: /Ningún ingreso garantizado/, withdraw: /Retiro en cualquier momento, borrado real/, scope: /Uso permitido/, own: /tu propia voz y tu propia imagen/ },
     ];
-    for (const { items, country, formula, deceive, income, withdraw } of locales) {
-      assert.match(items, /18 ans|18 or older|18 años/);
-      assert.match(items, country);
-      // Popol's validated eligibility formula (07/11/2026, via Indiana).
-      assert.match(items, formula);
-      assert.match(items, deceive);
-      assert.match(items, /sexuels|sexual|sexuales/);
-      assert.match(items, /politiques|political|políticos/);
-      assert.match(items, income);
-      assert.match(items, withdraw);
-      assert.match(items, /PIPEDA|LPRPDE/);
-      // A bracketed field remains open for Indiana's definitive text.
-      assert.match(items, /\[[^\]]+]/);
+    for (const l of locales) {
+      for (const re of [l.formula, l.deceive, l.income, l.withdraw, l.scope, l.own]) assert.match(l.items, re);
+      assert.match(l.items, /sexuels|sexual|sexuales/);
+      assert.match(l.items, /politiques|political|político/);
+      assert.match(l.items, /illégal|illegal|ilegal/);
+      assert.match(l.items, /PIPEDA|LPRPDE/);
+      assert.match(l.items, /opencommunity\.opc@gmail\.com/);
+      assert.doesNotMatch(l.items, /\[[^\]]+]/, "no bracketed placeholder left");
+      assert.doesNotMatch(l.items, /Québec|Quebec|Quebe/i);
+      assert.doesNotMatch(l.items, /\$|USD|CAD|€/, "no amount promised to lenders");
     }
   });
 
-  it("while the section is « En préparation », no copy claims the journey is open", () => {
-    const stubs = [fr.stubs.monetise, en.stubs.monetise, es.stubs.monetise];
-    for (const stub of stubs) {
-      assert.doesNotMatch(stub, /parcours est ouvert|journey is open|recorrido está abierto/i);
-      assert.match(stub, /En préparation|In preparation|En preparación/);
-      assert.match(stub, /rien n’est collecté|nothing is collected|no se recoge nada/);
+  it("no copy still says the journey is closed", () => {
+    for (const stub of [fr.stubs.monetise, en.stubs.monetise, es.stubs.monetise]) {
+      assert.doesNotMatch(stub, /En préparation|In preparation|En preparación/);
     }
   });
 });

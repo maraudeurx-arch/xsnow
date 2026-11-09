@@ -168,7 +168,11 @@ export const FEATURE_COPY = {
   },
   monetise: {
     title: "Monétisez-vous : votre image, votre voix.",
-    lead: "Proposez votre voix et votre image aux jumeaux numériques. En préparation : le parcours ouvrira dès que le texte de consentement sera validé — pour l'instant, rien n'est collecté.",
+    lead: "Prête ta voix ou ton image aux jumeaux numériques d’OPC. Tu restes propriétaire et tu peux te retirer quand tu veux. Aucun revenu garanti.",
+  },
+  jumeauBanque: {
+    title: "Jumeau numérique — banque d’images et de voix",
+    lead: "Voix et images prêtées avec consentement par des membres d’OPC. Mode test : rien n’est prélevé.",
   },
   sondages: {
     title: "Répondre à des sondages et gagner de l’argent",

@@ -34,6 +34,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { interpolate } from "@/lib/i18n/locales";
+import { cleanCountry, cleanPseudonym } from "@/lib/twin-bank";
 import { useI18n } from "@/lib/i18n/locale";
 import {
   canOpenPersonaStep,
@@ -46,12 +47,16 @@ import {
   personaFileIssue,
   personaFurthestStep,
   personaStepSatisfied,
+  personaVisibleSteps,
+  nextPersonaStep,
+  prevPersonaStep,
   PERSONA_AUDIO_MIME_CANDIDATES,
   PERSONA_COLLECTION_ENABLED,
-  PERSONA_STEPS,
   PERSONA_VIDEO_MIME_CANDIDATES,
   pickRecorderMimeType,
-  postPersonaDepositNotice,
+  recordPersonaChoice,
+  uploadPersonaDeposit,
+  withdrawPersonaDeposit,
   recordPersonaConsent,
   recordPersonaMedia,
   savePersonaDeposit,
@@ -96,7 +101,10 @@ export function PersonaDepositBoard() {
   const g = m.earnNow.personaMonetise;
 
   const [deposit, setDeposit] = useState<PersonaDeposit | null>(null);
-  const [step, setStep] = useState<PersonaStep>("consent");
+  const [step, setStep] = useState<PersonaStep>("choice");
+  const [choice, setChoice] = useState({ voice: false, image: false, pseudonym: "", country: "" });
+  const [withdrawAsk, setWithdrawAsk] = useState(false);
+  const [withdrawNote, setWithdrawNote] = useState("");
   const [checks, setChecks] = useState<PersonaConsentChecks>(emptyPersonaConsentChecks());
   const [resumed, setResumed] = useState(false);
   const [urls, setUrls] = useState<MediaUrls>({});
@@ -140,19 +148,24 @@ export function PersonaDepositBoard() {
       setStep(personaFurthestStep(stored));
       if (stored.consent || Object.keys(stored.media).length > 0) setResumed(true);
       if (stored.consent) {
-        setChecks({ terms: true, adult: true, compensation: true });
+        setChecks({ terms: true, adult: true, compensation: true, selfOnly: true });
       }
+      setChoice({ ...stored.offer, pseudonym: stored.pseudonym, country: stored.country });
       // A complete-but-unfinalized dossier (app closed on the last step)
       // is deposited now: status « en vérification » + best-effort notice.
-      if (personaFurthestStep(stored) === "done" && stored.status !== "en-verification") {
+      if (personaFurthestStep(stored) === "done" && stored.status === "en-cours") {
         void (async () => {
           const finished: PersonaDeposit = {
             ...stored,
             status: "en-verification",
             updatedAt: Date.now(),
           };
-          const result = await postPersonaDepositNotice(finished);
-          const withUpload: PersonaDeposit = { ...finished, upload: result };
+          const up = await uploadPersonaDeposit(finished, (kind) => loadPersonaMedia(finished.id, kind));
+          const withUpload: PersonaDeposit = {
+            ...finished,
+            upload: up.result,
+            withdrawToken: up.result === "sent" ? up.withdrawToken : "",
+          };
           savePersonaDeposit(withUpload);
           setDeposit(withUpload);
         })();
@@ -237,7 +250,8 @@ export function PersonaDepositBoard() {
 
   if (!deposit) return null;
 
-  const stepIndex = PERSONA_STEPS.indexOf(step);
+  const visibleSteps = personaVisibleSteps(deposit);
+  const stepIndex = Math.max(0, visibleSteps.indexOf(step));
   const furthest = personaFurthestStep(deposit);
 
   function persist(next: PersonaDeposit) {
@@ -271,8 +285,24 @@ export function PersonaDepositBoard() {
   /* ------------------------------------------------------------ */
   function acceptConsent() {
     if (!deposit || !personaConsentComplete(checks)) return;
-    persist(recordPersonaConsent(deposit, Date.now()));
-    setStep("voice");
+    const next = recordPersonaConsent(deposit, Date.now());
+    persist(next);
+    setStep(nextPersonaStep(next, "consent"));
+  }
+
+  const choicePseudonym = cleanPseudonym(choice.pseudonym);
+  const choiceCountry = cleanCountry(choice.country);
+  const choiceReady = (choice.voice || choice.image) && Boolean(choicePseudonym) && Boolean(choiceCountry);
+
+  function acceptChoice() {
+    if (!deposit || !choiceReady) return;
+    const next = recordPersonaChoice(
+      deposit,
+      { offer: { voice: choice.voice, image: choice.image }, pseudonym: choicePseudonym, country: choiceCountry },
+      Date.now(),
+    );
+    persist(next);
+    setStep(nextPersonaStep(next, "choice"));
   }
 
   /* ------------------------------------------------------------ */
@@ -364,7 +394,8 @@ export function PersonaDepositBoard() {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: "user" },
-        audio: false,
+        // The code is said aloud: the verification video carries the voice too.
+        audio: true,
       });
       selfieStreamRef.current = stream;
       setCameraOn(true);
@@ -451,12 +482,42 @@ export function PersonaDepositBoard() {
     if (!deposit || furthest !== "done" || finalizing) return;
     setFinalizing(true);
     const finished: PersonaDeposit = { ...deposit, status: "en-verification", updatedAt: Date.now() };
-    // Best-effort metadata notice — media never leave the device here.
-    const result = await postPersonaDepositNotice(finished);
-    const withUpload: PersonaDeposit = { ...finished, upload: result };
-    persist(withUpload);
+    persist(finished);
     setStep("done");
+    // Upload consent + media to the private twin bank (R2 behind the Worker).
+    const up = await uploadPersonaDeposit(finished, (kind) => loadPersonaMedia(finished.id, kind));
+    persist({ ...finished, upload: up.result, withdrawToken: up.result === "sent" ? up.withdrawToken : "" });
     setFinalizing(false);
+  }
+
+  async function retryUpload() {
+    if (!deposit || finalizing || deposit.status !== "en-verification") return;
+    setFinalizing(true);
+    const up = await uploadPersonaDeposit(deposit, (kind) => loadPersonaMedia(deposit.id, kind));
+    persist({ ...deposit, upload: up.result, withdrawToken: up.result === "sent" ? up.withdrawToken : "" });
+    setFinalizing(false);
+  }
+
+  /** Withdraw: server deletion first (when the dossier reached the bank), then the device copy. */
+  async function withdraw() {
+    if (!deposit) return;
+    setWithdrawNote("");
+    if (deposit.upload === "sent") {
+      const result = await withdrawPersonaDeposit(deposit);
+      if (result !== "withdrawn") {
+        setWithdrawNote(g.withdrawFailed);
+        return;
+      }
+    }
+    for (const kind of Object.keys(deposit.media) as PersonaMediaKind[]) {
+      await deletePersonaMedia(deposit.id, kind);
+    }
+    revokePreviewUrls(Object.values(urlsRef.current));
+    urlsRef.current = {};
+    setUrls({});
+    persist({ ...deposit, media: {}, status: "retire", withdrawToken: "", updatedAt: Date.now() });
+    setWithdrawAsk(false);
+    setWithdrawNote(g.withdrawDone);
   }
 
   async function startNewDeposit() {
@@ -473,9 +534,12 @@ export function PersonaDepositBoard() {
     setChecks(emptyPersonaConsentChecks());
     setFileNotes({});
     setResumed(false);
+    setWithdrawAsk(false);
+    setWithdrawNote("");
+    setChoice({ voice: false, image: false, pseudonym: "", country: "" });
     const fresh = emptyPersonaDeposit(newPersonaDepositId(Date.now(), Math.random()), Date.now());
     setDeposit(fresh);
-    setStep("consent");
+    setStep("choice");
   }
 
   const consentDate = deposit.consent
@@ -486,15 +550,30 @@ export function PersonaDepositBoard() {
 
   const recapRows: Array<{ label: string; kind: PersonaMediaKind | "consent" }> = [
     { label: g.recapConsent, kind: "consent" },
-    { label: g.recapVoice, kind: "voice" },
-    { label: g.recapImage, kind: "image" },
-    { label: g.recapVideo, kind: "video" },
-    { label: g.recapSelfie, kind: "selfie" },
+    ...(deposit.offer.voice ? [{ label: g.recapVoice, kind: "voice" as const }] : []),
+    ...(deposit.offer.image
+      ? [
+          { label: g.recapImage, kind: "image" as const },
+          { label: g.recapVideo, kind: "video" as const },
+        ]
+      : []),
+    { label: g.recapSelfie, kind: "selfie" as const },
   ];
+  const uploadNote =
+    deposit.upload === "sent"
+      ? g.uploadSent
+      : deposit.upload === "not-configured"
+        ? g.uploadNotConfigured
+        : deposit.upload === "failed"
+          ? g.uploadFailed
+          : finalizing
+            ? g.uploading
+            : g.uploadPending;
 
   return (
     <div className="grid gap-3" data-persona-board>
       <p className="text-left text-sm leading-snug text-slate-600">{g.lead}</p>
+      <p className="text-left text-[13px] font-bold text-slate-800" data-persona-adult-note>{g.adultNote}</p>
 
       <section className={cardClass} aria-label={g.stepsTitle}>
         <h3 className="text-[15px] font-extrabold text-slate-900">{g.stepsTitle}</h3>
@@ -514,16 +593,77 @@ export function PersonaDepositBoard() {
       <p className="text-left text-[13px] font-bold text-slate-700" data-persona-progress>
         {interpolate(g.progress, {
           step: String(stepIndex + 1),
-          total: String(PERSONA_STEPS.length),
+          total: String(visibleSteps.length),
           name: g.stepNames[step],
         })}
       </p>
+
+      {step === "choice" ? (
+        <section className={cardClass} data-persona-step="choice">
+          <h3 className="text-[15px] font-extrabold text-slate-900">{g.choiceTitle}</h3>
+          <p className="mt-1 text-[13px] leading-snug text-slate-700">{g.choiceLead}</p>
+          <div className="mt-3 grid gap-2">
+            <label className={checkRowClass}>
+              <input
+                type="checkbox"
+                checked={choice.voice}
+                onChange={(e) => setChoice((c) => ({ ...c, voice: e.target.checked }))}
+                data-persona-offer="voice"
+              />
+              {g.offerVoice}
+            </label>
+            <label className={checkRowClass}>
+              <input
+                type="checkbox"
+                checked={choice.image}
+                onChange={(e) => setChoice((c) => ({ ...c, image: e.target.checked }))}
+                data-persona-offer="image"
+              />
+              {g.offerImage}
+            </label>
+            <label className="grid gap-1 text-[13px] font-bold text-slate-800">
+              {g.pseudonymLabel}
+              <input
+                type="text"
+                maxLength={40}
+                value={choice.pseudonym}
+                onChange={(e) => setChoice((c) => ({ ...c, pseudonym: e.target.value }))}
+                className="min-h-11 rounded-xl border border-slate-300 bg-white px-3 text-[15px] font-normal text-slate-900"
+                style={{ WebkitTextFillColor: "#0f172a" }}
+                data-persona-pseudonym
+              />
+              <span className="text-[12px] font-normal text-slate-600">{g.pseudonymHint}</span>
+            </label>
+            <label className="grid gap-1 text-[13px] font-bold text-slate-800">
+              {g.countryLabel}
+              <input
+                type="text"
+                maxLength={40}
+                value={choice.country}
+                onChange={(e) => setChoice((c) => ({ ...c, country: e.target.value }))}
+                className="min-h-11 rounded-xl border border-slate-300 bg-white px-3 text-[15px] font-normal text-slate-900"
+                style={{ WebkitTextFillColor: "#0f172a" }}
+                data-persona-country
+              />
+            </label>
+          </div>
+          <button
+            type="button"
+            className={`${primaryClass} mt-3`}
+            disabled={!choiceReady}
+            onClick={acceptChoice}
+            data-persona-next
+          >
+            {g.next}
+          </button>
+        </section>
+      ) : null}
 
       {step === "consent" ? (
         <section className={cardClass} data-persona-step="consent">
           <h3 className="text-[15px] font-extrabold text-slate-900">{g.consentTitle}</h3>
           <p className="mt-1 text-[13px] leading-snug text-slate-700">{g.consentIntro}</p>
-          {/* TEXTE PROVISOIRE — à remplacer par le formulaire de consentement d’Indiana Lane (IA). */}
+          {/* Texte de consentement d’Indiana, v1 (TWIN_BANK_CONSENT_VERSION). */}
           <ul className="mt-2 list-disc space-y-1.5 pl-5 text-[13px] leading-snug text-slate-700">
             {g.consentItems.map((item) => (
               <li key={item}>{item}</li>
@@ -556,6 +696,15 @@ export function PersonaDepositBoard() {
                 data-persona-consent-check="compensation"
               />
               {g.consentCompensation}
+            </label>
+            <label className={checkRowClass}>
+              <input
+                type="checkbox"
+                checked={checks.selfOnly}
+                onChange={(e) => setChecks((c) => ({ ...c, selfOnly: e.target.checked }))}
+                data-persona-consent-check="selfOnly"
+              />
+              {g.consentSelfOnly}
             </label>
           </div>
           {deposit.consent ? (
@@ -623,14 +772,14 @@ export function PersonaDepositBoard() {
             ) : null}
           </div>
           <div className="mt-3 grid grid-cols-2 gap-2">
-            <button type="button" className={buttonClass} onClick={() => setStep("consent")} data-persona-back>
+            <button type="button" className={buttonClass} onClick={() => setStep(prevPersonaStep(deposit, "voice"))} data-persona-back>
               {g.back}
             </button>
             <button
               type="button"
               className={primaryClass}
               disabled={!personaStepSatisfied(deposit, "voice") || voiceRecording}
-              onClick={() => setStep("media")}
+              onClick={() => setStep(nextPersonaStep(deposit, "voice"))}
               data-persona-next
             >
               {g.next}
@@ -685,14 +834,14 @@ export function PersonaDepositBoard() {
             </div>
           </div>
           <div className="mt-3 grid grid-cols-2 gap-2">
-            <button type="button" className={buttonClass} onClick={() => setStep("voice")} data-persona-back>
+            <button type="button" className={buttonClass} onClick={() => setStep(prevPersonaStep(deposit, "media"))} data-persona-back>
               {g.back}
             </button>
             <button
               type="button"
               className={primaryClass}
               disabled={!personaStepSatisfied(deposit, "media")}
-              onClick={() => setStep("biometry")}
+              onClick={() => setStep(nextPersonaStep(deposit, "media"))}
               data-persona-next
             >
               {g.next}
@@ -705,6 +854,10 @@ export function PersonaDepositBoard() {
         <section className={cardClass} data-persona-step="biometry">
           <h3 className="text-[15px] font-extrabold text-slate-900">{g.biometryTitle}</h3>
           <p className="mt-1 text-[13px] leading-snug text-slate-700">{g.biometryLead}</p>
+          <p className="mt-2 text-[13px] font-bold text-slate-800">{g.biometryPhraseLabel}</p>
+          <blockquote className="mt-1 rounded-xl bg-slate-50 p-3 text-[15px] font-bold leading-relaxed text-slate-900" data-persona-liveness-phrase>
+            {interpolate(g.biometryPhrase, { name: deposit.pseudonym, code: deposit.livenessCode })}
+          </blockquote>
           <p className="mt-2 rounded-xl bg-sky-50 p-2 text-[13px] leading-snug text-slate-700">
             {g.biometryHonest}
           </p>
@@ -783,7 +936,7 @@ export function PersonaDepositBoard() {
             </>
           ) : null}
           <div className="mt-3 grid grid-cols-2 gap-2">
-            <button type="button" className={buttonClass} onClick={() => setStep("media")} data-persona-back>
+            <button type="button" className={buttonClass} onClick={() => setStep(prevPersonaStep(deposit, "biometry"))} data-persona-back>
               {g.back}
             </button>
             <button
@@ -807,10 +960,10 @@ export function PersonaDepositBoard() {
             {g.depositNumber} : <strong>{deposit.id}</strong>
           </p>
           <p className="mt-1 inline-block rounded-full bg-amber-100 px-2.5 py-1 text-[12px] font-extrabold uppercase tracking-wide text-amber-900" data-persona-status>
-            {g.statusReview}
+            {deposit.status === "retire" ? g.statusWithdrawn : g.statusReview}
           </p>
           <ul className="mt-3 grid gap-1 text-[13px] text-slate-800">
-            {recapRows.map((row) => {
+            {deposit.status === "retire" ? null : recapRows.map((row) => {
               const ok =
                 row.kind === "consent" ? deposit.consent != null : deposit.media[row.kind] != null;
               return (
@@ -823,9 +976,41 @@ export function PersonaDepositBoard() {
               );
             })}
           </ul>
-          <p className="mt-3 text-[13px] leading-snug text-slate-700" data-persona-upload-note>
-            {deposit.upload === "sent" ? g.uploadSent : g.uploadPending}
-          </p>
+          {deposit.status !== "retire" ? (
+            <>
+              <p className="mt-3 text-[13px] leading-snug text-slate-700" data-persona-upload-note data-persona-upload={deposit.upload}>
+                {uploadNote}
+              </p>
+              {deposit.upload === "failed" || deposit.upload === "not-configured" ? (
+                <button type="button" className={`${primaryClass} mt-2`} disabled={finalizing} onClick={() => void retryUpload()} data-persona-retry>
+                  {g.retryUpload}
+                </button>
+              ) : null}
+              <div className="mt-3 rounded-xl border border-red-200 bg-red-50 p-3" data-persona-withdraw>
+                <p className="text-[13px] font-extrabold text-red-900">{g.withdrawTitle}</p>
+                <p className="mt-1 text-[13px] leading-snug text-red-900">{g.withdrawLead}</p>
+                {withdrawAsk ? (
+                  <div className="mt-2 grid grid-cols-2 gap-2">
+                    <button type="button" className={buttonClass} onClick={() => setWithdrawAsk(false)} data-persona-withdraw-cancel>
+                      {g.withdrawCancel}
+                    </button>
+                    <button type="button" className={primaryClass} onClick={() => void withdraw()} data-persona-withdraw-confirm>
+                      {g.withdrawConfirm}
+                    </button>
+                  </div>
+                ) : (
+                  <button type="button" className={`${buttonClass} mt-2`} onClick={() => setWithdrawAsk(true)} data-persona-withdraw-button>
+                    {g.withdrawButton}
+                  </button>
+                )}
+              </div>
+            </>
+          ) : null}
+          {withdrawNote ? (
+            <p role="status" className="mt-2 text-[13px] font-bold text-slate-900" data-persona-withdraw-note>
+              {withdrawNote}
+            </p>
+          ) : null}
           <button type="button" className={`${buttonClass} mt-3`} onClick={() => void startNewDeposit()} data-persona-new>
             {g.newDeposit}
           </button>
