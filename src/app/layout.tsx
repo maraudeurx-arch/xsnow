@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Fraunces, Inter, Outfit, Plus_Jakarta_Sans } from "next/font/google";
+import localFont from "next/font/local";
 import Script from "next/script";
 import { AppChrome } from "@/components/AppChrome";
 import { Providers } from "@/app/providers";
@@ -8,37 +8,54 @@ import { PWA_ASSET_ORIGIN, assetUrl } from "@/lib/paths";
 import "./globals.css";
 import "./look-classic.css";
 
-const inter = Inter({
+/*
+ * Fonts are vendored locally (src/app/fonts/, latin variable woff2, OFL —
+ * see src/app/fonts/README.md). next/font/google downloaded them from
+ * fonts.googleapis.com at build time, which broke CI builds in sandboxed
+ * environments without network access; local files make the build fully
+ * self-contained while keeping the exact same families and CSS variables.
+ */
+const inter = localFont({
+  src: "./fonts/inter-latin.woff2",
   variable: "--font-outfit",
-  subsets: ["latin"],
+  weight: "100 900",
+  display: "swap",
 });
 
-const interDisplay = Inter({
+const interDisplay = localFont({
+  src: "./fonts/inter-latin.woff2",
   variable: "--font-fraunces",
-  subsets: ["latin"],
+  weight: "100 900",
+  display: "swap",
 });
 
-const interBrand = Inter({
+const interBrand = localFont({
+  src: "./fonts/inter-latin.woff2",
   variable: "--font-brand",
-  subsets: ["latin"],
-  weight: ["500", "600", "700", "800"],
+  weight: "100 900",
+  display: "swap",
 });
 
 /* Look A (pre-look-moderne-0.3.5) type. Look B keeps Inter on the original variables. */
-const outfit = Outfit({
+const outfit = localFont({
+  src: "./fonts/outfit-latin.woff2",
   variable: "--font-classic-outfit",
-  subsets: ["latin"],
+  weight: "100 900",
+  display: "swap",
 });
 
-const fraunces = Fraunces({
+const fraunces = localFont({
+  src: "./fonts/fraunces-latin.woff2",
   variable: "--font-classic-fraunces",
-  subsets: ["latin"],
+  weight: "100 900",
+  display: "swap",
 });
 
-const jakarta = Plus_Jakarta_Sans({
+const jakarta = localFont({
+  src: "./fonts/plus-jakarta-sans-latin.woff2",
   variable: "--font-classic-brand",
-  subsets: ["latin"],
-  weight: ["500", "600", "700", "800"],
+  weight: "200 800",
+  display: "swap",
 });
 
 export const metadata: Metadata = {

@@ -18,6 +18,7 @@
  * `POST /alerts/consent` = proche grants location sharing themselves
  * `/arbitrage/*` = HITL arbitration (see arbitrage.ts)
  * `POST /alerts/ping` = consented GPS ping; optional Twilio SMS / Resend email
+ * `/persona-deposits*`, `/persona-bank/*`, `/twin-bank*` = twin image & voice bank (see persona-bank.ts)
  *
  * D1: `npx wrangler d1 create xsnow-stats` then set database_id in wrangler.toml
  * and `npx wrangler d1 migrations apply xsnow-stats --remote`.
@@ -33,6 +34,7 @@ import {
   isAlertsPingPath,
 } from "./alerts";
 import { corsHeaders } from "./cors";
+import { d1BankStore, handlePersonaBank, isPersonaBankPath, type BlobStore, type D1ForBank } from "./persona-bank";
 import { d1ArbStore, handleArbitrage, isArbitragePath, type D1Full } from "./arbitrage";
 import { parseLatLon, reverseGeocode } from "./geo";
 import { handleIdeasGet, handleIdeasPost, handleRegisterPost, isIdeasPath, isRegisterPath } from "./ideas";
@@ -68,6 +70,16 @@ export interface Env {
   ARBITER_SIGNING_KEY?: string;
   ARBITER_SIGNING_PUBLIC_KEY?: string;
   ARBITER_ADMIN_SECRET?: string;
+  /** Twin image & voice bank: PRIVATE R2 bucket (see wrangler.toml). Without it the bank answers 503. */
+  PERSONA_BANK?: BlobStore;
+  /** Team review of lender dossiers. `npx wrangler secret put PERSONA_ADMIN_SECRET`. */
+  PERSONA_ADMIN_SECRET?: string;
+  /** HMAC key for short-lived twin media links. `npx wrangler secret put TWIN_BANK_SIGNING_KEY`. */
+  TWIN_BANK_SIGNING_KEY?: string;
+  /** "on" = twin testers also see dossiers still pending team review (flagged verified:false). */
+  TWIN_BANK_TEST_MODE?: string;
+  /** Server-to-server secret shared with the twin app backend (links real twin accounts). `npx wrangler secret put TWIN_APP_SECRET`. */
+  TWIN_APP_SECRET?: string;
 }
 
 const MODEL = "@cf/meta/llama-3.2-3b-instruct";
@@ -490,6 +502,21 @@ export default {
       if (!env.DB) return json({ error: "not_configured" }, 503, origin);
       if (tooMany(clientIp(request))) return json({ error: "rate_limited" }, 429, origin);
       const res = await handleArbitrage(request, env, { store: d1ArbStore(env.DB as unknown as D1Full) });
+      const headers = new Headers(res.headers);
+      for (const [k, v] of Object.entries(corsHeaders(origin))) headers.set(k, v);
+      return new Response(res.body, { status: res.status, headers });
+    }
+
+    if (isPersonaBankPath(pathname)) {
+      if (tooMany(clientIp(request))) return json({ error: "rate_limited" }, 429, origin);
+      const res = await handlePersonaBank(request, {
+        store: env.DB ? d1BankStore(env.DB as unknown as D1ForBank) : null,
+        blobs: env.PERSONA_BANK ?? null,
+        adminSecret: env.PERSONA_ADMIN_SECRET,
+        signingKey: env.TWIN_BANK_SIGNING_KEY,
+        testMode: env.TWIN_BANK_TEST_MODE,
+        twinAppSecret: env.TWIN_APP_SECRET,
+      });
       const headers = new Headers(res.headers);
       for (const [k, v] of Object.entries(corsHeaders(origin))) headers.set(k, v);
       return new Response(res.body, { status: res.status, headers });
