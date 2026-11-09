@@ -11,6 +11,7 @@ import { usePlace } from "@/lib/place";
 import { dictationLang } from "@/lib/voices";
 import {
   classifyDictationError,
+  dictationRetryLang,
   dictationSupported,
   getSpeechRecognitionCtor,
   transcriptFromEvent,
@@ -63,7 +64,10 @@ export function AvatarChat({
   const recogRef = useRef<BrowserSpeechRecognition | null>(null);
   const heardRef = useRef("");
   const sentFromMicRef = useRef(false);
-  const retryFrFrRef = useRef(false);
+  // Dictation language retry (guarded by dictationRetryLang): every
+  // language attempted for this start, plus the one pending fallback.
+  const triedLangsRef = useRef<string[]>([]);
+  const retryLangRef = useRef<string | null>(null);
 
   useEffect(() => {
     const node = listRef.current;
@@ -170,6 +174,7 @@ export function AvatarChat({
       return;
     }
 
+    if (!triedLangsRef.current.includes(lang)) triedLangsRef.current.push(lang);
     const recog = new Ctor();
     recogRef.current = recog;
     recog.lang = lang;
@@ -204,9 +209,15 @@ export function AvatarChat({
 
     recog.onerror = (event) => {
       if (event.error === "aborted") return;
-      if (event.error === "language-not-supported" && !retryFrFrRef.current) {
-        retryFrFrRef.current = true;
-        return;
+      if (event.error === "language-not-supported") {
+        // At most one fallback, never toward a language already tried:
+        // when none remains, fall through to the clean stop + message
+        // instead of restarting recognition forever.
+        const retry = dictationRetryLang(lang, triedLangsRef.current);
+        if (retry) {
+          retryLangRef.current = retry;
+          return;
+        }
       }
       listeningRef.current = false;
       setListening(false);
@@ -215,11 +226,10 @@ export function AvatarChat({
 
     recog.onend = () => {
       if (recogRef.current !== recog) return;
-      if (retryFrFrRef.current) {
-        retryFrFrRef.current = false;
-        beginDictation(
-          locale === "fr" ? "fr-FR" : locale === "es" ? "es-MX" : "en-GB",
-        );
+      const retry = retryLangRef.current;
+      if (retry) {
+        retryLangRef.current = null;
+        beginDictation(retry);
         return;
       }
       recogRef.current = null;
@@ -269,7 +279,8 @@ export function AvatarChat({
 
     heardRef.current = "";
     sentFromMicRef.current = false;
-    retryFrFrRef.current = false;
+    triedLangsRef.current = [];
+    retryLangRef.current = null;
     beginDictation(dictationLang(locale, localeHint));
   }
 

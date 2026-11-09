@@ -149,6 +149,46 @@ export type BusinessAdNoticeInput = {
   imageBytes: number;
 };
 
+export type IdeaAttachmentNoticeInput = {
+  /** Proposal id — the same id the flattened proposal text travels under. */
+  id: string;
+  title: string;
+  opcId: string;
+  filename: string;
+  mime: string;
+  base64: string;
+  bytes: number;
+};
+
+/**
+ * Team mail carrying the optional document/photo of a « Vendre mes idées »
+ * proposal. The proposal text itself arrives separately through /ideas
+ * under the same id; this mail only carries the file, matched by that id.
+ */
+export function buildIdeaAttachmentOwnerMail(
+  input: IdeaAttachmentNoticeInput,
+  now = Date.now(),
+): OwnerMail {
+  const when = new Date(now).toISOString();
+  const subject = clipSubject(`OPC idée à vendre — pièce jointe — ${input.title || input.id}`);
+  const text = [
+    "Pièce jointe d’une proposition « Vendre mes idées » (document ou photo de l’idée).",
+    "",
+    `Date: ${when}`,
+    `Proposition: ${input.id}`,
+    `Titre: ${input.title || "(sans titre)"}`,
+    `Numéro OPC (appareil): ${input.opcId || "non inscrit"}`,
+    `Fichier: ${input.filename} (~${Math.ceil(input.bytes / 1024)} Ko)`,
+    "",
+    "Le texte de la proposition arrive séparément (boîte « Vos idées », même identifiant de proposition).",
+    "Le vendeur a consenti à transmettre ce document ou cette photo avec sa proposition.",
+  ].join("\n");
+  const attachments = input.base64
+    ? [{ filename: input.filename, content: input.base64, content_type: input.mime }]
+    : undefined;
+  return { subject, text, attachments };
+}
+
 export function buildBusinessAdOwnerMail(
   ad: BusinessAdNoticeInput,
   now = Date.now(),
