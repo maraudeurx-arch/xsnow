@@ -3,9 +3,14 @@ import assert from "node:assert/strict";
 import { IDEA_TEXT_MAX } from "./ideas.ts";
 import { parseIdeaInboxInput } from "./idea-inbox.ts";
 import {
+  appendDictationToDescription,
+  clipIdeaSaleSummary,
   emptyIdeaSaleForm,
   ideaSaleInboxText,
   ideaSaleIssues,
+  ideaSaleSummarySystemPrompt,
+  IDEA_SALE_DESCRIPTION_MAX,
+  IDEA_SALE_SUMMARY_MAX,
   IDEA_SALE_TAG,
   type IdeaSaleForm,
 } from "./idea-sale.ts";
@@ -21,6 +26,67 @@ const validForm: IdeaSaleForm = {
   email: "marie@voisin.test",
   consent: true,
 };
+
+describe("vendre mes idées — micro et résumé (demande du fondateur, 08/11/2026)", () => {
+  it("appends a final dictation transcript to the text already written", () => {
+    assert.equal(appendDictationToDescription("", "Une idée simple"), "Une idée simple");
+    assert.equal(appendDictationToDescription("Une idée", "simple"), "Une idée simple");
+    // No double space when the current text already ends with whitespace.
+    assert.equal(appendDictationToDescription("Une idée ", "simple"), "Une idée simple");
+    // Whitespace inside the transcript is collapsed; an empty one changes nothing.
+    assert.equal(appendDictationToDescription("Une idée", "  très\n simple  "), "Une idée très simple");
+    assert.equal(appendDictationToDescription("Une idée", "   "), "Une idée");
+    assert.equal(appendDictationToDescription("Une idée", ""), "Une idée");
+  });
+
+  it("never lets dictation push the description past the maximum", () => {
+    const almostFull = "x".repeat(IDEA_SALE_DESCRIPTION_MAX - 5);
+    const result = appendDictationToDescription(almostFull, "mot en trop qui dépasse largement");
+    assert.equal(result.length, IDEA_SALE_DESCRIPTION_MAX);
+    assert.ok(result.startsWith(almostFull));
+  });
+
+  it("builds the summary system prompt in the interface language", () => {
+    const frPrompt = ideaSaleSummarySystemPrompt("fr");
+    assert.match(frPrompt, /uniquement par le résumé/);
+    assert.match(frPrompt, new RegExp(String(IDEA_SALE_SUMMARY_MAX)));
+    assert.match(frPrompt, /à qui elle s'adresse/);
+    const enPrompt = ideaSaleSummarySystemPrompt("en");
+    assert.match(enPrompt, /summary only/);
+    assert.match(enPrompt, /who it is for/);
+    const esPrompt = ideaSaleSummarySystemPrompt("es");
+    assert.match(esPrompt, /únicamente con el resumen/);
+    assert.match(esPrompt, /a quién va dirigida/);
+    // Any other locale falls back to French, the team's language.
+    assert.equal(ideaSaleSummarySystemPrompt("de"), frPrompt);
+  });
+
+  it("clips a proposed summary into a valid one-line description", () => {
+    assert.equal(clipIdeaSaleSummary("  Un résumé\nsur deux lignes.  "), "Un résumé sur deux lignes.");
+    const clipped = clipIdeaSaleSummary("y".repeat(IDEA_SALE_DESCRIPTION_MAX + 100));
+    assert.equal(clipped.length, IDEA_SALE_DESCRIPTION_MAX);
+    assert.equal(clipIdeaSaleSummary(""), "");
+  });
+
+  it("micro and summary copy exists in FR/EN/ES, with no promised figure", () => {
+    assert.equal(fr.earnNow.ideaSale.micStart, "Dicter mon idée");
+    assert.equal(en.earnNow.ideaSale.micStart, "Dictate my idea");
+    assert.equal(es.earnNow.ideaSale.micStart, "Dictar mi idea");
+    for (const m of [fr, en, es]) {
+      const g = m.earnNow.ideaSale;
+      assert.ok(g.micStop && g.micUnsupported && g.micPermission && g.micError);
+      assert.ok(g.summarize && g.summarizing && g.summaryTitle);
+      assert.ok(g.summaryUse && g.summaryKeep && g.summaryFailed);
+      const added = JSON.stringify({
+        a: g.micStart, b: g.micStop, c: g.micUnsupported, d: g.micPermission, e: g.micError,
+        f: g.summarize, g: g.summarizing, h: g.summaryTitle, i: g.summaryUse, j: g.summaryKeep,
+        k: g.summaryFailed,
+      });
+      assert.doesNotMatch(added, /[$€]|\d+\s?%|\d+\s?(USD|CAD)/);
+      assert.doesNotMatch(added, /crypto|token|jeton|solidaire|solidari/i);
+    }
+  });
+});
 
 describe("vendre mes idées", () => {
   it("requires title, description, name, a valid e-mail and consent", () => {
