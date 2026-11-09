@@ -1664,6 +1664,28 @@ export const es: Messages = {
     cityUnknown: "Ciudad no indicada",
     exportJson: "Exportar JSON",
   },
+  installWall: {
+    title: "Primero instala OPC en tu pantalla de inicio",
+    lead: "Open Community funciona como una aplicación de verdad, desde la pantalla de inicio de tu teléfono, sin tienda de aplicaciones. Mientras esté abierta en el navegador, no se muestra nada más: instálala y luego ábrela desde su icono.",
+    videoPlaceholder: "Video: instalar OPC (1 min) — muy pronto",
+    iosTitle: "En iPhone / iPad (Safari)",
+    iosSteps: [
+      "Toca el botón Compartir (el cuadrado con una flecha hacia arriba), abajo o arriba en Safari.",
+      "Desliza hacia abajo y toca «Agregar a la pantalla de inicio».",
+      "Toca «Agregar» arriba a la derecha: el icono de OPC aparece en tu pantalla de inicio.",
+    ],
+    androidTitle: "En Android (Chrome)",
+    androidSteps: [
+      "Toca el menú ⋮ arriba a la derecha de Chrome.",
+      "Toca «Instalar aplicación» o «Agregar a la pantalla de inicio».",
+      "Confirma: el icono de OPC aparece en tu pantalla de inicio.",
+    ],
+    inAppNote: "¿Abriste este enlace desde otra app (Facebook, WhatsApp, correo…)? Ábrelo primero en Safari (iPhone) o Chrome (Android).",
+    then: "Después cierra esta pestaña y toca el icono de OPC en tu pantalla de inicio.",
+    installButton: "INSTALAR LA APP AHORA",
+    terms: "Condiciones",
+    privacy: "Privacidad",
+  },
   twinBank: {
     title: "Gemelo digital — banco de imágenes y voces",
     lead: "Voces e imágenes prestadas por miembros de OPC que dieron su consentimiento (18 años o más). Solo aparecen los expedientes consentidos y no retirados.",

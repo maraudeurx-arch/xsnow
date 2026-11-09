@@ -19,6 +19,7 @@ import { WagmiProvider } from "wagmi";
 import { AnalyticsRoot } from "@/components/AnalyticsRoot";
 import { ConsentSheet } from "@/components/ConsentSheet";
 import { DeviceMemoryBoot } from "@/components/DeviceMemoryBoot";
+import { InstallWall } from "@/components/InstallWall";
 import type { Locale } from "@/lib/i18n";
 import { LocaleProvider, useI18n } from "@/lib/i18n/locale";
 import { PUBLIC_SITE_URL, absoluteAssetUrl } from "@/lib/paths";
@@ -95,14 +96,16 @@ export function Providers({ children }: { children: ReactNode }) {
       <PlaceProvider>
         <AnalyticsRoot />
         <DeviceMemoryBoot />
-        <ConsentSheet />
-        <SpeechProvider>
-          {walletConfig ? (
-            <RainbowStack>{children}</RainbowStack>
-          ) : (
-            <StubWalletProvider>{children}</StubWalletProvider>
-          )}
-        </SpeechProvider>
+        <InstallWall>
+          <ConsentSheet />
+          <SpeechProvider>
+            {walletConfig ? (
+              <RainbowStack>{children}</RainbowStack>
+            ) : (
+              <StubWalletProvider>{children}</StubWalletProvider>
+            )}
+          </SpeechProvider>
+        </InstallWall>
       </PlaceProvider>
     </LocaleProvider>
   );

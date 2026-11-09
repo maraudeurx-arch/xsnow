@@ -1662,6 +1662,28 @@ export const en: Messages = {
     cityUnknown: "City not given",
     exportJson: "Export JSON",
   },
+  installWall: {
+    title: "First install OPC on your home screen",
+    lead: "Open Community works like a real app, from your phone’s home screen — no app store needed. While it is open in the browser, nothing else is shown: install it, then open it from its icon.",
+    videoPlaceholder: "Video: installing OPC (1 min) — coming soon",
+    iosTitle: "On iPhone / iPad (Safari)",
+    iosSteps: [
+      "Tap the Share button (the square with an arrow pointing up), at the bottom or top of Safari.",
+      "Scroll down, then tap “Add to Home Screen”.",
+      "Tap “Add” at the top right: the OPC icon appears on your home screen.",
+    ],
+    androidTitle: "On Android (Chrome)",
+    androidSteps: [
+      "Tap the ⋮ menu at the top right of Chrome.",
+      "Tap “Install app” or “Add to Home screen”.",
+      "Confirm: the OPC icon appears on your home screen.",
+    ],
+    inAppNote: "Did you open this link from another app (Facebook, WhatsApp, email…)? First open it in Safari (iPhone) or Chrome (Android).",
+    then: "Then close this tab and tap the OPC icon on your home screen.",
+    installButton: "INSTALL THE APP NOW",
+    terms: "Terms",
+    privacy: "Privacy",
+  },
   twinBank: {
     title: "Digital twin — image and voice bank",
     lead: "Voices and images lent by OPC members who gave their consent (18 and over). Only consented, non-withdrawn files appear.",
