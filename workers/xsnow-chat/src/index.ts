@@ -12,7 +12,6 @@
  * `POST /business-ads` = business photo ad for review; emails opencommunity.opc@gmail.com with attachment
  * `POST /register` = optional registration notice to the same inbox
  * `POST /lead-test-answer` = project-lead test answer (08/11/2026); emails essaim.agents@gmail.com
- * `POST /transcribe` = raw recorded audio (dictation) -> Workers AI Whisper text; nothing stored
  * `GET /ideas` = owner list (JSON or HTML) behind `IDEAS_OWNER_SECRET`
  * `POST /alerts` = guardian registers a consented proximity alert (schedule + place)
  * `GET /alerts?token=` = invite preview for the proche (no phone)
@@ -38,7 +37,6 @@ import { d1ArbStore, handleArbitrage, isArbitragePath, type D1Full } from "./arb
 import { parseLatLon, reverseGeocode } from "./geo";
 import { handleIdeasGet, handleIdeasPost, handleRegisterPost, isIdeasPath, isRegisterPath } from "./ideas";
 import { handleLeadTestAnswerPost, isLeadTestAnswerPath } from "./lead-test";
-import { handleTranscribePost, isTranscribePath, TRANSCRIBE_MAX_AUDIO_BYTES } from "./transcribe";
 import { handleBusinessAdsPost, isBusinessAdsPath } from "./business-ads";
 import { fetchCityNews, parseCityParam, parseLangParam } from "./news";
 import { CHAT_TEXT_MAX, isJsonContentType, sanitizeUntrustedText } from "../../../src/lib/sanitize.ts";
@@ -417,35 +415,6 @@ async function handleLeadTestAnswer(request: Request, env: Env, origin: string |
   return json(result.data, result.status, origin);
 }
 
-async function handleTranscribe(request: Request, env: Env, origin: string | null): Promise<Response> {
-  if (request.method !== "POST") {
-    return json({ error: "method_not_allowed" }, 405, origin);
-  }
-  if (tooMany(clientIp(request))) {
-    return json({ error: "rate_limited" }, 429, origin);
-  }
-  // Early size guard on the declared length, before reading the body.
-  const declaredLength = Number(request.headers.get("Content-Length") || "0");
-  if (declaredLength > TRANSCRIBE_MAX_AUDIO_BYTES) {
-    return json({ error: "payload_too_large" }, 400, origin);
-  }
-  let audio: ArrayBuffer;
-  try {
-    audio = await request.arrayBuffer();
-  } catch {
-    return json({ error: "bad_request" }, 400, origin);
-  }
-  const result = await handleTranscribePost(
-    {
-      audio,
-      contentType: request.headers.get("Content-Type"),
-      language: new URL(request.url).searchParams.get("lang"),
-    },
-    env,
-  );
-  return json(result.data, result.status, origin);
-}
-
 async function handleNews(request: Request, origin: string | null): Promise<Response> {
   if (request.method !== "GET") {
     return json({ error: "method_not_allowed" }, 405, origin);
@@ -560,10 +529,6 @@ export default {
 
     if (isLeadTestAnswerPath(pathname)) {
       return handleLeadTestAnswer(request, env, origin);
-    }
-
-    if (isTranscribePath(pathname)) {
-      return handleTranscribe(request, env, origin);
     }
 
     if (request.method !== "POST") {

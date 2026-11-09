@@ -1,16 +1,20 @@
 /**
  * Reliable dictation client: the browser records the microphone
- * (MediaRecorder) and this module POSTs the raw audio to the Worker's
- * /transcribe route (Workers AI Whisper), which returns the text.
+ * (MediaRecorder) and this module POSTs the raw audio to the
+ * /opc/transcribe route (Workers AI Whisper), which returns the text.
  *
  * Replaces the browser's own speech recognition for the « Vendre mes
  * idées » form: Web Speech (webkitSpeechRecognition) is missing or
  * failing on the founder's iPhone, especially in the installed app —
  * tested live on 08/11/2026. Recording + server transcription works
  * wherever getUserMedia works.
+ *
+ * The route lives on the essaim-agents.com site Worker — NOT on this
+ * app's xsnow-chat Worker: the site Worker deploys itself on every
+ * merge (Workers Builds), while xsnow-chat needs a manual wrangler
+ * deploy nobody on the team can run from here. Same Workers AI
+ * binding on both sides, so the transcript quality is identical.
  */
-
-import { ideasInboxEndpoint } from "./idea-inbox.ts";
 
 /** Transcription can take a few seconds on the model side; allow more than the inbox posts. */
 export const TRANSCRIBE_POST_TIMEOUT_MS = 30_000;
@@ -27,8 +31,12 @@ export class TranscribeError extends Error {
   }
 }
 
+/** The transcription route lives on the essaim-agents.com site Worker (see header). */
+export const TRANSCRIBE_FALLBACK_URL = "https://essaim-agents.com/opc/transcribe";
+
 export function transcribeEndpoint(base?: string) {
-  return ideasInboxEndpoint(base).replace(/\/ideas$/, "/transcribe");
+  const origin = String(base ?? "").trim().replace(/\/+$/, "");
+  return origin ? `${origin}/opc/transcribe` : TRANSCRIBE_FALLBACK_URL;
 }
 
 /** Reduce an interface locale ("fr-CA") to the Whisper hint ("fr"); "" = let the model detect. */

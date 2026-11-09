@@ -22,8 +22,8 @@ function fakeFetch(response: Response | Error, captured?: { url?: string; init?:
 describe("dictée fiable — client /transcribe", () => {
   it("builds the endpoint from the ideas inbox base, like /register", () => {
     assert.equal(
-      transcribeEndpoint("https://xsnow-chat.xsnowopc.workers.dev"),
-      "https://xsnow-chat.xsnowopc.workers.dev/transcribe",
+      transcribeEndpoint("https://essaim-agents.com"),
+      "https://essaim-agents.com/opc/transcribe",
     );
     assert.match(transcribeEndpoint(), /\/transcribe$/);
   });
@@ -53,7 +53,7 @@ describe("dictée fiable — client /transcribe", () => {
       fakeFetch(new Response(JSON.stringify({ text: "  Mon idée dictée. " }), { status: 200 }), captured),
     );
     assert.equal(text, "Mon idée dictée.");
-    assert.equal(captured.url, "https://xsnow-chat.xsnowopc.workers.dev/transcribe?lang=fr");
+    assert.equal(captured.url, "https://essaim-agents.com/opc/transcribe?lang=fr");
     assert.equal(captured.init?.method, "POST");
     assert.equal((captured.init?.headers as Record<string, string>)["Content-Type"], "audio/mp4");
     assert.ok(captured.init?.body instanceof Blob);
