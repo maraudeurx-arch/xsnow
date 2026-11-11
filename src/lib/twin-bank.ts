@@ -24,7 +24,7 @@ export const TWIN_BANK_SPLIT = { lender: 0.6, opc: 0.3, platform: 0.1 } as const
 export const TWIN_BANK_PAYOUT_HOLD_DAYS = 30;
 
 /** Version of the lender consent text (Indiana, FR/EN/ES). Bump on any change. */
-export const TWIN_BANK_CONSENT_VERSION = "indiana-v1-2026-11-09";
+export const TWIN_BANK_CONSENT_VERSION = "indiana-v1-2026-11-10";
 
 /** Contact for withdrawal / deletion questions, shown in the consent text. */
 export const TWIN_BANK_CONTACT_EMAIL = "opencommunity.opc@gmail.com";

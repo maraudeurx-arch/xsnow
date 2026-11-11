@@ -168,7 +168,7 @@ export const FEATURE_COPY = {
   },
   monetise: {
     title: "Monétisez-vous : votre image, votre voix.",
-    lead: "Prête ta voix ou ton image aux jumeaux numériques d’OPC. Tu restes propriétaire et tu peux te retirer quand tu veux. Aucun revenu garanti.",
+    lead: "Prête ta voix ou ton image à OPC. Tu restes propriétaire et tu peux te retirer quand tu veux. Aucun revenu garanti.",
   },
   jumeauBanque: {
     title: "Jumeau numérique — banque d’images et de voix",

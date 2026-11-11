@@ -781,7 +781,7 @@ export const es: Messages = {
       title: "Monetízate: imagen y voz",
       preparingTitle: "En preparación",
       preparingLead: "El recorrido está cerrado por ahora. No se recoge nada.",
-      lead: "Presta tu voz o tu imagen al banco de gemelos digitales de OPC. Sigues siendo el dueño, eliges lo que ofreces y puedes retirarte cuando quieras. Si se usan tu voz o tu imagen, recibes una parte de lo que pagan los suscriptores. No se garantiza ningún ingreso.",
+      lead: "Presta tu voz o tu imagen al banco privado de OPC. Sigues siendo el dueño, eliges lo que ofreces y puedes retirarte cuando quieras. Si se usan tu voz o tu imagen, recibes una parte de lo que pagan los suscriptores. No se garantiza ningún ingreso.",
       adultNote: "Solo para personas de 18 años o más, residentes en un país en desarrollo (fuera de Canadá, Estados Unidos y Europa).",
       stepsTitle: "El recorrido",
       stepsList: [
@@ -792,7 +792,7 @@ export const es: Messages = {
         "Verificación: un video de tu cara diciendo un código en voz alta.",
         "Depósito: tu expediente va al banco privado, en revisión por el equipo.",
       ],
-      deviceNote: "Tus archivos van a un espacio privado de OPC, nunca público. Solo los suscriptores del Gemelo pueden usarlos, con un enlace temporal. Puedes retirarlo todo con un toque.",
+      deviceNote: "Tus archivos van a un espacio privado de OPC, nunca público. Solo los servicios de OPC autorizados a usarlos pueden hacerlo, con un enlace temporal, y solo con tu acuerdo. Puedes retirarlo todo con un toque.",
       resumeNote: "Tu expediente en curso continúa donde lo dejaste.",
       progress: "Paso {step} de {total} — {name}",
       stepNames: {
@@ -816,11 +816,11 @@ export const es: Messages = {
       consentTitle: "Condiciones y consentimiento",
       consentIntro: "Lee estas condiciones antes de aceptar. Dicen lo que ofreces, lo que OPC puede hacer con ello y cuáles son tus derechos.",
       consentItems: [
-        "Lo que ofreces: tu voz (una grabación) y/o tu imagen (una foto y un video), según tu elección, más un video corto de verificación. Entran en el banco privado de imágenes y voces de los gemelos digitales de OPC.",
-        "Uso permitido: los suscriptores del Gemelo digital de OPC pueden usarlos para crear videos y voces generados por IA (presentaciones, formaciones, programas). Ese contenido siempre se indica como generado por IA. Ningún otro uso, ninguna reventa, ningún entrenamiento de otros modelos.",
+        "Lo que ofreces: tu voz (una grabación) y/o tu imagen (una foto y un video), según tu elección, más un video corto de verificación. Entran en el banco privado de imágenes y voces de OPC.",
+        "Uso permitido: los servicios de OPC autorizados a usarlos, y solo con tu acuerdo, pueden usarlos para crear videos y voces generados por IA (presentaciones, formaciones, programas). Ese contenido siempre se indica como generado por IA. Ningún otro uso, ninguna reventa, ningún entrenamiento de otros modelos.",
         "Usos prohibidos: hacer creer que realmente dijiste o hiciste algo, suplantar tu identidad, contenido sexual o desnudos, contenido político o electoral, odio, difamación o acoso, estafas o fraude, publicidad dirigida a menores, y todo uso ilegal o en tu contra. Un incumplimiento suspende al suscriptor.",
         "Elegibilidad: participación reservada a personas de 18 años o más, residentes en un país en desarrollo (fuera de Canadá, Estados Unidos y Europa). Debes ofrecer solo tu propia voz y tu propia imagen. El video en el que dices un código en voz alta sirve para comprobarlo. El equipo revisa cada expediente; la aplicación nunca confirma una identidad por sí sola.",
-        "Retiro en cualquier momento, borrado real: el botón «Retirar mi voz y mi imagen» borra tus archivos del banco de inmediato y los quita del catálogo de gemelos. El contenido ya creado antes de tu retiro no siempre puede recuperarse. Contacto: opencommunity.opc@gmail.com.",
+        "Retiro en cualquier momento, borrado real: el botón «Retirar mi voz y mi imagen» borra tus archivos del banco de inmediato y los quita del catálogo. El contenido ya creado antes de tu retiro no siempre puede recuperarse. Contacto: opencommunity.opc@gmail.com.",
         "Ningún ingreso garantizado: si se usan tu voz o tu imagen, recibes una parte de lo que pagan los suscriptores por usarlas, pagada después del período de reembolso. No es un salario ni un ingreso prometido. Puede que no haya ninguna ganancia.",
         "Privacidad: solo tu seudónimo y tu país se muestran a los suscriptores. Tus archivos se guardan en un espacio privado y cifrado, que puede estar fuera de tu país. El tratamiento sigue la ley federal canadiense de protección de datos personales (PIPEDA). Puedes pedir el acceso a tus datos o su borrado en la dirección indicada arriba.",
       ],
@@ -832,7 +832,7 @@ export const es: Messages = {
       voiceTitle: "Tu voz",
       voiceLead: "Lee el texto de abajo al micrófono, con voz natural, en un lugar tranquilo. Bastan de 20 a 30 segundos.",
       voiceScriptLabel: "Texto para leer",
-      voiceScript: "¡Hola! Soy yo de verdad, con mi voz real. Hoy la presto al banco de gemelos digitales de OPC. Escuchen los números: uno, dos, tres, cuatro, cinco. Por la mañana me levanto temprano; por la noche cuento mi día. ¿Una pregunta? Respondo con gusto, con calma y claridad. Gracias por escucharme.",
+      voiceScript: "¡Hola! Soy yo de verdad, con mi voz real. Hoy la presto al banco privado de OPC. Escuchen los números: uno, dos, tres, cuatro, cinco. Por la mañana me levanto temprano; por la noche cuento mi día. ¿Una pregunta? Respondo con gusto, con calma y claridad. Gracias por escucharme.",
       voiceRecord: "Grabar",
       voiceStop: "Detener",
       voiceRecording: "Grabando… {seconds} s",
@@ -885,7 +885,7 @@ export const es: Messages = {
       uploadFailed: "El envío falló (¿conexión?). Tu expediente se queda en tu dispositivo. Toca «Reenviar».",
       retryUpload: "Reenviar mi expediente",
       withdrawTitle: "Retirar mi voz y mi imagen",
-      withdrawLead: "Basta un toque: tus archivos se borran del banco de inmediato y se quitan del catálogo de gemelos.",
+      withdrawLead: "Basta un toque: tus archivos se borran del banco de inmediato y se quitan del catálogo.",
       withdrawButton: "Retirar mi voz y mi imagen",
       withdrawConfirm: "Confirmar el retiro y el borrado",
       withdrawCancel: "Cancelar",
@@ -962,7 +962,7 @@ export const es: Messages = {
     },
     monetise: {
       title: "Monetízate: tu imagen, tu voz.",
-      lead: "Presta tu voz o tu imagen a los gemelos digitales de OPC. Sigues siendo el dueño y puedes retirarte cuando quieras. Ningún ingreso garantizado.",
+      lead: "Presta tu voz o tu imagen a OPC. Sigues siendo el dueño y puedes retirarte cuando quieras. Ningún ingreso garantizado.",
     },
     jumeauBanque: {
       title: "Gemelo digital — banco de imágenes y voces",
@@ -1059,7 +1059,7 @@ export const es: Messages = {
     inviter:
       "Un enlace de invitación y un QR aparecerán aquí. Por ahora, habla de Open Community a un vecino.",
     monetise:
-      "El recorrido está abierto a mayores de 18 años: elección de voz o imagen, consentimiento, muestras, verificación de la cara y depósito en el banco privado de gemelos digitales. Retiro con un toque.",
+      "El recorrido está abierto a mayores de 18 años: elección de voz o imagen, consentimiento, muestras, verificación de la cara y depósito en el banco privado de OPC. Retiro con un toque.",
     scenarios:
       "Un taller para inventar sketches y dibujos animados comunitarios. Previsto para 2027.",
     sondages:

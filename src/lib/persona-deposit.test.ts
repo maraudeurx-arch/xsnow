@@ -89,7 +89,7 @@ describe("monétise-toi — porte de consentement", () => {
     const d = consented();
     assert.equal(d.consent?.acceptedAt, NOW + 1);
     assert.equal(d.consent?.textVersion, PERSONA_CONSENT_TEXT_VERSION);
-    assert.equal(PERSONA_CONSENT_TEXT_VERSION, "indiana-v1-2026-11-09");
+    assert.equal(PERSONA_CONSENT_TEXT_VERSION, "indiana-v1-2026-11-10");
   });
 
   it("keeps every later step closed until the choice and the consent are recorded", () => {
@@ -317,6 +317,24 @@ describe("monétise-toi — collecte ouverte (Popol, 09/11/2026)", () => {
   it("no copy still says the journey is closed", () => {
     for (const stub of [fr.stubs.monetise, en.stubs.monetise, es.stubs.monetise]) {
       assert.doesNotMatch(stub, /En préparation|In preparation|En preparación/);
+    }
+  });
+
+  it("deposit journey copy no longer names Jumeau / Twin / Gemelo (Popol, 10/11/2026)", () => {
+    for (const lang of [fr, en, es]) {
+      const p = lang.earnNow.personaMonetise;
+      const corpus = [
+        p.lead,
+        p.deviceNote,
+        p.voiceScript,
+        p.withdrawLead,
+        ...p.consentItems,
+        lang.features.monetise.lead,
+        lang.stubs.monetise,
+      ].join("\n");
+      assert.doesNotMatch(corpus, /jumeau/i);
+      assert.doesNotMatch(corpus, /\btwin\b/i);
+      assert.doesNotMatch(corpus, /gemelo/i);
     }
   });
 });

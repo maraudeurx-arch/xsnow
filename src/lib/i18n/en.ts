@@ -781,7 +781,7 @@ export const en: Messages = {
       title: "Monetize yourself: image and voice",
       preparingTitle: "In preparation",
       preparingLead: "The journey is closed for now. Nothing is collected.",
-      lead: "Lend your voice or image to OPC’s digital twin bank. You stay the owner, you choose what you offer, and you can withdraw at any time. If your voice or image is used, you receive a share of what subscribers pay. No income is guaranteed.",
+      lead: "Lend your voice or image to OPC’s private bank. You stay the owner, you choose what you offer, and you can withdraw at any time. If your voice or image is used, you receive a share of what subscribers pay. No income is guaranteed.",
       adultNote: "Only for people 18 or older, living in a developing country (excluding Canada, the United States and Europe).",
       stepsTitle: "The journey",
       stepsList: [
@@ -792,7 +792,7 @@ export const en: Messages = {
         "Verification: a video of your face saying a code out loud.",
         "Deposit: your file goes to the private bank, for review by the team.",
       ],
-      deviceNote: "Your files go to a private OPC space, never public. Only Twin subscribers can use them, through a temporary link. You can withdraw everything in one tap.",
+      deviceNote: "Your files go to a private OPC space, never public. Only authorized OPC services may use them, through a temporary link, and only with your agreement. You can withdraw everything in one tap.",
       resumeNote: "Your file in progress picks up where you left off.",
       progress: "Step {step} of {total} — {name}",
       stepNames: {
@@ -816,11 +816,11 @@ export const en: Messages = {
       consentTitle: "Terms and consent",
       consentIntro: "Read these terms before you accept. They say what you offer, what OPC may do with it, and your rights.",
       consentItems: [
-        "What you offer: your voice (a recording) and/or your image (a photo and a video), as you choose, plus a short verification video. They go into OPC’s private image and voice bank for digital twins.",
-        "Allowed use: subscribers of OPC’s Digital Twin may use them to create AI-generated videos and voices (presentations, training, shows). This content is always labelled as AI-generated. No other use, no resale, no training of other models.",
+        "What you offer: your voice (a recording) and/or your image (a photo and a video), as you choose, plus a short verification video. They go into OPC’s private image and voice bank.",
+        "Allowed use: authorized OPC services, and only with your agreement, may use them to create AI-generated videos and voices (presentations, training, shows). This content is always labelled as AI-generated. No other use, no resale, no training of other models.",
         "Forbidden uses: making people believe you really said or did something, impersonating you, sexual content or nudity, political or election content, hate, defamation or harassment, scams or fraud, advertising aimed at minors, and any illegal use or use against you. A breach gets the subscriber suspended.",
         "Eligibility: open only to people 18 or older, living in a developing country (excluding Canada, the United States and Europe). You must offer only your own voice and your own image. The video where you say a code out loud is used to check this. The team reviews every file; the app never confirms an identity on its own.",
-        "Withdraw any time, real deletion: the “Withdraw my voice and image” button erases your files from the bank right away and removes them from the twin catalogue. Content already created before you withdraw cannot all be recalled. Contact: opencommunity.opc@gmail.com.",
+        "Withdraw any time, real deletion: the “Withdraw my voice and image” button erases your files from the bank right away and removes them from the catalogue. Content already created before you withdraw cannot all be recalled. Contact: opencommunity.opc@gmail.com.",
         "No income guaranteed: if your voice or image is used, you receive a share of what subscribers pay to use it, paid after the refund period. It is not a salary or a promised income. There may be no earnings at all.",
         "Privacy: only your nickname and country are shown to subscribers. Your files are kept in a private, encrypted space, which may be outside your country. Processing follows Canada’s federal privacy law (PIPEDA). You can ask for access to your data or its deletion at the address above.",
       ],
@@ -832,7 +832,7 @@ export const en: Messages = {
       voiceTitle: "Your voice",
       voiceLead: "Read the text below into the microphone, in a natural voice, somewhere quiet. 20 to 30 seconds is enough.",
       voiceScriptLabel: "Text to read",
-      voiceScript: "Hello! It’s really me, with my real voice. Today I am lending it to OPC’s digital twin bank. Listen to the numbers: one, two, three, four, five. In the morning I get up early; in the evening I talk about my day. A question? I’m happy to answer, calmly and clearly. Thank you for listening.",
+      voiceScript: "Hello! It’s really me, with my real voice. Today I am lending it to OPC’s private bank. Listen to the numbers: one, two, three, four, five. In the morning I get up early; in the evening I talk about my day. A question? I’m happy to answer, calmly and clearly. Thank you for listening.",
       voiceRecord: "Record",
       voiceStop: "Stop",
       voiceRecording: "Recording… {seconds} s",
@@ -885,7 +885,7 @@ export const en: Messages = {
       uploadFailed: "Sending failed (connection?). Your file stays on your device. Tap “Send again”.",
       retryUpload: "Send my file again",
       withdrawTitle: "Withdraw my voice and image",
-      withdrawLead: "One tap is enough: your files are erased from the bank right away and removed from the twin catalogue.",
+      withdrawLead: "One tap is enough: your files are erased from the bank right away and removed from the catalogue.",
       withdrawButton: "Withdraw my voice and image",
       withdrawConfirm: "Confirm withdrawal and deletion",
       withdrawCancel: "Cancel",
@@ -962,7 +962,7 @@ export const en: Messages = {
     },
     monetise: {
       title: "Monetize yourself: your image, your voice.",
-      lead: "Lend your voice or image to OPC’s digital twins. You stay the owner and can withdraw at any time. No income guaranteed.",
+      lead: "Lend your voice or image to OPC. You stay the owner and can withdraw at any time. No income guaranteed.",
     },
     jumeauBanque: {
       title: "Digital twin — image and voice bank",
@@ -1058,7 +1058,7 @@ export const en: Messages = {
     inviter:
       "An invite link and QR will appear here. For now, tell a neighbour about Open Community.",
     monetise:
-      "The journey is open to people 18 and over: choose voice or image, consent, samples, face check, then deposit in the private digital twin bank. Withdraw in one tap.",
+      "The journey is open to people 18 and over: choose voice or image, consent, samples, face check, then deposit in OPC’s private bank. Withdraw in one tap.",
     scenarios:
       "A workshop to invent community sketches and cartoons. Planned for 2027.",
     sondages:
