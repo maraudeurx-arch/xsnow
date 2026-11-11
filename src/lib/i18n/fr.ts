@@ -783,7 +783,7 @@ export const fr = {
       title: "Monétise-toi : image et voix",
       preparingTitle: "En préparation",
       preparingLead: "Le parcours est momentanément fermé. Rien n’est collecté.",
-      lead: "Prête ta voix ou ton image à la banque des jumeaux numériques d’OPC. Tu restes propriétaire, tu choisis ce que tu proposes et tu peux te retirer quand tu veux. Si ta voix ou ton image sont utilisées, tu reçois une part de ce que les abonnés paient. Aucun revenu n’est garanti.",
+      lead: "Prête ta voix ou ton image à la banque privée d’OPC. Tu restes propriétaire, tu choisis ce que tu proposes et tu peux te retirer quand tu veux. Si ta voix ou ton image sont utilisées, tu reçois une part de ce que les abonnés paient. Aucun revenu n’est garanti.",
       adultNote: "Réservé aux personnes de 18 ans ou plus, résidant dans un pays en développement (hors Canada, États-Unis et Europe).",
       stepsTitle: "Le parcours",
       stepsList: [
@@ -794,7 +794,7 @@ export const fr = {
         "Vérification : une vidéo de ton visage où tu dis un code à voix haute.",
         "Dépôt : ton dossier part dans la banque privée, en vérification par l’équipe.",
       ],
-      deviceNote: "Tes fichiers vont dans un espace privé d’OPC, jamais public. Seuls les abonnés du Jumeau peuvent les utiliser, avec un lien temporaire. Tu peux tout retirer en un geste.",
+      deviceNote: "Tes fichiers vont dans un espace privé d’OPC, jamais public. Seuls les services d’OPC autorisés à les utiliser le peuvent, avec un lien temporaire, et seulement avec ton accord. Tu peux tout retirer en un geste.",
       resumeNote: "Ton dossier en cours est repris là où tu l’avais laissé.",
       progress: "Étape {step} sur {total} — {name}",
       stepNames: {
@@ -818,11 +818,11 @@ export const fr = {
       consentTitle: "Conditions et consentement",
       consentIntro: "Lis ces conditions avant d’accepter. Elles disent ce que tu proposes, ce qu’OPC peut en faire et quels sont tes droits.",
       consentItems: [
-        "Ce que tu proposes : ta voix (un enregistrement) et/ou ton image (une photo et une vidéo), selon ton choix, plus une courte vidéo de vérification. Ils entrent dans la banque privée d’images et de voix des jumeaux numériques d’OPC.",
-        "Usage permis : les abonnés du Jumeau numérique d’OPC peuvent s’en servir pour créer des vidéos et des voix générées par IA (présentations, formations, émissions). Ces contenus sont toujours signalés comme générés par IA. Aucun autre usage, aucune revente, aucun entraînement d’autres modèles.",
+        "Ce que tu proposes : ta voix (un enregistrement) et/ou ton image (une photo et une vidéo), selon ton choix, plus une courte vidéo de vérification. Ils entrent dans la banque privée d’images et de voix d’OPC.",
+        "Usage permis : les services d’OPC autorisés à les utiliser, et seulement avec ton accord, peuvent s’en servir pour créer des vidéos et des voix générées par IA (présentations, formations, émissions). Ces contenus sont toujours signalés comme générés par IA. Aucun autre usage, aucune revente, aucun entraînement d’autres modèles.",
         "Usages interdits : faire croire que tu as vraiment dit ou fait quelque chose, usurper ton identité, contenus sexuels ou nudité, contenus politiques ou électoraux, haine, diffamation ou harcèlement, arnaque ou fraude, publicité visant des mineurs, et tout usage illégal ou contre toi. Un manquement entraîne la suspension de l’abonné.",
         "Admissibilité : participation réservée aux personnes de 18 ans ou plus, résidant dans un pays en développement (hors Canada, États-Unis et Europe). Tu dois proposer seulement ta propre voix et ta propre image. La vidéo où tu dis un code à voix haute sert à le vérifier. L’équipe vérifie chaque dossier ; l’application ne confirme jamais une identité toute seule.",
-        "Retrait en tout temps, suppression réelle : le bouton « Retirer ma voix et mon image » efface tes fichiers de la banque tout de suite et les retire du catalogue des jumeaux. Les contenus déjà créés avant ton retrait ne peuvent pas tous être rappelés. Contact : opencommunity.opc@gmail.com.",
+        "Retrait en tout temps, suppression réelle : le bouton « Retirer ma voix et mon image » efface tes fichiers de la banque tout de suite et les retire du catalogue. Les contenus déjà créés avant ton retrait ne peuvent pas tous être rappelés. Contact : opencommunity.opc@gmail.com.",
         "Aucun revenu garanti : si ta voix ou ton image sont utilisées, tu reçois une part de ce que les abonnés paient pour les utiliser, versée après la période de remboursement. Ce n’est ni un salaire ni un revenu promis. Il peut n’y avoir aucun gain.",
         "Vie privée : seuls ton pseudonyme et ton pays sont montrés aux abonnés. Tes fichiers sont gardés dans un espace privé et chiffré, qui peut être hors de ton pays. Le traitement suit la loi fédérale canadienne sur la protection des renseignements personnels (LPRPDE). Tu peux demander l’accès à tes données ou leur suppression à l’adresse ci-dessus.",
       ],
@@ -834,7 +834,7 @@ export const fr = {
       voiceTitle: "Ta voix",
       voiceLead: "Lis le texte ci-dessous au micro, d’une voix naturelle, dans un endroit calme. 20 à 30 secondes suffisent.",
       voiceScriptLabel: "Texte à lire",
-      voiceScript: "Bonjour ! C’est bien moi, avec ma vraie voix. Aujourd’hui, je la confie à la banque des jumeaux numériques d’OPC. Écoutez les chiffres : un, deux, trois, quatre, cinq. Le matin, je me lève tôt ; le soir, je raconte ma journée. Une question ? Je réponds avec plaisir, calmement et clairement. Merci de m’écouter.",
+      voiceScript: "Bonjour ! C’est bien moi, avec ma vraie voix. Aujourd’hui, je la confie à la banque privée d’OPC. Écoutez les chiffres : un, deux, trois, quatre, cinq. Le matin, je me lève tôt ; le soir, je raconte ma journée. Une question ? Je réponds avec plaisir, calmement et clairement. Merci de m’écouter.",
       voiceRecord: "Enregistrer",
       voiceStop: "Arrêter",
       voiceRecording: "Enregistrement en cours… {seconds} s",
@@ -887,7 +887,7 @@ export const fr = {
       uploadFailed: "L’envoi a échoué (connexion ?). Ton dossier reste sur ton appareil. Touche « Renvoyer ».",
       retryUpload: "Renvoyer mon dossier",
       withdrawTitle: "Retirer ma voix et mon image",
-      withdrawLead: "Un geste suffit : tes fichiers sont effacés de la banque tout de suite et retirés du catalogue des jumeaux.",
+      withdrawLead: "Un geste suffit : tes fichiers sont effacés de la banque tout de suite et retirés du catalogue.",
       withdrawButton: "Retirer ma voix et mon image",
       withdrawConfirm: "Confirmer le retrait et la suppression",
       withdrawCancel: "Annuler",
@@ -964,7 +964,7 @@ export const fr = {
     },
     monetise: {
       title: "Monétise-toi : image et voix",
-      lead: "Prête ta voix ou ton image aux jumeaux numériques d’OPC. Tu restes propriétaire et tu peux te retirer quand tu veux. Aucun revenu garanti.",
+      lead: "Prête ta voix ou ton image à OPC. Tu restes propriétaire et tu peux te retirer quand tu veux. Aucun revenu garanti.",
     },
     jumeauBanque: {
       title: "Jumeau numérique — banque d’images et de voix",
@@ -1060,7 +1060,7 @@ export const fr = {
     inviter:
       "Un lien d’invitation et un QR apparaîtront ici. Pour l’instant, parlez d’Open Community à un voisin.",
     monetise:
-      "Le parcours est ouvert aux 18 ans et plus : choix voix ou image, consentement, échantillons, vérification du visage, puis dépôt dans la banque privée des jumeaux numériques. Retrait en un geste.",
+      "Le parcours est ouvert aux 18 ans et plus : choix voix ou image, consentement, échantillons, vérification du visage, puis dépôt dans la banque privée d’OPC. Retrait en un geste.",
     scenarios:
       "Un atelier pour inventer des sketches et des dessins animés communautaires. Prévu pour 2027.",
     sondages:
