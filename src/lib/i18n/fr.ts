@@ -583,15 +583,21 @@ export const fr = {
   },
   earnNow: {
     arbiterCta: "Devenir arbitre",
-    missionsTitle: "Télétravail",
-    missionsLead:
-      "",
     onlineWorkTitle: "Tutorat en ligne",
     onlineWorkLead:
-      "",
+      "OPC prépare une mise en relation avec des tuteurs formés par OPC.",
+    tutoratLanguages: {
+      francais: "Français",
+      anglais: "Anglais",
+      espagnol: "Espagnol",
+      soonBadge: "Bientôt",
+      soonBody:
+        "OPC mettra en relation avec des tuteurs formés par OPC pour apprendre cette langue. Service en préparation, pas encore ouvert.",
+      back: "Retour",
+    },
     supportTitle: "Support technique",
     supportLead: "",
-    disclaimer: "* Ces sociétés ne sont pas affiliées à OPC. Aucun revenu n’est garanti par OPC.",
+    disclaimer: "Aucun revenu n’est garanti par OPC.",
     supportCta: "Aide un agent IA",
     supportDialogTitle: "En construction :",
     supportDialogBody:

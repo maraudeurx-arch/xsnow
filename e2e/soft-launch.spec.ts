@@ -1,5 +1,4 @@
 import { APP_VERSION } from "../src/lib/app-version";
-import { PAID_MISSION_LINKS } from "../src/lib/paid-missions";
 import { OPC_PUBLIC_EMAIL } from "../src/lib/paths";
 import { SERVICE_KINDS, SERVICE_SEEDS, SERVICES } from "../src/lib/services";
 import { expect, seedLocalProfile, stubIdeaInbox, test } from "./helpers";
@@ -82,22 +81,36 @@ test.describe("Open Community soft-launch smoke", () => {
     await expect(page.getByText("Compétences", { exact: true })).toBeVisible();
   });
 
-  test("Gagner maintenant hides the heading, explains unaffiliated platforms, and keeps four apply links", async ({
+  test("Gagner maintenant hides the heading, keeps tutoring language choices, and drops telework links", async ({
     page,
   }) => {
     await seedLocalProfile(page);
     await page.goto("./gagner-maintenant/");
     await expect(page.getByRole("heading", { name: "Gagner maintenant", level: 2 })).toHaveCount(0);
     await expect(page.locator("[data-home-back]")).toBeVisible();
-    await expect(page.getByText(/pas affiliées à OPC/)).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Tutorat en ligne" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Télétravail" })).toHaveCount(0);
+    await expect(page.getByRole("heading", { name: "Support technique" })).toBeVisible();
     await expect(page.getByText(/Aucun revenu/)).toBeVisible();
+    await expect(page.getByText(/pas affiliées à OPC/)).toHaveCount(0);
 
-    for (const link of PAID_MISSION_LINKS) {
-      const cta = page.getByRole("link", { name: link.label, exact: true });
-      await expect(cta).toBeVisible();
-      await expect(cta).toHaveAttribute("href", link.url);
-      await expect(cta).toHaveAttribute("target", "_blank");
+    for (const label of ["Français", "Anglais", "Espagnol"]) {
+      await expect(page.getByRole("button", { name: label, exact: true })).toBeVisible();
     }
+    for (const label of ["Micro1", "TELUS Digital", "OneForma", "Mindrift", "italki", "Preply", "AmazingTalker"]) {
+      await expect(page.getByRole("link", { name: label, exact: true })).toHaveCount(0);
+      await expect(page.getByText(label, { exact: true })).toHaveCount(0);
+    }
+
+    await page.getByRole("button", { name: "Français", exact: true }).click();
+    const soon = page.locator("[data-earn-tutorat-soon]");
+    await expect(soon).toBeVisible();
+    await expect(soon.getByText(/tuteurs formés par OPC/)).toBeVisible();
+    await expect(soon.getByText(/pas encore ouvert|en préparation/i)).toBeVisible();
+    await page.locator("[data-earn-tutorat-back]").click();
+    await expect(soon).toHaveCount(0);
+    await expect(page.getByRole("button", { name: "Français", exact: true })).toBeVisible();
+
     await expect(page.locator("[data-earn-banned]")).toHaveCount(0);
     await page.goto("./conditions/");
     await expect(page.getByRole("heading", { name: "Activités interdites" })).toBeVisible();

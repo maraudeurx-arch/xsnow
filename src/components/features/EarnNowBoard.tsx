@@ -2,8 +2,10 @@
 
 import Link from "next/link";
 import { useEffect, useId, useRef, useState } from "react";
-import { PAID_MISSION_LINKS } from "@/lib/paid-missions";
-import { ONLINE_WORK_LINKS } from "@/lib/online-work";
+import {
+  TUTORAT_LEARN_LANGUAGES,
+  type TutoratLearnLanguage,
+} from "@/lib/tutorat-languages";
 import { useI18n } from "@/lib/i18n/locale";
 import { ProjectLeadDialog } from "@/components/features/ProjectLeadDialog";
 import { IdeaSaleDialog } from "@/components/features/IdeaSaleDialog";
@@ -20,6 +22,7 @@ const sectionLeadClass = "text-left text-sm leading-snug text-slate-600";
 export function EarnNowBoard() {
   const { m } = useI18n();
   const copy = m.earnNow;
+  const [tutoratLang, setTutoratLang] = useState<TutoratLearnLanguage | null>(null);
   const [supportOpen, setSupportOpen] = useState(false);
   const [leadOpen, setLeadOpen] = useState(false);
   const [leadKey, setLeadKey] = useState(0);
@@ -59,37 +62,41 @@ export function EarnNowBoard() {
         {copy.onlineWorkLead ? (
           <p className={sectionLeadClass}>{copy.onlineWorkLead}</p>
         ) : null}
-        {ONLINE_WORK_LINKS.map((link) => (
-          <a
-            key={link.id}
-            href={link.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={ctaClass}
+        {tutoratLang ? (
+          <div
+            className="grid gap-2 rounded-2xl border border-slate-200 bg-white px-3.5 py-3 text-left"
+            data-earn-tutorat-soon
+            role="status"
           >
-            {link.label}
-          </a>
-        ))}
-      </section>
-
-      <section className="grid gap-1.5" aria-labelledby="earn-missions-title">
-        <h2 id="earn-missions-title" className={sectionTitleClass}>
-          {copy.missionsTitle}
-        </h2>
-        {copy.missionsLead ? (
-          <p className={sectionLeadClass}>{copy.missionsLead}</p>
-        ) : null}
-        {PAID_MISSION_LINKS.map((link) => (
-          <a
-            key={link.id}
-            href={link.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={ctaClass}
-          >
-            {link.label}
-          </a>
-        ))}
+            <p className="flex flex-wrap items-center gap-2 text-[15px] font-bold text-slate-900">
+              <span>{copy.tutoratLanguages[tutoratLang]}</span>
+              <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-extrabold uppercase tracking-wide text-amber-900">
+                {copy.tutoratLanguages.soonBadge}
+              </span>
+            </p>
+            <p className={sectionLeadClass}>{copy.tutoratLanguages.soonBody}</p>
+            <button
+              type="button"
+              className={ctaClass}
+              data-earn-tutorat-back
+              onClick={() => setTutoratLang(null)}
+            >
+              {copy.tutoratLanguages.back}
+            </button>
+          </div>
+        ) : (
+          TUTORAT_LEARN_LANGUAGES.map((id) => (
+            <button
+              key={id}
+              type="button"
+              className={ctaClass}
+              data-earn-tutorat-lang={id}
+              onClick={() => setTutoratLang(id)}
+            >
+              {copy.tutoratLanguages[id]}
+            </button>
+          ))
+        )}
       </section>
 
       <section className="grid gap-1.5" aria-labelledby="earn-support-title">

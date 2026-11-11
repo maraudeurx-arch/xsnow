@@ -586,16 +586,22 @@ export const en: Messages = {
   },
   earnNow: {
     arbiterCta: "Become an arbiter",
-    missionsTitle: "Remote work",
-    missionsLead:
-      "",
     onlineWorkTitle: "Online tutoring",
     onlineWorkLead:
-      "",
+      "OPC is preparing to connect you with tutors trained by OPC.",
+    tutoratLanguages: {
+      francais: "French",
+      anglais: "English",
+      espagnol: "Spanish",
+      soonBadge: "Coming soon",
+      soonBody:
+        "OPC will connect you with tutors trained by OPC to learn this language. This service is being prepared and is not open yet.",
+      back: "Back",
+    },
     supportTitle: "Technical support",
     supportLead:
       "",
-    disclaimer: "* These companies are not affiliated with OPC. No income is guaranteed by OPC.",
+    disclaimer: "No income is guaranteed by OPC.",
     supportCta: "Help an AI agent",
     supportDialogTitle: "Under construction:",
     supportDialogBody:
