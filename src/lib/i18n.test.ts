@@ -235,16 +235,15 @@ describe("captcha farms are banned (D-AL-1)", () => {
 });
 
 describe("gagner maintenant copy", () => {
-  it("drops the board heading and explains unaffiliated phone work in FR/EN/ES", () => {
+  it("drops the board heading, keeps tutoring languages, and states no income in FR/EN/ES", () => {
     assert.equal(fr.menu.gagnerMaintenant, "Gagner maintenant");
     assert.equal(fr.earnNow.onlineWorkTitle, "Tutorat en ligne");
-    assert.equal(fr.earnNow.missionsTitle, "Télétravail");
+    assert.equal("missionsTitle" in fr.earnNow, false);
     assert.equal(fr.earnNow.supportTitle, "Support technique");
-    assert.equal(fr.earnNow.missionsLead, "");
     assert.equal(fr.earnNow.supportLead, "");
-    assert.equal(fr.earnNow.onlineWorkLead, "");
-    assert.match(fr.earnNow.disclaimer, /pas affiliées à OPC/);
+    assert.match(fr.earnNow.onlineWorkLead, /tuteurs formés par OPC/);
     assert.match(fr.earnNow.disclaimer, /Aucun revenu/);
+    assert.doesNotMatch(fr.earnNow.disclaimer, /affiliées/);
     assert.equal(fr.guide.introTitle, "Open Community (OPC) c’est :");
     assert.deepEqual(fr.guide.introBenefits, [
       "l’entraide entre voisins",
@@ -266,12 +265,12 @@ describe("gagner maintenant copy", () => {
     assert.equal(fr.features.gagnerMaintenant.lead, "");
     assert.equal(en.features.gagnerMaintenant.lead, "");
     assert.equal(es.features.gagnerMaintenant.lead, "");
-    assert.match(fr.earnNow.disclaimer, /pas affiliées à OPC/);
     assert.match(fr.earnNow.disclaimer, /Aucun revenu/);
-    assert.match(en.earnNow.disclaimer, /not affiliated with OPC/);
+    assert.doesNotMatch(fr.earnNow.disclaimer, /affiliées/);
     assert.match(en.earnNow.disclaimer, /No income is guaranteed/);
-    assert.match(es.earnNow.disclaimer, /no están afiliadas a OPC/);
+    assert.doesNotMatch(en.earnNow.disclaimer, /affiliated/);
     assert.match(es.earnNow.disclaimer, /no garantiza ningún ingreso/);
+    assert.doesNotMatch(es.earnNow.disclaimer, /afiliadas/);
     assert.equal("gagner" in fr, false);
     assert.equal("gagner" in en, false);
     assert.equal("gagner" in es, false);

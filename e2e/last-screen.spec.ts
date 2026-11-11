@@ -25,7 +25,7 @@ test.describe("iPhone: reprendre l’écran quitté", () => {
   test("reload keeps the screen, relaunch resumes it, Accueil clears it", async ({ page }) => {
     await installedApp(page);
     await page.goto("./gagner-maintenant/");
-    await expect(page.getByRole("heading", { name: "Télétravail" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Tutorat en ligne" })).toBeVisible();
     await expect
       .poll(() => page.evaluate((key) => window.localStorage.getItem(key), KEY))
       .toContain("/gagner-maintenant");
@@ -34,12 +34,12 @@ test.describe("iPhone: reprendre l’écran quitté", () => {
 
     await page.reload();
     await expect(page).toHaveURL(/\/gagner-maintenant\/$/);
-    await expect(page.getByRole("heading", { name: "Télétravail" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Tutorat en ligne" })).toBeVisible();
 
     // Home Screen launch always opens start_url (Accueil): back to Gagner maintenant.
     await page.goto("./");
     await expect(page).toHaveURL(/\/gagner-maintenant\/$/);
-    await expect(page.getByRole("heading", { name: "Télétravail" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Tutorat en ligne" })).toBeVisible();
 
     await page.goto("./vos-idees/");
     await expect(page.getByLabel("Ton idée")).toBeVisible();
