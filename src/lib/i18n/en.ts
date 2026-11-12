@@ -176,7 +176,7 @@ export const en: Messages = {
       sections: [
         {
           heading: "Who we are",
-          body: "Open Community (OPC) / Xsnow is a neighbourhood mutual-aid app, branded with your city name. Static site on GitHub Pages. No email account required. The development team is responsible for the project. Independent soft launch — not a registered corporation. Contact: GitHub Issues, or opencommunity.opc@gmail.com. Details: Who is behind OPC.",
+          body: "Open Community (OPC) / Xsnow is a neighbourhood mutual-aid app, branded with your city name. Static site on GitHub Pages. No email account required. The development team is responsible for the project. Soft launch operated by Essaim-Agents Inc., a corporation registered in Ontario (Canada). Contact: GitHub Issues, or opencommunity.opc@gmail.com. Details: Who is behind OPC.",
         },
         {
           heading: "What we collect",
@@ -259,7 +259,7 @@ export const en: Messages = {
       sections: [
         {
           heading: "Public person responsible",
-          body: "The development team is responsible for the project. Open Community (OPC) / Xsnow is an independent soft launch: it is not a registered corporation, company, or incorporated entity. No legal business name is invented here.",
+          body: "The development team is responsible for the project. Open Community (OPC) / Xsnow is a soft launch operated by Essaim-Agents Inc., a corporation registered in Ontario (Canada). Applicable law is that of Ontario and the federal laws of Canada, together with the laws of each participant’s country.",
         },
         {
           heading: "Origin and displayed city",
