@@ -8,8 +8,8 @@
 
 export const INSTALL_WALL_ENABLED = true;
 
-/** Video placeholder: set the URL once the « installer OPC » video exists. */
-export const INSTALL_WALL_VIDEO_URL = "";
+/** Vidéo d’introduction d’OPC : publicité « Entraide » approuvée par Popol le 11/11/2026 (30 s, gens qui s’entraident). */
+export const INSTALL_WALL_VIDEO_URL = "/pub-opc-entraide-fr.mp4";
 
 /** Legal pages stay readable before install (privacy and terms must always be reachable). */
 export const INSTALL_WALL_OPEN_PATHS = ["/conditions", "/vie-privee", "/securite"] as const;
