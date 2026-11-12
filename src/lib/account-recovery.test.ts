@@ -2,13 +2,42 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import {
   createRecoveryRecord,
+  generateOpcCode,
   generateRecoverySalt,
   hashRecoveryCode,
+  isValidOpcCodeFormat,
+  normalizeOpcCode,
   normalizeRecoveryCode,
+  RECOVERY_MAX_ATTEMPTS,
   recoveryHashMatches,
   validateRecoveryCode,
   verifyRecoveryCode,
 } from "./account-recovery.ts";
+
+describe("OPC personal code (identifier)", () => {
+  it("generates well-formed codes without confusable characters", () => {
+    for (let i = 0; i < 50; i++) {
+      const code = generateOpcCode();
+      assert.equal(isValidOpcCodeFormat(code), true, code);
+      assert.equal(/[01IOL]/.test(code.slice(4)), false, code);
+    }
+  });
+  it("accepts the code typed without prefix, dash or case", () => {
+    const code = generateOpcCode();
+    const body = code.slice(4).toLowerCase();
+    assert.equal(normalizeOpcCode(body), code);
+    assert.equal(normalizeOpcCode("opc " + body), code);
+    assert.equal(isValidOpcCodeFormat(body), true);
+  });
+  it("rejects malformed codes", () => {
+    assert.equal(isValidOpcCodeFormat("OPC-ABC"), false);
+    assert.equal(isValidOpcCodeFormat("OPC-ABC01I"), false);
+    assert.equal(isValidOpcCodeFormat(""), false);
+  });
+  it("caps recovery attempts at 5 (Indiana's guard)", () => {
+    assert.equal(RECOVERY_MAX_ATTEMPTS, 5);
+  });
+});
 
 describe("normalizeRecoveryCode", () => {
   it("ignores case, accents and separators for words", () => {

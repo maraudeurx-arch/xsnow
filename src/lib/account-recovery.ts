@@ -32,6 +32,41 @@ export const RECOVERY_CODE_MIN_WORD_LENGTH = 5;
 export const RECOVERY_PIN_MIN_LENGTH = 4;
 export const RECOVERY_PIN_MAX_LENGTH = 6;
 
+/** Failed recovery attempts allowed before the temporary block (Indiana's guard, 2026-11-11). */
+export const RECOVERY_MAX_ATTEMPTS = 5;
+
+/**
+ * The OPC personal code: the account's identifier, shown big at
+ * registration, read aloud, copied by email when the person has one —
+ * « la clé de ta maison OPC ». It is NOT the secret (the 4-digit code
+ * below is). Alphabet excludes confusable characters (0/O, 1/I/L).
+ */
+export const OPC_CODE_PREFIX = "OPC-";
+export const OPC_CODE_ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
+export const OPC_CODE_LENGTH = 6;
+
+export function generateOpcCode(): string {
+  const bytes = new Uint8Array(OPC_CODE_LENGTH);
+  crypto.getRandomValues(bytes);
+  let out = OPC_CODE_PREFIX;
+  for (const b of bytes) out += OPC_CODE_ALPHABET[b % OPC_CODE_ALPHABET.length];
+  return out;
+}
+
+/** Normalize a typed OPC code: case, spaces and the dash do not matter. */
+export function normalizeOpcCode(input: string): string {
+  const cleaned = (input ?? "").toUpperCase().replace(/[\s-]+/g, "");
+  const body = cleaned.startsWith("OPC") ? cleaned.slice(3) : cleaned;
+  return OPC_CODE_PREFIX + body;
+}
+
+export function isValidOpcCodeFormat(input: string): boolean {
+  const normalized = normalizeOpcCode(input);
+  if (!normalized.startsWith(OPC_CODE_PREFIX)) return false;
+  const body = normalized.slice(OPC_CODE_PREFIX.length);
+  return body.length === OPC_CODE_LENGTH && [...body].every((c) => OPC_CODE_ALPHABET.includes(c));
+}
+
 /** PBKDF2 work factor for the stored hash (WebCrypto, SHA-256). */
 export const RECOVERY_PBKDF2_ITERATIONS = 150_000;
 export const RECOVERY_SALT_BYTES = 16;
