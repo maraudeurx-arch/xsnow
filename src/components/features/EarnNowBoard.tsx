@@ -74,7 +74,11 @@ export function EarnNowBoard() {
                 {copy.tutoratLanguages.soonBadge}
               </span>
             </p>
-            <p className={sectionLeadClass}>{copy.tutoratLanguages.soonBody}</p>
+            <p className={sectionLeadClass}>
+              {tutoratLang === "asl"
+                ? copy.tutoratLanguages.aslSoonBody
+                : copy.tutoratLanguages.soonBody}
+            </p>
             <button
               type="button"
               className={ctaClass}
