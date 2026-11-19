@@ -1,6 +1,6 @@
 /** Languages a person can ask to learn through OPC tutoring (in preparation). */
 
-export const TUTORAT_LEARN_LANGUAGES = ["francais", "anglais", "espagnol"] as const;
+export const TUTORAT_LEARN_LANGUAGES = ["francais", "anglais", "espagnol", "asl"] as const;
 
 export type TutoratLearnLanguage = (typeof TUTORAT_LEARN_LANGUAGES)[number];
 

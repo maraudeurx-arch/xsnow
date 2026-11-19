@@ -593,9 +593,12 @@ export const es: Messages = {
       francais: "Francés",
       anglais: "Inglés",
       espagnol: "Español",
+      asl: "Lengua de señas americana (ASL)",
       soonBadge: "Pronto",
       soonBody:
         "OPC te pondrá en relación con tutores formados por OPC para aprender este idioma. Servicio en preparación, aún no abierto.",
+      aslSoonBody:
+        "Servicio para padres de niños sordos o con dificultades auditivas; servicio en preparación, aún no abierto.",
       back: "Volver",
     },
     supportTitle: "Soporte técnico",

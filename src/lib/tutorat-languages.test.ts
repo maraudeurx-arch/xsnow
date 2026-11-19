@@ -25,25 +25,39 @@ const RETIRED_LABELS = [
 ];
 
 describe("tutorat language choices", () => {
-  it("exposes exactly French, English and Spanish as learnable languages", () => {
-    assert.deepEqual([...TUTORAT_LEARN_LANGUAGES], ["francais", "anglais", "espagnol"]);
+  it("exposes exactly French, English, Spanish and ASL as learnable languages", () => {
+    assert.deepEqual([...TUTORAT_LEARN_LANGUAGES], ["francais", "anglais", "espagnol", "asl"]);
     assert.equal(isTutoratLearnLanguage("francais"), true);
     assert.equal(isTutoratLearnLanguage("anglais"), true);
     assert.equal(isTutoratLearnLanguage("espagnol"), true);
+    assert.equal(isTutoratLearnLanguage("asl"), true);
     assert.equal(isTutoratLearnLanguage("de"), false);
     assert.equal(isTutoratLearnLanguage("tutorat"), false);
   });
 
-  it("labels the three choices in FR/EN/ES", () => {
+  it("labels the four choices in FR/EN/ES", () => {
     assert.equal(fr.earnNow.tutoratLanguages.francais, "Français");
     assert.equal(fr.earnNow.tutoratLanguages.anglais, "Anglais");
     assert.equal(fr.earnNow.tutoratLanguages.espagnol, "Espagnol");
+    assert.equal(fr.earnNow.tutoratLanguages.asl, "Langue des signes américaine (ASL)");
     assert.equal(en.earnNow.tutoratLanguages.francais, "French");
     assert.equal(en.earnNow.tutoratLanguages.anglais, "English");
     assert.equal(en.earnNow.tutoratLanguages.espagnol, "Spanish");
+    assert.equal(en.earnNow.tutoratLanguages.asl, "American Sign Language (ASL)");
     assert.equal(es.earnNow.tutoratLanguages.francais, "Francés");
     assert.equal(es.earnNow.tutoratLanguages.anglais, "Inglés");
     assert.equal(es.earnNow.tutoratLanguages.espagnol, "Español");
+    assert.equal(es.earnNow.tutoratLanguages.asl, "Lengua de señas americana (ASL)");
+  });
+
+  it("keeps the ASL coming-soon copy for parents, in preparation, with no price or promise", () => {
+    assert.match(fr.earnNow.tutoratLanguages.aslSoonBody, /pour parents d'enfants sourds ou malentendants; service en préparation/);
+    assert.match(en.earnNow.tutoratLanguages.aslSoonBody, /parents of deaf or hard-of-hearing children/);
+    assert.match(es.earnNow.tutoratLanguages.aslSoonBody, /padres de niños sordos/);
+    for (const messages of [fr, en, es]) {
+      const body = messages.earnNow.tutoratLanguages.aslSoonBody;
+      assert.doesNotMatch(body, /\$|garanti|guaranteed|garantiza/i);
+    }
   });
 
   it("keeps the coming-soon copy honest: OPC tutors, in preparation, no income promise", () => {
