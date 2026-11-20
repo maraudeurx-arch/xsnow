@@ -590,9 +590,12 @@ export const fr = {
       francais: "Français",
       anglais: "Anglais",
       espagnol: "Espagnol",
+      asl: "ASL",
       soonBadge: "Bientôt",
       soonBody:
         "OPC mettra en relation avec des tuteurs formés par OPC pour apprendre cette langue. Service en préparation, pas encore ouvert.",
+      aslSoonBody:
+        "Service pour parents d'enfants sourds ou malentendants; service en préparation, pas encore ouvert.",
       back: "Retour",
     },
     supportTitle: "Support technique",
