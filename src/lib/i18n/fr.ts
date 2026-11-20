@@ -590,7 +590,7 @@ export const fr = {
       francais: "Français",
       anglais: "Anglais",
       espagnol: "Espagnol",
-      asl: "Langue des signes américaine (ASL)",
+      asl: "ASL",
       soonBadge: "Bientôt",
       soonBody:
         "OPC mettra en relation avec des tuteurs formés par OPC pour apprendre cette langue. Service en préparation, pas encore ouvert.",

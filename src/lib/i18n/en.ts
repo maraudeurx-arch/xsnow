@@ -593,7 +593,7 @@ export const en: Messages = {
       francais: "French",
       anglais: "English",
       espagnol: "Spanish",
-      asl: "American Sign Language (ASL)",
+      asl: "ASL",
       soonBadge: "Coming soon",
       soonBody:
         "OPC will connect you with tutors trained by OPC to learn this language. This service is being prepared and is not open yet.",

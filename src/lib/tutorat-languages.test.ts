@@ -39,15 +39,15 @@ describe("tutorat language choices", () => {
     assert.equal(fr.earnNow.tutoratLanguages.francais, "Français");
     assert.equal(fr.earnNow.tutoratLanguages.anglais, "Anglais");
     assert.equal(fr.earnNow.tutoratLanguages.espagnol, "Espagnol");
-    assert.equal(fr.earnNow.tutoratLanguages.asl, "Langue des signes américaine (ASL)");
+    assert.equal(fr.earnNow.tutoratLanguages.asl, "ASL");
     assert.equal(en.earnNow.tutoratLanguages.francais, "French");
     assert.equal(en.earnNow.tutoratLanguages.anglais, "English");
     assert.equal(en.earnNow.tutoratLanguages.espagnol, "Spanish");
-    assert.equal(en.earnNow.tutoratLanguages.asl, "American Sign Language (ASL)");
+    assert.equal(en.earnNow.tutoratLanguages.asl, "ASL");
     assert.equal(es.earnNow.tutoratLanguages.francais, "Francés");
     assert.equal(es.earnNow.tutoratLanguages.anglais, "Inglés");
     assert.equal(es.earnNow.tutoratLanguages.espagnol, "Español");
-    assert.equal(es.earnNow.tutoratLanguages.asl, "Lengua de señas americana (ASL)");
+    assert.equal(es.earnNow.tutoratLanguages.asl, "ASL");
   });
 
   it("keeps the ASL coming-soon copy for parents, in preparation, with no price or promise", () => {
